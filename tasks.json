@@ -741,6 +741,37 @@
         "用户已确认接受AI语境校译；仍在询问已有模型服务名称，需管理员私密设置API密钥",
         "已有4篇会话校译已上线，真实外部模型调用尚未完成"
       ]
+    },
+    {
+      "id": "T025",
+      "title": "ChatGPT每日直接校译并通过GitHub发布，不依赖外部模型API",
+      "milestone": "M4",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T023"
+      ],
+      "scope": [
+        "backend/daily_translation.py",
+        "scripts/",
+        "data/translation-queue.json",
+        "data/translation-input/",
+        "data/translations/",
+        ".github/workflows/",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "每日ChatGPT任务已创建且启用，时区使用Asia/Tokyo",
+        "来源读取成功，任务有可直接读取的正文和安全提交格式",
+        "AI译稿对照校对后提交GitHub，校验后自动更新公开站，不需网站模型API",
+        "全部原文/来源/收藏保留，陈旧或未通过校对译稿不会发布",
+        "准确区分定时任务创建、流程实际验收和未来执行结果"
+      ],
+      "evidence": [
+        "GitHub连接get_repo成功，push权限确认；automations.peek无重复任务"
+      ]
     }
   ]
 }

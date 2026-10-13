@@ -146,3 +146,10 @@ T023实际发布证据：代码c570808；[CI38433869071](https://github.com/k1ry
 
 
 最终公开474条版本在1440／390px再次通过4稿原文/校译切换、AI来源说明、旧机翻隐藏、主动筛选后返回全部、原文保持验收。T023已完成软件与实际样稿；T024为明确的凭据依赖阻塞。管理员配置MODEL/BASE_URL/REVIEW_MODEL及EDITORIAL_API_KEY后，运行一次Refresh并核查真实模型结果再报告启用。不要要求用户重新确认公开访问或AI校译方式。
+
+
+## T025 · 每日ChatGPT直接校译路线建设中
+
+用户要求每天由ChatGPT直接代译，转为定时任务＋已连接GitHub，不要求配置额外网站模型API。GitHub get_repo真实只读成功，push权限确认；automations.peek无重复任务。准备data/translation-input逐篇完整源块、data/translation-queue.json（跨频道／来源与旧稿份额）、docs/DAILY_TRANSLATION.md和data/translations译稿格式。新增import_packs源hash／标题／段落／数字／校对检查，模型不可用也能独立导入。
+
+新增Publish daily AI translations工作流，分享文化资料写锁，验证后提交快照并自动Pages；refresh也导入既有译稿、重新生成队列。幂等导入避免重复覆盖；陈旧译稿不覆盖新原文，无源码／密码输入要求。当前任务还待实际提交发布、每日任务创建与验证，勿伪称已经每天运行。

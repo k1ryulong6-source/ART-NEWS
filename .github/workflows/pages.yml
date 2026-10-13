@@ -9,7 +9,7 @@ on:
       - 'data/live.json'
       - '.github/workflows/pages.yml'
   workflow_run:
-    workflows: ['Refresh cultural news']
+    workflows: ['Refresh cultural news', 'Publish daily AI translations']
     types: [completed]
 permissions:
   contents: read

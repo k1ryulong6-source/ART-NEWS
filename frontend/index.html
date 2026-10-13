@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f5ef">
+  <meta name="description" content="映间：个人电影、艺术、摄影资讯台，发现值得看的作品与展览。">
+  <title>映间 · 个人文化信息台</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="data.js"></script>
+  <script defer src="core.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <aside class="sidebar">
+    <a class="brand" href="#today" aria-label="映间首页"><span class="brand-seal">映</span><span>映间<small>BETWEEN FRAMES</small></span></a>
+    <p class="brand-note">电影 · 艺术 · 摄影<br>一份留给自己的文化日常。</p>
+    <nav aria-label="主要导航" id="navigation"></nav>
+    <div class="sidebar-bottom"><div class="mini-label">MY CULTURAL COORDINATES</div><button class="city-link" id="coordinate-button">东京，日本 <span>↗</span></button><p>在日常之外，<br>给好作品留一个位置。</p><span class="edition">PERSONAL EDITION · VOL. 01</span></div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar"><span class="topbar-title">你的个人文化信息台</span><div class="topbar-right"><label class="search-field"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="搜索作品、展览、关键词" aria-label="搜索资讯"></label><span class="profile" aria-label="个人工作区">我</span></div></header>
+    <main id="main" tabindex="-1"></main>
+    <footer>映间 · 在电影、艺术与摄影之间 <span>所有示例均为虚构；图形为作品示意。</span></footer>
+  </div>
+  <dialog id="detail-dialog" aria-labelledby="detail-title"><button id="close-detail" class="dialog-close" aria-label="关闭详情">×</button><div id="detail-body"></div></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">请启用 JavaScript 使用筛选、日历和收藏。当前版本仅包含虚构示例内容。</p></noscript>
+</body>
+</html>

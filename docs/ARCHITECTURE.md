@@ -2,9 +2,9 @@
 
 ## 当前与建议
 
-当前只有项目基础包和可执行 SQL，没有应用服务器或采集器。
+当前已经实现 `frontend/` 和 `backend/`：原生 HTML／CSS／JavaScript + FastAPI + SQLite。没有真实采集器、真实模型摘要或定时任务。
 
-建议 Python 3.10+、FastAPI、SQLite；前端 React + TypeScript + Vite。先本地运行，开发模式用 Vite 代理 `/api`，发布版本由后端提供前端构建结果。数据量或多人访问需要时再迁移 PostgreSQL。依赖版本在 T001 锁定，不凭文档声称已经安装。
+Python 3.10+、FastAPI、SQLite；前端无外部依赖，后端通过资源白名单提供静态文件。Python 依赖版本见 requirements.txt。后续若实际复杂度需要，再迁移 React／TypeScript 或 PostgreSQL；参见 D007。
 
 选择理由：单人低运维；采集与处理适合 Python；浏览器前端独立于模型供应商；SQLite 可导出迁移。允许下一位 AI 调整，但应先说明收益并更新决策，不重做已验证功能。
 
@@ -39,7 +39,9 @@
 | GET／PUT `/api/preferences` | 个人设置 |
 | GET `/api/export` | 个人收藏和设置的可移植 JSON |
 
-这些接口尚未实现；T001 起逐步实现。正式版本修改设置、采集与导出等接口需按实际部署限制访问。
+已实现 content、events、bookmarks、preferences、export，以及 `/api/health`、`/api/dataset`、`POST /api/import`。`/api/today` 尚未实现，精选使用前端 core.js；API 尚无分页。正式版本修改设置、采集与导出等接口需按实际部署限制访问，目前只监听本机。
+
+小规模个人服务的异步路由执行短 SQLite 查询，避免当前受限环境中的后台线程唤醒问题。采集／模型调用将独立于请求路径；未来大规模数据操作应迁移到独立任务进程或异步数据层。
 
 ## 模型接口
 
@@ -55,4 +57,4 @@
 
 个人设置初值来自 `config/preferences.json`；正式用户状态写本地数据目录或数据库。候选源来自 `config/sources.json`，未核实默认不启用。
 
-T001 提供依赖锁定与一条可复现启动说明。T004 提供手动采集命令。定时器由 T008 完成，在那之前不得写“每天自动更新”。数据目录、数据库、API 密钥与个人导出不进入 Git。
+T001 已提供依赖锁定与启动命令，仍待浏览器与 TCP 监听验收。T004 将提供手动采集命令。定时器由 T008 完成，在那之前不得写“每天自动更新”。数据目录、数据库、API 密钥与个人导出不进入 Git。

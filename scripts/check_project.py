@@ -118,7 +118,7 @@ def check_sql_and_demo():
         require(len(release_rows) == 2, "Expected separate country releases")
         require(release_rows[0][1] != release_rows[1][1], "Country dates accidentally merged")
         require(any(row[0] == "JP" and row[2] == "Asia/Tokyo" for row in release_rows), "Missing Japan timezone")
-        require(connection.execute("SELECT count(*) FROM content WHERE kind='industry_buzz'").fetchone()[0] == 1,
+        require(connection.execute("SELECT count(*) FROM content WHERE kind='industry_buzz' AND evidence_status != 'unverified'").fetchone()[0] >= 1,
                 "Expected a marked buzz example")
     print("PASS: SQL initializes twice; demo imports; country dates and foreign keys are valid")
 
@@ -130,7 +130,7 @@ def main():
     check_tasks()
     check_config()
     check_sql_and_demo()
-    print("PASS: handoff foundation is consistent; application features are not implemented yet")
+    print("PASS: handoff foundation is consistent (application QA is checked separately)")
 
 
 if __name__ == "__main__":

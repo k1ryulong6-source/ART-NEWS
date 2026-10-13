@@ -1,0 +1,1 @@
+"""Culture Desk local service."""

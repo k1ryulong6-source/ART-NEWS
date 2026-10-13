@@ -13,7 +13,6 @@
 | ARTnews | RSS | 艺术新闻 |
 | Aperture | RSS | 摄影资讯 |
 | Artforum 中文网 | 公开 RSS | 中文艺术内容与期刊元数据，订阅正文不访问 |
-
 | Variety · Film | RSS | 全球电影／影业新闻，英语，美国媒体 |
 | Artnet News | RSS | 艺术、市场、场馆与艺术家新闻，英语 |
 | Hyperallergic | RSS | 艺术新闻与评论，英语 |

@@ -4,7 +4,7 @@
 
 ## 仓库与授权
 
-仓库：https://github.com/k1ryulong6-source/ART-NEWS 。用户明确选择公开仓库，保留公开设置与原来的初始化提交。此前 v0.2 GitHub 检查及刷新成功；本次 v0.3 的全球更新已完成本地验收，推送后会记录最新工作流证据。
+仓库：https://github.com/k1ryulong6-source/ART-NEWS 。用户明确选择公开仓库，保留公开设置与原来的初始化提交。v0.3 全球更新已推送，GitHub Project checks 与 Refresh cultural news 实际成功；GitHub 端 14 个来源全部 success、inserted=0，235 条资讯／36 项活动已自动提交。最新检查和刷新链接见下方。
 
 API 密钥、密码、SMTP 配置、个人数据库与收藏不进入 Git。data/live.json 和 frontend/data.js 只有公开来源元数据及处理次数账本。
 
@@ -62,10 +62,11 @@ python3 scripts/import_snapshot.py：首次恢复公开快照，并恢复当天�
 
 ## GitHub 验证与领取入口
 
-- CI：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38360567814
-- 实际自动刷新：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38364831935
+- CI：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38378046262
+- 实际自动刷新：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38378052566
 - 摘要配置：https://github.com/k1ryulong6-source/ART-NEWS/issues/1
 - 托管选择：https://github.com/k1ryulong6-source/ART-NEWS/issues/2
-- 扩充来源：https://github.com/k1ryulong6-source/ART-NEWS/issues/3
+- 已完成全球更新：https://github.com/k1ryulong6-source/ART-NEWS/issues/3
+- 后续全球来源：https://github.com/k1ryulong6-source/ART-NEWS/issues/4
 
 公开网站的 Pages 工作流已准备，但仅 workflow_dispatch，不随 push 自动发布，也尚未触发；等待用户选择公开网站后再配置 Pages 并验证网址。

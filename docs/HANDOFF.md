@@ -159,4 +159,7 @@ T025实际证据：f907c45提供桥接＋一篇真实会话校译（Steve McQuee
 
 GitHubApp实际读取repo和DAILY_TRANSLATION成功；通过同一连接create_file写入DAILY_TRANSLATION_STATUS.md，提交bc9e860成功，验证定时任务所需连接可读写。automations.create与update均确认success、is_enabled=true，IANA DTSTART;TZID=Asia/Tokyo:20261014T113000、FREQ=DAILY、flexible_schedule。任务id仅保存在忽略的runtime/daily-automation.json，不写公开仓库。没有提前调用run_now，因为用户要求每日重复，未要求立即触发该任务；此会话译稿验证与首次定时执行分开。
 
-当前419条原非中文待译，新增实际稿后418，短队列36项，423份非中文原文输入保持。未来单次任务受额度／时长限制，不承诺一次完成全部；若工具连接或发布失败，保留原文／待译及已完成稿，并按真实任务结果报告。部署／网页和任务私下状态复核待最后验收。
+当前419条原非中文待译，新增实际稿后418，短队列36项，423份非中文原文输入保持。未来单次任务受额度／时长限制，不承诺一次完成全部；若工具连接或发布失败，保留原文／待译及已完成稿，并按真实任务结果报告。部署／网页和任务私下状态复核均已完成。
+
+
+T025最终验收：a1e0114改为默认chatgpt-task模式，无EDITORIAL_API_KEY仍能正常走译稿导入；[CI38442648556](https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38442648556) 64项通过；[部署38442648767](https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38442648767) 成功。公开1440／390px再次验证5份校译、注释／AI身份、旧机翻隐藏、全部474条／26来源保持，无脚本错误。任务private peek确认is_enabled=true、IANA日程正确，last_run_time=null，因此不假称第一次定时任务已执行。无需继续索要API凭据；用户可在ChatGPT任务管理修改或暂停每日任务。

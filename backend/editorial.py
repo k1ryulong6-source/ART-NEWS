@@ -130,10 +130,17 @@ def publish_translation(store, row, result, provider, model, review_model, revie
 
 
 def run_editorial(store, provider=None, daily_limit=None, article_limit=None):
-    if os.getenv('EDITORIAL_PROVIDER', 'openai-compatible') == 'disabled' and provider is None:
-        return {'status': 'disabled', 'reviewed': 0}
+    def save_status(value):
+        with store.connect() as db:
+            db.execute("INSERT INTO job_state VALUES('last-editorial',?) ON CONFLICT(id) DO UPDATE SET value=excluded.value", (json.dumps(value),))
+        return value
+    kind = os.getenv('EDITORIAL_PROVIDER', 'chatgpt-task')
+    if kind == 'disabled' and provider is None:
+        return save_status({'status': 'disabled', 'reviewed': 0})
+    if kind == 'chatgpt-task' and provider is None:
+        return save_status({'status': 'chatgpt_task', 'reviewed': 0, 'reason': 'reviewed_packs_imported_by_workflow'})
     if provider is None and not os.getenv('EDITORIAL_API_KEY'):
-        return {'status': 'not_configured', 'reviewed': 0, 'reason': 'EDITORIAL_API_KEY_missing'}
+        return save_status({'status': 'not_configured', 'reviewed': 0, 'reason': 'EDITORIAL_API_KEY_missing'})
     provider = provider or ContextTranslator()
     limit = max(0, min(200, int(daily_limit if daily_limit is not None else os.getenv('EDITORIAL_DAILY_LIMIT', '20'))))
     count = max(0, min(50, int(article_limit if article_limit is not None else os.getenv('EDITORIAL_ARTICLE_LIMIT', '5'))))

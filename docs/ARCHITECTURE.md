@@ -89,3 +89,10 @@ editorial.py 用完整文章块和术语表输入OpenAI-compatible模型接口�
 editorial_usage共享跨CI的独立模型请求账本；editorial_draft_json和输入hash允许续接校对。发布以正文hash及原标题作并发条件，防止陈旧请求回写。来源正文或原标题改变时清理相关校译缓存。前端只展示editorial_status=reviewed的editorial_*；公共Google翻译字段仅保留历史兼容。读取译文仍是本站静态快照，不在浏览器暴露API密钥。
 
 本次4篇样稿由会话AI实际完成并对照原文检查，provider=session-ai:context-review-v1；不登记为付费模型调用。模型服务未配置时not_configured，不启动Google回退，也不宣称后台校译已完成。
+
+
+## ChatGPT任务发布桥接 v0.10
+
+daily_translation.py为每篇非中文可读原文生成独立输入JSON，短队列兼顾频道、来源和旧稿；已完成稿不进入pending，但原输入仍保留。ChatGPT任务仅需GitHub连接，无本地环境／模型API要求。data/translations译稿经import_packs验证source hash、标题、完整块／数字、校对批准及AI来源后调用publish_translation，不覆盖原文或活动。包hash保证幂等，新正文使旧稿失效而不丢记录。
+
+新translations.yml对译稿变更执行导入与审计，只有新增稿才提交快照；Pages监听该工作流完成。refresh同步导入和重建队列，二者共享cultural-news-data-write并发组。default run_editorial返回chatgpt_task模式而不调用模型API，独立API模式仍可选。

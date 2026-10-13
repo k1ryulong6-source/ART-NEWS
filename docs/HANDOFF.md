@@ -1,8 +1,8 @@
-# 当前交接记录 · v0.9
+# 当前交接记录 · v0.10
 
 更新时间：2026-10-14 JST。建设者：Codex。
 
-最新要求：AI按全文语境翻译并对照校对，拒绝默认公共逐句机翻。v0.9已实现独立初译／校对模型接口、结构与数字检查、发布状态与独立请求账本。4篇会话校译样稿实际完成并上线；最新保留全部26来源、474条资讯、163活动及原文。GitHub实际刷新确认EDITORIAL_API_KEY_missing；自动校译尚未配置，不假称后台调用成功。参见文末T023／T024。
+最新要求：每天由ChatGPT直接按全文语境翻译并对照校对。每日任务已创建并启用，Asia/Tokyo上午约11:30，首定时执行尚未发生；无需另配网站模型API。GitHub原文小文件／队列、译稿回写与验证发布已走通，新稿从4增至5，全部26来源、474资讯、163活动保持。外部API方案仅为可选，不能再以无密钥阻塞当前路线。
 
 ## 仓库与授权
 
@@ -153,3 +153,10 @@ T023实际发布证据：代码c570808；[CI38433869071](https://github.com/k1ry
 用户要求每天由ChatGPT直接代译，转为定时任务＋已连接GitHub，不要求配置额外网站模型API。GitHub get_repo真实只读成功，push权限确认；automations.peek无重复任务。准备data/translation-input逐篇完整源块、data/translation-queue.json（跨频道／来源与旧稿份额）、docs/DAILY_TRANSLATION.md和data/translations译稿格式。新增import_packs源hash／标题／段落／数字／校对检查，模型不可用也能独立导入。
 
 新增Publish daily AI translations工作流，分享文化资料写锁，验证后提交快照并自动Pages；refresh也导入既有译稿、重新生成队列。幂等导入避免重复覆盖；陈旧译稿不覆盖新原文，无源码／密码输入要求。当前任务还待实际提交发布、每日任务创建与验证，勿伪称已经每天运行。
+
+
+T025实际证据：f907c45提供桥接＋一篇真实会话校译（Steve McQueen《66–76–26》展）。47Python＋16JS检查最初通过；新增无API任务模式验证后48Python＋16JS。导入工作流38441724744成功，bot158e92e更新快照和pending队列；部署38441784624成功。未调用模型API，5份校译均实际在站可读。
+
+GitHubApp实际读取repo和DAILY_TRANSLATION成功；通过同一连接create_file写入DAILY_TRANSLATION_STATUS.md，提交bc9e860成功，验证定时任务所需连接可读写。automations.create与update均确认success、is_enabled=true，IANA DTSTART;TZID=Asia/Tokyo:20261014T113000、FREQ=DAILY、flexible_schedule。任务id仅保存在忽略的runtime/daily-automation.json，不写公开仓库。没有提前调用run_now，因为用户要求每日重复，未要求立即触发该任务；此会话译稿验证与首次定时执行分开。
+
+当前419条原非中文待译，新增实际稿后418，短队列36项，423份非中文原文输入保持。未来单次任务受额度／时长限制，不承诺一次完成全部；若工具连接或发布失败，保留原文／待译及已完成稿，并按真实任务结果报告。部署／网页和任务私下状态复核待最后验收。

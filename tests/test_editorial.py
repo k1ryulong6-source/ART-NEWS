@@ -76,7 +76,15 @@ class EditorialTests(unittest.TestCase):
         self.assertIsNone(self.store.dataset('live')['content'][0]['editorial_blocks_json'])
 
     def test_missing_credentials_does_not_fall_back_to_google_or_disable_sources(self):
-        with patch.dict('os.environ',{'EDITORIAL_API_KEY':''}):result=run_editorial(self.store)
+        with patch.dict('os.environ',{'EDITORIAL_PROVIDER':'openai-compatible','EDITORIAL_API_KEY':''}):result=run_editorial(self.store)
         self.assertEqual(result['status'],'not_configured')
         self.assertEqual(self.store.dataset('live')['content'][0]['article_text'],self.row['article_text'])
         self.assertEqual(len(self.store.dataset('live')['content']),1)
+
+    def test_chatgpt_task_mode_needs_no_external_api_and_records_its_actual_mode(self):
+        with patch.dict('os.environ',{'EDITORIAL_PROVIDER':'chatgpt-task','EDITORIAL_API_KEY':''}), patch('backend.editorial.ContextTranslator',side_effect=AssertionError('API must not be called')):
+            result=run_editorial(self.store)
+        self.assertEqual(result['status'],'chatgpt_task')
+        with self.store.connect() as db:
+            status=json.loads(db.execute("SELECT value FROM job_state WHERE id='last-editorial'").fetchone()[0])
+        self.assertEqual(status['status'],'chatgpt_task')

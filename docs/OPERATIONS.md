@@ -1,4 +1,4 @@
-# 运行与托管 v0.9
+# 运行与托管 v0.10
 
 完整启动、静态构建、模型和邮件配置见 README.md。
 
@@ -59,20 +59,18 @@ print(collect_articles(s, limit=1000))
 之后运行 scripts/export_snapshot.py、scripts/audit_data.py --output data/quality.json --strict、scripts/build_static.py。仅在新内容／采集规则变化后针对所需来源复核，不重复强制抓取全部原文。查看 data/quality.json 的 article_source_counts；collected、partial、no_body、restricted、unavailable 分开统计。
 
 
-## 配置全文语境AI校译
+## 当前默认：ChatGPT每日直接校译
 
-用户已选择AI语境翻译＋校对。Google翻译已停用；ARTICLE_TRANSLATION_LIMIT和TRANSLATION_DAILY_LIMIT仅兼容旧版本，当前刷新不再调用Google。
+任务“每日校译文化资讯”已在用户ChatGPT账户开启，Asia/Tokyo时区，上午约11:30的flexible_schedule；可在ChatGPT任务管理中修改或暂停。第一次定时执行尚未发生。任务账户ID只在忽略的本地runtime文件保存，不入公开仓库。该模式不需要配置额外网站模型API，仍受ChatGPT任务可用性、执行额度／时长及连接状态限制。
 
-GitHub管理员打开 https://github.com/k1ryulong6-source/ART-NEWS/settings/secrets/actions ，新增repository secret `EDITORIAL_API_KEY`。不要把密钥写入源码、聊天或公开仓库。按实际服务在同页Variables设置：
+GitHub入口：docs/DAILY_TRANSLATION.md、data/translation-queue.json、逐篇data/translation-input。译稿写data/translations/ID.json，Publish daily AI translations验证并导出，workflow_run触发Pages。refresh与翻译发布使用同一个数据写入并发组，正常采集也导入未处理译稿和更新队列。已处理相同稿跳过，正文变更的陈旧稿留待重新校译。
 
-| 字段 | OpenAI示例 | DeepSeek示例 |
-| --- | --- | --- |
-| EDITORIAL_BASE_URL | https://api.openai.com/v1 | https://api.deepseek.com/v1 |
-| EDITORIAL_MODEL | gpt-4.1 | deepseek-chat |
-| EDITORIAL_REVIEW_MODEL | gpt-4.1 | deepseek-chat |
+手动验证：python scripts/import_daily_translations.py；python scripts/export_snapshot.py；python scripts/audit_data.py --output data/quality.json --strict；python scripts/prepare_translation_queue.py；python scripts/build_static.py。发布失败读取Actions日志修正具体译稿；不要删除原文以使检查通过。
 
-示例模型名需要以自己的账户实际可调用模型为准；接口使用/chat/completions和JSON输出。校对可使用另一可调用模型。默认EDITORIAL_ARTICLE_LIMIT=5、EDITORIAL_DAILY_LIMIT=20（模型请求次数，每篇通常2次），限制不是固定金额保证。模型API计费与ChatGPT额度各自独立。
+每12小时的资讯抓取仍为东京时间10:15／22:15；每日ChatGPT校译安排在上午抓取后。源站数据仍可能限制访问，原文缺失／仅公开部分维持明确状态。
 
-完成后手动运行Refresh cultural news，检查translations.status和reviewed计数；缺密钥明确not_configured，API出错或审稿未通过不展示初稿。自动刷新仍每天东京时间10:15／22:15运行，正文采集与模型校译分开；未配置校译不阻止原文发布。
+## 可选：外部模型API校译
 
-新CI先恢复editorial_usage当天账本及初稿；后续可继续校对，无需重译完成的初稿。大于45000字符／350块的全文进入too_long状态，不裁剪冒充全文。4篇会话样稿独立保留，不伪称已配置上述API。
+此方案不是当前每日任务的前置。只有主动选择API模式时，才在GitHubActionsSecret设置EDITORIAL_API_KEY，并把EDITORIAL_PROVIDER设为openai-compatible。参考OpenAI https://api.openai.com/v1／gpt-4.1，或DeepSeek https://api.deepseek.com/v1／deepseek-chat；以账户实际可用模型为准。EDITORIAL_MODEL与EDITORIAL_REVIEW_MODEL可不同。默认每轮5篇、每天20次模型请求；这一账本仅统计外部API，与ChatGPT任务运行分开。不要向聊天或仓库提交密钥。
+
+Google翻译保持停用。无需因缺少API密钥而停止当前ChatGPT直接校译路线。

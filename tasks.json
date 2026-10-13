@@ -715,9 +715,9 @@
     },
     {
       "id": "T024",
-      "title": "配置校译模型API并验收真实自动译稿",
+      "title": "可选：外部模型API校译模式配置",
       "milestone": "M4",
-      "status": "blocked",
+      "status": "todo",
       "owner": "Codex / 仓库管理员",
       "updated_at": "2026-10-14",
       "depends_on": [
@@ -739,7 +739,8 @@
         "工作环境无EDITORIAL_API_KEY；GitHub刷新38434030648实际返回not_configured／EDITORIAL_API_KEY_missing",
         "仓库接口列出Actions Secrets返回403，不能自行设置所缺模型凭据",
         "用户已确认接受AI语境校译；仍在询问已有模型服务名称，需管理员私密设置API密钥",
-        "已有4篇会话校译已上线，真实外部模型调用尚未完成"
+        "已有4篇会话校译已上线，真实外部模型调用尚未完成",
+        "用户改为要求ChatGPT每日直接校译；T025路线已不需网站模型API，T024仅作可选替代，不再阻塞主线"
       ]
     },
     {
@@ -770,7 +771,11 @@
         "准确区分定时任务创建、流程实际验收和未来执行结果"
       ],
       "evidence": [
-        "GitHub连接get_repo成功，push权限确认；automations.peek无重复任务"
+        "GitHub连接get_repo成功，push权限确认；automations.peek无重复任务",
+        "ChatGPT每日任务create/update成功且is_enabled=true；Asia/Tokyo约11:30，首定时执行尚未发生",
+        "GitHub连接实际读写均成功；任务ID保存在忽略的runtime，不入公开仓库",
+        "真实会话新译稿经工作流38441724744导入、Pages38441784624发布；5稿保持，无额外模型API调用",
+        "48 Python＋16 JS=64项检查；状态与公开网页待最终核验"
       ]
     }
   ]

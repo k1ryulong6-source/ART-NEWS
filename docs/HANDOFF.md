@@ -2,7 +2,7 @@
 
 更新时间：2026-10-14 JST。建设者：Codex。
 
-最新要求：AI按全文语境翻译并对照校对，拒绝默认公共逐句机翻。v0.9已实现独立初译／校对模型接口、结构与数字检查、发布状态与独立请求账本。4篇会话校译样稿实际完成；所有26来源、462条资讯、163活动及原文保持。定时模型凭据尚未配置，不假称后台自动校译已运行。参见文末T023。
+最新要求：AI按全文语境翻译并对照校对，拒绝默认公共逐句机翻。v0.9已实现独立初译／校对模型接口、结构与数字检查、发布状态与独立请求账本。4篇会话校译样稿实际完成并上线；最新保留全部26来源、474条资讯、163活动及原文。GitHub实际刷新确认EDITORIAL_API_KEY_missing；自动校译尚未配置，不假称后台调用成功。参见文末T023／T024。
 
 ## 仓库与授权
 
@@ -137,4 +137,12 @@ T022 最终完成：代码538ec99，自动快照c9f764c，补读快照7b36281。
 
 本地检查：44 Python＋16 JS=60项通过，项目检查／严格审计0错误通过。真实Chromium1440／390px：4稿原文/校译切换、译名说明、AI来源标注、旧机翻不显示、主动筛选4稿后返回全部462条、全部26来源保持，均通过，无横向溢出与页面错误。当前运行环境无EDITORIAL_API_KEY；GitHub密钥列表GET返回403，不能读取或新设模型密钥。用户服务名称问题已提出，可继续无凭据的建设，但自动API校译必须等配置。
 
-自动校译配置与真实模型端到端验证是剩余工作：管理员在仓库Actions secrets添加EDITORIAL_API_KEY，按账户选BASE_URL/MODEL/REVIEW_MODEL，详见OPERATIONS。当前只测试了模拟模型契约和真实会话样稿，不声称外部API实际执行。发布验收进行中。
+自动校译配置与真实模型端到端验证是剩余工作：管理员在仓库Actions secrets添加EDITORIAL_API_KEY，按账户选BASE_URL/MODEL/REVIEW_MODEL，详见OPERATIONS。当前只测试了模拟模型契约和真实会话样稿，不声称外部API实际执行。公开发布验收已完成，模型API配置单独留为T024。
+
+
+T023实际发布证据：代码c570808；[CI38433869071](https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38433869071) 60项检查通过；[部署38433869177](https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38433869177) 成功；公开站1440／390px实测4份校译、说明、来源标注、旧Google隐藏及全部来源保持通过。
+
+真实GitHub更新 [38434030648](https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38434030648) 继续正常采集原文，新增12条至474条，所有旧ID和4份校译保留。translations明确not_configured、reviewed=0、reason=EDITORIAL_API_KEY_missing；没有回退Google、没有付费API调用、editorial_usage为空。自动再发布 [38434258959](https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38434258959) 已成功。自动校译模型配置与真实请求留为T024 blocked，不掩盖缺口。
+
+
+最终公开474条版本在1440／390px再次通过4稿原文/校译切换、AI来源说明、旧机翻隐藏、主动筛选后返回全部、原文保持验收。T023已完成软件与实际样稿；T024为明确的凭据依赖阻塞。管理员配置MODEL/BASE_URL/REVIEW_MODEL及EDITORIAL_API_KEY后，运行一次Refresh并核查真实模型结果再报告启用。不要要求用户重新确认公开访问或AI校译方式。

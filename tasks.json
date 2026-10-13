@@ -682,7 +682,7 @@
       "id": "T023",
       "title": "全文语境翻译、校对与质量审核，替代默认公共机翻",
       "milestone": "M4",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-10-14",
       "depends_on": [
@@ -709,7 +709,37 @@
         "完整上下文初译＋独立审稿＋段落数字检查实现；60项自动检查通过",
         "4篇西／日／英／法真实会话校译稿完成，非外部API调用",
         "手机/桌面：4稿阅读、原文切换、旧机翻隐藏、462条/26来源保持通过",
-        "运行环境无模型密钥，定时真实模型调用未完成；发布待核验"
+        "60项GitHub CI和公开部署通过；手机／桌面474条版本：4份校译、译名说明、旧机翻隐藏、全部来源保持均通过",
+        "实际定时流程确认EDITORIAL_API_KEY_missing，未调用Google或外部模型；单独建立T024配置阻塞任务，不伪称自动校译已启用"
+      ]
+    },
+    {
+      "id": "T024",
+      "title": "配置校译模型API并验收真实自动译稿",
+      "milestone": "M4",
+      "status": "blocked",
+      "owner": "Codex / 仓库管理员",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T023"
+      ],
+      "scope": [
+        "GitHub Actions Secrets/Variables",
+        "backend/editorial.py",
+        "data/live.json",
+        "docs/HANDOFF.md"
+      ],
+      "acceptance": [
+        "私密配置EDITORIAL_API_KEY及可调用模型，密钥不入源码",
+        "实际完成初译及校对两次请求，通过结构检查并发布中文稿",
+        "验证请求账本、失败保留原文及原始活动事实不变",
+        "公开手机／桌面核对实际API生成校译稿"
+      ],
+      "evidence": [
+        "工作环境无EDITORIAL_API_KEY；GitHub刷新38434030648实际返回not_configured／EDITORIAL_API_KEY_missing",
+        "仓库接口列出Actions Secrets返回403，不能自行设置所缺模型凭据",
+        "用户已确认接受AI语境校译；仍在询问已有模型服务名称，需管理员私密设置API密钥",
+        "已有4篇会话校译已上线，真实外部模型调用尚未完成"
       ]
     }
   ]

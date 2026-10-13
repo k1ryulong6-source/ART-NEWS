@@ -26,6 +26,8 @@ def audit_payload(snapshot, catalog, reference=None):
         try: urls[canonical_url(row['canonical_url'])] += 1
         except (ValueError, KeyError): problem('invalid_content_url',row)
         if row.get('is_demo'): problem('demo_in_live_content',row)
+        if row.get('original_page_url') and not public_url(row['original_page_url']): problem('unsafe_original_page_url',row)
+        if row.get('original_embed_status') not in (None,'available','blocked','unavailable','unchecked'): problem('invalid_original_page_status',row)
         if row.get('image_url') and (not public_url(row['image_url']) or not row.get('image_credit') or not row.get('image_source_url')): problem('image_without_safe_url_or_attribution',row)
         if len(row.get('excerpt_original') or '') > 281: problem('excerpt_exceeds_short_reading_limit',row)
         if GEAR.search(row.get('title_original','')) or GEAR_MULTILINGUAL.search(row.get('title_original','')): problem('equipment_review',row)
@@ -83,6 +85,9 @@ def audit_payload(snapshot, catalog, reference=None):
             'original_excerpts': sum(bool(row.get('excerpt_original')) for row in content),
             'machine_translated_titles': sum(bool(row.get('translated_title_zh')) for row in content),
             'machine_translated_excerpts': sum(bool(row.get('translated_excerpt_zh')) for row in content),
+            'original_pages_without_blocking_header': sum(row.get('original_embed_status') == 'available' for row in content),
+            'original_pages_blocked_by_publisher': sum(row.get('original_embed_status') == 'blocked' for row in content),
+            'original_pages_unavailable_or_unchecked': sum(row.get('original_embed_status') in ('unavailable','unchecked',None) for row in content),
         },
         'languages': dict(Counter(row['language'] for row in content)),
         'event_countries': dict(Counter(row['country'] for row in events)),

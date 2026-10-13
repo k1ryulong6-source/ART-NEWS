@@ -122,3 +122,13 @@ test('reading uses Chinese translations, searches source excerpts and validates 
   assert(C.translatedArticleUrl(row).includes(encodeURIComponent(row.canonical_url)));
   assert.equal(C.displayTitle({ ...row, title_zh: '人工中文标题' }), '人工中文标题');
 });
+
+test('original reader links preserve the source and routes survive refresh and malformed hashes', () => {
+  const row = { canonical_url: 'https://source.example/story', original_page_url: 'https://source.example/story?context=original' };
+  assert.equal(C.originalPageUrl(row), row.original_page_url);
+  assert.equal(C.matches({ ...row, original_embed_status: 'blocked' }, {}), true);
+  assert.equal(C.originalPageUrl({ canonical_url: 'javascript:alert(1)' }), '');
+  assert.deepEqual(C.parseRoute(C.readerRoute('live-example')), { view: 'reader', id: 'live-example' });
+  assert.deepEqual(C.parseRoute('#reader/%broken'), { view: 'today' });
+  assert.deepEqual(C.parseRoute('#calendar'), { view: 'calendar' });
+});

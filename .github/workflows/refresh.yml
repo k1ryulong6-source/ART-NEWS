@@ -30,6 +30,7 @@ jobs:
           TRANSLATION_PROVIDER: ${{ vars.TRANSLATION_PROVIDER || 'google-public' }}
           TRANSLATION_DAILY_LIMIT: ${{ vars.TRANSLATION_DAILY_LIMIT || '1000' }}
           READING_PAGE_LIMIT: '20'
+          ORIGINAL_CHECK_LIMIT: '20'
       - run: python scripts/export_snapshot.py
       - run: python scripts/audit_data.py --output data/quality.json --strict
       - run: python scripts/build_static.py

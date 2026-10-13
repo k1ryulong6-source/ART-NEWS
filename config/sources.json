@@ -382,8 +382,12 @@
       "access_method": "rss",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "2026-10-13 实际 HTTP 200 且有有效 RSS 条目；只保存短元数据及原文链接。媒体发布地与标题提及地区分开；发布日期缺失保持未知。 排除明确以剧集／季／集为主的标题。",
-      "exclude_title_regex": "\\bsérie\\b|\\bséries\\b|\\btemporada\\b|\\bepisódio\\b|\\bepisódios\\b"
+      "notes": "2026-10-13 实际 HTTP 200 且有有效 RSS 条目；只保存短元数据及原文链接。媒体发布地与标题提及地区分开；发布日期缺失保持未知。 排除明确以剧集／季／集为主的标题。 原 RSS 的 RapaduraCast Patreon 原文链接保留，作为明确的附加原文域名检查；不绕过会员／登录。",
+      "exclude_title_regex": "\\bsérie\\b|\\bséries\\b|\\btemporada\\b|\\bepisódio\\b|\\bepisódios\\b",
+      "original_hosts": [
+        "www.patreon.com",
+        "patreon.com"
+      ]
     },
     {
       "id": "cinepremiere",

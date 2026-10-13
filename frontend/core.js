@@ -16,10 +16,17 @@
   const locationLabel = row => { const names = locations(row).map(place => place.city || countryLabels[place.country] || place.country); return names.length ? (row.geography_status === 'mentioned' ? '涉及 ' : '') + [...new Set(names)].join(' / ') : '地点未说明'; };
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const safeUrl = value => { try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } };
+  const originalPageUrl = row => safeImageUrl(row.original_page_url || row.canonical_url);
+  const readerRoute = id => '#reader/' + encodeURIComponent(id);
+  function parseRoute(hash) {
+    const value = (hash || '').replace(/^#/, '');
+    if (value.startsWith('reader/')) { try { const id = decodeURIComponent(value.slice(7)); return id ? { view: 'reader', id } : { view: 'today' }; } catch { return { view: 'today' }; } }
+    return { view: ['today','explore','calendar','bookmarks','settings'].includes(value) ? value : 'today' };
+  }
   const displayTitle = row => row.title_zh || row.translated_title_zh || row.title_original;
   const readingSummary = row => row.summary_zh || row.translated_excerpt_zh || row.excerpt_original || '来源未提供可读摘要，请打开原文阅读全文。';
   const safeImageUrl = value => { try { const u = new URL(value); return u.protocol === 'https:' && !u.username && !u.password && !['localhost', '127.0.0.1', '[::1]'].includes(u.hostname) ? u.href : ''; } catch { return ''; } };
-  const translatedArticleUrl = row => { const original = safeUrl(row.canonical_url || row.evidence_url); return original ? 'https://translate.google.com/translate?sl=auto&tl=zh-CN&u=' + encodeURIComponent(original) : ''; };
+  const translatedArticleUrl = row => { const original = safeUrl(row.original_page_url || row.canonical_url || row.evidence_url); return original ? 'https://translate.google.com/translate?sl=auto&tl=zh-CN&u=' + encodeURIComponent(original) : ''; };
   const dateNumber = value => { if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return null; const [y, m, d] = value.split('-').map(Number), date = new Date(Date.UTC(y, m - 1, d)); return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d ? date.getTime() / 86400000 : null; };
   const localDate = (timezone, instant = new Date()) => { const parts = new Intl.DateTimeFormat('en', { timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(instant); const get = type => parts.find(part => part.type === type).value; return `${get('year')}-${get('month')}-${get('day')}`; };
   const daysBetween = (start, end) => { const a = dateNumber(start), b = dateNumber(end); return a === null || b === null ? null : b - a; };
@@ -144,7 +151,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { originalPageUrl, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

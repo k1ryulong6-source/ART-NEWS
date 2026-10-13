@@ -59,6 +59,7 @@ def bfi_records(source,payload):
         query=[(k,v) for k,v in parse_qsl(parts.query) if not k.endswith('::context_id')]
         url=urlunsplit((parts.scheme,parts.netloc,parts.path,urlencode(query),'')).strip()
         record=content_record(source,name,url,summary=f'BFI 伦敦电影节官方放映信息《{name}》。具体场次、当地时刻、场馆与票价见关联活动；售罄或节目变更请核对原文。')
+        record['original_page_url']=booking
         event=event_record(source,record,'festival_screening',instant.date().isoformat(),venue=venue,city='伦敦',country='GB',timezone='Europe/London')
         event.update(id=stable_id(source['id']+':performance:'+row['id']),start_at=instant.isoformat(),time_status='confirmed',date_text_original=original,booking_url=booking)
         low,high=row.get('min_price'),row.get('max_price')

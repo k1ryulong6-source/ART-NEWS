@@ -72,3 +72,7 @@ config/regions.json 是前后端共享地区／城市／语言标签表；其中
 ## 公开阅读数据 v0.6
 
 reading.py 从 RSS 的 enclosure／media／公开 HTML 图片读取配图链接，并从公开摘要／页面 metadata 补短摘录。原始处理摘录 raw_excerpt 仍不导出；excerpt_original 有独立的 280 字符／55 单词上限，image_* 保留配图来源。translation.py 缓存公共机器译文，独立于 enrichment.py 的可选 AI 摘要；输入改变清理旧译文，陈旧请求不能回写新版资料。translation_usage 随公开快照传递，防止 CI 重置当日请求数。图片外链在浏览器加载，失败事件以安全文字占位；所有源文本与翻译均转义。
+
+## 原文阅读 v0.7
+
+originals.py 只读取来源响应头、原始地址与规则，不读取正文；保存 original_* 状态。CSP 多策略分别生效，frame-ancestors 优先于 XFO，report-only 不阻止。允许的原网页由浏览器 sandbox iframe 直接向来源请求；没有正文镜像或响应头剥除代理。所有内容始终保留。阅读页路由 #reader/id 可刷新，收藏只更新按钮与导航，不重建原文 iframe。

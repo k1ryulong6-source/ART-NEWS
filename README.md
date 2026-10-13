@@ -8,7 +8,7 @@
 
 已实现今日、探索、日历、收藏和设置；筛选／搜索、圈内动态开关、详情、关注排序；SQLite 持久保存；JSON 导出／恢复、ICS 日历导出；真实采集、去重、来源开关、手动更新、更新状态、站内提醒；可替换摘要接口与可选邮件提醒。
 
-2026-10-13 实际接入 22 个来源，收录 339 条公开资讯与资料、45 项活动（日本 28、英国 8、印度 3、南非 6）。data/live.json 是标明时间的公开元数据快照；虚构示例单独保存于 data/demo.json，页面可切换，二者不混用。
+2026-10-13 实际接入 22 个来源，收录 340 条公开资讯与资料、45 项活动（日本 28、英国 8、印度 3、南非 6）。data/live.json 是标明时间的公开元数据快照；虚构示例单独保存于 data/demo.json，页面可切换，二者不混用。
 
 新增 Variety Film、Artnet News、Hyperallergic、British Journal of Photography、L’Œil de la Photographie、Cinéfilos（西语）和 Tate Modern；保留原有七个来源。v0.4 新增 ART AFRICA、Cinema com Rapadura、Cine PREMIERE、Trois Couleurs、Fisheye、Asian Movie Pulse 及 MAP、Zeitz MOCAA 官方展期。默认全球阅读，提供 18 个国家、城市、原文语言筛选与日本专题快捷入口。媒体所在地与报道涉及地区分开保存；原标题提及的地区标为“涉及”，没有证据时显示“地点未说明”，不猜测活动地点。
 
@@ -98,7 +98,7 @@ node tests/core.test.js
 node --check frontend/app.js
 ```
 
-22 项 Python 与 11 项 JavaScript 检查通过。桌面 1440px 与手机 390px 五个页面无横向溢出；实际浏览器检查了筛选、收藏刷新、状态设置、JSON 下载／上传、ICS 下载、来源开关、提醒与手动刷新。静态版与服务版分别检查。
+23 项 Python 与 11 项 JavaScript 检查通过。桌面 1440px 与手机 390px 五个页面无横向溢出；实际浏览器检查了筛选、收藏刷新、状态设置、JSON 下载／上传、ICS 下载、来源开关、提醒与手动刷新。静态版与服务版分别检查。
 
 ## 文件入口
 

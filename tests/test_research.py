@@ -1,4 +1,8 @@
 import unittest
+import json
+from tempfile import TemporaryDirectory
+from pathlib import Path
+from backend.storage import Store
 from backend.ingestion import map_records,zeitz_records,rss_records
 from scripts.audit_data import audit_payload
 
@@ -46,3 +50,22 @@ class ResearchChecks(unittest.TestCase):
         data['content_events'].append({'content_id':'a','event_id':'missing'})
         codes=[e['code'] for e in audit_payload(data,catalog,'2026-10-13')['errors']]
         self.assertIn('duplicate_url',codes);self.assertIn('broken_content_event_link',codes)
+
+    def test_snapshot_restores_source_history_without_inventing_a_new_fetch(self):
+        with TemporaryDirectory() as temp:
+            path=Path(temp)/'snapshot.json'
+            success='2026-10-13T09:00:00+00:00'
+            failed={'started_at':'2026-10-13T10:00:00+00:00','finished_at':'2026-10-13T10:01:00+00:00','status':'failed','fetched_count':0,'inserted_count':0,'error':'HTTPError HTTP 403'}
+            path.write_text(json.dumps({'content':[],'events':[],'content_events':[],'source_status':[{'id':'asianmoviepulse','last_success_at':success,'last_run':failed}]}))
+            store=Store(Path(temp)/'history.db')
+            store.restore_public_snapshot(path);store.restore_public_snapshot(path)
+            status=next(x for x in store.source_status() if x['id']=='asianmoviepulse')
+            self.assertEqual(status['last_success_at'],success)
+            self.assertEqual(status['last_run']['status'],'failed')
+            with store.connect() as db:
+                self.assertEqual(db.execute('SELECT count(*) FROM ingest_runs').fetchone()[0],0)
+            # Loading an older snapshot must not erase the newer failure.
+            path.write_text(json.dumps({'content':[],'events':[],'content_events':[],'source_status':[{'id':'asianmoviepulse','last_success_at':success,'last_run':{**failed,'started_at':success,'status':'success'}}]}))
+            store.restore_public_snapshot(path)
+            status=next(x for x in store.source_status() if x['id']=='asianmoviepulse')
+            self.assertEqual(status['last_run']['status'],'failed')

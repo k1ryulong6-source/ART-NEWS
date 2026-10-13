@@ -194,6 +194,18 @@ class Store:
             db.execute("CREATE TABLE IF NOT EXISTS summary_usage(day TEXT PRIMARY KEY, calls INTEGER NOT NULL)")
             for item in data.get("processing_usage", []):
                 db.execute("INSERT INTO summary_usage VALUES(?,?) ON CONFLICT(day) DO UPDATE SET calls=max(calls,excluded.calls)", (item["day"], item["calls"]))
+            known_sources = {row[0] for row in db.execute("SELECT id FROM sources")}
+            for source in data.get("source_status", []):
+                if source["id"] not in known_sources:
+                    continue
+                key = "source-history:" + source["id"]
+                previous = db.execute("SELECT value FROM job_state WHERE id=?", (key,)).fetchone()
+                history = json.loads(previous[0]) if previous else {}
+                history["last_success_at"] = max(filter(None, (history.get("last_success_at"), source.get("last_success_at"))), default=None)
+                incoming = source.get("last_run")
+                if incoming and incoming.get("started_at", "") >= (history.get("last_run") or {}).get("started_at", ""):
+                    history["last_run"] = incoming
+                db.execute("INSERT INTO job_state VALUES(?,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value", (key, json.dumps(history)))
         if existing:
             return 0
         return self.ingest_records(data["content"], data["events"], data["content_events"])["inserted"]
@@ -208,6 +220,10 @@ class Store:
             for source in sources:
                 last = db.execute("SELECT started_at,finished_at,status,fetched_count,inserted_count,error FROM ingest_runs WHERE source_id=? ORDER BY started_at DESC LIMIT 1", (source["id"],)).fetchone()
                 successful = db.execute("SELECT finished_at FROM ingest_runs WHERE source_id=? AND status='success' ORDER BY finished_at DESC LIMIT 1", (source["id"],)).fetchone()
-                source["last_run"] = dict(last) if last else None
-                source["last_success_at"] = successful[0] if successful else None
+                saved = db.execute("SELECT value FROM job_state WHERE id=?", ("source-history:" + source["id"],)).fetchone()
+                history = json.loads(saved[0]) if saved else {}
+                current = dict(last) if last else None
+                restored = history.get("last_run")
+                source["last_run"] = restored if restored and restored.get("started_at", "") > (current or {}).get("started_at", "") else current or restored
+                source["last_success_at"] = max(filter(None, (successful[0] if successful else None, history.get("last_success_at"))), default=None)
         return sources

@@ -4,7 +4,7 @@
 
 ## 仓库与授权
 
-仓库：https://github.com/k1ryulong6-source/ART-NEWS 。用户明确选择公开仓库，保留公开设置与原来的初始化提交。此前 v0.3 的 GitHub 检查与刷新已验证成功。本轮 v0.4 本地 22 个来源两轮全部成功，第二轮 inserted=0，339 条资料／45 项活动；最新 GitHub 结果将在本次推送后补录。
+仓库：https://github.com/k1ryulong6-source/ART-NEWS 。用户明确选择公开仓库，保留原初始化提交。v0.4 已推送，代码检查与刷新工作流成功。GitHub 实际 21 源成功，Asian Movie Pulse 返回 HTTP 403；8 条已取得资料保留。快照 340 条资料／45 项活动，质量核验 0 错误。已修复快照重建丢失最后成功读取时间的问题，保留历史来源状态而不伪造新采集。
 
 API 密钥、密码、SMTP 配置、个人数据库与收藏不进入 Git。data/live.json 和 frontend/data.js 只有公开来源元数据及处理次数账本。
 
@@ -13,7 +13,7 @@ API 密钥、密码、SMTP 配置、个人数据库与收藏不进入 Git。data
 - 今日／探索／日历／收藏／设置；频道、地区、城市、搜索、圈内动态开关与配额。
 - 内容／活动详情、关注对象排序、收藏状态、JSON 导出恢复、ICS 日历导出。
 - SQLite 存储，真实／示例分离，旧库迁移、首次公开快照恢复。
-- 22 个真实来源；339 条资讯与资料、45 项活动（日本 28、英国 8、印度 3、南非 6）。
+- 22 个真实来源；340 条资讯与资料、45 项活动（日本 28、英国 8、印度 3、南非 6）。
 - 全球默认、18 国／城市／语言筛选、日本专题；标题多地区提及与媒体发布地分离，未知地点不猜测。
 - 已保存来源核实档案 data/source-research.json、覆盖缺口 docs/COVERAGE.md；质量脚本检查重复、日期、器材与活动引用。
 - 旧资料标记并保留在探索；今日排除 30 天外新闻及无日期证据的资料。MAP 周一闭馆／周二免费说明已核对。
@@ -27,7 +27,7 @@ API 密钥、密码、SMTP 配置、个人数据库与收藏不进入 Git。data
 
 ## 已实际验证
 
-- 22 项 Python 与 11 项 JavaScript 检查通过。
+- 23 项 Python 与 11 项 JavaScript 检查通过。
 - Uvicorn 实际监听与 HTTP 请求通过。
 - 22 个来源两轮真实读取成功；重复采集插入数为 0。
 - Chromium 桌面 1440px／手机 390px 五个页面无横向溢出、无脚本错误。
@@ -64,11 +64,13 @@ python3 scripts/import_snapshot.py：首次恢复公开快照，并恢复当天�
 
 ## GitHub 验证与领取入口
 
-- CI：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38378046262
-- 实际自动刷新：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38378052566
+- CI：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38382261321
+- 实际自动刷新：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38382266972
 - 摘要配置：https://github.com/k1ryulong6-source/ART-NEWS/issues/1
 - 托管选择：https://github.com/k1ryulong6-source/ART-NEWS/issues/2
 - 已完成全球更新：https://github.com/k1ryulong6-source/ART-NEWS/issues/3
 - 已完成全球来源补全：https://github.com/k1ryulong6-source/ART-NEWS/issues/4
 
 公开网站的 Pages 工作流已准备，但仅 workflow_dispatch，不随 push 自动发布，也尚未触发；等待用户选择公开网站后再配置 Pages 并验证网址。
+
+T018 下一项资料任务：https://github.com/k1ryulong6-source/ART-NEWS/issues/5 。

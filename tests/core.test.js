@@ -51,3 +51,13 @@ test('external links and text cannot inject executable markup', () => {
   assert.equal(C.escape('<script>'), '&lt;script&gt;');
   assert.equal(C.safeUrl('https://example.invalid/a'), 'https://example.invalid/a');
 });
+
+test('calendar export uses exclusive end dates and folds Unicode by bytes', () => {
+  const exhibit = { ...demo.events.find(row => row.id === 'demo-photo-tokyo'), title_zh: '摄影展'.repeat(40) };
+  const monthly = demo.events.find(row => row.date_precision === 'month');
+  const result = C.calendarFile([exhibit, monthly]);
+  assert.match(result, /DTSTART;VALUE=DATE:20261017/);
+  assert.match(result, /DTEND;VALUE=DATE:20261130/);
+  assert.equal((result.match(/BEGIN:VEVENT/g) || []).length, 1);
+  assert.ok(result.split('\r\n').every(line => Buffer.byteLength(line, 'utf8') <= 75));
+});

@@ -5,6 +5,7 @@
   const eventTypes = { cinema_release: '院线上映', festival_screening: '影展放映', streaming_release: '流媒体上线', exhibition: '展览', call_deadline: '征集截止' };
   const statusNames = { want_to_see: '想看', planning: '准备去', seen: '已看过' };
   const evidenceNames = { official_confirmed: '官方确认', media_reported: '媒体报道', firsthand_response: '当事人回应', unverified: '未证实' };
+  const locationLabel = row => row.city || ({ JP: '日本', CN: '中国' }[row.country]) || '国际';
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const safeUrl = value => { try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } };
   const dateNumber = value => { if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return null; const [y, m, d] = value.split('-').map(Number), date = new Date(Date.UTC(y, m - 1, d)); return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d ? date.getTime() / 86400000 : null; };
@@ -12,6 +13,8 @@
   const daysBetween = (start, end) => { const a = dateNumber(start), b = dateNumber(end); return a === null || b === null ? null : b - a; };
   const dateLabel = value => value ? value.replace(/-/g, '.') : '时间待确认';
   function matches(row, filters = {}) {
+    if (row.source_id && filters.disabledSources?.includes(row.source_id)) return false;
+    if (filters.disabledEventIds?.includes(row.id)) return false;
     if (filters.channel && filters.channel !== 'all' && row.channel !== filters.channel) return false;
     if (filters.kind && filters.kind !== 'all' && row.kind !== filters.kind && row.event_type !== filters.kind) return false;
     if (filters.country && filters.country !== 'all' && row.country !== filters.country) return false;
@@ -61,6 +64,7 @@
     if (!Number.isInteger(preferences.daily_selection_limit) || preferences.daily_selection_limit < 1 || preferences.daily_selection_limit > 50) throw new Error('精选数量无效');
     if (!Array.isArray(preferences.interests) || !Array.isArray(preferences.followed_entities) || [...preferences.interests, ...preferences.followed_entities].some(x => typeof x !== 'string' || x.length > 200)) throw new Error('兴趣或关注名单无效');
     if (typeof preferences.default_city !== 'string' || preferences.default_city.length > 80) throw new Error('城市无效');
+    if (preferences.disabled_sources && (!Array.isArray(preferences.disabled_sources) || preferences.disabled_sources.some(id => typeof id !== 'string'))) throw new Error('来源设置无效');
     const buzz = preferences.industry_buzz;
     if (!buzz || typeof buzz.enabled !== 'boolean' || typeof buzz.max_share !== 'number' || buzz.max_share < 0 || buzz.max_share > 1) throw new Error('圈内动态设置无效');
     if (!['Asia/Tokyo', 'Asia/Shanghai', 'UTC'].includes(preferences.reading_timezone)) throw new Error('时区无效');
@@ -77,7 +81,20 @@
     }
     return { schema_version: 1, preferences, bookmarks: [...seen.values()] };
   }
-  const api = { channels, kinds, eventTypes, statusNames, evidenceNames, escape, safeUrl, daysBetween, dateLabel, localDate, matches, selectToday, eventState, validateImport };
+  function calendarFile(events) {
+    const clean = value => String(value || '').replace(/\\/g, '\\\\').replace(/\r\n|\r|\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
+    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Culture Desk//Personal Culture Calendar//ZH', 'CALSCALE:GREGORIAN'];
+    for (const event of events) {
+      if (event.date_precision !== 'day' || dateNumber(event.start_date) === null) continue;
+      const end = new Date((dateNumber(event.end_date || event.start_date) + 1) * 86400000).toISOString().slice(0, 10);
+      lines.push('BEGIN:VEVENT', 'UID:' + clean(event.id) + '@culture-desk.local', 'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z', 'DTSTART;VALUE=DATE:' + event.start_date.replace(/-/g, ''), 'DTEND;VALUE=DATE:' + end.replace(/-/g, ''), 'SUMMARY:' + clean(event.title_zh || event.title_original), 'LOCATION:' + clean([event.city, event.venue].filter(Boolean).join(' ')), 'DESCRIPTION:' + clean((event.is_demo ? '虚构示例，不能作为实际安排。 ' : '') + (event.closure_note || '开放日与预约请核对原文。')), 'URL:' + safeUrl(event.evidence_url), 'END:VEVENT');
+    }
+    lines.push('END:VCALENDAR');
+    // RFC 5545 folds at 75 octets, not 75 Unicode characters.
+    const encoder = new TextEncoder();
+    return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
+  }
+  const api = { channels, kinds, eventTypes, statusNames, evidenceNames, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, selectToday, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

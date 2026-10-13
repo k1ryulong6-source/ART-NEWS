@@ -1,69 +1,57 @@
-# 当前交接记录 · v0.1
+# 当前交接记录 · v0.2
 
 更新时间：2026-10-13 UTC。建设者：Codex。
 
-## 真实进度
+## 仓库与授权
 
-已实现代码：
+仓库：https://github.com/k1ryulong6-source/ART-NEWS 。用户明确选择公开仓库，保留公开设置与原来的初始化提交。v0.1 已推送，v0.2 正在完成最终推送和 Actions 验证。
 
-- frontend/：今日、探索、日历、收藏、设置；筛选／搜索、圈内动态开关、详情弹窗、收藏状态、JSON 导出／导入。
-- backend/：FastAPI API、SQLite 存储、报道／活动分离、收藏与偏好持久保存、幂等且原子的导入、静态资源白名单。
-- scripts/build_static.py：分文件静态版与可双击打开的单文件 HTML；同一界面能使用浏览器存储或本地后端。
-- 演示有 13 条虚构资讯与 8 项虚构活动，包括中日不同上映日期、即将闭展与仅月份的征集。
-- 5 项 Python 数据／ASGI HTTP 检查，6 项 JavaScript 业务逻辑检查。
+API 密钥、密码、SMTP 配置、个人数据库与收藏不进入 Git。data/live.json 和 frontend/data.js 只有公开来源元数据及处理次数账本。
 
-尚未完成：浏览器视觉／真实点击验收、TCP 服务监听验收、真实采集、模型摘要、定时更新、外部通知和在线发布。
+## 实际完成
 
-当前阶段：M1 代码可交付，等待浏览器验收。任务状态按严格验收保留 blocked／todo，不把代码存在视为全部验收完成。
+- 今日／探索／日历／收藏／设置；频道、地区、城市、搜索、圈内动态开关与配额。
+- 内容／活动详情、关注对象排序、收藏状态、JSON 导出恢复、ICS 日历导出。
+- SQLite 存储，真实／示例分离，旧库迁移、首次公开快照恢复。
+- 7 个真实来源适配器；160 条资讯、28 项日本上映／展览活动。
+- URL 去重，内容变化识别，稳定活动 ID，日期变更保持收藏引用。
+- 来源开关、手动异步更新、跨进程刷新锁、读取失败日志与最后成功时间。
+- 可替换 NoOp／OpenAI-compatible 摘要接口、输出校验、缓存和跨 CI 的每日请求上限。
+- 12 小时后台调度、收藏活动开始／闭展提醒、已读标记、可选 SMTP 投递。
+- 静态版、单文件版、本地服务、可选个人访问密码、Docker／Compose 部署配置。
+- GitHub CI、定时公开快照更新、任务和 PR 模板。
 
-## 读取顺序
+## 已实际验证
 
-AGENTS.md → 本文件 → PRODUCT.md／DECISIONS.md → tasks.json → 与当前任务相关的代码。不要重复生成已有页面。
+- 14 项 Python 与 7 项 JavaScript 检查通过。
+- Uvicorn 实际监听与 HTTP 请求通过。
+- 七个来源真实读取成功；重复采集插入数为 0。
+- Chromium 桌面 1440px／手机 390px 五个页面无横向溢出、无脚本错误。
+- 浏览器筛选、收藏刷新保存、状态修改、JSON 下载／上传、ICS 下载、来源开关、提醒入口与手动更新完成。
+- 静态单文件经本地 HTTP 检查，收藏刷新后保持；停用 Aperture 后内容数从 160 减到 150。
+- 本环境浏览器禁止 file URL；单文件没有外部资源引用，一般浏览器可直接打开。
+- Docker 镜像成功构建；首次发现 COPY 目录权限导致非 root 用户不可读，已添加只读权限修复。修复后容器 HTTP 200，成功返回 160 条真实资讯与 28 项活动。
 
-## 运行
+## 尚需配置／持续扩充
 
-最快体验：python3 scripts/build_static.py，打开 dist/culture-desk-preview.html。
+- SUMMARY_API_KEY 尚未配置。真实外部模型调用未启用；结构化日期摘要与中文来源摘录可读，其他新闻保持原标题。
+- SMTP 未配置。没有实际发送邮件；站内提醒已实现，模拟发送与去重已测试。
+- 网站公开静态／私人托管方式的问题待用户答复。不能把仓库网址称作已部署网站。
+- 中国上映和更多城市／场馆来源仍待逐个核实；已有覆盖不代表完整覆盖。
 
-服务版：安装 requirements.txt 后运行 python3 -m backend；默认 http://127.0.0.1:8000。具体环境与备份说明见 README.md 和 OPERATIONS.md。
+## 运行与检查
 
-## 已通过检查
+python3 scripts/build_static.py：生成 dist。
+python3 -m backend：本地服务，默认 http://127.0.0.1:8000。
+python3 -m backend.jobs：完整刷新。
+python3 -m backend.jobs --schedule --interval-hours 12：后台更新。
+python3 scripts/export_snapshot.py：仅导出公开资讯。
+python3 scripts/import_snapshot.py：首次恢复公开快照，并恢复当天处理预算。
 
-2026-10-13：
+检查：python3 scripts/check_project.py；python3 -m unittest discover -s tests -v；node tests/core.test.js；node --check frontend/app.js。
 
-- python3 scripts/check_project.py：退出码 0。
-- node --check frontend/core.js、node --check frontend/app.js：退出码 0。
-- node tests/core.test.js：6 项通过。使用此命令可直接看到逐项结果。
-- python3 -m unittest discover -s tests -v：5 项通过，包括进程内 ASGI HTTP 的首页／资源／数据接口、保存、导出、导入和错误响应。
-- python3 scripts/build_static.py：静态构建完成，单文件无外部 JS／CSS 引用。
+## 下一位 AI
 
-ASGI 检查不打开 TCP 端口，不能代替浏览器与外部服务验证。
+先读 AGENTS.md、本文件、DECISIONS.md、tasks.json；查看实际 Git 状态与 Actions 结果。现有页面与采集链路不需要重写。按 T013／T014 处理用户选择启用的外部服务，按 T015 完成选定托管，按 T016 扩充来源。
 
-## 具体阻塞
-
-浏览器 Chromium 启动返回 setsockopt: Operation not permitted，因此没有截图，不宣称手机／桌面视觉验收通过。早先的网络权限请求未完成，RSS 端点均未核实；不能根据已知网址标记 enabled。
-
-Sites 技能已读取，但本工作区没有找到其 site-workflow.mjs／项目 ID 助手，也无法读取该脚本资源。尚未注册 Site、未同步源码、未部署。保留可部署的 dist，等待有完整工具链的接力环境执行支持的发布流程。
-
-## 下一步可执行动作
-
-1. 在能打开浏览器的环境验收 OPERATIONS.md 清单，修复实际问题，更新 T001／T011 状态。
-2. 验收已有筛选、SQLite、日历代码后依次完成 T002、T003、T005；不要再写一套相同页面。
-3. 核实首个 RSS／API 来源，推进 T004。当前来源 config 均默认关闭。
-4. 推进 T006 可替换摘要；把静态／本地演示的设置与导入能力接上真实内容，再验收 T007／T009。
-
-## 设计调整
-
-D007：原生前端降低依赖与交接成本，Python／SQLite 后端保留。静态版不会后台采集，两个保存位置通过 JSON 迁移。
-
-## 接力更新模板
-
-日期／建设者：
-任务编号及状态：
-实际完成行为与变更文件：
-运行／检查命令与结果：
-未完成／阻塞：
-下一步操作：
-配置变量名（不写密钥）：
-Git 提交或尚未提交 diff：
-
-意外中断时先查 doing／blocked 任务与 Git diff；重复运行检查后续接。不要把缺少浏览器权限归因于应用代码，也不要把上一条聊天描述当作验证证据。
+模型密钥只放运行环境／GitHub Secrets；不要让用户把密钥提交到公开仓库。日期／票价不由模型改写。每次交付更新任务、交接、决策和实际检查结果。

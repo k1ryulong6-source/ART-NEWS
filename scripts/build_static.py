@@ -12,6 +12,9 @@ def build():
         "preferences": json.loads((ROOT / "config/preferences.json").read_text(encoding="utf-8")),
         "sources": json.loads((ROOT / "config/sources.json").read_text(encoding="utf-8")),
     }
+    live_path = ROOT / "data/live.json"
+    if live_path.exists():
+        bundle["live"] = json.loads(live_path.read_text(encoding="utf-8"))
     text = "window.CULTURE_BOOTSTRAP = " + json.dumps(bundle, ensure_ascii=False).replace("<", "\\u003c") + ";\n"
     (ROOT / "frontend/data.js").write_text(text, encoding="utf-8")
     output = ROOT / "dist"

@@ -1,12 +1,186 @@
 {
   "schema_version": 1,
   "sources": [
-    {"id": "film-natalie", "name": "映画ナタリー", "homepage_url": "https://natalie.mu/eiga", "channels": ["film"], "country": "JP", "language": "ja", "source_type": "media", "enabled": false, "access_status": "unverified", "access_method": null, "feed_url": null, "verified_at": null, "notes": "候选：电影新闻与圈内动态；接入方式尚未核实。"},
-    {"id": "eiga-com", "name": "映画.com", "homepage_url": "https://eiga.com/", "channels": ["film"], "country": "JP", "language": "ja", "source_type": "media", "enabled": false, "access_status": "unverified", "access_method": null, "feed_url": null, "verified_at": null, "notes": "候选：上映资料与报道；上映日期需交叉核对官方。"},
-    {"id": "tokyo-art-beat", "name": "Tokyo Art Beat", "homepage_url": "https://www.tokyoartbeat.com/", "channels": ["art", "photography"], "country": "JP", "language": "ja", "source_type": "media", "enabled": false, "access_status": "unverified", "access_method": null, "feed_url": null, "verified_at": null, "notes": "候选：展览发现；不假定具有开放 API。"},
-    {"id": "bijutsutecho", "name": "美術手帖", "homepage_url": "https://bijutsutecho.com/", "channels": ["art", "photography"], "country": "JP", "language": "ja", "source_type": "media", "enabled": false, "access_status": "unverified", "access_method": null, "feed_url": null, "verified_at": null, "notes": "候选：展览、艺术家与行业报道。"},
-    {"id": "ima", "name": "IMA", "homepage_url": "https://imaonline.jp/", "channels": ["photography"], "country": "JP", "language": "ja", "source_type": "media", "enabled": false, "access_status": "unverified", "access_method": null, "feed_url": null, "verified_at": null, "notes": "候选：摄影师、摄影集、摄影展；排除器材评测。"},
-    {"id": "tokyo-photo-museum", "name": "东京都写真美术馆", "homepage_url": "https://topmuseum.jp/", "channels": ["photography", "art"], "country": "JP", "language": "ja", "source_type": "official", "enabled": false, "access_status": "unverified", "access_method": null, "feed_url": null, "verified_at": null, "notes": "候选官方来源：展期与场馆说明；核实后启用。"}
+    {
+      "id": "film-natalie",
+      "name": "映画ナタリー",
+      "homepage_url": "https://natalie.mu/eiga",
+      "channels": [
+        "film"
+      ],
+      "country": "JP",
+      "language": "ja",
+      "source_type": "media",
+      "enabled": false,
+      "access_status": "unverified",
+      "access_method": null,
+      "feed_url": null,
+      "verified_at": null,
+      "notes": "候选：电影新闻与圈内动态；接入方式尚未核实。"
+    },
+    {
+      "id": "eiga-com",
+      "name": "映画.com",
+      "homepage_url": "https://eiga.com/",
+      "channels": [
+        "film"
+      ],
+      "country": "JP",
+      "language": "ja",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "public_page",
+      "feed_url": "https://eiga.com/coming/",
+      "verified_at": "2026-10-13",
+      "notes": "2026-10-13 实际 HTTP 200，结构验证通过。只保存标题、必要摘录／结构化信息及原文链接，不镜像图片或全文。",
+      "adapter": "eiga_releases"
+    },
+    {
+      "id": "tokyo-art-beat",
+      "name": "Tokyo Art Beat",
+      "homepage_url": "https://www.tokyoartbeat.com/",
+      "channels": [
+        "art",
+        "photography"
+      ],
+      "country": "JP",
+      "language": "ja",
+      "source_type": "media",
+      "enabled": false,
+      "access_status": "unverified",
+      "access_method": null,
+      "feed_url": null,
+      "verified_at": null,
+      "notes": "候选：展览发现；不假定具有开放 API。"
+    },
+    {
+      "id": "bijutsutecho",
+      "name": "美術手帖",
+      "homepage_url": "https://bijutsutecho.com/",
+      "channels": [
+        "art",
+        "photography"
+      ],
+      "country": "JP",
+      "language": "ja",
+      "source_type": "media",
+      "enabled": false,
+      "access_status": "unverified",
+      "access_method": null,
+      "feed_url": null,
+      "verified_at": null,
+      "notes": "候选：展览、艺术家与行业报道。"
+    },
+    {
+      "id": "ima",
+      "name": "IMA",
+      "homepage_url": "https://imaonline.jp/",
+      "channels": [
+        "photography"
+      ],
+      "country": "JP",
+      "language": "ja",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "feed_url": "https://imaonline.jp/feed/",
+      "verified_at": "2026-10-13",
+      "notes": "2026-10-13 实际 HTTP 200，结构验证通过。只保存标题、必要摘录／结构化信息及原文链接，不镜像图片或全文。",
+      "adapter": "rss"
+    },
+    {
+      "id": "tokyo-photo-museum",
+      "name": "东京都写真美术馆",
+      "homepage_url": "https://topmuseum.jp/",
+      "channels": [
+        "photography",
+        "art"
+      ],
+      "country": "JP",
+      "language": "ja",
+      "source_type": "official",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "public_page",
+      "feed_url": "https://topmuseum.jp/contents/exhibition/index.html",
+      "verified_at": "2026-10-13",
+      "notes": "2026-10-13 实际 HTTP 200，结构验证通过。只保存标题、必要摘录／结构化信息及原文链接，不镜像图片或全文。",
+      "adapter": "top_exhibitions"
+    },
+    {
+      "id": "film-stage",
+      "name": "The Film Stage",
+      "homepage_url": "https://thefilmstage.com",
+      "channels": [
+        "film"
+      ],
+      "country": null,
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "feed_url": "https://thefilmstage.com/feed/",
+      "adapter": "rss",
+      "verified_at": "2026-10-13",
+      "notes": "实际 RSS 可读取；Aperture 的 XML 声明前空白需移除。保存必要摘要和原文链接，禁止镜像全文。"
+    },
+    {
+      "id": "artnews",
+      "name": "ARTnews",
+      "homepage_url": "https://www.artnews.com",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "feed_url": "https://www.artnews.com/feed/",
+      "adapter": "rss",
+      "verified_at": "2026-10-13",
+      "notes": "实际 RSS 可读取；Aperture 的 XML 声明前空白需移除。保存必要摘要和原文链接，禁止镜像全文。"
+    },
+    {
+      "id": "aperture",
+      "name": "Aperture",
+      "homepage_url": "https://aperture.org",
+      "channels": [
+        "photography"
+      ],
+      "country": null,
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "feed_url": "https://aperture.org/feed/",
+      "adapter": "rss",
+      "verified_at": "2026-10-13",
+      "notes": "实际 RSS 可读取；Aperture 的 XML 声明前空白需移除。保存必要摘要和原文链接，禁止镜像全文。"
+    },
+    {
+      "id": "artforum-cn",
+      "name": "Artforum 中文网",
+      "homepage_url": "https://www.artforum.com.cn/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "language": "zh",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "feed_url": "https://www.artforum.com.cn/rss",
+      "adapter": "rss",
+      "verified_at": "2026-10-13",
+      "notes": "实际 HTTP 200，RSS 50 条；只读取公开 RSS 元数据，不绕过订阅或登录。"
+    }
   ],
   "notes": "主页仅为候选资料，不证明已访问、可抓取或具备 RSS。中国来源及片方／影院官网在真实接入任务中补充。"
 }

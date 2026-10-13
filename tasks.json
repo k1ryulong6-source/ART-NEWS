@@ -39,7 +39,7 @@
       "id": "T001",
       "title": "可启动的前后端与演示模式",
       "milestone": "M1",
-      "status": "blocked",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
@@ -57,18 +57,17 @@
         "手机宽度下无横向溢出"
       ],
       "evidence": [
-        "python3 scripts/build_static.py 通过",
-        "python3 -m unittest discover -s tests -v：5 项通过，含 ASGI 首页与资源请求",
-        "浏览器 QA 待 T011 完成，未标 done"
+        "2026-10-13：本地 Uvicorn 启动成功；Playwright Chromium 桌面与 390px 手机验证，五个页面无横向溢出；筛选、收藏刷新保存、状态修改、日历选择和 JSON 下载验证通过。",
+        "5 项 Python 与 6 项 JavaScript 检查已通过"
       ],
-      "notes": "前后端、依赖锁定与演示代码已实现；ASGI HTTP 和静态构建通过。真实浏览器启动被 setsockopt 权限限制阻止；移动端／桌面验收及 TCP 监听仍未完成。"
+      "notes": "环境已开放网络；原验证阻塞解除。"
     },
     {
       "id": "T002",
       "title": "今日、探索与内容筛选",
       "milestone": "M1",
-      "status": "todo",
-      "owner": null,
+      "status": "done",
+      "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
         "T001"
@@ -83,15 +82,18 @@
         "圈内动态可关闭；无器材评测",
         "空结果与无摘要状态明确"
       ],
-      "evidence": [],
-      "notes": "筛选／搜索／内容详情已实现，core.test.js 覆盖组合筛选；等待 T001 和浏览器验收。"
+      "evidence": [
+        "2026-10-13：本地 Uvicorn 启动成功；Playwright Chromium 桌面与 390px 手机验证，五个页面无横向溢出；筛选、收藏刷新保存、状态修改、日历选择和 JSON 下载验证通过。",
+        "5 项 Python 与 6 项 JavaScript 检查已通过"
+      ],
+      "notes": "环境已开放网络；原验证阻塞解除。"
     },
     {
       "id": "T003",
       "title": "SQLite 数据层与持久收藏",
       "milestone": "M1",
-      "status": "todo",
-      "owner": null,
+      "status": "done",
+      "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
         "T001"
@@ -107,15 +109,18 @@
         "收藏和状态修改在重启后保留",
         "数据库与实际个人数据不提交 Git"
       ],
-      "evidence": [],
-      "notes": "SQLite 数据层与持久收藏已实现；5 项 Python 检查含重启保存、重复收藏和恢复。等待 T001 验收后领取完成。"
+      "evidence": [
+        "2026-10-13：本地 Uvicorn 启动成功；Playwright Chromium 桌面与 390px 手机验证，五个页面无横向溢出；筛选、收藏刷新保存、状态修改、日历选择和 JSON 下载验证通过。",
+        "5 项 Python 与 6 项 JavaScript 检查已通过"
+      ],
+      "notes": "环境已开放网络；原验证阻塞解除。"
     },
     {
       "id": "T004",
       "title": "核实首个来源并跑通真实采集",
       "milestone": "M2",
-      "status": "todo",
-      "owner": null,
+      "status": "done",
+      "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
         "T003"
@@ -132,14 +137,17 @@
         "失败可查且器材评测被过滤",
         "真实资讯模式不混入示例"
       ],
-      "evidence": []
+      "evidence": [
+        "14 项 Python 与 7 项 JavaScript 检查通过；真实来源采集成功且重复采集 inserted=0；桌面／手机浏览器筛选、收藏、导入／导出、ICS、来源开关、手动更新检查通过。"
+      ],
+      "notes": "v0.2 代码和相关验证完成；需真实外部账号的启用状态单独记录。"
     },
     {
       "id": "T005",
       "title": "当地日期日历与即将结束",
       "milestone": "M1",
-      "status": "todo",
-      "owner": null,
+      "status": "done",
+      "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
         "T002",
@@ -156,15 +164,18 @@
         "未知或仅月份的时间不伪造具体日",
         "展示日期信息来源"
       ],
-      "evidence": [],
-      "notes": "日历、月份切换、日期选择、活动详情及闭展提示已实现；当地日期与月份精度逻辑通过检查，界面待验收。"
+      "evidence": [
+        "2026-10-13：本地 Uvicorn 启动成功；Playwright Chromium 桌面与 390px 手机验证，五个页面无横向溢出；筛选、收藏刷新保存、状态修改、日历选择和 JSON 下载验证通过。",
+        "5 项 Python 与 6 项 JavaScript 检查已通过"
+      ],
+      "notes": "环境已开放网络；原验证阻塞解除。"
     },
     {
       "id": "T006",
       "title": "可替换中文摘要模型",
       "milestone": "M3",
-      "status": "todo",
-      "owner": null,
+      "status": "done",
+      "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
         "T004"
@@ -180,14 +191,17 @@
         "输出结构校验且不覆盖日期证据",
         "设置处理预算与缓存，密钥不入库或日志"
       ],
-      "evidence": []
+      "evidence": [
+        "14 项 Python 与 7 项 JavaScript 检查通过；真实来源采集成功且重复采集 inserted=0；桌面／手机浏览器筛选、收藏、导入／导出、ICS、来源开关、手动更新检查通过。"
+      ],
+      "notes": "v0.2 代码和相关验证完成；需真实外部账号的启用状态单独记录。"
     },
     {
       "id": "T007",
       "title": "个人设置、精选与关注排序",
       "milestone": "M3",
-      "status": "todo",
-      "owner": null,
+      "status": "done",
+      "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
         "T002",
@@ -206,15 +220,17 @@
         "按兴趣、地区、时间排序并显示简短入选理由",
         "无足够内容时不凑数"
       ],
-      "evidence": [],
-      "notes": "浏览器与后端偏好、关注排序和圈内动态配额已实现于示例模式；真实采集与完整验收待依赖完成。"
+      "evidence": [
+        "14 项 Python 与 7 项 JavaScript 检查通过；真实来源采集成功且重复采集 inserted=0；桌面／手机浏览器筛选、收藏、导入／导出、ICS、来源开关、手动更新检查通过。"
+      ],
+      "notes": "v0.2 代码和相关验证完成；需真实外部账号的启用状态单独记录。"
     },
     {
       "id": "T008",
       "title": "定时更新与运行记录",
       "milestone": "M3",
-      "status": "todo",
-      "owner": null,
+      "status": "done",
+      "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
         "T004",
@@ -231,14 +247,17 @@
         "闭展提示依赖当地日期且可手动复现",
         "停用来源后不再被调度"
       ],
-      "evidence": []
+      "evidence": [
+        "14 项 Python 与 7 项 JavaScript 检查通过；真实来源采集成功且重复采集 inserted=0；桌面／手机浏览器筛选、收藏、导入／导出、ICS、来源开关、手动更新检查通过。"
+      ],
+      "notes": "v0.2 代码和相关验证完成；需真实外部账号的启用状态单独记录。"
     },
     {
       "id": "T009",
       "title": "个人数据导出与恢复",
       "milestone": "M4",
-      "status": "todo",
-      "owner": null,
+      "status": "done",
+      "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
         "T003",
@@ -256,15 +275,17 @@
         "不导出任何凭据",
         "记录可选日历文件导出的实现状态"
       ],
-      "evidence": [],
-      "notes": "JSON 导出／导入与幂等恢复已实现；数据层检查通过，浏览器下载／上传与真实内容库迁移待验收。"
+      "evidence": [
+        "14 项 Python 与 7 项 JavaScript 检查通过；真实来源采集成功且重复采集 inserted=0；桌面／手机浏览器筛选、收藏、导入／导出、ICS、来源开关、手动更新检查通过。"
+      ],
+      "notes": "v0.2 代码和相关验证完成；需真实外部账号的启用状态单独记录。"
     },
     {
       "id": "T010",
       "title": "完整交接与部署准备",
       "milestone": "M4",
-      "status": "todo",
-      "owner": null,
+      "status": "done",
+      "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
         "T005",
@@ -284,13 +305,16 @@
         "备份恢复与访问方式有实际方案",
         "部署目标未确定时如实保留待配置状态"
       ],
-      "evidence": []
+      "evidence": [
+        "14 项 Python 与 7 项 JavaScript 检查通过；真实来源采集成功且重复采集 inserted=0；桌面／手机浏览器筛选、收藏、导入／导出、ICS、来源开关、手动更新检查通过。"
+      ],
+      "notes": "v0.2 代码和相关验证完成；需真实外部账号的启用状态单独记录。"
     },
     {
       "id": "T011",
       "title": "浏览器与本地监听验收",
       "milestone": "M1",
-      "status": "blocked",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
@@ -308,9 +332,117 @@
         "本地服务启动并通过实际 HTTP 就绪检查"
       ],
       "evidence": [
-        "当前 browser launch 因 setsockopt 权限限制失败；未完成浏览器验收"
+        "2026-10-13：本地 Uvicorn 启动成功；Playwright Chromium 桌面与 390px 手机验证，五个页面无横向溢出；筛选、收藏刷新保存、状态修改、日历选择和 JSON 下载验证通过。",
+        "5 项 Python 与 6 项 JavaScript 检查已通过"
       ],
-      "notes": "按 OPERATIONS.md 清单在具备浏览器能力的环境验收，不需要重新实现原型。"
+      "notes": "环境已开放网络；原验证阻塞解除。"
+    },
+    {
+      "id": "T012",
+      "title": "GitHub 仓库与协作配置",
+      "milestone": "M4",
+      "status": "doing",
+      "owner": "Codex",
+      "depends_on": [
+        "T000"
+      ],
+      "scope": [
+        ".github/",
+        "README.md"
+      ],
+      "acceptance": [
+        "保留用户指定的公开 ART-NEWS 仓库",
+        "源码上传成功",
+        "CI 与定时快照工作流执行并验证"
+      ],
+      "evidence": [
+        "v0.1 已上传 https://github.com/k1ryulong6-source/ART-NEWS；v0.2 待最后推送与 CI 验证"
+      ],
+      "updated_at": "2026-10-13"
+    },
+    {
+      "id": "T013",
+      "title": "配置生产摘要服务",
+      "milestone": "M3",
+      "status": "blocked",
+      "owner": null,
+      "depends_on": [
+        "T006"
+      ],
+      "scope": [
+        "运行环境／GitHub Secrets"
+      ],
+      "acceptance": [
+        "配置选定服务的模型与密钥",
+        "完成一次真实摘要并核对输出"
+      ],
+      "evidence": [
+        "SUMMARY_API_KEY 当前未配置；NoOp、预算和模拟模型结果已验证"
+      ],
+      "updated_at": "2026-10-13"
+    },
+    {
+      "id": "T014",
+      "title": "配置个人邮件服务",
+      "milestone": "M3",
+      "status": "blocked",
+      "owner": null,
+      "depends_on": [
+        "T008"
+      ],
+      "scope": [
+        "运行环境 SMTP 配置"
+      ],
+      "acceptance": [
+        "用户配置自己的发件／收件账号",
+        "一次真实提醒投递成功且不重复"
+      ],
+      "evidence": [
+        "SMTP 未配置；禁用状态与模拟投递去重已验证"
+      ],
+      "updated_at": "2026-10-13"
+    },
+    {
+      "id": "T015",
+      "title": "网站托管与访问方式",
+      "milestone": "M4",
+      "status": "blocked",
+      "owner": null,
+      "depends_on": [
+        "T010"
+      ],
+      "scope": [
+        "deployment/",
+        ".github/workflows/"
+      ],
+      "acceptance": [
+        "按用户选择公开静态页或私人服务",
+        "返回经过验证的在线网址"
+      ],
+      "evidence": [
+        "已提供静态版和 Docker 私人服务；网站访问方式问题待用户答复"
+      ],
+      "updated_at": "2026-10-13"
+    },
+    {
+      "id": "T016",
+      "title": "扩充中国上映与其他城市展览",
+      "milestone": "M2",
+      "status": "todo",
+      "owner": null,
+      "depends_on": [
+        "T004"
+      ],
+      "scope": [
+        "config/sources.json",
+        "backend/ingestion.py"
+      ],
+      "acceptance": [
+        "核实新增官方／可靠来源",
+        "按国家城市保存真实日期，不推测未知字段"
+      ],
+      "evidence": [],
+      "updated_at": "2026-10-13"
     }
   ]
 }

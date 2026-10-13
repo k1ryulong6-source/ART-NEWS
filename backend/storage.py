@@ -22,7 +22,13 @@ class Store:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.connect() as db:
             db.executescript((ROOT / "schema.sql").read_text(encoding="utf-8"))
+            existing = {row[1] for row in db.execute("PRAGMA table_info(content)")}
+            for column in ("raw_excerpt", "body_hash"):
+                if column not in existing:
+                    db.execute(f"ALTER TABLE content ADD COLUMN {column} TEXT")
             db.execute("CREATE TABLE IF NOT EXISTS preferences (id INTEGER PRIMARY KEY CHECK(id=1), value TEXT NOT NULL)")
+            db.execute("CREATE TABLE IF NOT EXISTS job_state(id TEXT PRIMARY KEY, value TEXT NOT NULL)")
+            db.execute("CREATE TABLE IF NOT EXISTS notifications(id TEXT PRIMARY KEY, event_id TEXT NOT NULL REFERENCES events(id) ON DELETE CASCADE, title TEXT NOT NULL, created_at TEXT NOT NULL, read INTEGER NOT NULL DEFAULT 0, emailed INTEGER NOT NULL DEFAULT 0)")
             demo = json.loads((ROOT / "data/demo.json").read_text(encoding="utf-8"))
             for table in ("sources", "content", "events", "content_events"):
                 columns_allowed = {row[1] for row in db.execute(f"PRAGMA table_info({table})")}
@@ -113,3 +119,74 @@ class Store:
                 else:
                     db.execute(f"INSERT INTO bookmarks(id,{key},status,note,created_at,updated_at) VALUES(?,?,?,?,?,?)", (str(uuid4()), item[key], item["status"], item.get("note", ""), stamp, stamp))
         return len(bookmarks)
+
+    def register_sources(self, sources):
+        with self.connect() as db:
+            for source in sources:
+                row = {key: source.get(key) for key in ("id", "name", "homepage_url", "source_type", "access_status", "access_method", "verified_at", "notes")}
+                row["enabled"] = int(source.get("enabled", False))
+                columns = list(row)
+                update = ",".join(f"{key}=excluded.{key}" for key in columns if key != "id")
+                db.execute(f"INSERT INTO sources ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)}) ON CONFLICT(id) DO UPDATE SET {update}", list(row.values()))
+
+    def ingest_records(self, content, events, links):
+        inserted, updated = 0, 0
+        with self.connect() as db:
+            for record in content:
+                old = db.execute("SELECT * FROM content WHERE canonical_url=?", (record["canonical_url"],)).fetchone()
+                if old:
+                    if old["is_demo"]:
+                        raise ValueError("真实记录不得覆盖示例")
+                    record["id"] = old["id"]
+                    if old["body_hash"] == record["body_hash"]:
+                        db.execute("UPDATE content SET fetched_at=?,raw_excerpt=? WHERE id=?", (record["fetched_at"], record.get("raw_excerpt"), old["id"]))
+                        if not old["summary_zh"] and record.get("summary_zh"):
+                            db.execute("UPDATE content SET title_zh=?,summary_zh=?,summary_status=?,summary_provider=?,summary_generated_at=? WHERE id=?", (record.get("title_zh"), record["summary_zh"], record["summary_status"], record.get("summary_provider"), record.get("summary_generated_at"), old["id"]))
+                        continue
+                    updated += 1
+                else:
+                    inserted += 1
+                cols = list(record)
+                values = ",".join(f"{key}=excluded.{key}" for key in cols if key != "id")
+                db.execute(f"INSERT INTO content ({','.join(cols)}) VALUES ({','.join('?' for _ in cols)}) ON CONFLICT(id) DO UPDATE SET {values}", list(record.values()))
+            for record in events:
+                cols = list(record)
+                update = ",".join(f"{key}=excluded.{key}" for key in cols if key != "id")
+                db.execute(f"INSERT INTO events ({','.join(cols)}) VALUES ({','.join('?' for _ in cols)}) ON CONFLICT(id) DO UPDATE SET {update}", list(record.values()))
+            for link in links:
+                db.execute("INSERT OR IGNORE INTO content_events VALUES(?,?)", (link["content_id"], link["event_id"]))
+        return {"inserted": inserted, "updated": updated}
+
+    def begin_run(self, source_id):
+        run_id = str(uuid4())
+        with self.connect() as db:
+            db.execute("INSERT INTO ingest_runs(id,source_id,started_at,status) VALUES(?,?,?,'running')", (run_id, source_id, now()))
+        return run_id
+
+    def restore_public_snapshot(self, path):
+        if not Path(path).exists():
+            return 0
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+        self.register_sources(json.loads((ROOT / "config/sources.json").read_text())["sources"])
+        with self.connect() as db:
+            existing = db.execute("SELECT count(*) FROM content WHERE is_demo=0").fetchone()[0]
+            db.execute("CREATE TABLE IF NOT EXISTS summary_usage(day TEXT PRIMARY KEY, calls INTEGER NOT NULL)")
+            for item in data.get("processing_usage", []):
+                db.execute("INSERT INTO summary_usage VALUES(?,?) ON CONFLICT(day) DO UPDATE SET calls=max(calls,excluded.calls)", (item["day"], item["calls"]))
+        if existing:
+            return 0
+        return self.ingest_records(data["content"], data["events"], data["content_events"])["inserted"]
+
+    def finish_run(self, run_id, status, count=0, inserted=0, error=None):
+        with self.connect() as db:
+            db.execute("UPDATE ingest_runs SET finished_at=?,status=?,fetched_count=?,inserted_count=?,error=? WHERE id=?", (now(), status, count, inserted, error, run_id))
+
+    def source_status(self):
+        with self.connect() as db:
+            sources = [dict(row) for row in db.execute("SELECT * FROM sources WHERE source_type!='demo'")]
+            for source in sources:
+                last = db.execute("SELECT started_at,finished_at,status,fetched_count,inserted_count,error FROM ingest_runs WHERE source_id=? ORDER BY started_at DESC LIMIT 1", (source["id"],)).fetchone()
+                successful = db.execute("SELECT finished_at FROM ingest_runs WHERE source_id=? AND status='success' ORDER BY finished_at DESC LIMIT 1", (source["id"],)).fetchone()
+                source["last_run"] = dict(last) if last else None
+                source["last_success_at"] = successful[0] if successful else None
+        return sources

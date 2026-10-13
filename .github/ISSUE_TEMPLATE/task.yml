@@ -1,0 +1,23 @@
+name: Development task
+description: A bounded task that another AI or developer can take over
+title: '[Task] '
+body:
+  - type: input
+    id: task_id
+    attributes:
+      label: Task ID
+      placeholder: T004
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired behavior and acceptance
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Files and dependencies
+  - type: textarea
+    id: handoff
+    attributes:
+      label: Current progress, verification and next action

@@ -76,10 +76,10 @@ class StorageChecks(unittest.TestCase):
                 for path in ("/", "/styles.css", "/core.js", "/app.js", "/data.js"):
                     self.assertEqual((await client.get(path)).status_code, 200)
                 self.assertEqual((await client.get("/runtime/culture-desk.db")).status_code, 404)
-                tokyo = (await client.get("/api/events", params={"city": "东京"})).json()
+                tokyo = (await client.get("/api/events", params={"city": "东京", "mode": "demo"})).json()
                 self.assertTrue(tokyo)
                 self.assertTrue(all(row["country"] == "JP" and row["city"] in ("东京", None) for row in tokyo))
-                shanghai = (await client.get("/api/content", params={"city": "上海", "q": "新展"})).json()
+                shanghai = (await client.get("/api/content", params={"city": "上海", "q": "新展", "mode": "demo"})).json()
                 self.assertTrue(shanghai)
                 self.assertTrue(all(row["country"] == "CN" for row in shanghai))
                 response = await client.post("/api/bookmarks", json={"target_type": "event", "target_id": "demo-film-jp", "status": "planning"})

@@ -1,6 +1,9 @@
 import json
 import os
 import mimetypes
+import asyncio
+import base64
+import secrets
 from pathlib import Path
 from typing import Literal
 from fastapi import FastAPI, HTTPException
@@ -24,6 +27,7 @@ class Preferences(BaseModel):
     daily_selection_limit: int = Field(default=10, ge=1, le=50)
     interests: list[str] = Field(default_factory=list, max_length=30)
     followed_entities: list[str] = Field(default_factory=list, max_length=100)
+    disabled_sources: list[str] = Field(default_factory=list, max_length=100)
     industry_buzz: dict = Field(default_factory=lambda: {"enabled": True, "max_share": 0.1, "include_unverified_in_today": False})
 
     def safe_dict(self):
@@ -67,24 +71,43 @@ class ImportInput(BaseModel):
 
 def create_app(db_path=None):
     store = Store(db_path or os.getenv("CULTURE_DESK_DB", str(ROOT / "runtime/culture-desk.db")))
+    if db_path is None:
+        store.restore_public_snapshot(ROOT / "data/live.json")
     app = FastAPI(title="映间 · Culture Desk", version="0.1.0")
     app.state.store = store
+    password = os.getenv("CULTURE_DESK_PASSWORD", "")
+
+    @app.middleware("http")
+    async def personal_access(request, call_next):
+        if password:
+            authorization = request.headers.get("authorization", "")
+            try:
+                scheme, value = authorization.split(" ", 1)
+                username, supplied = base64.b64decode(value, validate=True).decode().split(":", 1)
+                valid = scheme.lower() == "basic" and secrets.compare_digest(username.encode(), b"owner") and secrets.compare_digest(supplied.encode(), password.encode())
+            except (ValueError, UnicodeError):
+                valid = False
+            if not valid:
+                return Response("请输入个人访问密码", status_code=401, headers={"WWW-Authenticate": 'Basic realm="Culture Desk", charset="UTF-8"'})
+        return await call_next(request)
 
     @app.get("/api/health")
     async def health():
         return {"status": "ok", "storage": "sqlite", "version": "0.1.0"}
 
     @app.get("/api/dataset")
-    async def dataset(mode: Literal["demo", "live"] = "demo"):
-        return store.dataset(mode)
+    async def dataset(mode: Literal["demo", "live"] = "live"):
+        result = store.dataset(mode)
+        result["source_status"] = store.source_status()
+        return result
 
     @app.get("/api/content")
-    async def content(mode: Literal["demo", "live"] = "demo", channel: str | None = None, country: str | None = None, city: str | None = None, kind: str | None = None, q: str = ""):
+    async def content(mode: Literal["demo", "live"] = "live", channel: str | None = None, country: str | None = None, city: str | None = None, kind: str | None = None, q: str = ""):
         rows = store.dataset(mode)["content"]
         return [r for r in rows if (not channel or r["channel"] == channel) and (not country or r["country"] == country) and city_matches(r, city) and (not kind or r["kind"] == kind) and (not q or q.lower() in " ".join(str(r.get(k) or "") for k in ("title_original", "title_zh", "summary_zh")).lower())]
 
     @app.get("/api/events")
-    async def events(mode: Literal["demo", "live"] = "demo", country: str | None = None, city: str | None = None, start: str | None = None, end: str | None = None):
+    async def events(mode: Literal["demo", "live"] = "live", country: str | None = None, city: str | None = None, start: str | None = None, end: str | None = None):
         return [r for r in store.dataset(mode)["events"] if (not country or r["country"] == country) and city_matches(r, city) and (not start or (r["date_precision"] == "day" and (r["end_date"] or r["start_date"]) >= start)) and (not end or (r["date_precision"] == "day" and r["start_date"] <= end))]
 
     @app.get("/api/preferences")
@@ -105,7 +128,10 @@ def create_app(db_path=None):
     @app.post("/api/bookmarks")
     async def save_bookmark(body: BookmarkInput):
         try:
-            return store.save_bookmark(body.target_type, body.target_id, body.status, body.note)
+            result = store.save_bookmark(body.target_type, body.target_id, body.status, body.note)
+            from .jobs import notify
+            notify(store)
+            return result
         except KeyError as exc:
             raise HTTPException(404, "内容不存在") from exc
 
@@ -126,6 +152,45 @@ def create_app(db_path=None):
             return {"imported": count}
         except (ValueError, TypeError) as exc:
             raise HTTPException(422, str(exc)) from exc
+
+    @app.get("/api/sources")
+    async def sources():
+        return store.source_status()
+
+    @app.get("/api/notifications")
+    async def notifications():
+        from .jobs import notify
+        notify(store)
+        with store.connect() as db:
+            return [dict(row) for row in db.execute("SELECT notifications.* FROM notifications JOIN bookmarks ON bookmarks.event_id=notifications.event_id WHERE bookmarks.status!='seen' ORDER BY notifications.created_at DESC LIMIT 50")]
+
+    @app.patch("/api/notifications/{notification_id}")
+    async def read_notification(notification_id: str):
+        with store.connect() as db:
+            changed = db.execute("UPDATE notifications SET read=1 WHERE id=?", (notification_id,)).rowcount
+        if not changed:
+            raise HTTPException(404, "提醒不存在")
+        return {"read": True}
+
+    refresh_task = None
+
+    @app.post("/api/refresh")
+    async def refresh():
+        nonlocal refresh_task
+        if refresh_task is not None and not refresh_task.done():
+            return {"status": "busy"}
+        from .jobs import refresh as run_refresh
+        refresh_task = asyncio.create_task(asyncio.to_thread(run_refresh, store))
+        return {"status": "started"}
+
+    @app.get("/api/jobs/status")
+    async def job_status():
+        with store.connect() as db:
+            row = db.execute("SELECT value FROM job_state WHERE id='last-refresh'").fetchone()
+            lock = db.execute("SELECT value FROM job_state WHERE id='refresh-lock'").fetchone()
+        from datetime import datetime, timezone
+        locked = bool(lock and datetime.fromisoformat(lock[0]) > datetime.now(timezone.utc))
+        return {"running": locked or (refresh_task is not None and not refresh_task.done()), "last_refresh": json.loads(row[0]) if row else None}
 
     # A bounded asset allowlist keeps the small local edition independent of
     # background file-worker threads and never exposes project/runtime files.

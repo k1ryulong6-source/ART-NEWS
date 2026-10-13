@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS content (
     title_original TEXT NOT NULL,
     title_zh TEXT,
     summary_zh TEXT,
+    raw_excerpt TEXT,
+    body_hash TEXT,
     channel TEXT NOT NULL CHECK (channel IN ('film', 'art', 'photography')),
     kind TEXT NOT NULL CHECK (kind IN ('news', 'interview', 'work', 'photobook', 'industry_buzz')),
     country TEXT,

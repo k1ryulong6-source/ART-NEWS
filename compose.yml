@@ -1,0 +1,36 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:8000:8000'
+    environment:
+      CULTURE_DESK_DB: /app/runtime/culture-desk.db
+      CULTURE_DESK_PASSWORD: ${CULTURE_DESK_PASSWORD:-}
+      SUMMARY_PROVIDER: ${SUMMARY_PROVIDER:-noop}
+      SUMMARY_BASE_URL: ${SUMMARY_BASE_URL:-https://api.openai.com/v1}
+      SUMMARY_MODEL: ${SUMMARY_MODEL:-gpt-4.1-mini}
+      SUMMARY_API_KEY: ${SUMMARY_API_KEY:-}
+    volumes:
+      - personal-data:/app/runtime
+  updater:
+    build: .
+    restart: unless-stopped
+    command: ['python', '-m', 'backend.jobs', '--schedule', '--interval-hours', '12']
+    environment:
+      CULTURE_DESK_DB: /app/runtime/culture-desk.db
+      SUMMARY_PROVIDER: ${SUMMARY_PROVIDER:-noop}
+      SUMMARY_BASE_URL: ${SUMMARY_BASE_URL:-https://api.openai.com/v1}
+      SUMMARY_MODEL: ${SUMMARY_MODEL:-gpt-4.1-mini}
+      SUMMARY_API_KEY: ${SUMMARY_API_KEY:-}
+      SUMMARY_DAILY_LIMIT: ${SUMMARY_DAILY_LIMIT:-20}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_TO: ${SMTP_TO:-}
+    volumes:
+      - personal-data:/app/runtime
+volumes:
+  personal-data:

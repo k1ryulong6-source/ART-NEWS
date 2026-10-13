@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "notice": "全部为虚构演示，非真实资讯、上映情报或展览安排。example.invalid 链接不可访问。",
+  "sources": [
+    {"id": "demo-official", "name": "示例官方来源（虚构）", "homepage_url": "https://example.invalid/official", "source_type": "demo", "access_status": "reviewed", "access_method": "demo", "verified_at": "2026-10-13T00:00:00Z", "enabled": 0, "notes": "只用于开发演示，不代表来源已联网核实。"}
+  ],
+  "content": [
+    {"id": "demo-film", "source_id": "demo-official", "canonical_url": "https://example.invalid/news/film", "title_original": "デモ映画『光の散歩』上映情報", "title_zh": "示例：电影《光的散步》中日上映安排", "summary_zh": "虚构电影，用于演示同一作品在中国与日本有不同上映日期。", "channel": "film", "kind": "news", "country": "JP", "city": null, "language": "ja", "evidence_status": "official_confirmed", "published_at": "2026-10-13T00:00:00Z", "fetched_at": "2026-10-13T00:05:00Z", "updated_at": "2026-10-13T00:05:00Z", "summary_status": "ready", "is_demo": 1},
+    {"id": "demo-photo", "source_id": "demo-official", "canonical_url": "https://example.invalid/news/exhibition", "title_original": "デモ写真展『街角の記憶』", "title_zh": "示例：东京摄影展《街角的记忆》", "summary_zh": "虚构展览，演示开幕、闭展和休馆说明；不是器材展示。", "channel": "photography", "kind": "news", "country": "JP", "city": "东京", "language": "ja", "evidence_status": "official_confirmed", "published_at": "2026-10-13T01:00:00Z", "fetched_at": "2026-10-13T01:05:00Z", "updated_at": "2026-10-13T01:05:00Z", "summary_status": "ready", "is_demo": 1},
+    {"id": "demo-art", "source_id": "demo-official", "canonical_url": "https://example.invalid/news/art", "title_original": "示例：艺术家谈新系列的创作", "title_zh": "示例：一组新作品的创作访谈", "summary_zh": "虚构访谈，用于展示艺术频道，不关联具体展期。", "channel": "art", "kind": "interview", "country": "CN", "city": "上海", "language": "zh", "evidence_status": "firsthand_response", "published_at": "2026-10-12T05:00:00Z", "fetched_at": "2026-10-13T01:05:00Z", "updated_at": "2026-10-13T01:05:00Z", "summary_status": "ready", "is_demo": 1},
+    {"id": "demo-buzz", "source_id": "demo-official", "canonical_url": "https://example.invalid/news/behind-scenes", "title_original": "示例：导演分享片场趣事", "title_zh": "示例：导演访谈里的片场趣闻", "summary_zh": "虚构圈内动态，演示出处、消息状态和首页配额；人物及故事均未对应真实事件。", "channel": "film", "kind": "industry_buzz", "country": "JP", "city": null, "language": "ja", "evidence_status": "media_reported", "published_at": "2026-10-12T05:00:00Z", "fetched_at": "2026-10-13T01:05:00Z", "updated_at": "2026-10-13T01:05:00Z", "summary_status": "ready", "is_demo": 1}
+  ],
+  "events": [
+    {"id": "demo-film-jp", "title_original": "光の散歩", "title_zh": "示例：《光的散步》日本上映", "channel": "film", "event_type": "cinema_release", "country": "JP", "city": null, "venue": null, "start_date": "2026-10-16", "end_date": null, "date_precision": "day", "date_text_original": "2026年10月16日（虚构）", "timezone": "Asia/Tokyo", "evidence_url": "https://example.invalid/official/film-jp", "evidence_status": "official_confirmed", "updated_at": "2026-10-13T00:05:00Z", "is_demo": 1},
+    {"id": "demo-film-cn", "title_original": "光的散步", "title_zh": "示例：《光的散步》中国上映", "channel": "film", "event_type": "cinema_release", "country": "CN", "city": null, "venue": null, "start_date": "2026-10-23", "end_date": null, "date_precision": "day", "date_text_original": "2026年10月23日（虚构）", "timezone": "Asia/Shanghai", "evidence_url": "https://example.invalid/official/film-cn", "evidence_status": "official_confirmed", "updated_at": "2026-10-13T00:05:00Z", "is_demo": 1},
+    {"id": "demo-photo-tokyo", "title_original": "街角の記憶", "title_zh": "示例：摄影展《街角的记忆》", "channel": "photography", "event_type": "exhibition", "country": "JP", "city": "东京", "venue": "示例画廊（虚构）", "start_date": "2026-10-17", "end_date": "2026-11-29", "date_precision": "day", "date_text_original": "2026年10月17日〜11月29日（虚构）", "timezone": "Asia/Tokyo", "price_text": null, "closure_note": "示例：周一休馆，非真实安排。", "booking_url": null, "evidence_url": "https://example.invalid/official/exhibition", "evidence_status": "official_confirmed", "updated_at": "2026-10-13T01:05:00Z", "is_demo": 1}
+  ],
+  "content_events": [
+    {"content_id": "demo-film", "event_id": "demo-film-jp"},
+    {"content_id": "demo-film", "event_id": "demo-film-cn"},
+    {"content_id": "demo-photo", "event_id": "demo-photo-tokyo"}
+  ]
+}

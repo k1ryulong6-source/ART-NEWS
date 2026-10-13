@@ -39,6 +39,7 @@ def matches_region(record, country=None, city=None):
         return False
     if city and city not in ("all", "全球"):
         inferred = CITY_COUNTRIES.get(city)
-        if not any(place.get("city") == city or (not place.get("city") and place.get("country") == inferred) for place in locations):
+        nationwide = record.get("event_type") in ("cinema_release", "streaming_release")
+        if not any(place.get("city") == city or (not place.get("city") and place.get("country") == inferred and (nationwide or place.get("basis") == "source_structured")) for place in locations):
             return False
     return True

@@ -465,17 +465,22 @@
       "id": "T017",
       "title": "补充全球非英语来源与更多官方展期",
       "milestone": "M2",
-      "status": "todo",
-      "owner": null,
+      "status": "done",
+      "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
         "T016"
       ],
       "scope": [
-        "config/sources.json",
+        "config/",
         "backend/ingestion.py",
+        "backend/geography.py",
+        "frontend/",
+        "scripts/audit_data.py",
+        "data/source-research.json",
+        "data/quality.json",
         "tests/",
-        "docs/SOURCES.md"
+        "docs/"
       ],
       "acceptance": [
         "逐一核实亚洲、拉美、非洲等地区文化来源，优先补充现有英语覆盖之外的媒体",
@@ -483,9 +488,39 @@
         "不把国家菜单当作已覆盖全部地区，不用媒体总部推断活动位置",
         "保存真实样例，重复采集无重复插入，未知票价／日期保持未知"
       ],
-      "evidence": [],
-      "notes": "世界电影、艺术、摄影优先；来源必须真实可读取。T013/T014/T015 的配置待用户信息，不阻塞可独立扩充的来源。",
+      "evidence": [
+        "2026-10-13：新增 6 个媒体 RSS 与 MAP／Zeitz 两场馆；22 源两轮全成功，第二轮 inserted=0，339 条资讯资料／45 项活动。",
+        "完整性核验 0 错误、0 日期预警；92 条旧资料保留且不填充今日；未知日期／地区不补造。",
+        "22 项 Python 与 11 项 JS 检查通过；1440px／390px 五页及法语、葡语、印度票价／闭馆、南非已结束标签浏览器验证通过。"
+      ],
+      "notes": "已完成本轮资料补全及查缺；来源与候选证据档案、剩余覆盖缺口已保存。",
       "github_issue": "https://github.com/k1ryulong6-source/ART-NEWS/issues/4"
+    },
+    {
+      "id": "T018",
+      "title": "补齐海外上映、影展放映与摄影征集资料",
+      "milestone": "M2",
+      "status": "todo",
+      "owner": null,
+      "updated_at": "2026-10-13",
+      "depends_on": [
+        "T017"
+      ],
+      "scope": [
+        "config/",
+        "backend/ingestion.py",
+        "data/",
+        "docs/COVERAGE.md",
+        "tests/"
+      ],
+      "acceptance": [
+        "优先核实日本外的逐片上映／逐场影展与摄影征集截止日期",
+        "补东南亚、东亚、拉美、非洲更多当前／即将开展的官方场馆",
+        "截止日期、当地时区、费用与预约均保留来源证据，缺失不补造",
+        "放映系列不擅自称为电影节，列表发布日期不当单片上映日",
+        "保留历史资料和收藏关系，每次采集后核验公开快照"
+      ],
+      "evidence": []
     }
   ]
 }

@@ -16,6 +16,7 @@ from .geography import title_places
 
 MAX_BYTES = 6_000_000
 GEAR = re.compile(r"器材评测|购买指南|カメラレビュー|レンズレビュー|カメラ比較|機材レビュー|(?:(?:camera|lens|tripod|lighting gear).{0,25}(?:review|comparison|test|buying guide))|(?:(?:review|test|buying guide).{0,25}(?:camera|lens|tripod))", re.I)
+GEAR_MULTILINGUAL = re.compile(r"(?:(?:test|comparatif|comparaison|guide d'achat|prueba|comparativa|guía de compra|teste|comparativo|guia de compra).{0,35}(?:appareil photo|objectif|cámara|câmera|lente|objetiva))|(?:(?:appareil photo|objectif|cámara|câmera|lente|objetiva).{0,35}(?:review|test|teste|comparatif|comparativa|comparativo|guia de compra))", re.I)
 BUZZ = re.compile(r"behind.the.scenes|casting|cast joins|片場|舞台裏|撮影秘話|幕后|选角|趣闻|in talks to|reveló|detrás de cámaras", re.I)
 
 
@@ -59,7 +60,7 @@ def text_only(value, limit=1200):
 def content_record(source, title, url, excerpt="", published=None, summary=None):
     stamp = now()
     url = canonical_url(url)
-    fixed = source.get("adapter") in ("eiga_releases", "top_exhibitions", "tate_exhibitions")
+    fixed = source.get("adapter") in ("eiga_releases", "top_exhibitions", "tate_exhibitions", "map_exhibitions", "zeitz_exhibitions")
     locations = [{"country": source["country"], "city": source.get("city"), "basis": "source_structured"}] if fixed and source.get("country") else title_places(title)
     countries = {place["country"] for place in locations}
     cities = {place["city"] for place in locations if place["city"]}
@@ -78,7 +79,9 @@ def rss_records(source, payload):
             continue
         excerpt = text_only(item.findtext("description") or item.findtext("{http://purl.org/rss/1.0/modules/content/}encoded"))
         categories = " ".join(x.text or "" for x in item.findall("category"))
-        if GEAR.search(title + " " + categories):
+        if GEAR.search(title + " " + categories) or GEAR_MULTILINGUAL.search(title + " " + categories):
+            continue
+        if source.get("exclude_title_regex") and re.search(source["exclude_title_regex"], title, re.I):
             continue
         published = None
         try:
@@ -93,9 +96,9 @@ def rss_records(source, payload):
                 record["summary_zh"] = "来源摘录：" + excerpt[:300]
                 record["summary_status"] = "ready"
                 record["summary_provider"] = "source-excerpt"
-        if re.search(r"photobook|写真集|摄影集", title, re.I):
+        if record["kind"] != "industry_buzz" and re.search(r"photobook|写真集|摄影集|livre photo|fotolibro|fotolivro", title + " " + categories, re.I):
             record["kind"] = "photobook"
-        elif re.search(r"interview|インタビュー|访谈", title, re.I):
+        elif record["kind"] != "industry_buzz" and re.search(r"interview|インタビュー|访谈|entretien|entrevista", title + " " + categories, re.I):
             record["kind"] = "interview"
         records.append(record)
     return records, [], []
@@ -207,7 +210,73 @@ def tate_records(source, payload):
     return records, events, links
 
 
-ADAPTERS = {"rss": rss_records, "eiga_releases": eiga_records, "top_exhibitions": top_records, "tate_exhibitions": tate_records}
+def museum_record(source, title, url, start, end, original):
+    summary = f"{source['city']} {source['venue']} 展览《{title}》，展期 {start} 至 {end}。日期来自场馆官网；票价、开放日与预约请核对原文。"
+    record = content_record(source, title, url, summary=summary)
+    event = event_record(source, record, "exhibition", start, end, source["venue"], source["city"], source["country"], source["timezone"])
+    event["date_text_original"] = original
+    return record, event, {"content_id": record["id"], "event_id": event["id"]}
+
+
+def map_records(source, payload):
+    soup = BeautifulSoup(payload, "html.parser")
+    records, events, links, seen = [], [], [], set()
+    visitor_info = soup.select_one(".footer__top__info")
+    visitor_text = visitor_info.get_text(" ", strip=True) if visitor_info else ""
+    for card in soup.select("article.rds-card"):
+        category = card.select_one(".rds-card__category-location")
+        title, dates, anchor = card.select_one(".rds-card__title"), card.select_one(".rds-card__date"), card.select_one('a[href*="/exhibition/"]')
+        if not category or category.get_text(" ", strip=True) != "Exhibitions | MAP Bengaluru" or not title or not dates or not anchor:
+            continue
+        original = dates.get_text(" ", strip=True)
+        match = re.fullmatch(r"([A-Za-z]{3}) (\d{1,2}), (\d{4})\s*[-–]\s*([A-Za-z]{3}) (\d{1,2}), (\d{4})", original)
+        if not match or match[1] not in MONTHS or match[4] not in MONTHS:
+            continue
+        start, end = date(int(match[3]), MONTHS[match[1]], int(match[2])).isoformat(), date(int(match[6]), MONTHS[match[4]], int(match[5])).isoformat()
+        url = canonical_url(urljoin(source["feed_url"], anchor["href"]))
+        if url in seen:
+            continue
+        seen.add(url)
+        record, event, link = museum_record(source, title.get_text(" ", strip=True), url, start, end, original)
+        if "Monday · Closed" in visitor_text:
+            event["closure_note"] = "馆方访问说明：周一闭馆；节假日及特别安排请出行前核对官网。"
+        if "Free entry to all exhibitions on Tuesdays" in visitor_text:
+            event["price_text"] = "馆方说明周二所有展览免费；其他日期票价以官网为准。"
+        records.append(record); events.append(event); links.append(link)
+    if not records:
+        raise ValueError("MAP 未发现带完整日期的现场展览")
+    return records, events, links
+
+
+def zeitz_records(source, payload):
+    soup = BeautifulSoup(payload, "html.parser")
+    records, events, links, seen = [], [], [], set()
+    for card in soup.select("article.zeitz-card"):
+        category = card.select_one(".zeitz-card__subtitle")
+        title, dates, anchor = card.select_one(".zeitz-card__title"), card.select_one(".zeitz-card__date"), card.select_one('a[href*="/exhibition/"]')
+        if not category or category.get_text(strip=True) != "EXHIBITIONS" or not title or not dates or not anchor:
+            continue
+        name = title.get_text(" ", strip=True)
+        # An exhibition-season announcement is not an individual exhibition.
+        if re.search(r"announces|exhibition season", name, re.I):
+            continue
+        original = dates.get_text(" ", strip=True)
+        match = re.fullmatch(r"(\d{1,2}) ([A-Za-z]{3}) (\d{4})\s*[-–]\s*(\d{1,2}) ([A-Za-z]{3}) (\d{4})", original)
+        if not match or match[2] not in MONTHS or match[5] not in MONTHS:
+            continue
+        start, end = date(int(match[3]), MONTHS[match[2]], int(match[1])).isoformat(), date(int(match[6]), MONTHS[match[5]], int(match[4])).isoformat()
+        url = canonical_url(urljoin(source["feed_url"], anchor["href"]))
+        if url in seen:
+            continue
+        seen.add(url)
+        record, event, link = museum_record(source, name, url, start, end, original)
+        records.append(record); events.append(event); links.append(link)
+    if not records:
+        raise ValueError("Zeitz 未发现带完整日期的单展")
+    return records, events, links
+
+
+ADAPTERS = {"rss": rss_records, "eiga_releases": eiga_records, "top_exhibitions": top_records, "tate_exhibitions": tate_records, "map_exhibitions": map_records, "zeitz_exhibitions": zeitz_records}
 
 
 def run_ingestion(store, source_ids=None, fetcher=get_url):

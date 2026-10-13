@@ -27,17 +27,30 @@
     if (filters.kind && filters.kind !== 'all' && row.kind !== filters.kind && row.event_type !== filters.kind) return false;
     const places = locations(row);
     if (filters.country && filters.country !== 'all' && (filters.country === 'unknown' ? places.length > 0 : !places.some(place => place.country === filters.country))) return false;
-    if (filters.city && filters.city !== 'all' && !places.some(place => place.city === filters.city || (!place.city && place.country === cityCountries[filters.city]))) return false;
+    if (filters.city && filters.city !== 'all' && !places.some(place => place.city === filters.city || (!place.city && place.country === cityCountries[filters.city] && (['cinema_release', 'streaming_release'].includes(row.event_type) || place.basis === 'source_structured')))) return false;
     if (filters.language && filters.language !== 'all' && row.language && row.language !== filters.language) return false;
     if (filters.buzz === false && row.kind === 'industry_buzz') return false;
     const needle = (filters.query || '').trim().toLocaleLowerCase();
     return !needle || [row.title_zh, row.title_original, row.summary_zh, row.city, row.venue].join(' ').toLocaleLowerCase().includes(needle);
   }
-  function selectToday(rows, preferences) {
+  function isCurrentContent(row, reference, linkedEvents = [], maxAge = 30) {
+    const published = row.published_at?.slice(0, 10);
+    const age = daysBetween(published, reference);
+    if (age !== null) return age >= -1 && age <= maxAge;
+    // A date from a real calendar can support an undated listing, but the
+    // fetch timestamp never becomes an invented publication date.
+    return linkedEvents.some(event => {
+      if (event.date_precision !== 'day') return false;
+      const today = event.is_demo ? reference : localDate(event.timezone);
+      const start = daysBetween(today, event.start_date), end = daysBetween(today, event.end_date || event.start_date);
+      return start !== null && end !== null && start <= 14 && end >= 0;
+    });
+  }
+  function selectToday(rows, preferences, context = null) {
     const limit = preferences.daily_selection_limit || 10;
     const buzz = preferences.industry_buzz || { enabled: true, max_share: 0.1 };
     const interests = [...(preferences.interests || []), ...(preferences.followed_entities || [])];
-    const scored = rows.filter(r => r.evidence_status !== 'unverified' && (buzz.enabled || r.kind !== 'industry_buzz')).map(row => {
+    const scored = rows.filter(r => r.evidence_status !== 'unverified' && (buzz.enabled || r.kind !== 'industry_buzz') && (!context || isCurrentContent(r, context.reference_date, (context.content_events || []).filter(link => link.content_id === r.id).map(link => (context.events || []).find(event => event.id === link.event_id)).filter(Boolean), preferences.recent_news_days || 30))).map(row => {
       const text = [row.title_original, row.title_zh, row.summary_zh].join(' ').toLocaleLowerCase();
       const synonyms = { 电影: ['film', 'cinema', 'película'], 艺术: ['art', 'exhibition'], 摄影: ['photograph', '写真'], 摄影集: ['photobook', '写真集'], 电影访谈: ['interview'], 街头摄影: ['street photography'] };
       const interestScore = interests.filter(x => x && [x, ...(synonyms[x] || [])].some(term => text.includes(term.toLocaleLowerCase()))).length * 4;
@@ -114,7 +127,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, selectToday, eventState, validateImport, calendarFile };
+  const api = { channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

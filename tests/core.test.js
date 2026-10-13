@@ -79,6 +79,8 @@ test('world region and language filters use story places rather than publisher c
   assert.ok(!C.matches(row,{language:'en'}));
   assert.match(C.locationLabel(row),/^涉及/);
   assert.equal(C.locationLabel({country:null}),'地点未说明');
+  assert.ok(!C.matches({country:'JP',geography_status:'mentioned'},{city:'东京'}));
+  assert.ok(C.matches({country:'JP',event_type:'cinema_release'},{city:'东京'}));
 });
 
 test('event countdown uses local dates across UTC midnight in different regions', () => {
@@ -86,4 +88,16 @@ test('event countdown uses local dates across UTC midnight in different regions'
   assert.equal(C.localDate('America/New_York',instant),'2026-10-13');
   assert.equal(C.localDate('Asia/Tokyo',instant),'2026-10-14');
   assert.equal(C.eventState({date_precision:'day',event_type:'exhibition',start_date:'2026-10-14'},C.localDate('America/New_York',instant)).label,'1 天后开幕');
+});
+
+test('today excludes archival publications and uses confirmed calendar dates for undated listings', () => {
+  const recent={id:'recent',kind:'news',channel:'art',title_original:'Art today',evidence_status:'media_reported',published_at:'2026-10-12T00:00:00Z'};
+  const old={...recent,id:'old',published_at:'2021-01-01T00:00:00Z'};
+  const unknown={...recent,id:'unknown',published_at:null,fetched_at:'2026-10-13T00:00:00Z'};
+  const listing={...unknown,id:'listing'};
+  const context={reference_date:'2026-10-13',content_events:[{content_id:'listing',event_id:'exhibit'}],events:[{id:'exhibit',date_precision:'day',start_date:'2026-10-01',end_date:'2026-11-01',is_demo:1}]};
+  const rows=C.selectToday([old,unknown,listing,recent],{...prefs,interests:[],followed_entities:[]},context);
+  assert.deepEqual(new Set(rows.map(r=>r.id)),new Set(['recent','listing']));
+  assert.ok(!C.isCurrentContent({...recent,published_at:'2027-01-01T00:00:00Z'},'2026-10-13'));
+  assert.equal(C.matches(old,{}),true);
 });

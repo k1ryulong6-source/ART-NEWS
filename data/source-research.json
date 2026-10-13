@@ -1,0 +1,303 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-10-13",
+  "scope": "全球文化资料接入核实；HTTP 可读取不代表所有报道已独立证实，也不等于内容允许全文镜像。",
+  "checks": [
+    {
+      "id": "contemporary-and",
+      "url": "https://contemporaryand.com/feed/",
+      "error": "HTTPError HTTP Error 404: Not Found",
+      "checked_at": "2026-10-13",
+      "decision": "research_only",
+      "notes": "feed 404，主页可读但未发现公开 RSS；暂不启用。"
+    },
+    {
+      "id": "artafrica",
+      "url": "https://artafricamagazine.org/feed/",
+      "status": 200,
+      "count": 10,
+      "language": "en-GB",
+      "sample": [
+        {
+          "title": "Caroline Gueye: The Shifting Value of Gold at the Senegal Pavilion",
+          "link": "https://artafricamagazine.org/caroline-gueye-the-shifting-value-of-gold-at-the-senegal-pavilion/?utm_source=rss&utm_medium=rss&utm_campaign=caroline-gueye-the-shifting-value-of-gold-at-the-senegal-pavilion",
+          "date": "Mon, 12 Oct 2026 08:46:08 +0000"
+        },
+        {
+          "title": "The Wrong Black Woman on the Fourth Plinth",
+          "link": "https://artafricamagazine.org/the-wrong-black-woman-on-the-fourth-plinth/?utm_source=rss&utm_medium=rss&utm_campaign=the-wrong-black-woman-on-the-fourth-plinth",
+          "date": "Sun, 11 Oct 2026 12:28:09 +0000"
+        },
+        {
+          "title": "The Distance Between Being There and Being Seen at La Biennale di Venezia",
+          "link": "https://artafricamagazine.org/the-distance-between-being-there-and-being-seen-at-la-biennale-di-venezia/?utm_source=rss&utm_medium=rss&utm_campaign=the-distance-between-being-there-and-being-seen-at-la-biennale-di-venezia",
+          "date": "Thu, 08 Oct 2026 14:58:34 +0000"
+        }
+      ],
+      "checked_at": "2026-10-13",
+      "decision": "enabled",
+      "notes": "公开 RSS 有有效条目，原文语言与电影／艺术／摄影主题已核对。只读取元数据与短摘录。"
+    },
+    {
+      "id": "cinepop",
+      "url": "https://cinepop.com.br/feed/",
+      "status": 200,
+      "count": 33,
+      "language": "pt-BR",
+      "sample": [
+        {
+          "title": "CHOQUE! Selma Blair é presa após supostamente agredir comissários e tentar abrir porta de avião durante voo",
+          "link": "https://cinepop.com.br/choque-selma-blair-e-presa-apos-supostamente-agredir-comissarios-e-tentar-abrir-porta-de-aviao-durante-voo-770197/",
+          "date": "Tue, 13 Oct 2026 03:02:53 +0000"
+        },
+        {
+          "title": "Crítica | ‘American Horror Story: 13’ une nostalgia e velhos dilemas em uma sólida dobradinha de episódios",
+          "link": "https://cinepop.com.br/critica-american-horror-story-13-une-nostalgia-e-velhos-dilemas-em-uma-solida-dobradinha-de-episodios-770194/",
+          "date": "Tue, 13 Oct 2026 02:01:39 +0000"
+        },
+        {
+          "title": "Amanda Seyfried não tem interesse em fazer cenas de SEXO: “Fico desconfortável”",
+          "link": "https://cinepop.com.br/amanda-seyfried-nao-tem-interesse-em-fazer-cenas-de-sexo-fico-desconfortavel-770189/",
+          "date": "Tue, 13 Oct 2026 01:39:10 +0000"
+        }
+      ],
+      "checked_at": "2026-10-13",
+      "decision": "research_only",
+      "notes": "RSS 可读，但抽样含较多明星八卦与剧集内容；本轮优先启用更符合电影主线的 Rapadura，不增加八卦来源。"
+    },
+    {
+      "id": "rapadura",
+      "url": "https://cinemacomrapadura.com.br/feed/",
+      "status": 200,
+      "count": 50,
+      "language": "pt-BR",
+      "sample": [
+        {
+          "title": "Crítica | Se Eu Fosse Você 3 (2026): troca pela metade",
+          "link": "https://cinemacomrapadura.com.br/criticas/631057/critica-se-eu-fosse-voce-3-2026-troca-pela-metade/",
+          "date": "Sat, 10 Oct 2026 20:10:28 +0000"
+        },
+        {
+          "title": "Avatar: Os Sete Refúgios | Nova série é renovada para terceira e quarta temporada — saiba mais",
+          "link": "https://cinemacomrapadura.com.br/noticias/631047/avatar-os-sete-refugios-nova-serie-e-renovada-para-terceira-e-quarta-temporada-saiba-mais/",
+          "date": "Fri, 09 Oct 2026 22:16:19 +0000"
+        },
+        {
+          "title": "Zodiac | Marvel anuncia nova série em live-action durante a New York Comic-Con",
+          "link": "https://cinemacomrapadura.com.br/noticias/631052/marvel-zodiac-nycc/",
+          "date": "Fri, 09 Oct 2026 01:00:10 +0000"
+        }
+      ],
+      "checked_at": "2026-10-13",
+      "decision": "enabled",
+      "notes": "公开 RSS 有有效条目，原文语言与电影／艺术／摄影主题已核对。只读取元数据与短摘录。"
+    },
+    {
+      "id": "cinepremiere",
+      "url": "https://cinepremiere.com.mx/feed",
+      "status": 200,
+      "count": 10,
+      "language": "es",
+      "sample": [
+        {
+          "title": "Cartelera Cinemex – Estrenos de películas 15 de octubre, 2026",
+          "link": "https://cinepremiere.com.mx/cartelera-cinemex-estrenos-de-peliculas-en-cines.html",
+          "date": "Mon, 12 Oct 2026 14:20:41 +0000"
+        },
+        {
+          "title": "Estrenos Apple TV – Películas y series nuevas del 12 al 18 de octubre 2026",
+          "link": "https://cinepremiere.com.mx/apple-tv-plus-precio-series-peliculas.html",
+          "date": "Mon, 12 Oct 2026 13:54:05 +0000"
+        },
+        {
+          "title": "Estrenos Disney Plus – 12 al 18 de octubre 2026 y todo el mes",
+          "link": "https://cinepremiere.com.mx/peliculas-series-disponibles-disney-plus-latam.html",
+          "date": "Mon, 12 Oct 2026 13:53:13 +0000"
+        }
+      ],
+      "checked_at": "2026-10-13",
+      "decision": "enabled",
+      "notes": "公开 RSS 有有效条目，原文语言与电影／艺术／摄影主题已核对。只读取元数据与短摘录。"
+    },
+    {
+      "id": "troiscouleurs",
+      "url": "https://www.troiscouleurs.fr/feed/",
+      "status": 200,
+      "count": 10,
+      "language": "fr-FR",
+      "sample": [
+        {
+          "title": "QUEER GAZE · Diamanda Callas : « J’adorerais voir un film sur l’architecture fait par une personne queer »",
+          "link": "https://www.troiscouleurs.fr/must-read/queer-gaze-diamanda-callas/",
+          "date": "Mon, 12 Oct 2026 14:45:14 +0000"
+        },
+        {
+          "title": "LA SEXTAPE · « The Shards » de Ryan Murphy, le retour du refoulé",
+          "link": "https://www.troiscouleurs.fr/cinema/la-sextape-%c2%b7-the-shards-de-ryan-murphy-le-retour-du-refoule/",
+          "date": "Mon, 12 Oct 2026 10:56:31 +0000"
+        },
+        {
+          "title": "« Minotaure »: un film qui questionne le vice public dans la lignée de Platon",
+          "link": "https://www.troiscouleurs.fr/cinema/minotaure-un-film-qui-questionne-le-vice-public-dans-la-lignee-de-platon/",
+          "date": "Mon, 12 Oct 2026 10:47:06 +0000"
+        }
+      ],
+      "checked_at": "2026-10-13",
+      "decision": "enabled",
+      "notes": "公开 RSS 有有效条目，原文语言与电影／艺术／摄影主题已核对。只读取元数据与短摘录。"
+    },
+    {
+      "id": "fisheye",
+      "url": "https://fisheyemagazine.fr/feed/",
+      "status": 200,
+      "count": 10,
+      "language": "fr-FR",
+      "sample": [
+        {
+          "title": "InCadaqués Festival : Julie Peiffer remporte le Premi Fotografia Femenina 2026",
+          "link": "https://fisheyemagazine.fr/article/julie-peiffer-laureate-premi-fotografia-femenina-2026/",
+          "date": "Sat, 10 Oct 2026 09:00:02 +0000"
+        },
+        {
+          "title": "Le Chant des villes : un urbain intime chez agnès b. ",
+          "link": "https://fisheyemagazine.fr/article/le-chant-des-villes-agnes-b/",
+          "date": "Fri, 09 Oct 2026 09:00:55 +0000"
+        },
+        {
+          "title": "Blindfolded : Antoine De Winter dialogue avec les glaciers",
+          "link": "https://fisheyemagazine.fr/article/blindfolded-antoine-de-winter/",
+          "date": "Thu, 08 Oct 2026 09:00:55 +0000"
+        }
+      ],
+      "checked_at": "2026-10-13",
+      "decision": "enabled",
+      "notes": "公开 RSS 有有效条目，原文语言与电影／艺术／摄影主题已核对。只读取元数据与短摘录。"
+    },
+    {
+      "id": "asianmoviepulse",
+      "url": "https://asianmoviepulse.com/feed/",
+      "status": 200,
+      "count": 8,
+      "language": "en-US",
+      "sample": [
+        {
+          "title": "Vishwendra Singh Talks “Khoriya”, Nepali Migrants, Documentary Realism and Life on the Margins of Delhi",
+          "link": "https://asianmoviepulse.com/2026/10/vishwendra-singh-khoriya-interview/",
+          "date": "Tue, 13 Oct 2026 09:30:00 +0000"
+        },
+        {
+          "title": "July Jung, Kim Do-yeon and Song Sae-byeok on “Dora”",
+          "link": "https://asianmoviepulse.com/2026/10/july-jung-kim-do-yeon-and-song-sae-byeok-on-dora/",
+          "date": "Tue, 13 Oct 2026 06:30:00 +0000"
+        },
+        {
+          "title": "Gu You Talks “The First Taste of Loneliness”, Shanshui Painting, Family, the Moon and Finding New Possibilities in Cinema",
+          "link": "https://asianmoviepulse.com/2026/10/gu-you-the-first-taste-of-loneliness-interview/",
+          "date": "Tue, 13 Oct 2026 03:30:00 +0000"
+        }
+      ],
+      "checked_at": "2026-10-13",
+      "decision": "enabled",
+      "notes": "公开 RSS 有有效条目，原文语言与电影／艺术／摄影主题已核对。只读取元数据与短摘录。"
+    },
+    {
+      "id": "sinema-sg",
+      "url": "https://www.sinema.sg/feed/",
+      "error": "URLError <urlopen error Tunnel connection failed: 502 Bad Gateway>",
+      "checked_at": "2026-10-13",
+      "decision": "research_only",
+      "notes": "连接返回 502，未得到可验证条目；保持候选。"
+    },
+    {
+      "id": "map-india",
+      "url": "https://map-india.org/exhibitions/",
+      "status": 200,
+      "title": "Exhibitions at the Museum of Art & Photography",
+      "feeds": [
+        "https://map-india.org/feed/",
+        "https://map-india.org/comments/feed/",
+        "https://map-india.org/exhibitions/feed/"
+      ],
+      "checked_at": "2026-10-13",
+      "decision": "enabled",
+      "notes": "只提取实体展览的完整展期；排除在线展、无明确起始的装置。访客说明明确周一闭馆、周二所有展览免费；其他票价不推断。"
+    },
+    {
+      "id": "zeitz",
+      "url": "https://zeitzmocaa.museum/exhibitions-and-events/",
+      "status": 200,
+      "title": "Exhibitions and Events - Zeitz MOCAA",
+      "feeds": [
+        "https://zeitzmocaa.museum/feed/",
+        "https://zeitzmocaa.museum/comments/feed/"
+      ],
+      "checked_at": "2026-10-13",
+      "decision": "enabled",
+      "notes": "仅 EXHIBITIONS 的个别展览；排除展季总公告、工作坊、出版和放映。Current 徽标不覆盖明确闭展日。"
+    },
+    {
+      "id": "ngs",
+      "url": "https://www.nationalgallery.sg/sg/en/exhibitions.html",
+      "status": 200,
+      "title": "Exhibitions | National Gallery Singapore",
+      "feeds": [],
+      "checked_at": "2026-10-13",
+      "decision": "research_only",
+      "notes": "列表可读，但样例仍链接到已结束展览及长期教育空间，不能据列表推断现在有新展。"
+    },
+    {
+      "id": "ngs-detail",
+      "url": "https://www.nationalgallery.sg/sg/en/exhibitions/Passion-is-Volcanic-Desire-in-Southeast-Asian-Art.html",
+      "status": 200,
+      "title": "Passion is Volcanic: Desire in Southeast Asian Art (R18) | National Gallery Singapore",
+      "feeds": [],
+      "checked_at": "2026-10-13",
+      "decision": "research_only",
+      "notes": "JSON-LD 明确为 2026-04-24 至 2026-09-20，已结束；不把页面仍在列表当作仍在展出。"
+    },
+    {
+      "id": "contand-home",
+      "url": "https://contemporaryand.com/en",
+      "status": 200,
+      "count": 0,
+      "language": null,
+      "sample": [],
+      "checked_at": "2026-10-13",
+      "decision": "research_only",
+      "notes": "公开主页可读；未发现 RSS，公开页面解析待后续评估。"
+    },
+    {
+      "id": "artafrica-about",
+      "url": "https://artafricamagazine.org/about/",
+      "status": 200,
+      "title": "About - ART AFRICA Magazine",
+      "feeds": [
+        "https://artafricamagazine.org/feed/"
+      ],
+      "checked_at": "2026-10-13",
+      "decision": "research_only",
+      "notes": "明确介绍非洲／全球南方艺术，并说明团队位于南非开普敦、约翰内斯堡。"
+    },
+    {
+      "id": "rapadura-about",
+      "url": "https://cinemacomrapadura.com.br/sobre/",
+      "error": "HTTPError HTTP Error 404: Not Found",
+      "checked_at": "2026-10-13",
+      "decision": "research_only",
+      "notes": "候选 About 路径 404，不能据此否定已验证 RSS；发布地区按巴西媒体资料记录。"
+    },
+    {
+      "id": "zeitz-film",
+      "url": "https://zeitzmocaa.museum/exhibition/the-pan-african-film-caravan-screenings/",
+      "status": 200,
+      "title": "The Pan-African Film Caravan screening: 'Sambizanga' by Sarah Maldoror - Zeitz MOCAA",
+      "feeds": [
+        "https://zeitzmocaa.museum/feed/",
+        "https://zeitzmocaa.museum/comments/feed/"
+      ],
+      "checked_at": "2026-10-13",
+      "decision": "research_only",
+      "notes": "官网说明为放映系列，不推断为电影节；当前只接入单展展期，放映类型后续单独扩展。"
+    }
+  ]
+}

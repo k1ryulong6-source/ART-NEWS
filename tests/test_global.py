@@ -21,6 +21,9 @@ class GlobalChecks(unittest.TestCase):
         self.assertTrue(matches_region(mentioned, 'FR', '巴黎'))
         self.assertTrue(matches_region(mentioned, 'JP', '东京'))
         self.assertFalse(matches_region(mentioned, 'US'))
+        country_only = content_record(SOURCE, 'Art in Senegal', 'https://example.invalid/country')
+        self.assertTrue(matches_region(country_only, 'SN'))
+        self.assertFalse(matches_region(country_only, 'SN', '达喀尔'))
         self.assertEqual(mentioned['geography_status'], 'mentioned')
         self.assertFalse(matches_region(content_record(SOURCE, 'Comparison of artworks', 'https://example.invalid/word'), 'FR'))
 

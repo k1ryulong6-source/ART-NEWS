@@ -32,8 +32,9 @@
     if (value.startsWith('reader/')) { try { const id = decodeURIComponent(value.slice(7)); return id ? { view: 'reader', id } : { view: 'today' }; } catch { return { view: 'today' }; } }
     return { view: ['today','explore','calendar','bookmarks','settings'].includes(value) ? value : 'today' };
   }
-  const displayTitle = row => (editorialReady(row) ? row.editorial_title_zh : null) || row.title_zh || row.title_original;
-  const readingSummary = row => (editorialReady(row) ? row.editorial_excerpt_zh : null) || row.summary_zh || row.excerpt_original || '中文译文待校对，原文可直接阅读。';
+  const reviewedHeadline = row => { const pack = root.CULTURE_BOOTSTRAP?.headlines?.[row.id]; return pack?.source_title === row.title_original ? pack.title_zh : null; };
+  const displayTitle = row => (editorialReady(row) ? row.editorial_title_zh : null) || reviewedHeadline(row) || row.title_zh || (row.language === 'zh' ? row.title_original : '中文标题待校译');
+  const readingSummary = row => (editorialReady(row) ? row.editorial_excerpt_zh : null) || row.summary_zh || (row.language === 'zh' ? row.excerpt_original : null) || '中文正文待校译，可在阅读页切换原文。';
   const safeImageUrl = value => { try { const u = new URL(value); return u.protocol === 'https:' && !u.username && !u.password && !['localhost', '127.0.0.1', '[::1]'].includes(u.hostname) ? u.href : ''; } catch { return ''; } };
   const translatedArticleUrl = row => { const original = safeUrl(row.original_page_url || row.canonical_url || row.evidence_url); return original ? 'https://translate.google.com/translate?sl=auto&tl=zh-CN&u=' + encodeURIComponent(original) : ''; };
   const dateNumber = value => { if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return null; const [y, m, d] = value.split('-').map(Number), date = new Date(Date.UTC(y, m - 1, d)); return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d ? date.getTime() / 86400000 : null; };
@@ -52,7 +53,7 @@
     if (filters.language && filters.language !== 'all' && row.language && row.language !== filters.language) return false;
     if (filters.buzz === false && row.kind === 'industry_buzz') return false;
     const needle = (filters.query || '').trim().toLocaleLowerCase();
-    return !needle || [row.title_zh, row.translated_title_zh, row.title_original, row.editorial_title_zh, row.editorial_excerpt_zh, row.summary_zh, row.translated_excerpt_zh, row.excerpt_original, row.article_text, row.city, row.venue].join(' ').toLocaleLowerCase().includes(needle);
+    return !needle || [displayTitle(row), row.title_zh, row.translated_title_zh, row.title_original, row.editorial_title_zh, row.editorial_excerpt_zh, row.summary_zh, row.translated_excerpt_zh, row.excerpt_original, row.article_text, row.city, row.venue].join(' ').toLocaleLowerCase().includes(needle);
   }
   function isCurrentContent(row, reference, linkedEvents = [], maxAge = 30) {
     const published = row.published_at?.slice(0, 10);
@@ -73,7 +74,7 @@
     const buzz = preferences.industry_buzz || { enabled: true, max_share: 0.1 };
     const interests = [...(preferences.interests || []), ...(preferences.followed_entities || [])];
     const scored = rows.filter(r => r.evidence_status !== 'unverified' && (buzz.enabled || r.kind !== 'industry_buzz') && (!context || isCurrentContent(r, context.reference_date, (context.content_events || []).filter(link => link.content_id === r.id).map(link => (context.events || []).find(event => event.id === link.event_id)).filter(Boolean), preferences.recent_news_days || 30))).map(row => {
-      const text = [row.title_original, row.title_zh, row.summary_zh].join(' ').toLocaleLowerCase();
+      const text = [row.title_original, displayTitle(row), row.summary_zh].join(' ').toLocaleLowerCase();
       const synonyms = { 电影: ['film', 'cinema', 'película'], 艺术: ['art', 'exhibition'], 摄影: ['photograph', '写真'], 摄影集: ['photobook', '写真集'], 电影访谈: ['interview'], 街头摄影: ['street photography'] };
       const interestScore = interests.filter(x => x && [x, ...(synonyms[x] || [])].some(term => text.includes(term.toLocaleLowerCase()))).length * 4;
       const cityBoost = preferences.news_scope === 'follow_city' && row.city === preferences.default_city;
@@ -154,7 +155,7 @@
       const stamp = date => new Date(date).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
       const dates = value ? ['DTSTART:' + stamp(value), ...(event.end_at ? ['DTEND:' + stamp(event.end_at)] : [])] : ['DTSTART;VALUE=DATE:' + event.start_date.replace(/-/g, ''), 'DTEND;VALUE=DATE:' + end.replace(/-/g, '')];
       const notes = [event.is_demo ? '虚构示例，不能作为实际安排。' : '', event.time_note, event.closure_note || '开放日与预约请核对原文。', event.price_text, event.eligibility_note, event.booking_url].filter(Boolean).join(' ');
-      lines.push('BEGIN:VEVENT', 'UID:' + clean(event.id) + '@culture-desk.local', 'DTSTAMP:' + stamp(new Date()), ...dates, 'SUMMARY:' + clean(event.title_zh || event.title_original), 'LOCATION:' + clean([event.city, event.venue].filter(Boolean).join(' ')), 'DESCRIPTION:' + clean(notes), 'URL:' + safeUrl(event.evidence_url), 'END:VEVENT');
+      lines.push('BEGIN:VEVENT', 'UID:' + clean(event.id) + '@culture-desk.local', 'DTSTAMP:' + stamp(new Date()), ...dates, 'SUMMARY:' + clean(displayTitle(event)), 'LOCATION:' + clean([event.city, event.venue].filter(Boolean).join(' ')), 'DESCRIPTION:' + clean(notes), 'URL:' + safeUrl(event.evidence_url), 'END:VEVENT');
     }
     lines.push('END:VCALENDAR');
     // RFC 5545 folds at 75 octets, not 75 Unicode characters.

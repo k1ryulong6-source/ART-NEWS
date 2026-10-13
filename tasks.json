@@ -779,6 +779,41 @@
         "private peek确认唯一每日任务仍is_enabled=true，TZID=Asia/Tokyo，flexible_schedule；last_run_time=null，首定时执行尚未发生",
         "GitHub CI38442648556（64项）／部署38442648767成功；公开1440／390px五份校译、474条／26来源、旧机翻隐藏全部通过"
       ]
+    },
+    {
+      "id": "T026",
+      "title": "中文标题与正文默认阅读，原文切换及Claude视觉改版交接",
+      "milestone": "M4",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T025"
+      ],
+      "scope": [
+        "frontend/",
+        "backend/daily_translation.py",
+        "scripts/",
+        "data/headlines/",
+        "docs/CLAUDE_UI_HANDOFF.md",
+        "docs/",
+        "tests/",
+        "tasks.json",
+        "backend/headlines.py"
+      ],
+      "acceptance": [
+        "标题与正文中文优先，原文仅按阅读切换显示",
+        "未完成全文校译明确标记，不能用旧机翻或外文正文伪装中文",
+        "全部来源与原文保存，每日校译和收藏保持",
+        "提供Claude可读的GitHub交接说明、可改范围及验收流程",
+        "手机/桌面、原标题切换、直达刷新与上线实际验证"
+      ],
+      "evidence": [
+        "50 Python＋17 JS检查通过；严格审计0错误、1项已有时刻冲突提示",
+        "474条资讯／163项活动均有中文标题，419份标题稿；26来源和原文数据未更改，完整校译仍5篇",
+        "1440／390px中文默认、原文标题与正文切换、深链刷新、待译提示无外文、收藏保留、中文搜索、五页无溢出通过",
+        "Claude交接文档完成；每日任务仅prompt加入标题补齐，启用状态与日程保持"
+      ]
     }
   ]
 }

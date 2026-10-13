@@ -6,6 +6,7 @@ from collections import Counter
 from pathlib import Path
 from .storage import ROOT, now
 from .editorial import checked_result, publish_translation
+from .headlines import load_headlines
 
 PROVIDER = 'chatgpt-direct:context-review-v1'
 
@@ -71,6 +72,14 @@ def prepare_queue(snapshot, output=None):
     # A bounded shortlist avoids downloading the entire 6+ MB snapshot in a task.
     # Rotate sources/channels; older items get a dedicated share instead of starving.
     pending.sort(key=lambda r: r.get('published_at') or '', reverse=True)
+    headlines = load_headlines(snapshot, output / 'headlines')
+    headline_pending = []
+    for row in sorted(snapshot['content'], key=lambda r: r.get('published_at') or '', reverse=True):
+        if row.get('is_demo') or row['language'] == 'zh' or row.get('title_zh') or row.get('editorial_status') == 'reviewed' or row['id'] in headlines:
+            continue
+        headline_pending.append({'id': row['id'], 'source_id': row['source_id'], 'language': row['language'],
+                                 'title_original': row['title_original'], 'excerpt_original': row.get('excerpt_original'),
+                                 'input_path': 'data/translation-input/' + row['id'] + '.json' if row.get('article_blocks_json') else None})
     selected, seen, source_counts = [], set(), Counter()
     for channel in ('film', 'art', 'photography'):
         for row in [r for r in pending if r['channel'] == channel]:
@@ -88,6 +97,7 @@ def prepare_queue(snapshot, output=None):
              'reviewed': sum(r.get('editorial_status') == 'reviewed' for r in snapshot['content']),
              'originals_without_body': sum(not r.get('article_blocks_json') for r in snapshot['content']),
              'instructions_path': 'docs/DAILY_TRANSLATION.md', 'glossary_path': 'config/translation.json',
+             'pending_headlines': len(headline_pending), 'headlines_next': headline_pending[:120],
              'next': selected}
     output.mkdir(exist_ok=True)
     (output / 'translation-queue.json').write_text(json.dumps(queue, ensure_ascii=False, indent=2) + '\n')

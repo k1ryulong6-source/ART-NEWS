@@ -1,9 +1,12 @@
 """Create a portable static edition using the same frontend and demo records."""
 import json
 import shutil
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from backend.headlines import load_headlines
 
 
 def build():
@@ -16,6 +19,7 @@ def build():
     live_path = ROOT / "data/live.json"
     if live_path.exists():
         bundle["live"] = json.loads(live_path.read_text(encoding="utf-8"))
+        bundle["headlines"] = load_headlines(bundle["live"])
     text = "window.CULTURE_BOOTSTRAP = " + json.dumps(bundle, ensure_ascii=False).replace("<", "\\u003c") + ";\n"
     (ROOT / "frontend/data.js").write_text(text, encoding="utf-8")
     output = ROOT / "dist"

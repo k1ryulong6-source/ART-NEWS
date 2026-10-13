@@ -7,6 +7,9 @@ on:
       - 'frontend/**'
       - 'config/**'
       - 'data/live.json'
+      - 'data/headlines/**'
+      - 'backend/headlines.py'
+      - 'scripts/build_static.py'
       - '.github/workflows/pages.yml'
   workflow_run:
     workflows: ['Refresh cultural news', 'Publish daily AI translations']

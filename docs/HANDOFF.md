@@ -66,8 +66,8 @@ python3 scripts/import_snapshot.py：首次恢复公开快照，并恢复当天�
 
 ## GitHub 验证与领取入口
 
-- CI：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38389258753
-- 实际自动刷新：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38389285444
+- CI：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38398024557
+- 实际自动刷新：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38398100281
 - 摘要配置：https://github.com/k1ryulong6-source/ART-NEWS/issues/1
 - 托管选择：https://github.com/k1ryulong6-source/ART-NEWS/issues/2
 - 已完成全球更新：https://github.com/k1ryulong6-source/ART-NEWS/issues/3
@@ -85,8 +85,10 @@ T018 本轮资料任务：https://github.com/k1ryulong6-source/ART-NEWS/issues/5
 
 ## T020 · 原文摘录、译文与配图
 
-已完成采集与页面实现，发布验收进行中。当前 434 条资料／158 活动，306 张来源配图、299 条原文摘录、384 个机器翻译标题、249 个机器翻译摘录（另 50 条中文）。实际公共翻译 633 次请求，0 失败；重复翻译 0 新请求。图片只保存来源 URL，不镜像报道图片。原文摘录最多 280 字符加省略号／55 单词；短摘录、机器译文与全文入口明确区分。
+已完成采集、页面、公开发布和在线验收。当前 434 条资料／158 活动，306 张来源配图、299 条原文摘录、384 个机器翻译标题、249 个机器翻译摘录（另 50 条中文）。实际公共翻译 633 次请求，0 失败；重复翻译 0 新请求。图片只保存来源 URL，不镜像报道图片。原文摘录最多 280 字符加省略号／55 单词；短摘录、机器译文与全文入口明确区分。
 
 31 Python／13 JS 检查通过；静态版与本地服务 1440px／390px 五页、真正加载来源图片、中文标题／译文、原文文本对照、全文链接、故障图回退、中文搜索通过。原有 101 场放映、4 征集、时刻冲突和 UTC ICS 再验通过。翻译不改事件日期、票价或收藏；预算与缓存跨快照恢复。
 
 公开机器翻译配置为 TRANSLATION_PROVIDER=google-public，可关闭；每日最多 1000 请求，固定 3 个线程。端点可能变动／受限，失败不冒称已翻译，缓存保留。生成式 AI 摘要 T013 仍待账号；不应因已有公共译文而声称已启用付费模型。后续不要恢复只有标题的旧快照或用原始 1200 字符处理摘录作为公开全文。
+
+T020 GitHub 检查 44 项通过：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38398024557；实际自动刷新：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38398100281；刷新后发布：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38398252913。GitHub 本轮新增 23 条日本上映资料摘录与译文，翻译 0 失败；保留 306 张图，当前 322 原文摘录、384 翻译标题、272 翻译摘录。两项补读页面失败保留此前内容；Asian Movie Pulse／BFI 403 仍如实记录。实际公开 URL 1440px／390px 源图真正加载、译文与原文、全文入口、失败图回退及五页通过。

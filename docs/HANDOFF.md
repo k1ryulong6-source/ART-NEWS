@@ -78,3 +78,7 @@ python3 scripts/import_snapshot.py：首次恢复公开快照，并恢复当天�
 首次公开部署成功：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38389258730。公开 URL 返回 HTTP 200；在线 Chromium 1440px／390px 五页无溢出和脚本错误，摄影时刻冲突、报名入口、101 场放映、地区筛选、收藏和 UTC ICS 下载通过。GitHub 每 12 小时自动刷新，刷新完成后自动重新发布。
 
 T018 本轮资料任务：https://github.com/k1ryulong6-source/ART-NEWS/issues/5 。
+
+## T019 · 同域名离线缓存冲突
+
+用户确认网址显示 Selah；已复现根应用 Service Worker 拦截 `/ART-NEWS/`。全新浏览器验收漏掉已安装其他 PWA 的情形。永久修复涉及另一个项目 Selah，补丁和针对性 Node／Chromium 回归已完成，等待跨项目修改与重新发布授权。临时无痕可访问，不等于永久修复。详见 PAGES_TROUBLESHOOTING.md。

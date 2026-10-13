@@ -538,6 +538,32 @@
       ],
       "github_issue": "https://github.com/k1ryulong6-source/ART-NEWS/issues/5",
       "notes": "本轮资料和界面验收完成；持续扩充方向见 COVERAGE。GitHub 环境来源访问限制如实记录，未绕过限制。"
+    },
+    {
+      "id": "T019",
+      "title": "修复同域名学歌 PWA 拦截资讯网址",
+      "milestone": "M4",
+      "status": "blocked",
+      "owner": "Codex",
+      "updated_at": "2026-10-13",
+      "depends_on": [
+        "T015"
+      ],
+      "scope": [
+        "docs/PAGES_TROUBLESHOOTING.md",
+        "外部 Selah 项目 scripts/build-pwa.mjs 与生成部署"
+      ],
+      "acceptance": [
+        "先访问学歌根页再打开完整资讯网址，正确显示映间",
+        "保留学歌根应用离线行为与个人数据库／媒体",
+        "源码修复、发布和已有 Worker 更新均有实际验证"
+      ],
+      "evidence": [
+        "用户确认实际显示 Selah／私人学歌老师；真实 Chromium 先访问根页再访问 ART-NEWS 复现。",
+        "Pages API 与新浏览器证明资讯 URL 正确且页面存在，根 Worker 的 navigate 回退错误覆盖所有路径。",
+        "两行源码补丁与 Node／真实 Chromium Service Worker 回归准备完成，根应用离线行为保持，其他项目不再拦截。"
+      ],
+      "notes": "永久修复涉及另一个项目 Selah；等待用户确认跨项目修改与重新发布。临时无痕可访问，尚未宣称永久修复完成。"
     }
   ]
 }

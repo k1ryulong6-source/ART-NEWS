@@ -1,12 +1,14 @@
-# 当前交接记录 · v0.7
+# 当前交接记录 · v0.8
 
-更新时间：2026-10-13 UTC。建设者：Codex。
+更新时间：2026-10-14 JST。建设者：Codex。
+
+最新用户要求与实现：抓取公开正文并由本站直接排版，移除 iframe。此前 v0.7 的原网页嵌入方案已由 T022／D018 取代。现有 26 个来源、441 条资讯、160 项活动全部保留。427 条已提取正文，13 条公开部分，1 条未取得正文；10 条完成正文机器翻译，1 条翻译进行中。当前代码与公开状态见文末 T022 验收。
 
 ## 仓库与授权
 
 仓库：https://github.com/k1ryulong6-source/ART-NEWS 。用户保留公开仓库，并已明确授权公开网页。v0.5 新增四个官方来源，434 条资料／158 项活动；真实重复采集新来源 inserted=0。源级历史保留；本轮 GitHub 刷新 24 源成功，Asian Movie Pulse 与 BFI 返回 HTTP 403，分别保留原 8 条资料与 101 场次及最后成功时间，没有绕过限制。
 
-API 密钥、密码、SMTP 配置、个人数据库与收藏不进入 Git。data/live.json 和 frontend/data.js 只有公开来源元数据及处理次数账本。
+API 密钥、密码、SMTP 配置、个人数据库与收藏不进入 Git。data/live.json 和 frontend/data.js 包含公开来源元数据、已采集正文、机器译文及处理次数账本。
 
 ## 实际完成
 
@@ -102,3 +104,16 @@ T020 GitHub 检查 44 项通过：https://github.com/k1ryulong6-source/ART-NEWS/
 33 Python／14 JS 检查通过。实际 Chromium 1440px／390px 在本站读取 IMA 原网页，原文内容存在且留在本站；Film Stage、ART AFRICA、Cinéfilos 英／西文页面也实际可读。收藏保持窗口且刷新持久、原文直达链接刷新、中文切换、受限页面不删资料、探索全部 434 记录验证通过。已完成公开发布与实际在线原页验收。
 
 T021 最新公开验证：原有 434 IDs 全保留，并合并自动刷新，当前 441 条资料／160 活动、26 来源。213 页响应头未阻止嵌入，228 页由来源限制；不将前者数量冒称所有页实际全文通过。47 项 CI 成功：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38407746912。实际刷新：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38407982361；原页检查新增 2 available／5 blocked，资料不删。刷新后部署成功：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38408100107。真实公开 URL 的 1440px／390px 原页、收藏不重建窗口、刷新、中文切换、受限内容保留、全部 441 探索记录，以及 Film Stage／ART AFRICA／Cinéfilos 原页再次通过。
+
+
+## T022 · v0.8 来源正文直接阅读
+
+用户明确拒绝嵌入，要求抓取保存原文。新增 backend/articles.py：来源特定选择器＋Trafilatura，安全重定向域名与结构化内容块。本站转义排版，不执行原站 HTML，不使用 iframe。保存段落、图片／图注、链接、作者、原始出处与时间；source ID/content ID/events 和 enabled 状态都与上一版完全一致。
+
+本次批量对全部 441 条实际 GET。427 collected、13 partial（ARTnews 订阅标记的公开部分）、1 no_body（Artforum 2023 科尔比·张伯伦谈乔什·克莱恩，页面只返回标题作者）。50 条 Artforum 中包含杂志目录，目录保持自身页面内容，不补造整本杂志。BFI 的 78 个报道页各有不同正文 hash，对应 109 项场次／英国活动；MMCA 4 个展览介绍各自独立。
+
+正文翻译240次实际调用，10条完成、1条部分，未完成块保持原文。累计当日翻译请求931次，账本随快照保存。每轮新增正文60条，翻译120次，失败两天重试，已采集七天复核；共享默认每天1000次上限。翻译停用／失败不会阻止原文阅读。
+
+本地验收：python scripts/check_project.py；python -m unittest discover -s tests -v（39项）；node tests/core.test.js（15项）；node --check frontend/app.js；严格资料审计0错误、1个已有摄影征集时刻冲突提醒。Chromium 1440／390px 实测 Variety、ARTnews、IMA、ART AFRICA、BFI、MMCA、Artforum 的存储正文显示，全部 iframe 数为0；阻断来源网络仍可读保存的正文；中文全文、收藏不重建正文、刷新深链保存、缺正文记录保留、441条探索可见均通过。
+
+发布验证进行中，完成后补具体 Actions 及公开网址验收证据。不要在未验证时声称全部来源／全部文章均有完整正文或全文译文。

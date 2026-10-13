@@ -132,3 +132,16 @@ test('original reader links preserve the source and routes survive refresh and m
   assert.deepEqual(C.parseRoute('#reader/%broken'), { view: 'today' });
   assert.deepEqual(C.parseRoute('#calendar'), { view: 'calendar' });
 });
+
+test('stored body blocks display without executable links and search uses the original body', () => {
+  const row = { title_original:'A festival', article_text:'Original body about cinematography', article_blocks_json: JSON.stringify([
+    {type:'paragraph',text:'<script>Unsafe markup remains plain text</script>',links:[{text:'bad',url:'javascript:alert(1)'},{text:'source',url:'https://example.com/article'}]},
+    {type:'image',url:'data:text/html,bad'}, {type:'image',url:'https://example.com/photo.jpg'}, {type:'script',text:'bad'}
+  ]) };
+  const blocks = C.articleBlocks(row);
+  assert.equal(blocks.length,2); assert.equal(blocks[0].links.length,1);
+  assert.equal(blocks[1].url,'https://example.com/photo.jpg');
+  assert.ok(C.escape(blocks[0].text).startsWith('&lt;script&gt;'));
+  assert.ok(C.matches(row,{query:'cinematography'}));
+  assert.deepEqual(C.articleBlocks({article_blocks_json:'broken'}),[]);
+});

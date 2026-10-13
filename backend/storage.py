@@ -31,7 +31,8 @@ class Store:
                     db.execute(f"ALTER TABLE content ADD COLUMN {column} TEXT NOT NULL DEFAULT '{default}'")
             from .reading import READING_FIELDS, TRANSLATION_FIELDS
             from .originals import ORIGINAL_FIELDS
-            for column in READING_FIELDS + TRANSLATION_FIELDS + ORIGINAL_FIELDS:
+            from .articles import ARTICLE_FIELDS
+            for column in READING_FIELDS + TRANSLATION_FIELDS + ORIGINAL_FIELDS + ARTICLE_FIELDS:
                 if column not in existing:
                     db.execute(f"ALTER TABLE content ADD COLUMN {column} TEXT")
             source_columns = {row[1] for row in db.execute("PRAGMA table_info(sources)")}
@@ -167,7 +168,13 @@ class Store:
                     record["id"] = old["id"]
                     from .reading import READING_FIELDS, TRANSLATION_FIELDS
                     from .originals import ORIGINAL_FIELDS
+                    from .articles import ARTICLE_FIELDS
                     original_changed = bool(record.get('original_page_url') and record['original_page_url'] != old['original_page_url'])
+                    for field in ARTICLE_FIELDS:
+                        if original_changed:
+                            record[field] = None
+                        elif field not in record:
+                            record[field] = old[field]
                     for field in ORIGINAL_FIELDS:
                         if original_changed and field != 'original_page_url':
                             record[field] = None
@@ -182,7 +189,7 @@ class Store:
                         for field in TRANSLATION_FIELDS:
                             record[field] = None
                     if old["body_hash"] == record["body_hash"]:
-                        for field in READING_FIELDS + ORIGINAL_FIELDS + (TRANSLATION_FIELDS if reading_changed else ()):
+                        for field in READING_FIELDS + ORIGINAL_FIELDS + ARTICLE_FIELDS + (TRANSLATION_FIELDS if reading_changed else ()):
                             if field in record:
                                 db.execute(f"UPDATE content SET {field}=? WHERE id=?", (record[field], old['id']))
                         db.execute("UPDATE content SET fetched_at=?,raw_excerpt=? WHERE id=?", (record["fetched_at"], record.get("raw_excerpt"), old["id"]))

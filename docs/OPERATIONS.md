@@ -1,4 +1,4 @@
-# 运行与托管 v0.7
+# 运行与托管 v0.8
 
 完整启动、静态构建、模型和邮件配置见 README.md。
 
@@ -44,4 +44,16 @@ main 保留可运行版本；其他 AI 用分支与 Pull Request。tasks.json �
 
 公共机器翻译与公开摘要／图片补读在刷新任务中执行。TRANSLATION_PROVIDER=disabled 可停用；每日请求账本存于 SQLite／公开快照，默认 1000 次上限；翻译失败保留已有内容，不修改活动事实。图片加载依赖来源网络，静态离线文字仍可读。
 
-原网页策略检查默认 ORIGINAL_CHECK_LIMIT=20，七天后复核，嵌入状态随公开快照保存。原文由用户浏览器向来源加载；来源的网络、登录、订阅及嵌入限制不由本服务代理或解除。源级嵌入状态不会改来源 enabled 或删除旧内容。
+正文采集随刷新执行，ARTICLE_PAGE_LIMIT=60 为每轮上限；覆盖全部启用来源，失败不删除资讯。正文七天复核，失败两天后重试。ARTICLE_TRANSLATION_LIMIT=120 为每轮全文翻译调用上限，仍受 TRANSLATION_DAILY_LIMIT=1000 的共享每日账本约束。每轮断点保存在快照；待翻译段落可读原文。网页直接读取保存的正文，图片外链依赖来源网络。
+
+一次批量补全可用：
+
+```python
+from backend.storage import Store
+from backend.articles import collect_articles
+s = Store('runtime/culture-desk.db')
+s.restore_public_snapshot('data/live.json')
+print(collect_articles(s, limit=1000))
+```
+
+之后运行 scripts/export_snapshot.py、scripts/audit_data.py --output data/quality.json --strict、scripts/build_static.py。仅在新内容／采集规则变化后针对所需来源复核，不重复强制抓取全部原文。查看 data/quality.json 的 article_source_counts；collected、partial、no_body、restricted、unavailable 分开统计。

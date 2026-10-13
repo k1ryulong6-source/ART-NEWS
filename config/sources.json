@@ -98,7 +98,10 @@
       "notes": "2026-10-13 实际 HTTP 200，结构验证通过。只保存标题、必要摘录／结构化信息及原文链接，不镜像图片或全文。",
       "adapter": "rss",
       "publisher_country": "JP",
-      "coverage": "global"
+      "coverage": "global",
+      "article_selectors": [
+        ".post-inner"
+      ]
     },
     {
       "id": "tokyo-photo-museum",
@@ -140,7 +143,10 @@
       "verified_at": "2026-10-13",
       "notes": "实际 RSS 可读取；Aperture 的 XML 声明前空白需移除。保存必要摘要和原文链接，禁止镜像全文。",
       "publisher_country": "US",
-      "coverage": "global"
+      "coverage": "global",
+      "article_selectors": [
+        ".cb-entry-content"
+      ]
     },
     {
       "id": "artnews",
@@ -160,7 +166,10 @@
       "verified_at": "2026-10-13",
       "notes": "实际 RSS 可读取；Aperture 的 XML 声明前空白需移除。保存必要摘要和原文链接，禁止镜像全文。",
       "publisher_country": "US",
-      "coverage": "global"
+      "coverage": "global",
+      "article_selectors": [
+        ".a-content"
+      ]
     },
     {
       "id": "aperture",
@@ -200,7 +209,11 @@
       "verified_at": "2026-10-13",
       "notes": "实际 HTTP 200，RSS 50 条；只读取公开 RSS 元数据，不绕过订阅或登录。",
       "publisher_country": "CN",
-      "coverage": "global"
+      "coverage": "global",
+      "article_selectors": [
+        ".toc-issue",
+        ".toc-articles"
+      ]
     },
     {
       "id": "variety-film",
@@ -220,7 +233,10 @@
       "access_method": "rss",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。"
+      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。",
+      "article_selectors": [
+        ".a-content"
+      ]
     },
     {
       "id": "artnet",
@@ -447,7 +463,10 @@
       "access_method": "rss",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "2026-10-13 实际 HTTP 200 且有有效 RSS 条目；只保存短元数据及原文链接。媒体发布地与标题提及地区分开；发布日期缺失保持未知。"
+      "notes": "2026-10-13 实际 HTTP 200 且有有效 RSS 条目；只保存短元数据及原文链接。媒体发布地与标题提及地区分开；发布日期缺失保持未知。",
+      "article_selectors": [
+        ".single-post-content .text.gutenberg"
+      ]
     },
     {
       "id": "asianmoviepulse",
@@ -562,7 +581,10 @@
       "notes": "实际 HTTP 200，字段与原文核实；活动日期、时刻和费用保留限定条件，不镜像全文或图片。",
       "url_template": "https://whatson.bfi.org.uk/lff/Online/default.asp?BOparam::WScontent::loadArticle::permalink={day}",
       "season_start": "2026-10-07",
-      "season_end": "2026-10-18"
+      "season_end": "2026-10-18",
+      "article_selectors": [
+        "#Film__page"
+      ]
     },
     {
       "id": "wpo-awards",
@@ -629,7 +651,11 @@
       "adapter": "mmca_exhibitions",
       "verified_at": "2026-10-13",
       "notes": "实际 HTTP 200，字段与原文核实；活动日期、时刻和费用保留限定条件，不镜像全文或图片。",
-      "detail_url_template": "https://www.mmca.go.kr/eng/exhibitions/exhibitionsDetail.do?exhFlag=1&exhId={id}"
+      "detail_url_template": "https://www.mmca.go.kr/eng/exhibitions/exhibitionsDetail.do?exhFlag=1&exhId={id}",
+      "article_selectors": [
+        "#audioText",
+        ".audioText"
+      ]
     }
   ],
   "notes": "全球电影、艺术、摄影为主，日本上映与展览保留专题；地区由报道线索或明确场馆资料决定，不能按媒体总部推断。覆盖仍有限，未验证来源保持停用。"

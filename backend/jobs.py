@@ -51,10 +51,12 @@ def refresh(store, source_ids=None):
         from .reading import enrich_reading
         from .translation import run_translation
         reading = enrich_reading(store, int(os.getenv('READING_PAGE_LIMIT', '20')))
-        from .originals import check_originals
-        originals = check_originals(store, int(os.getenv('ORIGINAL_CHECK_LIMIT', '20')))
+        from .articles import collect_articles
+        articles = collect_articles(store, int(os.getenv('ARTICLE_PAGE_LIMIT', '60')))
         try:
             translations = run_translation(store)
+            from .article_translation import translate_articles
+            translations['articles'] = translate_articles(store)
         except Exception as exc:
             translations = {'status': 'configuration_error', 'error': type(exc).__name__}
         try:
@@ -64,7 +66,7 @@ def refresh(store, source_ids=None):
         reminders = notify(store)
         from .mail import send_notifications
         email = send_notifications(store)
-        result = {"status": "completed", "started_at": stamp, "finished_at": now(), "sources": sources, "summaries": summaries, "reading": reading, "originals": originals, "translations": translations, "new_notifications": reminders, "email": email}
+        result = {"status": "completed", "started_at": stamp, "finished_at": now(), "sources": sources, "summaries": summaries, "reading": reading, "articles": articles, "translations": translations, "new_notifications": reminders, "email": email}
         with store.connect() as db:
             db.execute("INSERT INTO job_state VALUES('last-refresh',?) ON CONFLICT(id) DO UPDATE SET value=excluded.value", (json.dumps(result),))
         return result

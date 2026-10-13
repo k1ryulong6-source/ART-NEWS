@@ -17,6 +17,14 @@
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const safeUrl = value => { try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } };
   const originalPageUrl = row => safeImageUrl(row.original_page_url || row.canonical_url);
+  const articleBlocks = (row, translated = false) => {
+    try {
+      const blocks = JSON.parse((translated ? row.article_translation_json : row.article_blocks_json) || '[]');
+      if (!Array.isArray(blocks)) return [];
+      return blocks.slice(0, 2000).filter(block => block && ['paragraph','heading','quote','list_item','image'].includes(block.type)).map(block => block.type === 'image' ? { ...block, url: safeImageUrl(block.url) } : { ...block, text: String(block.text || ''), links: (Array.isArray(block.links) ? block.links : []).filter(link => link && typeof link === 'object').map(link => ({ text: String(link.text || ''), url: safeImageUrl(link.url) })).filter(link => link.url) }).filter(block => block.type === 'image' ? block.url : block.text);
+    } catch { return []; }
+  };
+
   const readerRoute = id => '#reader/' + encodeURIComponent(id);
   function parseRoute(hash) {
     const value = (hash || '').replace(/^#/, '');
@@ -42,7 +50,7 @@
     if (filters.language && filters.language !== 'all' && row.language && row.language !== filters.language) return false;
     if (filters.buzz === false && row.kind === 'industry_buzz') return false;
     const needle = (filters.query || '').trim().toLocaleLowerCase();
-    return !needle || [row.title_zh, row.translated_title_zh, row.title_original, row.summary_zh, row.translated_excerpt_zh, row.excerpt_original, row.city, row.venue].join(' ').toLocaleLowerCase().includes(needle);
+    return !needle || [row.title_zh, row.translated_title_zh, row.title_original, row.summary_zh, row.translated_excerpt_zh, row.excerpt_original, row.article_text, row.city, row.venue].join(' ').toLocaleLowerCase().includes(needle);
   }
   function isCurrentContent(row, reference, linkedEvents = [], maxAge = 30) {
     const published = row.published_at?.slice(0, 10);
@@ -151,7 +159,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { originalPageUrl, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

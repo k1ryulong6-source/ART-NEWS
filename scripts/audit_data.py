@@ -28,6 +28,17 @@ def audit_payload(snapshot, catalog, reference=None):
         if row.get('is_demo'): problem('demo_in_live_content',row)
         if row.get('original_page_url') and not public_url(row['original_page_url']): problem('unsafe_original_page_url',row)
         if row.get('original_embed_status') not in (None,'available','blocked','unavailable','unchecked'): problem('invalid_original_page_status',row)
+        from backend.articles import STATUSES
+        if row.get('article_status') not in STATUSES | {None}: problem('invalid_article_status',row)
+        if row.get('article_blocks_json'):
+            try:
+                blocks = json.loads(row['article_blocks_json'])
+                if not isinstance(blocks,list) or not blocks or not row.get('article_text') or not row.get('article_source_url') or not row.get('article_fetched_at'): problem('article_without_body_or_provenance',row)
+                for block in blocks:
+                    if block.get('type') not in ('paragraph','heading','quote','list_item','image'): problem('invalid_article_block',row)
+                    if block.get('type') == 'image' and not public_url(block.get('url')): problem('unsafe_article_image',row)
+            except (ValueError,TypeError,AttributeError): problem('invalid_article_json',row)
+        if row.get('article_translation_hash') and not row.get('article_translation_json'): problem('translation_without_body',row)
         if row.get('image_url') and (not public_url(row['image_url']) or not row.get('image_credit') or not row.get('image_source_url')): problem('image_without_safe_url_or_attribution',row)
         if len(row.get('excerpt_original') or '') > 281: problem('excerpt_exceeds_short_reading_limit',row)
         if GEAR.search(row.get('title_original','')) or GEAR_MULTILINGUAL.search(row.get('title_original','')): problem('equipment_review',row)
@@ -88,12 +99,17 @@ def audit_payload(snapshot, catalog, reference=None):
             'original_pages_without_blocking_header': sum(row.get('original_embed_status') == 'available' for row in content),
             'original_pages_blocked_by_publisher': sum(row.get('original_embed_status') == 'blocked' for row in content),
             'original_pages_unavailable_or_unchecked': sum(row.get('original_embed_status') in ('unavailable','unchecked',None) for row in content),
+            'collected_article_bodies': sum(row.get('article_status') == 'collected' for row in content),
+            'partial_article_bodies': sum(row.get('article_status') == 'partial' for row in content),
+            'article_bodies_not_obtained': sum(not row.get('article_blocks_json') for row in content),
+            'machine_translated_article_bodies': sum(bool(row.get('article_translation_hash')) for row in content),
         },
         'languages': dict(Counter(row['language'] for row in content)),
         'event_countries': dict(Counter(row['country'] for row in events)),
         'event_types': dict(Counter(row['event_type'] for row in events)),
         'channels': dict(Counter(row['channel'] for row in content)),
         'source_content_counts': dict(by_source), 'failed_sources': failed,
+        'article_source_counts': {source['id']: dict(Counter(row.get('article_status') or 'pending' for row in content if row['source_id'] == source['id'])) for source in enabled},
         'enabled_sources_without_content': missing, 'errors': errors, 'warnings': warnings,
         'notes': ['旧资料保留供探索和收藏，不冒充近期新闻。',
                   '抓取时间不替代发布时间；未标注地点和票价不补造。',

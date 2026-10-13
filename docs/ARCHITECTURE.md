@@ -73,6 +73,10 @@ config/regions.json 是前后端共享地区／城市／语言标签表；其中
 
 reading.py 从 RSS 的 enclosure／media／公开 HTML 图片读取配图链接，并从公开摘要／页面 metadata 补短摘录。原始处理摘录 raw_excerpt 仍不导出；excerpt_original 有独立的 280 字符／55 单词上限，image_* 保留配图来源。translation.py 缓存公共机器译文，独立于 enrichment.py 的可选 AI 摘要；输入改变清理旧译文，陈旧请求不能回写新版资料。translation_usage 随公开快照传递，防止 CI 重置当日请求数。图片外链在浏览器加载，失败事件以安全文字占位；所有源文本与翻译均转义。
 
-## 原文阅读 v0.7
+## 原文正文采集 v0.8
 
-originals.py 只读取来源响应头、原始地址与规则，不读取正文；保存 original_* 状态。CSP 多策略分别生效，frame-ancestors 优先于 XFO，report-only 不阻止。允许的原网页由浏览器 sandbox iframe 直接向来源请求；没有正文镜像或响应头剥除代理。所有内容始终保留。阅读页路由 #reader/id 可刷新，收藏只更新按钮与导航，不重建原文 iframe。
+articles.py 从已核实来源域名抓取公开 HTML；重定向也验证来源域名。最多 6 MB 响应，不执行页面脚本，不读取订阅隐藏 JSON；来源特定正文选择器优先，Trafilatura 2.3.1 为通用后备。保存 article_blocks_json、article_text、状态、作者、来源 URL、时间和内容 hash；正文最多 200000 字符／2000 块，超限标为部分内容。article_text 用于搜索；所有块以转义文本和安全 HTTPS 图片／链接渲染，原始 HTML 不进入阅读页。
+
+collect_articles 对全部已启用来源运行，不以 original_embed_status 筛选。新记录先处理，失败两天后重试，已有正文七天复核；暂时失败保留正文。article_translation.py 保存分块翻译进度及输入 hash，用 translation_usage 的同一每日账本控制调用；已译分块不会因换 CI 重译。中文原文直接显示，不伪称经过机器翻译。
+
+GitHub 静态版 data/live.json 和 frontend/data.js 包含抓取后正文，读取时无需再次访问来源。图片仍是来源外链；视频／原站交互不复制。#reader/id 深链、返回、收藏和刷新保留，正文 DOM 不因收藏重建。旧 originals.py 和 original_* 字段只保留兼容历史快照，不再参与刷新或原文阅读，iframe 已移除。

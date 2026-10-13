@@ -48,6 +48,13 @@ def refresh(store, source_ids=None):
         db.execute("INSERT INTO job_state VALUES('refresh-lock',?) ON CONFLICT(id) DO UPDATE SET value=excluded.value", (expiry,))
     try:
         sources = run_ingestion(store, source_ids)
+        from .reading import enrich_reading
+        from .translation import run_translation
+        reading = enrich_reading(store, int(os.getenv('READING_PAGE_LIMIT', '20')))
+        try:
+            translations = run_translation(store)
+        except Exception as exc:
+            translations = {'status': 'configuration_error', 'error': type(exc).__name__}
         try:
             summaries = run_enrichment(store)
         except Exception as exc:
@@ -55,7 +62,7 @@ def refresh(store, source_ids=None):
         reminders = notify(store)
         from .mail import send_notifications
         email = send_notifications(store)
-        result = {"status": "completed", "started_at": stamp, "finished_at": now(), "sources": sources, "summaries": summaries, "new_notifications": reminders, "email": email}
+        result = {"status": "completed", "started_at": stamp, "finished_at": now(), "sources": sources, "summaries": summaries, "reading": reading, "translations": translations, "new_notifications": reminders, "email": email}
         with store.connect() as db:
             db.execute("INSERT INTO job_state VALUES('last-refresh',?) ON CONFLICT(id) DO UPDATE SET value=excluded.value", (json.dumps(result),))
         return result

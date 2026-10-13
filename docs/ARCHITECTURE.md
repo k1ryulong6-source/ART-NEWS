@@ -68,3 +68,7 @@ config/regions.json 是前后端共享地区／城市／语言标签表；其中
 资料核验：scripts/audit_data.py 读取公开快照和来源目录，输出 data/quality.json；检查重复 URL/ID、器材、日期、时区、关联，统计存档与未知项。refresh.yml 每次刷新后生成报告，checks.yml 验证快照完整性。data/source-research.json 保留实际核实请求、样例及候选未启用原因；不保存全文。
 
 时间字段 start_at／end_at／deadline_at 为明确带时区 ISO 时刻；time_status/conflict 与 time_note 保留原文冲突。只公布日期时为空；不由片长推结束。backend/programmes.py 解析公开放映数组、发行商卡片、摄影规则与韩国首页精选。放映按官网场次 ID 稳定，报名按官方竞赛 ID 稳定。
+
+## 公开阅读数据 v0.6
+
+reading.py 从 RSS 的 enclosure／media／公开 HTML 图片读取配图链接，并从公开摘要／页面 metadata 补短摘录。原始处理摘录 raw_excerpt 仍不导出；excerpt_original 有独立的 280 字符／55 单词上限，image_* 保留配图来源。translation.py 缓存公共机器译文，独立于 enrichment.py 的可选 AI 摘要；输入改变清理旧译文，陈旧请求不能回写新版资料。translation_usage 随公开快照传递，防止 CI 重置当日请求数。图片外链在浏览器加载，失败事件以安全文字占位；所有源文本与翻译均转义。

@@ -29,6 +29,10 @@ class Store:
             for column, default in (("geography_status", "unknown"), ("locations_json", "[]")):
                 if column not in existing:
                     db.execute(f"ALTER TABLE content ADD COLUMN {column} TEXT NOT NULL DEFAULT '{default}'")
+            from .reading import READING_FIELDS, TRANSLATION_FIELDS
+            for column in READING_FIELDS + TRANSLATION_FIELDS:
+                if column not in existing:
+                    db.execute(f"ALTER TABLE content ADD COLUMN {column} TEXT")
             source_columns = {row[1] for row in db.execute("PRAGMA table_info(sources)")}
             for column in ("publisher_country", "coverage"):
                 if column not in source_columns:
@@ -160,7 +164,19 @@ class Store:
                     if old["is_demo"]:
                         raise ValueError("真实记录不得覆盖示例")
                     record["id"] = old["id"]
+                    from .reading import READING_FIELDS, TRANSLATION_FIELDS
+                    # Missing RSS metadata must not erase a previously read page introduction.
+                    for field in READING_FIELDS:
+                        if not record.get(field) and old[field]:
+                            record[field] = old[field]
+                    reading_changed = old['title_original'] != record['title_original'] or (old['excerpt_original'] or '') != (record.get('excerpt_original') or '')
+                    if reading_changed:
+                        for field in TRANSLATION_FIELDS:
+                            record[field] = None
                     if old["body_hash"] == record["body_hash"]:
+                        for field in READING_FIELDS + (TRANSLATION_FIELDS if reading_changed else ()):
+                            if field in record:
+                                db.execute(f"UPDATE content SET {field}=? WHERE id=?", (record[field], old['id']))
                         db.execute("UPDATE content SET fetched_at=?,raw_excerpt=? WHERE id=?", (record["fetched_at"], record.get("raw_excerpt"), old["id"]))
                         for field in ("country", "city", "geography_status", "locations_json", "kind"):
                             if field in record:
@@ -196,6 +212,9 @@ class Store:
         with self.connect() as db:
             existing = db.execute("SELECT count(*) FROM content WHERE is_demo=0").fetchone()[0]
             db.execute("CREATE TABLE IF NOT EXISTS summary_usage(day TEXT PRIMARY KEY, calls INTEGER NOT NULL)")
+            db.execute("CREATE TABLE IF NOT EXISTS translation_usage(day TEXT PRIMARY KEY, calls INTEGER NOT NULL)")
+            for item in data.get('translation_usage', []):
+                db.execute("INSERT INTO translation_usage VALUES(?,?) ON CONFLICT(day) DO UPDATE SET calls=max(calls,excluded.calls)", (item['day'], item['calls']))
             for item in data.get("processing_usage", []):
                 db.execute("INSERT INTO summary_usage VALUES(?,?) ON CONFLICT(day) DO UPDATE SET calls=max(calls,excluded.calls)", (item["day"], item["calls"]))
             known_sources = {row[0] for row in db.execute("SELECT id FROM sources")}

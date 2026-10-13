@@ -13,6 +13,8 @@ snapshot["source_status"] = store.source_status()
 with store.connect() as db:
     db.execute("CREATE TABLE IF NOT EXISTS summary_usage(day TEXT PRIMARY KEY, calls INTEGER NOT NULL)")
     snapshot["processing_usage"] = [dict(row) for row in db.execute("SELECT * FROM summary_usage ORDER BY day DESC LIMIT 7")]
+    db.execute("CREATE TABLE IF NOT EXISTS translation_usage(day TEXT PRIMARY KEY, calls INTEGER NOT NULL)")
+    snapshot['translation_usage'] = [dict(row) for row in db.execute("SELECT * FROM translation_usage ORDER BY day DESC LIMIT 7")]
 for record in snapshot["content"]:
     record.pop("raw_excerpt", None)
 snapshot.pop("sources", None)

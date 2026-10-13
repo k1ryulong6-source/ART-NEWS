@@ -110,3 +110,15 @@ test('exact screening and deadline exports preserve UTC instants rather than tur
   assert.equal(C.eventState(call,'2027-01-05',new Date('2027-01-05T16:00:01Z')).label,'已截止');
   assert.equal(C.eventState({...call,deadline_at:null,time_status:'conflict'},'2027-01-05',new Date('2027-01-05T10:00:00Z')).label,'今日截止 · 时刻需核对');
 });
+
+test('reading uses Chinese translations, searches source excerpts and validates photo/fulltext links', () => {
+  const row = { title_original: 'A photo exhibition', translated_title_zh: '摄影展', translated_excerpt_zh: '城市摄影作品', excerpt_original: 'Original introduction', canonical_url: 'https://example.org/story' };
+  assert.equal(C.displayTitle(row), '摄影展');
+  assert.equal(C.readingSummary(row), '城市摄影作品');
+  assert.equal(C.matches(row, { query: '城市摄影' }), true);
+  assert.equal(C.safeImageUrl('javascript:alert(1)'), '');
+  assert.equal(C.safeImageUrl('https://user:pass@example.org/image.jpg'), '');
+  assert.equal(C.safeImageUrl('https://127.0.0.1/image.jpg'), '');
+  assert(C.translatedArticleUrl(row).includes(encodeURIComponent(row.canonical_url)));
+  assert.equal(C.displayTitle({ ...row, title_zh: '人工中文标题' }), '人工中文标题');
+});

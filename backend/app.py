@@ -73,7 +73,7 @@ def create_app(db_path=None):
     store = Store(db_path or os.getenv("CULTURE_DESK_DB", str(ROOT / "runtime/culture-desk.db")))
     if db_path is None:
         store.restore_public_snapshot(ROOT / "data/live.json")
-    app = FastAPI(title="映间 · Culture Desk", version="0.5.0")
+    app = FastAPI(title="映间 · Culture Desk", version="0.6.0")
     app.state.store = store
     password = os.getenv("CULTURE_DESK_PASSWORD", "")
 
@@ -93,7 +93,7 @@ def create_app(db_path=None):
 
     @app.get("/api/health")
     async def health():
-        return {"status": "ok", "storage": "sqlite", "version": "0.5.0"}
+        return {"status": "ok", "storage": "sqlite", "version": "0.6.0"}
 
     @app.get("/api/dataset")
     async def dataset(mode: Literal["demo", "live"] = "live"):

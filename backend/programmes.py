@@ -118,6 +118,9 @@ def mmca_records(source,payload):
         if not days or match[1] in seen:continue
         seen.add(match[1]);url=source['detail_url_template'].format(id=match[1]);name=title.get_text(' ',strip=True)
         record=content_record(source,name,url,summary=f'韩国国立现代美术馆首尔馆展览《{name}》，官网展期 {days[1]} 至 {days[2]}；票价、开放日与预约请核对原文。')
+        from .reading import image_fields
+        image=anchor.find('img')
+        if image:record.update(image_fields(source,image.get('data-src') or image.get('src'),url,name))
         event=event_record(source,record,'exhibition',days[1],days[2],'MMCA Seoul','首尔','KR','Asia/Seoul')
         event['date_text_original']=dates.get_text(strip=True)
         records.append(record);events.append(event);links.append({'content_id':record['id'],'event_id':event['id']})

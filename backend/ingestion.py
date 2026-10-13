@@ -64,7 +64,8 @@ def content_record(source, title, url, excerpt="", published=None, summary=None)
     locations = [{"country": source["country"], "city": source.get("city"), "basis": "source_structured"}] if fixed and source.get("country") else title_places(title)
     countries = {place["country"] for place in locations}
     cities = {place["city"] for place in locations if place["city"]}
-    return {"id": stable_id(url), "source_id": source["id"], "canonical_url": url, "title_original": title.strip(), "title_zh": None, "summary_zh": summary, "raw_excerpt": excerpt[:1200], "body_hash": hashlib.sha256((title + excerpt + (summary or "")).encode()).hexdigest(), "channel": source["channels"][0], "kind": "industry_buzz" if BUZZ.search(title) else "news", "country": next(iter(countries)) if len(countries) == 1 else None, "city": next(iter(cities)) if len(cities) == 1 else None, "geography_status": "confirmed" if fixed else "mentioned" if locations else "unknown", "locations_json": json.dumps(locations, ensure_ascii=False), "language": source["language"], "evidence_status": "official_confirmed" if source["source_type"] == "official" else "media_reported", "published_at": published, "fetched_at": stamp, "updated_at": stamp, "summary_status": "ready" if summary else "pending", "summary_provider": "structured-fields" if summary else None, "summary_model": None, "summary_generated_at": stamp if summary else None, "is_demo": 0}
+    from .reading import short_excerpt
+    return {"excerpt_original": short_excerpt(excerpt) or None, "excerpt_origin": "rss" if excerpt else None, "id": stable_id(url), "source_id": source["id"], "canonical_url": url, "title_original": title.strip(), "title_zh": None, "summary_zh": summary, "raw_excerpt": excerpt[:1200], "body_hash": hashlib.sha256((title + excerpt + (summary or "")).encode()).hexdigest(), "channel": source["channels"][0], "kind": "industry_buzz" if BUZZ.search(title) else "news", "country": next(iter(countries)) if len(countries) == 1 else None, "city": next(iter(cities)) if len(cities) == 1 else None, "geography_status": "confirmed" if fixed else "mentioned" if locations else "unknown", "locations_json": json.dumps(locations, ensure_ascii=False), "language": source["language"], "evidence_status": "official_confirmed" if source["source_type"] == "official" else "media_reported", "published_at": published, "fetched_at": stamp, "updated_at": stamp, "summary_status": "ready" if summary else "pending", "summary_provider": "structured-fields" if summary else None, "summary_model": None, "summary_generated_at": stamp if summary else None, "is_demo": 0}
 
 
 def rss_records(source, payload):
@@ -90,6 +91,8 @@ def rss_records(source, payload):
         except (TypeError, ValueError):
             pass
         record = content_record(source, title, link, excerpt, published)
+        from .reading import rss_image
+        record.update(rss_image(source, item, (item.findtext('description') or '') + (item.findtext('{http://purl.org/rss/1.0/modules/content/}encoded') or ''), record['canonical_url']))
         if source["language"] == "zh":
             record["title_zh"] = title.strip()
             if excerpt:
@@ -165,6 +168,8 @@ def top_records(source, payload):
         summary = f"东京都写真美术馆展览《{title}》，展期 {dates[0]} 至 {dates[1]}。展期取自场馆官网；票价、休馆日与预约以原文为准。"
         record = content_record(source, title, url, summary=summary)
         record["city"] = "东京"
+        from .reading import image_fields
+        record.update(image_fields(source, image.get('data-src') or image.get('src'), url, title))
         event = event_record(source, record, "exhibition", dates[0], dates[1], "东京都写真美术馆", "东京")
         records.append(record); events.append(event); links.append({"content_id": record["id"], "event_id": event["id"]})
     if not records:
@@ -199,6 +204,9 @@ def tate_records(source, payload):
         title = title_node.get_text(" ", strip=True)
         summary = f"伦敦 Tate Modern 展览《{title}》，展期 {start} 至 {end}。展期来自场馆官网；票价、开放日及预约请核对原文。"
         record = content_record(source, title, url, summary=summary)
+        from .reading import image_fields
+        image = anchor.find('img')
+        if image: record.update(image_fields(source, image.get('data-src') or image.get('src'), url, title))
         description = anchor.select_one(".card__description")
         if re.search(r"photograph", title + " " + (description.get_text() if description else ""), re.I):
             record["channel"] = "photography"

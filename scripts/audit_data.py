@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from backend.ingestion import canonical_url, GEAR, GEAR_MULTILINGUAL
+from backend.reading import public_url
 
 
 def audit_payload(snapshot, catalog, reference=None):
@@ -25,6 +26,8 @@ def audit_payload(snapshot, catalog, reference=None):
         try: urls[canonical_url(row['canonical_url'])] += 1
         except (ValueError, KeyError): problem('invalid_content_url',row)
         if row.get('is_demo'): problem('demo_in_live_content',row)
+        if row.get('image_url') and (not public_url(row['image_url']) or not row.get('image_credit') or not row.get('image_source_url')): problem('image_without_safe_url_or_attribution',row)
+        if len(row.get('excerpt_original') or '') > 281: problem('excerpt_exceeds_short_reading_limit',row)
         if GEAR.search(row.get('title_original','')) or GEAR_MULTILINGUAL.search(row.get('title_original','')): problem('equipment_review',row)
         if row.get('published_at'):
             try:
@@ -76,6 +79,10 @@ def audit_payload(snapshot, catalog, reference=None):
             'old_publications_over_30_days': old,
             'missing_publication_date': sum(not row.get('published_at') for row in content),
             'unknown_story_place': sum(row.get('geography_status') == 'unknown' for row in content),
+            'source_images': sum(bool(row.get('image_url')) for row in content),
+            'original_excerpts': sum(bool(row.get('excerpt_original')) for row in content),
+            'machine_translated_titles': sum(bool(row.get('translated_title_zh')) for row in content),
+            'machine_translated_excerpts': sum(bool(row.get('translated_excerpt_zh')) for row in content),
         },
         'languages': dict(Counter(row['language'] for row in content)),
         'event_countries': dict(Counter(row['country'] for row in events)),

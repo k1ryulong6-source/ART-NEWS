@@ -512,6 +512,120 @@
       "timezone": "Africa/Johannesburg",
       "verified_at": "2026-10-13",
       "notes": "2026-10-13 实际 HTTP 200；仅展览卡片中的完整起止日期入日历，在线展、工作坊与展季总公告不作为单展。不从 Ongoing 或新闻发布日期补造开幕日。"
+    },
+    {
+      "id": "diaphana",
+      "name": "Diaphana Distribution",
+      "homepage_url": "https://diaphana.fr",
+      "feed_url": "https://diaphana.fr/",
+      "channels": [
+        "film"
+      ],
+      "country": "FR",
+      "city": null,
+      "timezone": "Europe/Paris",
+      "publisher_country": "FR",
+      "coverage": "FR",
+      "language": "fr",
+      "source_type": "official",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "public_page",
+      "adapter": "diaphana_releases",
+      "verified_at": "2026-10-13",
+      "notes": "实际 HTTP 200，字段与原文核实；活动日期、时刻和费用保留限定条件，不镜像全文或图片。"
+    },
+    {
+      "id": "bfi-lff",
+      "name": "BFI London Film Festival 2026",
+      "homepage_url": "https://whatson.bfi.org.uk/lff/Online/",
+      "feed_url": "https://whatson.bfi.org.uk/lff/Online/default.asp?BOparam::WScontent::loadArticle::permalink=20261013",
+      "channels": [
+        "film"
+      ],
+      "country": "GB",
+      "city": "伦敦",
+      "timezone": "Europe/London",
+      "publisher_country": "GB",
+      "coverage": "GB",
+      "language": "en",
+      "source_type": "official",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "public_page",
+      "adapter": "bfi_programme",
+      "verified_at": "2026-10-13",
+      "notes": "实际 HTTP 200，字段与原文核实；活动日期、时刻和费用保留限定条件，不镜像全文或图片。",
+      "url_template": "https://whatson.bfi.org.uk/lff/Online/default.asp?BOparam::WScontent::loadArticle::permalink={day}",
+      "season_start": "2026-10-07",
+      "season_end": "2026-10-18"
+    },
+    {
+      "id": "wpo-awards",
+      "name": "World Photography Organisation",
+      "homepage_url": "https://www.worldphoto.org",
+      "feed_url": "https://www.worldphoto.org/sony-world-photography-awards",
+      "channels": [
+        "photography"
+      ],
+      "country": "GLOBAL",
+      "city": null,
+      "timezone": "UTC",
+      "publisher_country": "GB",
+      "coverage": "global",
+      "language": "en",
+      "source_type": "official",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "public_page",
+      "adapter": "wpo_calls",
+      "verified_at": "2026-10-13",
+      "notes": "实际 HTTP 200，字段与原文核实；活动日期、时刻和费用保留限定条件，不镜像全文或图片。",
+      "pages": [
+        {
+          "url": "https://www.worldphoto.org/sony-world-photography-awards/series",
+          "entry_label_zh": "组照组（原专业组）",
+          "eligibility_note": "官网规则规定超过 18 岁；每组 5–10 张，完整资格与作品限制见原文。"
+        },
+        {
+          "url": "https://www.worldphoto.org/sony-world-photography-awards/single-image",
+          "entry_label_zh": "单张组（原公开组）",
+          "eligibility_note": "面向单张作品；拍摄年份、分类、版权与其他限制见官网。"
+        },
+        {
+          "url": "https://www.worldphoto.org/sony-world-photography-awards/student",
+          "entry_label_zh": "学生组",
+          "eligibility_note": "学生与院校资质要求见官网；截止时刻有冲突，需向主办方核对。"
+        },
+        {
+          "url": "https://www.worldphoto.org/sony-world-photography-awards/youth",
+          "entry_label_zh": "青年组",
+          "eligibility_note": "年龄与作品拍摄年份限制见官网完整规则。"
+        }
+      ]
+    },
+    {
+      "id": "mmca-seoul",
+      "name": "MMCA · Seoul",
+      "homepage_url": "https://www.mmca.go.kr/eng/",
+      "feed_url": "https://www.mmca.go.kr/eng/",
+      "channels": [
+        "art"
+      ],
+      "country": "KR",
+      "city": "首尔",
+      "timezone": "Asia/Seoul",
+      "publisher_country": "KR",
+      "coverage": "KR",
+      "language": "en",
+      "source_type": "official",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "public_page",
+      "adapter": "mmca_exhibitions",
+      "verified_at": "2026-10-13",
+      "notes": "实际 HTTP 200，字段与原文核实；活动日期、时刻和费用保留限定条件，不镜像全文或图片。",
+      "detail_url_template": "https://www.mmca.go.kr/eng/exhibitions/exhibitionsDetail.do?exhFlag=1&exhId={id}"
     }
   ],
   "notes": "全球电影、艺术、摄影为主，日本上映与展览保留专题；地区由报道线索或明确场馆资料决定，不能按媒体总部推断。覆盖仍有限，未验证来源保持停用。"

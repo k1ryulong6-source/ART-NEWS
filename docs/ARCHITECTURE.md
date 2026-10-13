@@ -2,7 +2,7 @@
 
 ## 当前与建议
 
-当前已实现原生前端、FastAPI／SQLite、22 个真实来源（六类适配器）、可配置摘要接口、定时任务、提醒与部署配置。实际外部摘要和 SMTP 尚未配置，默认 NoOp。
+当前已实现原生前端、FastAPI／SQLite、26 个真实来源（六类适配器）、可配置摘要接口、定时任务、提醒与部署配置。实际外部摘要和 SMTP 尚未配置，默认 NoOp。
 
 Python 3.10+、FastAPI、SQLite；前端无外部依赖，后端通过资源白名单提供静态文件。Python 依赖版本见 requirements.txt。后续若实际复杂度需要，再迁移 React／TypeScript 或 PostgreSQL；参见 D007。
 
@@ -66,3 +66,5 @@ config/regions.json 是前后端共享地区／城市／语言标签表；其中
 新闻语言筛选作用于报道；日历只使用国家、城市和频道，不以媒体语言排除活动。今日使用软性来源／频道多样性权重，并保留相关性与发布时间，不强凑地区配额。
 
 资料核验：scripts/audit_data.py 读取公开快照和来源目录，输出 data/quality.json；检查重复 URL/ID、器材、日期、时区、关联，统计存档与未知项。refresh.yml 每次刷新后生成报告，checks.yml 验证快照完整性。data/source-research.json 保留实际核实请求、样例及候选未启用原因；不保存全文。
+
+时间字段 start_at／end_at／deadline_at 为明确带时区 ISO 时刻；time_status/conflict 与 time_note 保留原文冲突。只公布日期时为空；不由片长推结束。backend/programmes.py 解析公开放映数组、发行商卡片、摄影规则与韩国首页精选。放映按官网场次 ID 稳定，报名按官方竞赛 ID 稳定。

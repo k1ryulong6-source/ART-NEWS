@@ -60,7 +60,7 @@ def text_only(value, limit=1200):
 def content_record(source, title, url, excerpt="", published=None, summary=None):
     stamp = now()
     url = canonical_url(url)
-    fixed = source.get("adapter") in ("eiga_releases", "top_exhibitions", "tate_exhibitions", "map_exhibitions", "zeitz_exhibitions")
+    fixed = source.get("adapter") in ("eiga_releases", "top_exhibitions", "tate_exhibitions", "map_exhibitions", "zeitz_exhibitions", "diaphana_releases", "bfi_programme", "wpo_calls", "mmca_exhibitions")
     locations = [{"country": source["country"], "city": source.get("city"), "basis": "source_structured"}] if fixed and source.get("country") else title_places(title)
     countries = {place["country"] for place in locations}
     cities = {place["city"] for place in locations if place["city"]}
@@ -117,7 +117,7 @@ def event_record(source, content, kind, start, end=None, venue=None, city=None, 
         raise ValueError("活动需要明确国家与当地时区")
     from zoneinfo import ZoneInfo
     ZoneInfo(timezone)
-    return {"id": stable_id(source["id"] + url + kind + country), "title_original": content["title_original"], "title_zh": None, "channel": content["channel"], "event_type": kind, "country": country, "city": city, "venue": venue, "start_date": start, "end_date": end, "date_precision": "day", "date_text_original": start + ("〜" + end if end else ""), "timezone": timezone, "price_text": None, "closure_note": None, "booking_url": None, "evidence_url": url, "evidence_status": content["evidence_status"], "verified_at": now(), "updated_at": now(), "is_demo": 0}
+    return {"id": stable_id(source["id"] + url + kind + country), "title_original": content["title_original"], "title_zh": None, "channel": content["channel"], "event_type": kind, "country": country, "city": city, "venue": venue, "start_date": start, "end_date": end, "date_precision": "day", "date_text_original": start + ("〜" + end if end else ""), "timezone": timezone, "start_at": None, "end_at": None, "deadline_at": None, "time_status": None, "time_note": None, "eligibility_note": None, "booking_status": None, "price_text": None, "closure_note": None, "booking_url": None, "evidence_url": url, "evidence_status": content["evidence_status"], "verified_at": now(), "updated_at": now(), "is_demo": 0}
 
 
 def eiga_records(source, payload):
@@ -280,6 +280,10 @@ ADAPTERS = {"rss": rss_records, "eiga_releases": eiga_records, "top_exhibitions"
 
 
 def run_ingestion(store, source_ids=None, fetcher=get_url):
+    from .programmes import diaphana_records, bfi_records, wpo_records, mmca_records
+    from datetime import datetime, timedelta
+    from zoneinfo import ZoneInfo
+    extra_adapters = {"diaphana_releases": diaphana_records, "bfi_programme": bfi_records, "wpo_calls": wpo_records, "mmca_exhibitions": mmca_records}
     config = json.loads((ROOT / "config/sources.json").read_text())
     disabled = store.preferences().get("disabled_sources", [])
     for source in config["sources"]:
@@ -292,7 +296,23 @@ def run_ingestion(store, source_ids=None, fetcher=get_url):
             continue
         run_id = store.begin_run(source["id"])
         try:
-            records, events, links = ADAPTERS[source.get("adapter", "rss")](source, fetcher(source["feed_url"]))
+            method = source.get("adapter", "rss")
+            handler = extra_adapters.get(method) or ADAPTERS[method]
+            pages = source.get("pages") or [{"url": source["feed_url"]}]
+            if method == "bfi_programme":
+                local = datetime.now(ZoneInfo(source["timezone"])).date()
+                first, last = date.fromisoformat(source["season_start"]), date.fromisoformat(source["season_end"])
+                start = min(last, max(first, local))
+                pages = [{"url": source["url_template"].format(day=(start+timedelta(days=i)).strftime("%Y%m%d"))} for i in range(3) if start+timedelta(days=i) <= last]
+            records_by_id, events_by_id, relations = {}, {}, set()
+            for page in pages[:6]:
+                current = {**source, **page, "feed_url": page["url"]}
+                records, events, links = handler(current, fetcher(page["url"]))
+                records_by_id.update({r["id"]: r for r in records})
+                events_by_id.update({e["id"]: e for e in events})
+                relations.update((l["content_id"], l["event_id"]) for l in links)
+            records, events = list(records_by_id.values()), list(events_by_id.values())
+            links = [{"content_id": c, "event_id": e} for c, e in sorted(relations)]
             counts = store.ingest_records(records, events, links)
             store.finish_run(run_id, "success", len(records), counts["inserted"])
             results.append({"source": source["id"], "status": "success", "fetched": len(records), "events": len(events), **counts})

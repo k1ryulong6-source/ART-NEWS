@@ -6,7 +6,7 @@
   const statusNames = { want_to_see: '想看', planning: '准备去', seen: '已看过' };
   const evidenceNames = { official_confirmed: '官方确认', media_reported: '媒体报道', firsthand_response: '当事人回应', unverified: '未证实' };
   const registry = root.CULTURE_BOOTSTRAP?.regions || (typeof module !== 'undefined' && module.exports ? require('../config/regions.json') : { regions: [], languages: {} });
-  const countryLabels = Object.fromEntries(registry.regions.map(r => [r.code, r.label]));
+  const countryLabels = { ...Object.fromEntries(registry.regions.map(r => [r.code, r.label])), GLOBAL: '全球征集' };
   const cityCountries = Object.fromEntries(registry.regions.flatMap(r => r.cities.map(city => [city, r.code])));
   const languageLabels = registry.languages;
   const locations = row => {
@@ -41,9 +41,10 @@
     // fetch timestamp never becomes an invented publication date.
     return linkedEvents.some(event => {
       if (event.date_precision !== 'day') return false;
+      if (eventInstant(event) && new Date(eventInstant(event)) <= new Date()) return false;
       const today = event.is_demo ? reference : localDate(event.timezone);
       const start = daysBetween(today, event.start_date), end = daysBetween(today, event.end_date || event.start_date);
-      return start !== null && end !== null && start <= 14 && end >= 0;
+      return start !== null && end !== null && (event.event_type === 'call_deadline' ? start >= 0 && start <= 120 : start <= 14 && end >= 0);
     });
   }
   function selectToday(rows, preferences, context = null) {
@@ -80,9 +81,17 @@
     const allowed = buzz.enabled && buzz.max_share > 0 ? Math.min(deferred.length, buzz.max_share === 1 ? limit : Math.floor(selected.length * buzz.max_share / (1 - buzz.max_share))) : 0;
     return [...selected.slice(0, limit - allowed), ...deferred.slice(0, allowed)].slice(0, limit);
   }
-  function eventState(event, reference) {
+  const eventInstant = event => event.event_type === 'call_deadline' ? event.deadline_at : event.start_at;
+  const timeLabel = event => { const value = eventInstant(event); return value ? new Intl.DateTimeFormat('zh-CN', { timeZone: event.timezone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(value)) + ' · ' + event.timezone : dateLabel(event.start_date) + (event.time_status === 'conflict' ? ' · 时刻有冲突' : ''); };
+  function eventState(event, reference, instant = new Date()) {
     if (event.date_precision !== 'day') return { label: event.date_precision === 'month' ? '月份已公布' : '时间待确认', tone: 'muted' };
     const untilStart = daysBetween(reference, event.start_date);
+    if (event.event_type === 'call_deadline') {
+      if ((event.deadline_at && new Date(event.deadline_at) <= instant) || untilStart < 0) return { label: '已截止', tone: 'muted' };
+      if (untilStart === 0) return { label: event.time_status === 'conflict' ? '今日截止 · 时刻需核对' : '今日截止', tone: 'urgent' };
+      return { label: `${untilStart} 天后截止`, tone: untilStart <= 7 ? 'urgent' : 'upcoming' };
+    }
+    if (event.start_at && new Date(event.start_at) <= instant && !event.end_at) return { label: '已开始', tone: 'muted' };
     const untilEnd = daysBetween(reference, event.end_date);
     if (untilEnd !== null && untilEnd < 0) return { label: '已结束', tone: 'muted' };
     if (untilStart !== null && untilStart > 0) return { label: `${untilStart} 天后${event.event_type === 'exhibition' ? '开幕' : '开始'}`, tone: 'upcoming' };
@@ -120,14 +129,18 @@
     for (const event of events) {
       if (event.date_precision !== 'day' || dateNumber(event.start_date) === null) continue;
       const end = new Date((dateNumber(event.end_date || event.start_date) + 1) * 86400000).toISOString().slice(0, 10);
-      lines.push('BEGIN:VEVENT', 'UID:' + clean(event.id) + '@culture-desk.local', 'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z', 'DTSTART;VALUE=DATE:' + event.start_date.replace(/-/g, ''), 'DTEND;VALUE=DATE:' + end.replace(/-/g, ''), 'SUMMARY:' + clean(event.title_zh || event.title_original), 'LOCATION:' + clean([event.city, event.venue].filter(Boolean).join(' ')), 'DESCRIPTION:' + clean((event.is_demo ? '虚构示例，不能作为实际安排。 ' : '') + (event.closure_note || '开放日与预约请核对原文。')), 'URL:' + safeUrl(event.evidence_url), 'END:VEVENT');
+      const value = eventInstant(event);
+      const stamp = date => new Date(date).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      const dates = value ? ['DTSTART:' + stamp(value), ...(event.end_at ? ['DTEND:' + stamp(event.end_at)] : [])] : ['DTSTART;VALUE=DATE:' + event.start_date.replace(/-/g, ''), 'DTEND;VALUE=DATE:' + end.replace(/-/g, '')];
+      const notes = [event.is_demo ? '虚构示例，不能作为实际安排。' : '', event.time_note, event.closure_note || '开放日与预约请核对原文。', event.price_text, event.eligibility_note, event.booking_url].filter(Boolean).join(' ');
+      lines.push('BEGIN:VEVENT', 'UID:' + clean(event.id) + '@culture-desk.local', 'DTSTAMP:' + stamp(new Date()), ...dates, 'SUMMARY:' + clean(event.title_zh || event.title_original), 'LOCATION:' + clean([event.city, event.venue].filter(Boolean).join(' ')), 'DESCRIPTION:' + clean(notes), 'URL:' + safeUrl(event.evidence_url), 'END:VEVENT');
     }
     lines.push('END:VCALENDAR');
     // RFC 5545 folds at 75 octets, not 75 Unicode characters.
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventState, validateImport, calendarFile };
+  const api = { channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 from .storage import ROOT, Store, now
 from .ingestion import run_ingestion
 from .enrichment import run_enrichment
+from .timing import instant_passed
 
 
 def notify(store, reference=None):
@@ -15,16 +16,24 @@ def notify(store, reference=None):
     with store.connect() as db:
         events = db.execute("SELECT events.* FROM events JOIN bookmarks ON bookmarks.event_id=events.id WHERE events.is_demo=0 AND events.date_precision='day' AND bookmarks.status!='seen'").fetchall()
         for event in events:
+            event = dict(event)
+            if reference is None and instant_passed(event):
+                continue
             today = reference or datetime.now(ZoneInfo(event["timezone"])).date().isoformat()
             checks = [("starting", event["start_date"], "即将开始", 1), ("ending", event["end_date"], "即将结束", 7)]
+            if event["event_type"] == "call_deadline":
+                checks = [("deadline", event["start_date"], "即将截止", 7)]
             for kind, target, label, window in checks:
                 if not target:
                     continue
                 delta = (datetime.fromisoformat(target).date() - datetime.fromisoformat(today).date()).days
+                if event.get("time_status") == "conflict" and delta == 0:
+                    continue
                 if 0 <= delta <= window:
                     id = event["id"] + ":" + kind + ":" + target
                     title = f"{event['title_zh'] or event['title_original']}：{'今天' if delta == 0 else str(delta)+'天后'}{label[2:]}"
                     created += db.execute("INSERT OR IGNORE INTO notifications(id,event_id,title,created_at) VALUES(?,?,?,?)", (id, event["id"], title, now())).rowcount
+                    db.execute("UPDATE notifications SET title=? WHERE id=?", (title, id))
     return created
 
 

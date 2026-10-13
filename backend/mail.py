@@ -5,6 +5,7 @@ import smtplib
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from email.message import EmailMessage
+from .timing import instant_passed
 
 
 def send_notifications(store, smtp_factory=None):
@@ -14,8 +15,16 @@ def send_notifications(store, smtp_factory=None):
     if any("\n" in value or "\r" in value for value in (host, sender, recipient)):
         return {"status": "configuration_error", "sent": 0}
     with store.connect() as db:
-        rows = db.execute("SELECT notifications.*, events.timezone AS event_timezone, coalesce(events.end_date,events.start_date) AS last_day FROM notifications JOIN bookmarks ON bookmarks.event_id=notifications.event_id JOIN events ON events.id=notifications.event_id WHERE notifications.read=0 AND notifications.emailed=0 AND bookmarks.status!='seen' ORDER BY notifications.created_at").fetchall()
-        rows = [row for row in rows if row["last_day"] >= datetime.now(ZoneInfo(row["event_timezone"])).date().isoformat()][:20]
+        rows = db.execute("SELECT notifications.*, events.timezone AS event_timezone, events.deadline_at, events.start_at, events.time_status, events.event_type, coalesce(events.end_date,events.start_date) AS last_day FROM notifications JOIN bookmarks ON bookmarks.event_id=notifications.event_id JOIN events ON events.id=notifications.event_id WHERE notifications.read=0 AND notifications.emailed=0 AND bookmarks.status!='seen' ORDER BY notifications.created_at").fetchall()
+        eligible = []
+        for row in rows:
+            today = datetime.now(ZoneInfo(row["event_timezone"])).date().isoformat()
+            if instant_passed(dict(row)) or row["last_day"] < today:
+                continue
+            if row["event_type"] == "call_deadline" and row["time_status"] == "conflict" and row["last_day"] == today:
+                continue
+            eligible.append(row)
+        rows = eligible[:20]
     if not rows:
         return {"status": "idle", "sent": 0}
     message = EmailMessage()

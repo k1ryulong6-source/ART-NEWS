@@ -43,7 +43,14 @@ def audit_payload(snapshot, catalog, reference=None):
         event_ids[row['id']]+=1
         if row.get('is_demo'):problem('demo_in_live_event',row)
         try:
-            ZoneInfo(row['timezone']);canonical_url(row['evidence_url'])
+            zone=ZoneInfo(row['timezone']);canonical_url(row['evidence_url'])
+            for field in ('start_at','end_at','deadline_at'):
+                if row.get(field):
+                    value=datetime.fromisoformat(row[field].replace('Z','+00:00'))
+                    if value.tzinfo is None or value.astimezone(zone).date().isoformat() != row['start_date'] and field != 'end_at':problem('invalid_event_instant',row)
+            if row.get('time_status')=='conflict':
+                problem('conflicting_official_time',row,warnings)
+                if row.get('deadline_at'):problem('conflict_has_invented_deadline',row)
             if row['date_precision']=='day':
                 start=date.fromisoformat(row['start_date']);end=date.fromisoformat(row['end_date']) if row.get('end_date') else start
                 if end<start:problem('reversed_event_range',row)

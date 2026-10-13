@@ -4,15 +4,17 @@
 
 仓库：https://github.com/k1ryulong6-source/ART-NEWS 。根据用户选择保持公开；本地数据库、收藏、密码和 API 密钥不入库。
 
-## 当前版本 v0.4
+## 当前版本 v0.5
 
 已实现今日、探索、日历、收藏和设置；筛选／搜索、圈内动态开关、详情、关注排序；SQLite 持久保存；JSON 导出／恢复、ICS 日历导出；真实采集、去重、来源开关、手动更新、更新状态、站内提醒；可替换摘要接口与可选邮件提醒。
 
-2026-10-13 实际接入 22 个来源，收录 340 条公开资讯与资料、45 项活动（日本 28、英国 8、印度 3、南非 6）。data/live.json 是标明时间的公开元数据快照；虚构示例单独保存于 data/demo.json，页面可切换，二者不混用。
+2026-10-13 实际接入 26 个来源，收录 430 条公开资讯与资料、158 项活动（日本 28、英国 109、印度 3、南非 6、法国 4、韩国 4、全球征集 4）。data/live.json 是标明时间的公开元数据快照；虚构示例单独保存于 data/demo.json，页面可切换，二者不混用。
 
 新增 Variety Film、Artnet News、Hyperallergic、British Journal of Photography、L’Œil de la Photographie、Cinéfilos（西语）和 Tate Modern；保留原有七个来源。v0.4 新增 ART AFRICA、Cinema com Rapadura、Cine PREMIERE、Trois Couleurs、Fisheye、Asian Movie Pulse 及 MAP、Zeitz MOCAA 官方展期。默认全球阅读，提供 18 个国家、城市、原文语言筛选与日本专题快捷入口。媒体所在地与报道涉及地区分开保存；原标题提及的地区标为“涉及”，没有证据时显示“地点未说明”，不猜测活动地点。
 
 今日精选兼顾来源、频道与发布时间；全球模式不按东京／中国加分。用户也可切换城市优先。阅读时区用于显示更新时间；活动倒计时和提醒始终按活动自身时区计算。Tate 只读取明确完整展期，不从单独闭展日期推算开幕，不把会员免费写成一般票价免费。上映类型区分院线与流媒体；未明确的票价、休馆日和预约保持待确认。
+
+新增法国发行商 Diaphana、BFI 伦敦电影节、World Photography Organisation 和 MMCA 首尔馆。影展支持场次时刻、场馆、票价范围及售罄提示，摄影征集支持截止时刻、资格、费用条件与官方报名入口。
 
 旧资料保留在探索与收藏，并标记“旧资料”；今日只用近期新闻及明确日期的进行中／近期活动，不以抓取日补造发布日期。MAP 的周二免费和周一闭馆取自馆方访问说明。资料覆盖与剩余缺口见 docs/COVERAGE.md，来源核实档案见 data/source-research.json；每次自动刷新会生成 data/quality.json。
 
@@ -85,7 +87,7 @@ docker compose up -d --build
 
 app 与 updater 共用持久数据卷；默认只绑定本机 8000。部署到远程私人服务时可设置 CULTURE_DESK_PASSWORD，用户名 owner，并由 HTTPS 网关提供访问。同一受保护服务的多个浏览器共享 SQLite 状态；静态版各浏览器状态独立。
 
-Docker 与托管细节见 docs/OPERATIONS.md。网站公开／私人访问方式仍按用户选择处理，不把仓库公开等同于网站已经发布。pages.yml 是尚未触发的公开静态托管准备，用户选定公开网页后再开启。
+Docker 与托管细节见 docs/OPERATIONS.md。用户已选择其他人均可访问的公开资讯页。管理员已开启 GitHub Actions Pages 来源，当前发布验证中。pages.yml 在前端／公开快照变更和定时刷新完成后自动部署。各读者收藏保存在各自浏览器。
 
 ## 检查
 
@@ -98,7 +100,7 @@ node tests/core.test.js
 node --check frontend/app.js
 ```
 
-23 项 Python 与 11 项 JavaScript 检查通过。桌面 1440px 与手机 390px 五个页面无横向溢出；实际浏览器检查了筛选、收藏刷新、状态设置、JSON 下载／上传、ICS 下载、来源开关、提醒与手动刷新。静态版与服务版分别检查。
+27 项 Python 与 12 项 JavaScript 检查通过。桌面 1440px 与手机 390px 五个页面无横向溢出；实际浏览器检查了筛选、收藏刷新、状态设置、JSON 下载／上传、ICS 下载、来源开关、提醒与手动刷新。静态版与服务版分别检查。
 
 ## 文件入口
 

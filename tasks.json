@@ -409,8 +409,8 @@
       "id": "T015",
       "title": "网站托管与访问方式",
       "milestone": "M4",
-      "status": "blocked",
-      "owner": null,
+      "status": "doing",
+      "owner": "Codex",
       "depends_on": [
         "T010"
       ],
@@ -423,7 +423,10 @@
         "返回经过验证的在线网址"
       ],
       "evidence": [
-        "已提供静态版和 Docker 私人服务；网站访问方式问题待用户答复"
+        "用户已选择其他人都能访问的公开静态网站；各读者独立浏览器收藏。",
+        "GitHub POST /pages 返回 403 Resource not accessible by integration；管理员须在 Settings → Pages 将 Source 设 GitHub Actions。",
+        "Pages 自动发布、就绪检查、刷新完成后触发已准备；未虚称网站部署成功。",
+        "管理员回复已开启；GET /pages 确认 build_type=workflow，正在执行公开发布验收。"
       ],
       "updated_at": "2026-10-13",
       "github_issue": "https://github.com/k1ryulong6-source/ART-NEWS/issues/2"
@@ -502,8 +505,8 @@
       "id": "T018",
       "title": "补齐海外上映、影展放映与摄影征集资料",
       "milestone": "M2",
-      "status": "todo",
-      "owner": null,
+      "status": "doing",
+      "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
         "T017"
@@ -522,8 +525,13 @@
         "放映系列不擅自称为电影节，列表发布日期不当单片上映日",
         "保留历史资料和收藏关系，每次采集后核验公开快照"
       ],
-      "evidence": [],
-      "github_issue": "https://github.com/k1ryulong6-source/ART-NEWS/issues/5"
+      "evidence": [
+        "四个新官方来源实际读取成功；101 场影展、4 个摄影征集、4 个法国上映、4 个韩国精选展期，当前 430 条资料／158 活动。",
+        "精确时刻、报名与费用、身份稳定、冲突留空与 UTC 日历导出检查；27 Python / 12 JS 检查通过。",
+        "重复采集四个新源 inserted=0；时刻冲突标明、未任选 13/16 GMT。"
+      ],
+      "github_issue": "https://github.com/k1ryulong6-source/ART-NEWS/issues/5",
+      "notes": "本轮资料与功能已完成；浏览器验收及 GitHub 结果补录后关闭。"
     }
   ]
 }

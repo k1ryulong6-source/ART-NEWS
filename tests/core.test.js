@@ -101,3 +101,12 @@ test('today excludes archival publications and uses confirmed calendar dates for
   assert.ok(!C.isCurrentContent({...recent,published_at:'2027-01-01T00:00:00Z'},'2026-10-13'));
   assert.equal(C.matches(old,{}),true);
 });
+
+test('exact screening and deadline exports preserve UTC instants rather than turning them into full days', () => {
+  const screening={id:'screen',date_precision:'day',event_type:'festival_screening',start_date:'2026-10-17',start_at:'2026-10-17T11:45:00+01:00',timezone:'Europe/London',title_original:'A film',evidence_url:'https://example.invalid/film'};
+  const call={id:'call',date_precision:'day',event_type:'call_deadline',start_date:'2027-01-05',deadline_at:'2027-01-05T16:00:00+00:00',timezone:'UTC',title_original:'Photography call',evidence_url:'https://example.invalid/call'};
+  const result=C.calendarFile([screening,call]);
+  assert.match(result,/DTSTART:20261017T104500Z/);assert.match(result,/DTSTART:20270105T160000Z/);assert.ok(!result.includes('DTSTART;VALUE=DATE'));
+  assert.equal(C.eventState(call,'2027-01-05',new Date('2027-01-05T16:00:01Z')).label,'已截止');
+  assert.equal(C.eventState({...call,deadline_at:null,time_status:'conflict'},'2027-01-05',new Date('2027-01-05T10:00:00Z')).label,'今日截止 · 时刻需核对');
+});

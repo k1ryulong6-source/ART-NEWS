@@ -1,7 +1,16 @@
 name: Publish public news page
-# Dormant until the user selects a public website and triggers this workflow.
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'config/**'
+      - 'data/live.json'
+      - '.github/workflows/pages.yml'
+  workflow_run:
+    workflows: ['Refresh cultural news']
+    types: [completed]
 permissions:
   contents: read
   pages: write
@@ -10,10 +19,33 @@ concurrency:
   group: github-pages
   cancel-in-progress: false
 jobs:
+  readiness:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.pages.outputs.enabled }}
+    steps:
+      - name: Check administrator-enabled Pages configuration
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${GITHUB_REPOSITORY}/pages" > /tmp/pages.json 2>/tmp/pages-error.txt; then
+            if jq -e '.build_type == "workflow"' /tmp/pages.json >/dev/null; then
+              echo 'enabled=true' >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          echo 'enabled=false' >> "$GITHUB_OUTPUT"
+          echo 'Pages is not ready for Actions deployment. Select GitHub Actions in Settings → Pages.' >> "$GITHUB_STEP_SUMMARY"
   build:
+    needs: readiness
+    if: needs.readiness.outputs.enabled == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -23,11 +55,11 @@ jobs:
         with:
           path: dist/
   deploy:
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Publish
         id: deploy

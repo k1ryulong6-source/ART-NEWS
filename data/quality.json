@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
   "as_of": "2026-10-13",
-  "snapshot_at": "2026-10-13T10:22:13.364501+00:00",
+  "snapshot_at": "2026-10-13T11:07:15.170874+00:00",
   "counts": {
-    "content": 340,
-    "events": 45,
-    "enabled_sources": 22,
+    "content": 430,
+    "events": 158,
+    "enabled_sources": 26,
     "old_publications_over_30_days": 92,
-    "missing_publication_date": 45,
+    "missing_publication_date": 135,
     "unknown_story_place": 269
   },
   "languages": {
-    "fr": 21,
-    "en": 127,
+    "fr": 25,
+    "en": 213,
     "ja": 78,
     "es": 20,
     "pt": 44,
@@ -21,18 +21,23 @@
   "event_countries": {
     "ZA": 6,
     "IN": 3,
+    "KR": 4,
+    "FR": 4,
     "JP": 28,
-    "GB": 8
+    "GB": 109,
+    "GLOBAL": 4
   },
   "event_types": {
-    "exhibition": 22,
+    "exhibition": 26,
+    "cinema_release": 15,
+    "festival_screening": 101,
     "streaming_release": 12,
-    "cinema_release": 11
+    "call_deadline": 4
   },
   "channels": {
-    "photography": 97,
-    "art": 114,
-    "film": 129
+    "photography": 101,
+    "art": 118,
+    "film": 211
   },
   "source_content_counts": {
     "fisheye": 11,
@@ -52,18 +57,28 @@
     "rapadura": 44,
     "aperture": 10,
     "artforum-cn": 50,
-    "zeitz-mocaa": 6,
-    "map-india": 3,
-    "tate-modern": 8,
+    "mmca-seoul": 4,
+    "wpo-awards": 4,
+    "bfi-lff": 78,
+    "diaphana": 4,
+    "eiga-com": 23,
     "tokyo-photo-museum": 5,
-    "eiga-com": 23
+    "tate-modern": 8,
+    "map-india": 3,
+    "zeitz-mocaa": 6
   },
   "failed_sources": [
     "asianmoviepulse"
   ],
   "enabled_sources_without_content": [],
   "errors": [],
-  "warnings": [],
+  "warnings": [
+    {
+      "code": "conflicting_official_time",
+      "id": "live-463f956770a9f099aca22a62",
+      "source_id": null
+    }
+  ],
   "notes": [
     "旧资料保留供探索和收藏，不冒充近期新闻。",
     "抓取时间不替代发布时间；未标注地点和票价不补造。",

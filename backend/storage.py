@@ -33,6 +33,10 @@ class Store:
             for column in ("publisher_country", "coverage"):
                 if column not in source_columns:
                     db.execute(f"ALTER TABLE sources ADD COLUMN {column} TEXT")
+            event_columns = {row[1] for row in db.execute("PRAGMA table_info(events)")}
+            for column in ("start_at", "end_at", "deadline_at", "time_note", "time_status", "eligibility_note", "booking_status"):
+                if column not in event_columns:
+                    db.execute(f"ALTER TABLE events ADD COLUMN {column} TEXT")
             db.execute("CREATE TABLE IF NOT EXISTS preferences (id INTEGER PRIMARY KEY CHECK(id=1), value TEXT NOT NULL)")
             db.execute("CREATE TABLE IF NOT EXISTS job_state(id TEXT PRIMARY KEY, value TEXT NOT NULL)")
             db.execute("CREATE TABLE IF NOT EXISTS notifications(id TEXT PRIMARY KEY, event_id TEXT NOT NULL REFERENCES events(id) ON DELETE CASCADE, title TEXT NOT NULL, created_at TEXT NOT NULL, read INTEGER NOT NULL DEFAULT 0, emailed INTEGER NOT NULL DEFAULT 0)")

@@ -1,4 +1,4 @@
-# 运行与托管 v0.8
+# 运行与托管 v0.9
 
 完整启动、静态构建、模型和邮件配置见 README.md。
 
@@ -57,3 +57,22 @@ print(collect_articles(s, limit=1000))
 ```
 
 之后运行 scripts/export_snapshot.py、scripts/audit_data.py --output data/quality.json --strict、scripts/build_static.py。仅在新内容／采集规则变化后针对所需来源复核，不重复强制抓取全部原文。查看 data/quality.json 的 article_source_counts；collected、partial、no_body、restricted、unavailable 分开统计。
+
+
+## 配置全文语境AI校译
+
+用户已选择AI语境翻译＋校对。Google翻译已停用；ARTICLE_TRANSLATION_LIMIT和TRANSLATION_DAILY_LIMIT仅兼容旧版本，当前刷新不再调用Google。
+
+GitHub管理员打开 https://github.com/k1ryulong6-source/ART-NEWS/settings/secrets/actions ，新增repository secret `EDITORIAL_API_KEY`。不要把密钥写入源码、聊天或公开仓库。按实际服务在同页Variables设置：
+
+| 字段 | OpenAI示例 | DeepSeek示例 |
+| --- | --- | --- |
+| EDITORIAL_BASE_URL | https://api.openai.com/v1 | https://api.deepseek.com/v1 |
+| EDITORIAL_MODEL | gpt-4.1 | deepseek-chat |
+| EDITORIAL_REVIEW_MODEL | gpt-4.1 | deepseek-chat |
+
+示例模型名需要以自己的账户实际可调用模型为准；接口使用/chat/completions和JSON输出。校对可使用另一可调用模型。默认EDITORIAL_ARTICLE_LIMIT=5、EDITORIAL_DAILY_LIMIT=20（模型请求次数，每篇通常2次），限制不是固定金额保证。模型API计费与ChatGPT额度各自独立。
+
+完成后手动运行Refresh cultural news，检查translations.status和reviewed计数；缺密钥明确not_configured，API出错或审稿未通过不展示初稿。自动刷新仍每天东京时间10:15／22:15运行，正文采集与模型校译分开；未配置校译不阻止原文发布。
+
+新CI先恢复editorial_usage当天账本及初稿；后续可继续校对，无需重译完成的初稿。大于45000字符／350块的全文进入too_long状态，不裁剪冒充全文。4篇会话样稿独立保留，不伪称已配置上述API。

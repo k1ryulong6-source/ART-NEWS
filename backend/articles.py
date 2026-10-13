@@ -207,6 +207,8 @@ def collect_articles(store, limit=40, getter=None, force=False):
         if fields.get('article_hash') and fields['article_hash'] != row.get('article_hash'):
             for k in ARTICLE_FIELDS:
                 if k.startswith('article_translation_'): fields[k] = None
+            from .editorial import EDITORIAL_FIELDS
+            for k in EDITORIAL_FIELDS: fields[k] = None
         with store.connect() as db:
             db.execute('UPDATE content SET ' + ','.join(k+'=?' for k in fields) + ' WHERE id=?', [*fields.values(), row['id']])
         return row['source_id'], fields['article_status']

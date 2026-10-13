@@ -111,8 +111,10 @@ test('exact screening and deadline exports preserve UTC instants rather than tur
   assert.equal(C.eventState({...call,deadline_at:null,time_status:'conflict'},'2027-01-05',new Date('2027-01-05T10:00:00Z')).label,'今日截止 · 时刻需核对');
 });
 
-test('reading uses Chinese translations, searches source excerpts and validates photo/fulltext links', () => {
+test('reading hides legacy machine translations and shows only reviewed context translations', () => {
   const row = { title_original: 'A photo exhibition', translated_title_zh: '摄影展', translated_excerpt_zh: '城市摄影作品', excerpt_original: 'Original introduction', canonical_url: 'https://example.org/story' };
+  assert.equal(C.displayTitle(row), 'A photo exhibition');
+  row.editorial_status='reviewed'; row.editorial_title_zh='摄影展'; row.editorial_excerpt_zh='城市摄影作品'; row.editorial_blocks_json=JSON.stringify([{type:'paragraph',text:'已校对的正文'}]);
   assert.equal(C.displayTitle(row), '摄影展');
   assert.equal(C.readingSummary(row), '城市摄影作品');
   assert.equal(C.matches(row, { query: '城市摄影' }), true);
@@ -120,7 +122,7 @@ test('reading uses Chinese translations, searches source excerpts and validates 
   assert.equal(C.safeImageUrl('https://user:pass@example.org/image.jpg'), '');
   assert.equal(C.safeImageUrl('https://127.0.0.1/image.jpg'), '');
   assert(C.translatedArticleUrl(row).includes(encodeURIComponent(row.canonical_url)));
-  assert.equal(C.displayTitle({ ...row, title_zh: '人工中文标题' }), '人工中文标题');
+  assert.equal(C.displayTitle({ ...row, editorial_status: null, title_zh: '人工中文标题' }), '人工中文标题');
 });
 
 test('original reader links preserve the source and routes survive refresh and malformed hashes', () => {
@@ -144,4 +146,12 @@ test('stored body blocks display without executable links and search uses the or
   assert.ok(C.escape(blocks[0].text).startsWith('&lt;script&gt;'));
   assert.ok(C.matches(row,{query:'cinematography'}));
   assert.deepEqual(C.articleBlocks({article_blocks_json:'broken'}),[]);
+});
+
+
+test('draft or legacy body translation is never presented as reviewed copy', () => {
+  const row={title_original:'Original',translated_title_zh:'旧机翻标题',article_translation_json:'[{"type":"paragraph","text":"旧机翻正文"}]',editorial_status:'draft',editorial_title_zh:'未校对标题',editorial_blocks_json:'[{"type":"paragraph","text":"未审核初稿"}]'};
+  assert.equal(C.displayTitle(row),'Original');
+  assert.deepEqual(C.articleBlocks(row,true),[]);
+  row.editorial_status='reviewed';assert.equal(C.displayTitle(row),'未校对标题');assert.equal(C.articleBlocks(row,true)[0].text,'未审核初稿');
 });

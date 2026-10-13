@@ -49,14 +49,12 @@ def refresh(store, source_ids=None):
     try:
         sources = run_ingestion(store, source_ids)
         from .reading import enrich_reading
-        from .translation import run_translation
         reading = enrich_reading(store, int(os.getenv('READING_PAGE_LIMIT', '20')))
         from .articles import collect_articles
         articles = collect_articles(store, int(os.getenv('ARTICLE_PAGE_LIMIT', '60')))
         try:
-            translations = run_translation(store)
-            from .article_translation import translate_articles
-            translations['articles'] = translate_articles(store)
+            from .editorial import run_editorial
+            translations = run_editorial(store)
         except Exception as exc:
             translations = {'status': 'configuration_error', 'error': type(exc).__name__}
         try:

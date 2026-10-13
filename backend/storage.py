@@ -32,7 +32,8 @@ class Store:
             from .reading import READING_FIELDS, TRANSLATION_FIELDS
             from .originals import ORIGINAL_FIELDS
             from .articles import ARTICLE_FIELDS
-            for column in READING_FIELDS + TRANSLATION_FIELDS + ORIGINAL_FIELDS + ARTICLE_FIELDS:
+            from .editorial import EDITORIAL_FIELDS
+            for column in READING_FIELDS + TRANSLATION_FIELDS + ORIGINAL_FIELDS + ARTICLE_FIELDS + EDITORIAL_FIELDS:
                 if column not in existing:
                     db.execute(f"ALTER TABLE content ADD COLUMN {column} TEXT")
             source_columns = {row[1] for row in db.execute("PRAGMA table_info(sources)")}
@@ -169,6 +170,7 @@ class Store:
                     from .reading import READING_FIELDS, TRANSLATION_FIELDS
                     from .originals import ORIGINAL_FIELDS
                     from .articles import ARTICLE_FIELDS
+                    from .editorial import EDITORIAL_FIELDS
                     original_changed = bool(record.get('original_page_url') and record['original_page_url'] != old['original_page_url'])
                     for field in ARTICLE_FIELDS:
                         if original_changed:
@@ -185,11 +187,16 @@ class Store:
                         if not record.get(field) and old[field]:
                             record[field] = old[field]
                     reading_changed = old['title_original'] != record['title_original'] or (old['excerpt_original'] or '') != (record.get('excerpt_original') or '')
+                    for field in EDITORIAL_FIELDS:
+                        if original_changed or reading_changed:
+                            record[field] = None
+                        elif field not in record:
+                            record[field] = old[field]
                     if reading_changed:
                         for field in TRANSLATION_FIELDS:
                             record[field] = None
                     if old["body_hash"] == record["body_hash"]:
-                        for field in READING_FIELDS + ORIGINAL_FIELDS + ARTICLE_FIELDS + (TRANSLATION_FIELDS if reading_changed else ()):
+                        for field in READING_FIELDS + ORIGINAL_FIELDS + ARTICLE_FIELDS + EDITORIAL_FIELDS + (TRANSLATION_FIELDS if reading_changed else ()):
                             if field in record:
                                 db.execute(f"UPDATE content SET {field}=? WHERE id=?", (record[field], old['id']))
                         db.execute("UPDATE content SET fetched_at=?,raw_excerpt=? WHERE id=?", (record["fetched_at"], record.get("raw_excerpt"), old["id"]))
@@ -228,6 +235,9 @@ class Store:
             existing = db.execute("SELECT count(*) FROM content WHERE is_demo=0").fetchone()[0]
             db.execute("CREATE TABLE IF NOT EXISTS summary_usage(day TEXT PRIMARY KEY, calls INTEGER NOT NULL)")
             db.execute("CREATE TABLE IF NOT EXISTS translation_usage(day TEXT PRIMARY KEY, calls INTEGER NOT NULL)")
+            db.execute('CREATE TABLE IF NOT EXISTS editorial_usage(day TEXT PRIMARY KEY,calls INTEGER NOT NULL)')
+            for item in data.get('editorial_usage', []):
+                db.execute('INSERT INTO editorial_usage VALUES(?,?) ON CONFLICT(day) DO UPDATE SET calls=max(calls,excluded.calls)', (item['day'],item['calls']))
             for item in data.get('translation_usage', []):
                 db.execute("INSERT INTO translation_usage VALUES(?,?) ON CONFLICT(day) DO UPDATE SET calls=max(calls,excluded.calls)", (item['day'], item['calls']))
             for item in data.get("processing_usage", []):

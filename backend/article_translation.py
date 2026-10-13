@@ -19,7 +19,7 @@ def chunks(text, size=900):
 
 
 def translate_articles(store, provider=None, call_limit=None, daily_limit=None):
-    kind = os.getenv('TRANSLATION_PROVIDER', 'google-public')
+    kind = os.getenv('TRANSLATION_PROVIDER', 'disabled')
     if provider is None and kind == 'disabled': return {'translated': 0, 'calls': 0, 'status': 'disabled'}
     if provider is None and kind != 'google-public': raise ValueError('未知翻译服务')
     provider = provider or PublicGoogleTranslator()

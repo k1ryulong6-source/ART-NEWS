@@ -35,7 +35,7 @@ def input_hash(row, provider):
 
 
 def run_translation(store, provider=None, daily_limit=None, workers=3):
-    kind = os.getenv('TRANSLATION_PROVIDER', 'google-public')
+    kind = os.getenv('TRANSLATION_PROVIDER', 'disabled')
     if provider is None and kind == 'disabled':
         return {'provider': 'disabled', 'translated': 0, 'failed': 0}
     if provider is None and kind != 'google-public':

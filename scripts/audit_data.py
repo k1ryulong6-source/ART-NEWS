@@ -39,6 +39,16 @@ def audit_payload(snapshot, catalog, reference=None):
                     if block.get('type') == 'image' and not public_url(block.get('url')): problem('unsafe_article_image',row)
             except (ValueError,TypeError,AttributeError): problem('invalid_article_json',row)
         if row.get('article_translation_hash') and not row.get('article_translation_json'): problem('translation_without_body',row)
+        if row.get('editorial_status') == 'reviewed':
+            from backend.editorial import checked_result
+            try:
+                translated = json.loads(row.get('editorial_blocks_json') or 'null')
+                if not isinstance(translated,list): raise ValueError()
+                checked_result(row, {'title_zh':row['editorial_title_zh'],'excerpt_zh':row['editorial_excerpt_zh'] or '',
+                                     'blocks':[{'index':i,**block} for i,block in enumerate(translated)]})
+                review=json.loads(row.get('editorial_review_json') or '{}')
+                if review.get('approved') is not True or review.get('issues') != []: problem('editorial_without_approved_review',row)
+            except (ValueError,TypeError,KeyError): problem('invalid_editorial_translation',row)
         if row.get('image_url') and (not public_url(row['image_url']) or not row.get('image_credit') or not row.get('image_source_url')): problem('image_without_safe_url_or_attribution',row)
         if len(row.get('excerpt_original') or '') > 281: problem('excerpt_exceeds_short_reading_limit',row)
         if GEAR.search(row.get('title_original','')) or GEAR_MULTILINGUAL.search(row.get('title_original','')): problem('equipment_review',row)
@@ -103,6 +113,7 @@ def audit_payload(snapshot, catalog, reference=None):
             'partial_article_bodies': sum(row.get('article_status') == 'partial' for row in content),
             'article_bodies_not_obtained': sum(not row.get('article_blocks_json') for row in content),
             'machine_translated_article_bodies': sum(bool(row.get('article_translation_hash')) for row in content),
+            'ai_reviewed_article_translations': sum(row.get('editorial_status')=='reviewed' for row in content),
         },
         'languages': dict(Counter(row['language'] for row in content)),
         'event_countries': dict(Counter(row['country'] for row in events)),

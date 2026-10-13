@@ -80,3 +80,12 @@ articles.py 从已核实来源域名抓取公开 HTML；重定向也验证来源
 collect_articles 对全部已启用来源运行，不以 original_embed_status 筛选。新记录先处理，失败两天后重试，已有正文七天复核；暂时失败保留正文。article_translation.py 保存分块翻译进度及输入 hash，用 translation_usage 的同一每日账本控制调用；已译分块不会因换 CI 重译。中文原文直接显示，不伪称经过机器翻译。
 
 GitHub 静态版 data/live.json 和 frontend/data.js 包含抓取后正文，读取时无需再次访问来源。图片仍是来源外链；视频／原站交互不复制。#reader/id 深链、返回、收藏和刷新保留，正文 DOM 不因收藏重建。旧 originals.py 和 original_* 字段只保留兼容历史快照，不再参与刷新或原文阅读，iframe 已移除。
+
+
+## 校译 v0.9
+
+editorial.py 用完整文章块和术语表输入OpenAI-compatible模型接口，draft和review是两个独立请求。review必须给出完整校正稿并approved=true、issues=[]；checked_result保证块数／顺序、数字及非空正文，再只更新editorial_*字段。原文、活动、收藏不被模型修改。AI无法替代人工专业审核，程序检查不能发现所有语义错误。
+
+editorial_usage共享跨CI的独立模型请求账本；editorial_draft_json和输入hash允许续接校对。发布以正文hash及原标题作并发条件，防止陈旧请求回写。来源正文或原标题改变时清理相关校译缓存。前端只展示editorial_status=reviewed的editorial_*；公共Google翻译字段仅保留历史兼容。读取译文仍是本站静态快照，不在浏览器暴露API密钥。
+
+本次4篇样稿由会话AI实际完成并对照原文检查，provider=session-ai:context-review-v1；不登记为付费模型调用。模型服务未配置时not_configured，不启动Google回退，也不宣称后台校译已完成。

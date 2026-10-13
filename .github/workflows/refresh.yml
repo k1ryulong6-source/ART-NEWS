@@ -27,11 +27,18 @@ jobs:
           SUMMARY_MODEL: ${{ vars.SUMMARY_MODEL || 'gpt-4.1-mini' }}
           SUMMARY_DAILY_LIMIT: ${{ vars.SUMMARY_DAILY_LIMIT || '20' }}
           SUMMARY_API_KEY: ${{ secrets.SUMMARY_API_KEY }}
-          TRANSLATION_PROVIDER: ${{ vars.TRANSLATION_PROVIDER || 'google-public' }}
+          TRANSLATION_PROVIDER: 'disabled'
           TRANSLATION_DAILY_LIMIT: ${{ vars.TRANSLATION_DAILY_LIMIT || '1000' }}
           READING_PAGE_LIMIT: '20'
           ARTICLE_PAGE_LIMIT: '60'
           ARTICLE_TRANSLATION_LIMIT: '120'
+          EDITORIAL_PROVIDER: ${{ vars.EDITORIAL_PROVIDER || 'openai-compatible' }}
+          EDITORIAL_BASE_URL: ${{ vars.EDITORIAL_BASE_URL || 'https://api.openai.com/v1' }}
+          EDITORIAL_MODEL: ${{ vars.EDITORIAL_MODEL || 'gpt-4.1' }}
+          EDITORIAL_REVIEW_MODEL: ${{ vars.EDITORIAL_REVIEW_MODEL || 'gpt-4.1' }}
+          EDITORIAL_DAILY_LIMIT: ${{ vars.EDITORIAL_DAILY_LIMIT || '20' }}
+          EDITORIAL_ARTICLE_LIMIT: ${{ vars.EDITORIAL_ARTICLE_LIMIT || '5' }}
+          EDITORIAL_API_KEY: ${{ secrets.EDITORIAL_API_KEY }}
       - run: python scripts/export_snapshot.py
       - run: python scripts/audit_data.py --output data/quality.json --strict
       - run: python scripts/build_static.py

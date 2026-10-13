@@ -17,9 +17,10 @@
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const safeUrl = value => { try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } };
   const originalPageUrl = row => safeImageUrl(row.original_page_url || row.canonical_url);
+  const editorialReady = row => row.editorial_status === 'reviewed' && Boolean(row.editorial_blocks_json && row.editorial_title_zh);
   const articleBlocks = (row, translated = false) => {
     try {
-      const blocks = JSON.parse((translated ? row.article_translation_json : row.article_blocks_json) || '[]');
+      const blocks = JSON.parse((translated ? (editorialReady(row) ? row.editorial_blocks_json : null) : row.article_blocks_json) || '[]');
       if (!Array.isArray(blocks)) return [];
       return blocks.slice(0, 2000).filter(block => block && ['paragraph','heading','quote','list_item','image'].includes(block.type)).map(block => block.type === 'image' ? { ...block, url: safeImageUrl(block.url) } : { ...block, text: String(block.text || ''), links: (Array.isArray(block.links) ? block.links : []).filter(link => link && typeof link === 'object').map(link => ({ text: String(link.text || ''), url: safeImageUrl(link.url) })).filter(link => link.url) }).filter(block => block.type === 'image' ? block.url : block.text);
     } catch { return []; }
@@ -31,8 +32,8 @@
     if (value.startsWith('reader/')) { try { const id = decodeURIComponent(value.slice(7)); return id ? { view: 'reader', id } : { view: 'today' }; } catch { return { view: 'today' }; } }
     return { view: ['today','explore','calendar','bookmarks','settings'].includes(value) ? value : 'today' };
   }
-  const displayTitle = row => row.title_zh || row.translated_title_zh || row.title_original;
-  const readingSummary = row => row.summary_zh || row.translated_excerpt_zh || row.excerpt_original || '来源未提供可读摘要，请打开原文阅读全文。';
+  const displayTitle = row => (editorialReady(row) ? row.editorial_title_zh : null) || row.title_zh || row.title_original;
+  const readingSummary = row => (editorialReady(row) ? row.editorial_excerpt_zh : null) || row.summary_zh || row.excerpt_original || '中文译文待校对，原文可直接阅读。';
   const safeImageUrl = value => { try { const u = new URL(value); return u.protocol === 'https:' && !u.username && !u.password && !['localhost', '127.0.0.1', '[::1]'].includes(u.hostname) ? u.href : ''; } catch { return ''; } };
   const translatedArticleUrl = row => { const original = safeUrl(row.original_page_url || row.canonical_url || row.evidence_url); return original ? 'https://translate.google.com/translate?sl=auto&tl=zh-CN&u=' + encodeURIComponent(original) : ''; };
   const dateNumber = value => { if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return null; const [y, m, d] = value.split('-').map(Number), date = new Date(Date.UTC(y, m - 1, d)); return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d ? date.getTime() / 86400000 : null; };
@@ -41,6 +42,7 @@
   const dateLabel = value => value ? value.replace(/-/g, '.') : '时间待确认';
   function matches(row, filters = {}) {
     if (row.source_id && filters.disabledSources?.includes(row.source_id)) return false;
+    if (filters.reviewedOnly && !editorialReady(row)) return false;
     if (filters.disabledEventIds?.includes(row.id)) return false;
     if (filters.channel && filters.channel !== 'all' && row.channel !== filters.channel) return false;
     if (filters.kind && filters.kind !== 'all' && row.kind !== filters.kind && row.event_type !== filters.kind) return false;
@@ -50,7 +52,7 @@
     if (filters.language && filters.language !== 'all' && row.language && row.language !== filters.language) return false;
     if (filters.buzz === false && row.kind === 'industry_buzz') return false;
     const needle = (filters.query || '').trim().toLocaleLowerCase();
-    return !needle || [row.title_zh, row.translated_title_zh, row.title_original, row.summary_zh, row.translated_excerpt_zh, row.excerpt_original, row.article_text, row.city, row.venue].join(' ').toLocaleLowerCase().includes(needle);
+    return !needle || [row.title_zh, row.translated_title_zh, row.title_original, row.editorial_title_zh, row.editorial_excerpt_zh, row.summary_zh, row.translated_excerpt_zh, row.excerpt_original, row.article_text, row.city, row.venue].join(' ').toLocaleLowerCase().includes(needle);
   }
   function isCurrentContent(row, reference, linkedEvents = [], maxAge = 30) {
     const published = row.published_at?.slice(0, 10);
@@ -159,7 +161,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { editorialReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

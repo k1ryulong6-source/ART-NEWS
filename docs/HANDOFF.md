@@ -1,8 +1,8 @@
-# 当前交接记录 · v0.8
+# 当前交接记录 · v0.9
 
 更新时间：2026-10-14 JST。建设者：Codex。
 
-最新用户要求与实现：抓取公开正文并由本站直接排版，移除 iframe。此前 v0.7 的原网页嵌入方案已由 T022／D018 取代。全部26个来源保留；最新自动更新后462条资讯、163项活动。445条已提取正文，16条公开部分，1条未取得正文；11条完成正文机器翻译，另有分块翻译进行中。当前代码与公开状态见文末 T022 验收。
+最新要求：AI按全文语境翻译并对照校对，拒绝默认公共逐句机翻。v0.9已实现独立初译／校对模型接口、结构与数字检查、发布状态与独立请求账本。4篇会话校译样稿实际完成；所有26来源、462条资讯、163活动及原文保持。定时模型凭据尚未配置，不假称后台自动校译已运行。参见文末T023。
 
 ## 仓库与授权
 
@@ -127,3 +127,14 @@ T022 自动更新与新增资料：GitHub refresh 38428321826 成功，新增21�
 T022 最终完成：代码538ec99，自动快照c9f764c，补读快照7b36281。最终CI [38428982448](https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38428982448) 与部署 [38428982544](https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38428982544) 成功；自动更新 [38428321826](https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38428321826) 成功。直接读取已发布 data.js 核对462条、26来源、445 collected／16 partial／1 no_body，两个Artnet补读正文都存在。公开手机／桌面重新验收全部通过，原文不依赖来源网页请求，iframe=0，无页面脚本错误。
 
 运行与待补：按 docs/OPERATIONS.md 安装依赖并运行；正文采集与翻译已进入定时流程。唯一未取得正文为 Artforum https://www.artforum.com.cn/print/202304/14499，原站仅提供标题和作者。16条ARTnews只保留公开部分；11条非中文正文已完成机器译文，其余待每日共享账本重置后分段继续。当前请求账本达到1000次上限，不扩大额度、不丢弃原文。更多地区来源与官方日期缺口继续见 COVERAGE，未配置的生成式摘要／SMTP并不阻止正文阅读。
+
+
+## T023 · v0.9 全文语境AI校译
+
+用户明确选择AI全文语境翻译并校对。新增editorial.py、术语表、draft/review两请求、段落与数字校验、approved状态、并发hash保护及独立editorial_usage账本。前端只显示已reviewed校译，旧Google译文与标题退出默认展示；默认全部来源仍在，新增“AI校译”主动入口。原文／已收录活动与所有ID保持。
+
+本次会话实际为4篇西／日／英／法原文制作中文稿并逐段对照：Cinéfilos《边境》、IMA铃木崇“もののをかし”展、ART AFRICA的Brandon Gercara展、Fisheye的Julie Peiffer报道。保留暂译说明、原名、原文数字、图像、时间和票价；不得称人工译者审核。provider=session-ai:context-review-v1，非外部模型调用，APIusage未虚增。
+
+本地检查：44 Python＋16 JS=60项通过，项目检查／严格审计0错误通过。真实Chromium1440／390px：4稿原文/校译切换、译名说明、AI来源标注、旧机翻不显示、主动筛选4稿后返回全部462条、全部26来源保持，均通过，无横向溢出与页面错误。当前运行环境无EDITORIAL_API_KEY；GitHub密钥列表GET返回403，不能读取或新设模型密钥。用户服务名称问题已提出，可继续无凭据的建设，但自动API校译必须等配置。
+
+自动校译配置与真实模型端到端验证是剩余工作：管理员在仓库Actions secrets添加EDITORIAL_API_KEY，按账户选BASE_URL/MODEL/REVIEW_MODEL，详见OPERATIONS。当前只测试了模拟模型契约和真实会话样稿，不声称外部API实际执行。发布验收进行中。

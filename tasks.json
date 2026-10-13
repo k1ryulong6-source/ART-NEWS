@@ -430,24 +430,60 @@
     },
     {
       "id": "T016",
-      "title": "扩充中国上映与其他城市展览",
+      "title": "扩充全球文化资讯与各地展览",
       "milestone": "M2",
-      "status": "todo",
-      "owner": null,
+      "status": "done",
+      "owner": "Codex",
       "depends_on": [
         "T004"
       ],
       "scope": [
-        "config/sources.json",
-        "backend/ingestion.py"
+        "config/",
+        "backend/",
+        "frontend/",
+        "schema.sql",
+        "tests/",
+        "docs/"
       ],
       "acceptance": [
-        "核实新增官方／可靠来源",
-        "按国家城市保存真实日期，不推测未知字段"
+        "全球默认视野，不默认偏向东京或中国",
+        "核实新增国际及非英语来源，保存来源地区与报道地区的区别",
+        "国家、城市、语言筛选实际可用",
+        "保持日期来源、少量圈内动态与器材排除规则"
+      ],
+      "evidence": [
+        "2026-10-13：14 个来源两轮真实读取全部成功，第二轮 inserted=0；235 条公开资讯与 36 项活动，其中伦敦 8 项。",
+        "18 项 Python 与 10 项 JS 检查通过；媒体总部不定位报道、多国提及、Tate 完整展期、缓存／收藏保持、全球多样性与当地日期验证。",
+        "Chromium 1440px／390px 五个页面无溢出或脚本错误；西语 10 条、全球／日本专题、伦敦官方展期详情检查通过。"
+      ],
+      "updated_at": "2026-10-13",
+      "github_issue": "https://github.com/k1ryulong6-source/ART-NEWS/issues/3",
+      "notes": "用户明确以世界电影、艺术、摄影新闻为主，日本上映与展览作为专题；中国不再是默认扩充重点。"
+    },
+    {
+      "id": "T017",
+      "title": "补充全球非英语来源与更多官方展期",
+      "milestone": "M2",
+      "status": "todo",
+      "owner": null,
+      "updated_at": "2026-10-13",
+      "depends_on": [
+        "T016"
+      ],
+      "scope": [
+        "config/sources.json",
+        "backend/ingestion.py",
+        "tests/",
+        "docs/SOURCES.md"
+      ],
+      "acceptance": [
+        "逐一核实亚洲、拉美、非洲等地区文化来源，优先补充现有英语覆盖之外的媒体",
+        "新增日本／英国之外的官方场馆完整展期与当地时区",
+        "不把国家菜单当作已覆盖全部地区，不用媒体总部推断活动位置",
+        "保存真实样例，重复采集无重复插入，未知票价／日期保持未知"
       ],
       "evidence": [],
-      "updated_at": "2026-10-13",
-      "github_issue": "https://github.com/k1ryulong6-source/ART-NEWS/issues/3"
+      "notes": "世界电影、艺术、摄影优先；来源必须真实可读取。T013/T014/T015 的配置待用户信息，不阻塞可独立扩充的来源。"
     }
   ]
 }

@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS sources (
     verified_at TEXT,
     enabled INTEGER NOT NULL DEFAULT 0 CHECK (enabled IN (0, 1)),
     notes TEXT,
+    publisher_country TEXT,
+    coverage TEXT,
     CHECK (enabled = 0 OR (access_status = 'reviewed' AND verified_at IS NOT NULL AND access_method IS NOT NULL))
 );
 
@@ -27,6 +29,8 @@ CREATE TABLE IF NOT EXISTS content (
     kind TEXT NOT NULL CHECK (kind IN ('news', 'interview', 'work', 'photobook', 'industry_buzz')),
     country TEXT,
     city TEXT,
+    geography_status TEXT NOT NULL DEFAULT 'unknown',
+    locations_json TEXT NOT NULL DEFAULT '[]',
     language TEXT NOT NULL,
     evidence_status TEXT NOT NULL CHECK (evidence_status IN ('official_confirmed', 'media_reported', 'firsthand_response', 'unverified')),
     published_at TEXT,

@@ -10,6 +10,7 @@ def build():
     bundle = {
         "dataset": json.loads((ROOT / "data/demo.json").read_text(encoding="utf-8")),
         "preferences": json.loads((ROOT / "config/preferences.json").read_text(encoding="utf-8")),
+        "regions": json.loads((ROOT / "config/regions.json").read_text(encoding="utf-8")),
         "sources": json.loads((ROOT / "config/sources.json").read_text(encoding="utf-8")),
     }
     live_path = ROOT / "data/live.json"
@@ -31,7 +32,7 @@ def build():
         html = html.replace(f'<script defer src="{name}"></script>', '')
         html = html.replace('</body>', '<script>' + script + '</script>\n</body>')
     (output / "culture-desk-preview.html").write_text(html, encoding="utf-8")
-    print("Static edition built in dist/ (demo data; browser storage)")
+    print("Static edition built in dist/ (public live snapshot + separate demo; browser storage)")
 
 
 if __name__ == "__main__":

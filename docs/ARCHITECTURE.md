@@ -2,7 +2,7 @@
 
 ## 当前与建议
 
-当前已实现原生前端、FastAPI／SQLite、七个真实来源适配器、可配置摘要接口、定时任务、提醒与部署配置。实际外部摘要和 SMTP 尚未配置，默认 NoOp。
+当前已实现原生前端、FastAPI／SQLite、14 个真实来源（四类适配器）、可配置摘要接口、定时任务、提醒与部署配置。实际外部摘要和 SMTP 尚未配置，默认 NoOp。
 
 Python 3.10+、FastAPI、SQLite；前端无外部依赖，后端通过资源白名单提供静态文件。Python 依赖版本见 requirements.txt。后续若实际复杂度需要，再迁移 React／TypeScript 或 PostgreSQL；参见 D007。
 
@@ -31,7 +31,7 @@ Python 3.10+、FastAPI、SQLite；前端无外部依赖，后端通过资源白�
 
 | 方法与路径 | 用途 |
 | --- | --- |
-| GET `/api/content` | channel、kind、country、city、q、cursor 筛选 |
+| GET `/api/content` | channel、kind、country、city、language、q；暂无 cursor 筛选 |
 | GET `/api/events` | 当地日期区间、地区、活动类型筛选 |
 | GET `/api/today` | 精选、开幕／上映、即将结束，限制圈内动态比例 |
 | GET `/api/bookmarks` | 收藏与状态 |
@@ -58,3 +58,9 @@ Python 3.10+、FastAPI、SQLite；前端无外部依赖，后端通过资源白�
 个人设置初值来自 `config/preferences.json`；正式用户状态写本地数据目录或数据库。候选源来自 `config/sources.json`，未核实默认不启用。
 
 本地与 Docker HTTP、桌面／手机浏览器均已验证。backend.jobs 提供一次刷新或每 12 小时调度；GitHub refresh.yml 提供 UTC 每天两次公开快照刷新。实际定时服务需保持运行，GitHub Actions 结果可核查。数据目录、数据库、API 密钥与个人导出不进入 Git。
+
+## 全球地区元数据
+
+config/regions.json 是前后端共享地区／城市／语言标签表；其中时区用于阅读设置选项，不据此推断未知活动时区。backend/geography.py 从原标题识别明确地名；多个提及保存在 locations_json，geography_status 为 mentioned。官方场馆适配器使用 confirmed，缺失时为 unknown。source.publisher_country 与 source.coverage 不能替代 content 地区。RSS 的已存档地区在 register_sources 时一起修正，原始缓存、稳定 ID、收藏与偏好保留。
+
+新闻语言筛选作用于报道；日历只使用国家、城市和频道，不以媒体语言排除活动。今日使用软性来源／频道多样性权重，并保留相关性与发布时间，不强凑地区配额。

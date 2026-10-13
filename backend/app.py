@@ -10,20 +10,16 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import Response
 from pydantic import BaseModel, Field, ConfigDict, model_validator
 from .storage import Store
+from .geography import matches_region
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 ROOT = Path(__file__).resolve().parents[1]
-CITY_COUNTRIES = {"东京": "JP", "京都": "JP", "大阪": "JP", "上海": "CN", "北京": "CN"}
-
-
-def city_matches(record, city):
-    return not city or (record["country"] == CITY_COUNTRIES.get(city, record["country"]) and record["city"] in (None, city))
-
-
 class Preferences(BaseModel):
     model_config = ConfigDict(extra="allow")
     schema_version: Literal[1] = 1
-    default_city: str = Field(default="东京", max_length=80)
-    reading_timezone: Literal["Asia/Tokyo", "Asia/Shanghai", "UTC"] = "Asia/Tokyo"
+    default_city: str = Field(default="全球", max_length=80)
+    reading_timezone: str = Field(default="UTC", max_length=100)
+    news_scope: Literal["global", "follow_city"] = "global"
     daily_selection_limit: int = Field(default=10, ge=1, le=50)
     interests: list[str] = Field(default_factory=list, max_length=30)
     followed_entities: list[str] = Field(default_factory=list, max_length=100)
@@ -32,6 +28,10 @@ class Preferences(BaseModel):
 
     def safe_dict(self):
         data = self.model_dump()
+        try:
+            ZoneInfo(self.reading_timezone)
+        except (ZoneInfoNotFoundError, ValueError):
+            raise ValueError("时区无效")
         data["excluded_topics"] = ["equipment_review", "equipment_comparison", "buying_guide", "equipment_rumor"]
         buzz = data["industry_buzz"]
         if not isinstance(buzz.get("enabled", True), bool):
@@ -73,7 +73,7 @@ def create_app(db_path=None):
     store = Store(db_path or os.getenv("CULTURE_DESK_DB", str(ROOT / "runtime/culture-desk.db")))
     if db_path is None:
         store.restore_public_snapshot(ROOT / "data/live.json")
-    app = FastAPI(title="映间 · Culture Desk", version="0.1.0")
+    app = FastAPI(title="映间 · Culture Desk", version="0.3.0")
     app.state.store = store
     password = os.getenv("CULTURE_DESK_PASSWORD", "")
 
@@ -93,7 +93,7 @@ def create_app(db_path=None):
 
     @app.get("/api/health")
     async def health():
-        return {"status": "ok", "storage": "sqlite", "version": "0.1.0"}
+        return {"status": "ok", "storage": "sqlite", "version": "0.3.0"}
 
     @app.get("/api/dataset")
     async def dataset(mode: Literal["demo", "live"] = "live"):
@@ -102,13 +102,13 @@ def create_app(db_path=None):
         return result
 
     @app.get("/api/content")
-    async def content(mode: Literal["demo", "live"] = "live", channel: str | None = None, country: str | None = None, city: str | None = None, kind: str | None = None, q: str = ""):
+    async def content(mode: Literal["demo", "live"] = "live", channel: str | None = None, country: str | None = None, city: str | None = None, kind: str | None = None, language: str | None = None, q: str = ""):
         rows = store.dataset(mode)["content"]
-        return [r for r in rows if (not channel or r["channel"] == channel) and (not country or r["country"] == country) and city_matches(r, city) and (not kind or r["kind"] == kind) and (not q or q.lower() in " ".join(str(r.get(k) or "") for k in ("title_original", "title_zh", "summary_zh")).lower())]
+        return [r for r in rows if (not channel or r["channel"] == channel) and matches_region(r, country, city) and (not kind or r["kind"] == kind) and (not language or r["language"] == language) and (not q or q.lower() in " ".join(str(r.get(k) or "") for k in ("title_original", "title_zh", "summary_zh")).lower())]
 
     @app.get("/api/events")
     async def events(mode: Literal["demo", "live"] = "live", country: str | None = None, city: str | None = None, start: str | None = None, end: str | None = None):
-        return [r for r in store.dataset(mode)["events"] if (not country or r["country"] == country) and city_matches(r, city) and (not start or (r["date_precision"] == "day" and (r["end_date"] or r["start_date"]) >= start)) and (not end or (r["date_precision"] == "day" and r["start_date"] <= end))]
+        return [r for r in store.dataset(mode)["events"] if matches_region(r, country, city) and (not start or (r["date_precision"] == "day" and (r["end_date"] or r["start_date"]) >= start)) and (not end or (r["date_precision"] == "day" and r["start_date"] <= end))]
 
     @app.get("/api/preferences")
     async def preferences():

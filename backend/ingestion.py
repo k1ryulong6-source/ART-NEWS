@@ -12,10 +12,11 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from bs4 import BeautifulSoup
 from .storage import ROOT, Store, now
+from .geography import title_places
 
 MAX_BYTES = 6_000_000
 GEAR = re.compile(r"器材评测|购买指南|カメラレビュー|レンズレビュー|カメラ比較|機材レビュー|(?:(?:camera|lens|tripod|lighting gear).{0,25}(?:review|comparison|test|buying guide))|(?:(?:review|test|buying guide).{0,25}(?:camera|lens|tripod))", re.I)
-BUZZ = re.compile(r"behind.the.scenes|casting|cast joins|片場|舞台裏|撮影秘話|幕后|选角|趣闻|in talks to", re.I)
+BUZZ = re.compile(r"behind.the.scenes|casting|cast joins|片場|舞台裏|撮影秘話|幕后|选角|趣闻|in talks to|reveló|detrás de cámaras", re.I)
 
 
 def stable_id(value):
@@ -58,7 +59,11 @@ def text_only(value, limit=1200):
 def content_record(source, title, url, excerpt="", published=None, summary=None):
     stamp = now()
     url = canonical_url(url)
-    return {"id": stable_id(url), "source_id": source["id"], "canonical_url": url, "title_original": title.strip(), "title_zh": None, "summary_zh": summary, "raw_excerpt": excerpt[:1200], "body_hash": hashlib.sha256((title + excerpt + (summary or "")).encode()).hexdigest(), "channel": source["channels"][0], "kind": "industry_buzz" if BUZZ.search(title) else "news", "country": source.get("country"), "city": source.get("city"), "language": source["language"], "evidence_status": "official_confirmed" if source["source_type"] == "official" else "media_reported", "published_at": published, "fetched_at": stamp, "updated_at": stamp, "summary_status": "ready" if summary else "pending", "summary_provider": "structured-fields" if summary else None, "summary_model": None, "summary_generated_at": stamp if summary else None, "is_demo": 0}
+    fixed = source.get("adapter") in ("eiga_releases", "top_exhibitions", "tate_exhibitions")
+    locations = [{"country": source["country"], "city": source.get("city"), "basis": "source_structured"}] if fixed and source.get("country") else title_places(title)
+    countries = {place["country"] for place in locations}
+    cities = {place["city"] for place in locations if place["city"]}
+    return {"id": stable_id(url), "source_id": source["id"], "canonical_url": url, "title_original": title.strip(), "title_zh": None, "summary_zh": summary, "raw_excerpt": excerpt[:1200], "body_hash": hashlib.sha256((title + excerpt + (summary or "")).encode()).hexdigest(), "channel": source["channels"][0], "kind": "industry_buzz" if BUZZ.search(title) else "news", "country": next(iter(countries)) if len(countries) == 1 else None, "city": next(iter(cities)) if len(cities) == 1 else None, "geography_status": "confirmed" if fixed else "mentioned" if locations else "unknown", "locations_json": json.dumps(locations, ensure_ascii=False), "language": source["language"], "evidence_status": "official_confirmed" if source["source_type"] == "official" else "media_reported", "published_at": published, "fetched_at": stamp, "updated_at": stamp, "summary_status": "ready" if summary else "pending", "summary_provider": "structured-fields" if summary else None, "summary_model": None, "summary_generated_at": stamp if summary else None, "is_demo": 0}
 
 
 def rss_records(source, payload):
@@ -96,14 +101,20 @@ def rss_records(source, payload):
     return records, [], []
 
 
-def event_record(source, content, kind, start, end=None, venue=None, city=None):
+def event_record(source, content, kind, start, end=None, venue=None, city=None, country=None, timezone=None):
     date.fromisoformat(start)
     if end:
         date.fromisoformat(end)
         if end < start:
             raise ValueError("活动结束日期早于开始日期")
     url = content["canonical_url"]
-    return {"id": stable_id(source["id"] + url + kind + "JP"), "title_original": content["title_original"], "title_zh": None, "channel": content["channel"], "event_type": kind, "country": "JP", "city": city, "venue": venue, "start_date": start, "end_date": end, "date_precision": "day", "date_text_original": start + ("〜" + end if end else ""), "timezone": "Asia/Tokyo", "price_text": None, "closure_note": None, "booking_url": None, "evidence_url": url, "evidence_status": content["evidence_status"], "verified_at": now(), "updated_at": now(), "is_demo": 0}
+    country = country or source.get("country")
+    timezone = timezone or ("Asia/Tokyo" if country == "JP" else None)
+    if not country or not timezone:
+        raise ValueError("活动需要明确国家与当地时区")
+    from zoneinfo import ZoneInfo
+    ZoneInfo(timezone)
+    return {"id": stable_id(source["id"] + url + kind + country), "title_original": content["title_original"], "title_zh": None, "channel": content["channel"], "event_type": kind, "country": country, "city": city, "venue": venue, "start_date": start, "end_date": end, "date_precision": "day", "date_text_original": start + ("〜" + end if end else ""), "timezone": timezone, "price_text": None, "closure_note": None, "booking_url": None, "evidence_url": url, "evidence_status": content["evidence_status"], "verified_at": now(), "updated_at": now(), "is_demo": 0}
 
 
 def eiga_records(source, payload):
@@ -158,7 +169,45 @@ def top_records(source, payload):
     return records, events, links
 
 
-ADAPTERS = {"rss": rss_records, "eiga_releases": eiga_records, "top_exhibitions": top_records}
+MONTHS = {name: index for index, name in enumerate(("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"), 1)}
+
+
+def tate_records(source, payload):
+    soup = BeautifulSoup(payload, "html.parser")
+    records, events, links, seen = [], [], [], set()
+    for anchor in soup.select('a[href*="/whats-on/tate-modern/"]'):
+        title_node, dates = anchor.select_one(".card__title"), anchor.select_one(".event-info__date")
+        tags, venue = anchor.select_one(".card-tags"), anchor.select_one(".event-info__venue")
+        if not title_node or not dates or not tags or not venue or tags.get_text(" ", strip=True) != "Exhibition" or venue.get_text(" ", strip=True) != "Tate Modern":
+            continue
+        original = dates.get_text(" ", strip=True)
+        match = re.fullmatch(r"(\d{1,2}) ([A-Za-z]{3})(?: (\d{4}))?\s*[–—-]\s*(\d{1,2}) ([A-Za-z]{3}) (\d{4})", original)
+        if not match or match[2] not in MONTHS or match[5] not in MONTHS:
+            continue
+        # Inherit the explicitly printed year only for a non-cross-year range.
+        if not match[3] and MONTHS[match[2]] > MONTHS[match[5]]:
+            continue
+        start = date(int(match[3] or match[6]), MONTHS[match[2]], int(match[1])).isoformat()
+        end = date(int(match[6]), MONTHS[match[5]], int(match[4])).isoformat()
+        url = canonical_url(urljoin(source["feed_url"], anchor["href"]))
+        if url in seen:
+            continue
+        seen.add(url)
+        title = title_node.get_text(" ", strip=True)
+        summary = f"伦敦 Tate Modern 展览《{title}》，展期 {start} 至 {end}。展期来自场馆官网；票价、开放日及预约请核对原文。"
+        record = content_record(source, title, url, summary=summary)
+        description = anchor.select_one(".card__description")
+        if re.search(r"photograph", title + " " + (description.get_text() if description else ""), re.I):
+            record["channel"] = "photography"
+        event = event_record(source, record, "exhibition", start, end, "Tate Modern", "伦敦", "GB", "Europe/London")
+        event["date_text_original"] = original
+        records.append(record); events.append(event); links.append({"content_id": record["id"], "event_id": event["id"]})
+    if not records:
+        raise ValueError("没有解析到完整展期，需核实场馆页面结构")
+    return records, events, links
+
+
+ADAPTERS = {"rss": rss_records, "eiga_releases": eiga_records, "top_exhibitions": top_records, "tate_exhibitions": tate_records}
 
 
 def run_ingestion(store, source_ids=None, fetcher=get_url):

@@ -11,12 +11,11 @@ from .enrichment import run_enrichment
 
 
 def notify(store, reference=None):
-    prefs = store.preferences()
-    today = reference or datetime.now(ZoneInfo(prefs.get("reading_timezone", "Asia/Tokyo"))).date().isoformat()
     created = 0
     with store.connect() as db:
         events = db.execute("SELECT events.* FROM events JOIN bookmarks ON bookmarks.event_id=events.id WHERE events.is_demo=0 AND events.date_precision='day' AND bookmarks.status!='seen'").fetchall()
         for event in events:
+            today = reference or datetime.now(ZoneInfo(event["timezone"])).date().isoformat()
             checks = [("starting", event["start_date"], "即将开始", 1), ("ending", event["end_date"], "即将结束", 7)]
             for kind, target, label, window in checks:
                 if not target:

@@ -14,8 +14,8 @@ def send_notifications(store, smtp_factory=None):
     if any("\n" in value or "\r" in value for value in (host, sender, recipient)):
         return {"status": "configuration_error", "sent": 0}
     with store.connect() as db:
-        today = datetime.now(ZoneInfo(store.preferences().get("reading_timezone", "Asia/Tokyo"))).date().isoformat()
-        rows = db.execute("SELECT notifications.* FROM notifications JOIN bookmarks ON bookmarks.event_id=notifications.event_id JOIN events ON events.id=notifications.event_id WHERE notifications.read=0 AND notifications.emailed=0 AND bookmarks.status!='seen' AND coalesce(events.end_date,events.start_date)>=? ORDER BY notifications.created_at LIMIT 20", (today,)).fetchall()
+        rows = db.execute("SELECT notifications.*, events.timezone AS event_timezone, coalesce(events.end_date,events.start_date) AS last_day FROM notifications JOIN bookmarks ON bookmarks.event_id=notifications.event_id JOIN events ON events.id=notifications.event_id WHERE notifications.read=0 AND notifications.emailed=0 AND bookmarks.status!='seen' ORDER BY notifications.created_at").fetchall()
+        rows = [row for row in rows if row["last_day"] >= datetime.now(ZoneInfo(row["event_timezone"])).date().isoformat()][:20]
     if not rows:
         return {"status": "idle", "sent": 0}
     message = EmailMessage()

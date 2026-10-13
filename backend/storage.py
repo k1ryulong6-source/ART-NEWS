@@ -26,6 +26,13 @@ class Store:
             for column in ("raw_excerpt", "body_hash"):
                 if column not in existing:
                     db.execute(f"ALTER TABLE content ADD COLUMN {column} TEXT")
+            for column, default in (("geography_status", "unknown"), ("locations_json", "[]")):
+                if column not in existing:
+                    db.execute(f"ALTER TABLE content ADD COLUMN {column} TEXT NOT NULL DEFAULT '{default}'")
+            source_columns = {row[1] for row in db.execute("PRAGMA table_info(sources)")}
+            for column in ("publisher_country", "coverage"):
+                if column not in source_columns:
+                    db.execute(f"ALTER TABLE sources ADD COLUMN {column} TEXT")
             db.execute("CREATE TABLE IF NOT EXISTS preferences (id INTEGER PRIMARY KEY CHECK(id=1), value TEXT NOT NULL)")
             db.execute("CREATE TABLE IF NOT EXISTS job_state(id TEXT PRIMARY KEY, value TEXT NOT NULL)")
             db.execute("CREATE TABLE IF NOT EXISTS notifications(id TEXT PRIMARY KEY, event_id TEXT NOT NULL REFERENCES events(id) ON DELETE CASCADE, title TEXT NOT NULL, created_at TEXT NOT NULL, read INTEGER NOT NULL DEFAULT 0, emailed INTEGER NOT NULL DEFAULT 0)")
@@ -60,13 +67,15 @@ class Store:
             event_ids = {record["id"] for record in events}
             links = [dict(row) for row in db.execute("SELECT * FROM content_events") if row["content_id"] in ids and row["event_id"] in event_ids]
             sources = [dict(row) for row in db.execute("SELECT * FROM sources")]
-        reference = "2026-10-13" if demo else datetime.now(ZoneInfo(self.preferences().get("reading_timezone", "Asia/Tokyo"))).date().isoformat()
+        reference = "2026-10-13" if demo else datetime.now(ZoneInfo(self.preferences().get("reading_timezone", "UTC"))).date().isoformat()
         return {"schema_version": 1, "mode": mode, "reference_date": reference, "content": content, "events": events, "content_events": links, "sources": sources}
 
     def preferences(self):
         with self.connect() as db:
             row = db.execute("SELECT value FROM preferences WHERE id=1").fetchone()
-        return json.loads(row[0]) if row else json.loads((ROOT / "config/preferences.json").read_text(encoding="utf-8"))
+        defaults = json.loads((ROOT / "config/preferences.json").read_text(encoding="utf-8"))
+        saved = json.loads(row[0]) if row else {}
+        return {**defaults, **saved, "news_scope": saved.get("news_scope", defaults["news_scope"])}
 
     def save_preferences(self, preferences):
         with self.connect() as db:
@@ -123,11 +132,20 @@ class Store:
     def register_sources(self, sources):
         with self.connect() as db:
             for source in sources:
-                row = {key: source.get(key) for key in ("id", "name", "homepage_url", "source_type", "access_status", "access_method", "verified_at", "notes")}
+                row = {key: source.get(key) for key in ("id", "name", "homepage_url", "source_type", "access_status", "access_method", "verified_at", "notes", "publisher_country", "coverage")}
                 row["enabled"] = int(source.get("enabled", False))
                 columns = list(row)
                 update = ",".join(f"{key}=excluded.{key}" for key in columns if key != "id")
                 db.execute(f"INSERT INTO sources ({','.join(columns)}) VALUES ({','.join('?' for _ in columns)}) ON CONFLICT(id) DO UPDATE SET {update}", list(row.values()))
+                if source.get("adapter") == "rss":
+                    # Correct archived records too, even when a feed no longer
+                    # includes them. Keep cached summaries and bookmarks intact.
+                    from .geography import title_places
+                    for article in db.execute("SELECT id,title_original FROM content WHERE source_id=? AND is_demo=0", (source["id"],)).fetchall():
+                        locations = title_places(article["title_original"])
+                        countries = {place["country"] for place in locations}
+                        cities = {place["city"] for place in locations if place["city"]}
+                        db.execute("UPDATE content SET country=?,city=?,geography_status=?,locations_json=? WHERE id=?", (next(iter(countries)) if len(countries) == 1 else None, next(iter(cities)) if len(cities) == 1 else None, "mentioned" if locations else "unknown", json.dumps(locations, ensure_ascii=False), article["id"]))
 
     def ingest_records(self, content, events, links):
         inserted, updated = 0, 0
@@ -140,6 +158,9 @@ class Store:
                     record["id"] = old["id"]
                     if old["body_hash"] == record["body_hash"]:
                         db.execute("UPDATE content SET fetched_at=?,raw_excerpt=? WHERE id=?", (record["fetched_at"], record.get("raw_excerpt"), old["id"]))
+                        for field in ("country", "city", "geography_status", "locations_json", "kind"):
+                            if field in record:
+                                db.execute(f"UPDATE content SET {field}=? WHERE id=?", (record[field], old["id"]))
                         if not old["summary_zh"] and record.get("summary_zh"):
                             db.execute("UPDATE content SET title_zh=?,summary_zh=?,summary_status=?,summary_provider=?,summary_generated_at=? WHERE id=?", (record.get("title_zh"), record["summary_zh"], record["summary_status"], record.get("summary_provider"), record.get("summary_generated_at"), old["id"]))
                         continue

@@ -61,3 +61,29 @@ test('calendar export uses exclusive end dates and folds Unicode by bytes', () =
   assert.equal((result.match(/BEGIN:VEVENT/g) || []).length, 1);
   assert.ok(result.split('\r\n').every(line => Buffer.byteLength(line, 'utf8') <= 75));
 });
+
+test('global selection balances sources and channels without a default city bias', () => {
+  const rows = Array.from({length: 10}, (_, i) => ({id:'film'+i, source_id:'film-source', channel:'film', city:'东京', title_original:'A movie', kind:'news', published_at:'2026-10-13', evidence_status:'media_reported'}));
+  rows.push({id:'art',source_id:'art-source',channel:'art',title_original:'An exhibition',kind:'news',evidence_status:'media_reported'}, {id:'photo',source_id:'photo-source',channel:'photography',title_original:'A photograph',kind:'news',evidence_status:'media_reported'});
+  const selected=C.selectToday(rows,{...prefs,interests:[],followed_entities:[],default_city:'东京',news_scope:'global',daily_selection_limit:5});
+  assert.ok(selected.some(r => r.id==='art'));
+  assert.ok(selected.some(r => r.id==='photo'));
+  assert.ok(selected.every(r => r.score===0));
+});
+
+test('world region and language filters use story places rather than publisher country', () => {
+  const row={language:'es',country:null,geography_status:'mentioned',locations_json:JSON.stringify([{country:'FR',city:'巴黎'},{country:'JP',city:'东京'}])};
+  assert.ok(C.matches(row,{country:'FR',city:'巴黎',language:'es'}));
+  assert.ok(C.matches(row,{country:'JP'}));
+  assert.ok(!C.matches(row,{country:'US'}));
+  assert.ok(!C.matches(row,{language:'en'}));
+  assert.match(C.locationLabel(row),/^涉及/);
+  assert.equal(C.locationLabel({country:null}),'地点未说明');
+});
+
+test('event countdown uses local dates across UTC midnight in different regions', () => {
+  const instant=new Date('2026-10-14T01:00:00Z');
+  assert.equal(C.localDate('America/New_York',instant),'2026-10-13');
+  assert.equal(C.localDate('Asia/Tokyo',instant),'2026-10-14');
+  assert.equal(C.eventState({date_precision:'day',event_type:'exhibition',start_date:'2026-10-14'},C.localDate('America/New_York',instant)).label,'1 天后开幕');
+});

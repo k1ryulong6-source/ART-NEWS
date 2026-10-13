@@ -16,7 +16,9 @@
       "access_method": null,
       "feed_url": null,
       "verified_at": null,
-      "notes": "候选：电影新闻与圈内动态；接入方式尚未核实。"
+      "notes": "候选：电影新闻与圈内动态；接入方式尚未核实。",
+      "publisher_country": "JP",
+      "coverage": "JP"
     },
     {
       "id": "eiga-com",
@@ -34,7 +36,9 @@
       "feed_url": "https://eiga.com/coming/",
       "verified_at": "2026-10-13",
       "notes": "2026-10-13 实际 HTTP 200，结构验证通过。只保存标题、必要摘录／结构化信息及原文链接，不镜像图片或全文。",
-      "adapter": "eiga_releases"
+      "adapter": "eiga_releases",
+      "publisher_country": "JP",
+      "coverage": "JP"
     },
     {
       "id": "tokyo-art-beat",
@@ -52,7 +56,9 @@
       "access_method": null,
       "feed_url": null,
       "verified_at": null,
-      "notes": "候选：展览发现；不假定具有开放 API。"
+      "notes": "候选：展览发现；不假定具有开放 API。",
+      "publisher_country": "JP",
+      "coverage": "JP"
     },
     {
       "id": "bijutsutecho",
@@ -70,7 +76,9 @@
       "access_method": null,
       "feed_url": null,
       "verified_at": null,
-      "notes": "候选：展览、艺术家与行业报道。"
+      "notes": "候选：展览、艺术家与行业报道。",
+      "publisher_country": "JP",
+      "coverage": "JP"
     },
     {
       "id": "ima",
@@ -79,7 +87,7 @@
       "channels": [
         "photography"
       ],
-      "country": "JP",
+      "country": null,
       "language": "ja",
       "source_type": "media",
       "enabled": true,
@@ -88,7 +96,9 @@
       "feed_url": "https://imaonline.jp/feed/",
       "verified_at": "2026-10-13",
       "notes": "2026-10-13 实际 HTTP 200，结构验证通过。只保存标题、必要摘录／结构化信息及原文链接，不镜像图片或全文。",
-      "adapter": "rss"
+      "adapter": "rss",
+      "publisher_country": "JP",
+      "coverage": "global"
     },
     {
       "id": "tokyo-photo-museum",
@@ -107,7 +117,10 @@
       "feed_url": "https://topmuseum.jp/contents/exhibition/index.html",
       "verified_at": "2026-10-13",
       "notes": "2026-10-13 实际 HTTP 200，结构验证通过。只保存标题、必要摘录／结构化信息及原文链接，不镜像图片或全文。",
-      "adapter": "top_exhibitions"
+      "adapter": "top_exhibitions",
+      "publisher_country": "JP",
+      "coverage": "JP",
+      "city": "东京"
     },
     {
       "id": "film-stage",
@@ -125,7 +138,9 @@
       "feed_url": "https://thefilmstage.com/feed/",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "实际 RSS 可读取；Aperture 的 XML 声明前空白需移除。保存必要摘要和原文链接，禁止镜像全文。"
+      "notes": "实际 RSS 可读取；Aperture 的 XML 声明前空白需移除。保存必要摘要和原文链接，禁止镜像全文。",
+      "publisher_country": "US",
+      "coverage": "global"
     },
     {
       "id": "artnews",
@@ -143,7 +158,9 @@
       "feed_url": "https://www.artnews.com/feed/",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "实际 RSS 可读取；Aperture 的 XML 声明前空白需移除。保存必要摘要和原文链接，禁止镜像全文。"
+      "notes": "实际 RSS 可读取；Aperture 的 XML 声明前空白需移除。保存必要摘要和原文链接，禁止镜像全文。",
+      "publisher_country": "US",
+      "coverage": "global"
     },
     {
       "id": "aperture",
@@ -161,7 +178,9 @@
       "feed_url": "https://aperture.org/feed/",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "实际 RSS 可读取；Aperture 的 XML 声明前空白需移除。保存必要摘要和原文链接，禁止镜像全文。"
+      "notes": "实际 RSS 可读取；Aperture 的 XML 声明前空白需移除。保存必要摘要和原文链接，禁止镜像全文。",
+      "publisher_country": "US",
+      "coverage": "global"
     },
     {
       "id": "artforum-cn",
@@ -179,8 +198,152 @@
       "feed_url": "https://www.artforum.com.cn/rss",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "实际 HTTP 200，RSS 50 条；只读取公开 RSS 元数据，不绕过订阅或登录。"
+      "notes": "实际 HTTP 200，RSS 50 条；只读取公开 RSS 元数据，不绕过订阅或登录。",
+      "publisher_country": "CN",
+      "coverage": "global"
+    },
+    {
+      "id": "variety-film",
+      "name": "Variety · Film",
+      "homepage_url": "https://variety.com",
+      "feed_url": "https://variety.com/v/film/feed/",
+      "channels": [
+        "film"
+      ],
+      "country": null,
+      "publisher_country": "US",
+      "coverage": "global",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "verified_at": "2026-10-13",
+      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。"
+    },
+    {
+      "id": "artnet",
+      "name": "Artnet News",
+      "homepage_url": "https://news.artnet.com",
+      "feed_url": "https://news.artnet.com/feed",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": "US",
+      "coverage": "global",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "verified_at": "2026-10-13",
+      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。"
+    },
+    {
+      "id": "hyperallergic",
+      "name": "Hyperallergic",
+      "homepage_url": "https://hyperallergic.com",
+      "feed_url": "https://hyperallergic.com/rss/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": "US",
+      "coverage": "global",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "verified_at": "2026-10-13",
+      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。"
+    },
+    {
+      "id": "bjp",
+      "name": "British Journal of Photography",
+      "homepage_url": "https://www.1854.photography",
+      "feed_url": "https://www.1854.photography/feed/",
+      "channels": [
+        "photography"
+      ],
+      "country": null,
+      "publisher_country": "GB",
+      "coverage": "global",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "verified_at": "2026-10-13",
+      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。"
+    },
+    {
+      "id": "loeil",
+      "name": "L’Œil de la Photographie",
+      "homepage_url": "https://loeildelaphotographie.com",
+      "feed_url": "https://loeildelaphotographie.com/en/feed/",
+      "channels": [
+        "photography"
+      ],
+      "country": null,
+      "publisher_country": "FR",
+      "coverage": "global",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "verified_at": "2026-10-13",
+      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。"
+    },
+    {
+      "id": "cinefilos",
+      "name": "Cinéfilos",
+      "homepage_url": "https://cinefilosoficial.com",
+      "feed_url": "https://cinefilosoficial.com/feed/",
+      "channels": [
+        "film"
+      ],
+      "country": null,
+      "publisher_country": "AR",
+      "coverage": "global",
+      "language": "es",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "verified_at": "2026-10-13",
+      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。"
+    },
+    {
+      "id": "tate-modern",
+      "name": "Tate Modern",
+      "homepage_url": "https://www.tate.org.uk",
+      "feed_url": "https://www.tate.org.uk/whats-on/tate-modern",
+      "channels": [
+        "art",
+        "photography"
+      ],
+      "country": "GB",
+      "city": "伦敦",
+      "publisher_country": "GB",
+      "coverage": "GB",
+      "language": "en",
+      "source_type": "official",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "public_page",
+      "adapter": "tate_exhibitions",
+      "verified_at": "2026-10-13",
+      "notes": "实际 HTTP 200；只采用展览卡片中的明确完整展期。Until 单独闭展日期不补造开幕日；会员免费不代表普通门票免费。"
     }
   ],
-  "notes": "主页仅为候选资料，不证明已访问、可抓取或具备 RSS。中国来源及片方／影院官网在真实接入任务中补充。"
+  "notes": "全球电影、艺术、摄影为主，日本上映与展览保留专题；地区由报道线索或明确场馆资料决定，不能按媒体总部推断。覆盖仍有限，未验证来源保持停用。"
 }

@@ -6,7 +6,7 @@
 
 **在线访问：[映间资讯平台](https://k1ryulong6-source.github.io/ART-NEWS/)**
 
-若打开后显示「Selah／私人学歌老师」，是同域名另一项目的离线缓存拦截。当前可用无痕窗口访问；永久修复进度见 [Pages 排查记录](docs/PAGES_TROUBLESHOOTING.md)。
+同域名旧 PWA 的导航缓存冲突已修复并上线。若浏览器仍显示「Selah」，在该页点击“更新 Selah”，再打开上述完整资讯地址；无需删除浏览器数据。详见 [Pages 排查记录](docs/PAGES_TROUBLESHOOTING.md)。
 
 ## 当前版本 v0.5
 

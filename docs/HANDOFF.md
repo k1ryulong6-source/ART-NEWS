@@ -81,4 +81,4 @@ T018 本轮资料任务：https://github.com/k1ryulong6-source/ART-NEWS/issues/5
 
 ## T019 · 同域名离线缓存冲突
 
-用户确认网址显示 Selah；已复现根应用 Service Worker 拦截 `/ART-NEWS/`。全新浏览器验收漏掉已安装其他 PWA 的情形。永久修复涉及另一个项目 Selah，补丁和针对性 Node／Chromium 回归已完成，等待跨项目修改与重新发布授权。临时无痕可访问，不等于永久修复。详见 PAGES_TROUBLESHOOTING.md。
+用户确认网址显示 Selah；已复现根应用 Service Worker 拦截 `/ART-NEWS/`。全新浏览器验收漏掉已安装其他 PWA 的情形。用户已明确授权修改 Selah；私有源码 23d9830 修复根导航回退，发布 e8b1592，部署成功：https://github.com/k1ryulong6-source/k1ryulong6-source.github.io/actions/runs/38393132033。同一保留旧 Worker 的生产浏览器升级前复现、更新后正确打开映间，存储标记保留，390px／1440px 五页通过，根站仍离线可打开。已验收 T019；当前浏览器旧 Worker 如未升级，点击页面“更新 Selah”再打开资讯。详见 PAGES_TROUBLESHOOTING.md。

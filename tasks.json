@@ -543,7 +543,7 @@
       "id": "T019",
       "title": "修复同域名学歌 PWA 拦截资讯网址",
       "milestone": "M4",
-      "status": "blocked",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
@@ -561,9 +561,13 @@
       "evidence": [
         "用户确认实际显示 Selah／私人学歌老师；真实 Chromium 先访问根页再访问 ART-NEWS 复现。",
         "Pages API 与新浏览器证明资讯 URL 正确且页面存在，根 Worker 的 navigate 回退错误覆盖所有路径。",
-        "两行源码补丁与 Node／真实 Chromium Service Worker 回归准备完成，根应用离线行为保持，其他项目不再拦截。"
+        "两行源码补丁与 Node／真实 Chromium Service Worker 回归准备完成，根应用离线行为保持，其他项目不再拦截。",
+        "用户确认：另一个项目 Selah 可以修改，授权持续，无需重复确认。",
+        "Selah 私有源码 23d9830、发布 e8b1592；138 Node／TypeScript／生产构建、58 恢复核验与 4 组 PWA 回归通过。",
+        "正式部署成功：https://github.com/k1ryulong6-source/k1ryulong6-source.github.io/actions/runs/38393132033",
+        "同一生产浏览器保留旧 Worker，升级前显示 Selah，正常点击更新后显示映间；合成存储标记保持、390px／1440px 五页、根站离线重开通过。"
       ],
-      "notes": "永久修复涉及另一个项目 Selah；等待用户确认跨项目修改与重新发布。临时无痕可访问，尚未宣称永久修复完成。"
+      "notes": "用户授权的跨项目修复已发布并验收；已有浏览器旧 Worker 可点击“更新 Selah”保留数据升级，无需重复确认或清空站点数据。"
     }
   ]
 }

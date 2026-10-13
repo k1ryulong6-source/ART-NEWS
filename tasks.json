@@ -409,7 +409,7 @@
       "id": "T015",
       "title": "网站托管与访问方式",
       "milestone": "M4",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "depends_on": [
         "T010"
@@ -426,10 +426,13 @@
         "用户已选择其他人都能访问的公开静态网站；各读者独立浏览器收藏。",
         "GitHub POST /pages 返回 403 Resource not accessible by integration；管理员须在 Settings → Pages 将 Source 设 GitHub Actions。",
         "Pages 自动发布、就绪检查、刷新完成后触发已准备；未虚称网站部署成功。",
-        "管理员回复已开启；GET /pages 确认 build_type=workflow，正在执行公开发布验收。"
+        "管理员回复已开启；GET /pages 确认 build_type=workflow，正在执行公开发布验收。",
+        "首次 Pages 部署成功：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38389258730",
+        "公开网址 https://k1ryulong6-source.github.io/ART-NEWS/ HTTP 200，1440px／390px 五页、筛选、收藏、UTC ICS 在线验收通过。"
       ],
       "updated_at": "2026-10-13",
-      "github_issue": "https://github.com/k1ryulong6-source/ART-NEWS/issues/2"
+      "github_issue": "https://github.com/k1ryulong6-source/ART-NEWS/issues/2",
+      "notes": "公开静态网站已验收；各读者收藏与设置保存在自己的浏览器，可 JSON 迁移。"
     },
     {
       "id": "T016",
@@ -505,7 +508,7 @@
       "id": "T018",
       "title": "补齐海外上映、影展放映与摄影征集资料",
       "milestone": "M2",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-10-13",
       "depends_on": [
@@ -528,10 +531,13 @@
       "evidence": [
         "四个新官方来源实际读取成功；101 场影展、4 个摄影征集、4 个法国上映、4 个韩国精选展期，当前 430 条资料／158 活动。",
         "精确时刻、报名与费用、身份稳定、冲突留空与 UTC 日历导出检查；27 Python / 12 JS 检查通过。",
-        "重复采集四个新源 inserted=0；时刻冲突标明、未任选 13/16 GMT。"
+        "重复采集四个新源 inserted=0；时刻冲突标明、未任选 13/16 GMT。",
+        "本地服务、静态版与实际公开 URL 在 1440px／390px 验收通过；4 个征集、101 场放映、法国上映、韩国展期、时刻冲突与 UTC ICS。",
+        "CI 39 项检查通过：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38389258753",
+        "实际 GitHub 刷新成功：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38389285444；24 源成功，Asian Movie Pulse／BFI 403 缓存保留。当前 432 条资料、158 活动，审计 0 错误、1 官方时刻冲突预警。"
       ],
       "github_issue": "https://github.com/k1ryulong6-source/ART-NEWS/issues/5",
-      "notes": "本轮资料与功能已完成；浏览器验收及 GitHub 结果补录后关闭。"
+      "notes": "本轮资料和界面验收完成；持续扩充方向见 COVERAGE。GitHub 环境来源访问限制如实记录，未绕过限制。"
     }
   ]
 }

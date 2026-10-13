@@ -83,3 +83,5 @@ T018 新增法国 Diaphana 上映日、BFI London Film Festival 场次、Sony �
 Sony 学生组同页 13:00／16:00 GMT 表述冲突，保留日期与原文冲突说明，不任选时刻。已知时刻的 ICS 输出 UTC 瞬间，旧日期型记录仍为全天；截止与放映提醒按真实时刻过期，冲突时刻不在截止当天发送模糊提醒。
 
 管理员回复“已开启”；GitHub GET /pages 已确认 build_type=workflow，管理权限问题已解除。公开发布继续执行，无需重复授权。
+
+公开网站 https://k1ryulong6-source.github.io/ART-NEWS/ 首次部署、HTTP 200、桌面与手机交互验收通过。GitHub 刷新 24 源成功，BFI 与 Asian Movie Pulse 403；保留此前数据与最近成功记录，不以工作流总体成功掩盖源级失败。

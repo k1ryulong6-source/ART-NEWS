@@ -4,7 +4,7 @@
 
 ## 仓库与授权
 
-仓库：https://github.com/k1ryulong6-source/ART-NEWS 。用户保留公开仓库，并已明确授权公开网页。v0.5 本地新增四个官方来源，430 条资料／158 项活动；真实重复采集新来源 inserted=0。源级历史保留，Asian Movie Pulse 之前在 GitHub 返回 403 的限制仍明确记录。推送后补录本轮 CI／刷新结果。
+仓库：https://github.com/k1ryulong6-source/ART-NEWS 。用户保留公开仓库，并已明确授权公开网页。v0.5 新增四个官方来源，432 条资料／158 项活动；真实重复采集新来源 inserted=0。源级历史保留；本轮 GitHub 刷新 24 源成功，Asian Movie Pulse 与 BFI 返回 HTTP 403，分别保留原 8 条资料与 101 场次及最后成功时间，没有绕过限制。
 
 API 密钥、密码、SMTP 配置、个人数据库与收藏不进入 Git。data/live.json 和 frontend/data.js 只有公开来源元数据及处理次数账本。
 
@@ -13,7 +13,7 @@ API 密钥、密码、SMTP 配置、个人数据库与收藏不进入 Git。data
 - 今日／探索／日历／收藏／设置；频道、地区、城市、搜索、圈内动态开关与配额。
 - 内容／活动详情、关注对象排序、收藏状态、JSON 导出恢复、ICS 日历导出。
 - SQLite 存储，真实／示例分离，旧库迁移、首次公开快照恢复。
-- 26 个真实来源；430 条资讯与资料、158 项活动（日本 28、英国 109、印度 3、南非 6、法国 4、韩国 4、全球征集 4）。
+- 26 个真实来源；432 条资讯与资料、158 项活动（日本 28、英国 109、印度 3、南非 6、法国 4、韩国 4、全球征集 4）。
 - 新增 101 场伦敦影展放映、4 个全球摄影征集、4 个法国上映、4 个韩国展期；准确时刻、报名、资格、费用及冲突提示。
 - 全球默认、18 国／城市／语言筛选、日本专题；标题多地区提及与媒体发布地分离，未知地点不猜测。
 - 已保存来源核实档案 data/source-research.json、覆盖缺口 docs/COVERAGE.md；质量脚本检查重复、日期、器材与活动引用。
@@ -43,7 +43,7 @@ API 密钥、密码、SMTP 配置、个人数据库与收藏不进入 Git。data
 
 - SUMMARY_API_KEY 尚未配置。真实外部模型调用未启用；结构化日期摘要与中文来源摘录可读，其他新闻保持原标题。
 - SMTP 未配置。没有实际发送邮件；站内提醒已实现，模拟发送与去重已测试。
-- 管理员已开启 GitHub Actions Pages 来源；当前正在发布并验证在线网址。
+- 来源访问限制：Asian Movie Pulse 与 BFI 在 GitHub 返回 HTTP 403，旧资料与来源状态保留，后续按来源状态复核。
 - T018 本轮已补法国上映、伦敦影展、摄影征集与韩国展期；仍是持续覆盖，不能声称所有地区、所有电影或场馆已收齐。
 
 ## 运行与检查
@@ -59,20 +59,22 @@ python3 scripts/import_snapshot.py：首次恢复公开快照，并恢复当天�
 
 ## 下一位 AI
 
-先读 AGENTS.md、本文件、DECISIONS.md、tasks.json；查看实际 Git 状态与 Actions 结果。现有页面与采集链路不需要重写。按 T013／T014 处理用户选择启用的外部服务，按 T015 完成选定托管，按 T018 扩充全球非英语来源和官方展期。
+先读 AGENTS.md、本文件、DECISIONS.md、tasks.json；查看实际 Git 状态与 Actions 结果。现有页面与采集链路不需要重写。按 T013／T014 处理用户选择启用的外部服务，T015／T018 已验收；继续按 COVERAGE 扩充全球非英语来源和官方展期。
 
 模型密钥只放运行环境／GitHub Secrets；不要让用户把密钥提交到公开仓库。日期／票价不由模型改写。每次交付更新任务、交接、决策和实际检查结果。
 
 
 ## GitHub 验证与领取入口
 
-- CI：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38382261321
-- 实际自动刷新：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38382266972
+- CI：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38389258753
+- 实际自动刷新：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38389285444
 - 摘要配置：https://github.com/k1ryulong6-source/ART-NEWS/issues/1
 - 托管选择：https://github.com/k1ryulong6-source/ART-NEWS/issues/2
 - 已完成全球更新：https://github.com/k1ryulong6-source/ART-NEWS/issues/3
 - 已完成全球来源补全：https://github.com/k1ryulong6-source/ART-NEWS/issues/4
 
-公开访问已授权，管理员已开启 Pages，API 已确认 build_type=workflow；发布验收进行中。
+网站：https://k1ryulong6-source.github.io/ART-NEWS/
+
+首次公开部署成功：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38389258730。公开 URL 返回 HTTP 200；在线 Chromium 1440px／390px 五页无溢出和脚本错误，摄影时刻冲突、报名入口、101 场放映、地区筛选、收藏和 UTC ICS 下载通过。GitHub 每 12 小时自动刷新，刷新完成后自动重新发布。
 
 T018 本轮资料任务：https://github.com/k1ryulong6-source/ART-NEWS/issues/5 。

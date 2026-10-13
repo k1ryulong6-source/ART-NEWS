@@ -81,7 +81,7 @@ docker compose up -d --build
 
 app 与 updater 共用持久数据卷；默认只绑定本机 8000。部署到远程私人服务时可设置 CULTURE_DESK_PASSWORD，用户名 owner，并由 HTTPS 网关提供访问。同一受保护服务的多个浏览器共享 SQLite 状态；静态版各浏览器状态独立。
 
-Docker 与托管细节见 docs/OPERATIONS.md。网站公开／私人访问方式仍按用户选择处理，不把仓库公开等同于网站已经发布。
+Docker 与托管细节见 docs/OPERATIONS.md。网站公开／私人访问方式仍按用户选择处理，不把仓库公开等同于网站已经发布。pages.yml 是尚未触发的公开静态托管准备，用户选定公开网页后再开启。
 
 ## 检查
 

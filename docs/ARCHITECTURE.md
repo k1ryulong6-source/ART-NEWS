@@ -2,7 +2,7 @@
 
 ## 当前与建议
 
-当前已经实现 `frontend/` 和 `backend/`：原生 HTML／CSS／JavaScript + FastAPI + SQLite。没有真实采集器、真实模型摘要或定时任务。
+当前已实现原生前端、FastAPI／SQLite、七个真实来源适配器、可配置摘要接口、定时任务、提醒与部署配置。实际外部摘要和 SMTP 尚未配置，默认 NoOp。
 
 Python 3.10+、FastAPI、SQLite；前端无外部依赖，后端通过资源白名单提供静态文件。Python 依赖版本见 requirements.txt。后续若实际复杂度需要，再迁移 React／TypeScript 或 PostgreSQL；参见 D007。
 
@@ -39,7 +39,7 @@ Python 3.10+、FastAPI、SQLite；前端无外部依赖，后端通过资源白�
 | GET／PUT `/api/preferences` | 个人设置 |
 | GET `/api/export` | 个人收藏和设置的可移植 JSON |
 
-已实现 content、events、bookmarks、preferences、export，以及 `/api/health`、`/api/dataset`、`POST /api/import`。`/api/today` 尚未实现，精选使用前端 core.js；API 尚无分页。正式版本修改设置、采集与导出等接口需按实际部署限制访问，目前只监听本机。
+已实现 content、events、bookmarks、preferences、export，以及 health、dataset、import、sources、notifications、refresh、jobs/status。精选使用前端 core.js，没有单独 /api/today；API 暂无分页，适用于当前个人规模。服务默认监听本机，可选个人访问密码由中间件保护全部路由。
 
 小规模个人服务的异步路由执行短 SQLite 查询，避免当前受限环境中的后台线程唤醒问题。采集／模型调用将独立于请求路径；未来大规模数据操作应迁移到独立任务进程或异步数据层。
 
@@ -57,4 +57,4 @@ Python 3.10+、FastAPI、SQLite；前端无外部依赖，后端通过资源白�
 
 个人设置初值来自 `config/preferences.json`；正式用户状态写本地数据目录或数据库。候选源来自 `config/sources.json`，未核实默认不启用。
 
-T001 已提供依赖锁定与启动命令，仍待浏览器与 TCP 监听验收。T004 将提供手动采集命令。定时器由 T008 完成，在那之前不得写“每天自动更新”。数据目录、数据库、API 密钥与个人导出不进入 Git。
+本地与 Docker HTTP、桌面／手机浏览器均已验证。backend.jobs 提供一次刷新或每 12 小时调度；GitHub refresh.yml 提供 UTC 每天两次公开快照刷新。实际定时服务需保持运行，GitHub Actions 结果可核查。数据目录、数据库、API 密钥与个人导出不进入 Git。

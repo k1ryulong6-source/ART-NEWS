@@ -4,7 +4,7 @@
 
 ## 仓库与授权
 
-仓库：https://github.com/k1ryulong6-source/ART-NEWS 。用户明确选择公开仓库，保留公开设置与原来的初始化提交。v0.1 已推送，v0.2 正在完成最终推送和 Actions 验证。
+仓库：https://github.com/k1ryulong6-source/ART-NEWS 。用户明确选择公开仓库，保留公开设置与原来的初始化提交。v0.2 已推送，GitHub Project checks 和 Refresh cultural news 均成功；刷新实际验证七个来源全部成功、重复插入为 0。
 
 API 密钥、密码、SMTP 配置、个人数据库与收藏不进入 Git。data/live.json 和 frontend/data.js 只有公开来源元数据及处理次数账本。
 
@@ -55,3 +55,14 @@ python3 scripts/import_snapshot.py：首次恢复公开快照，并恢复当天�
 先读 AGENTS.md、本文件、DECISIONS.md、tasks.json；查看实际 Git 状态与 Actions 结果。现有页面与采集链路不需要重写。按 T013／T014 处理用户选择启用的外部服务，按 T015 完成选定托管，按 T016 扩充来源。
 
 模型密钥只放运行环境／GitHub Secrets；不要让用户把密钥提交到公开仓库。日期／票价不由模型改写。每次交付更新任务、交接、决策和实际检查结果。
+
+
+## GitHub 验证与领取入口
+
+- CI：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38360567814
+- 实际自动刷新：https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38364831935
+- 摘要配置：https://github.com/k1ryulong6-source/ART-NEWS/issues/1
+- 托管选择：https://github.com/k1ryulong6-source/ART-NEWS/issues/2
+- 扩充来源：https://github.com/k1ryulong6-source/ART-NEWS/issues/3
+
+公开网站的 Pages 工作流已准备，但仅 workflow_dispatch，不随 push 自动发布，也尚未触发；等待用户选择公开网站后再配置 Pages 并验证网址。

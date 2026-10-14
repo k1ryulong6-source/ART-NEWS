@@ -18,12 +18,13 @@
   const safeUrl = value => { try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } };
   const originalPageUrl = row => safeImageUrl(row.original_page_url || row.canonical_url);
   const editorialReady = row => ['reviewed','translated'].includes(row.editorial_status) && Boolean(row.editorial_blocks_json && row.editorial_title_zh);
+  const machineReady = row => row.machine_translation_ready !== false && String(row.article_translation_provider || '').startsWith('offline-m2m100:') && row.translation_status === 'machine' && Boolean(row.article_translation_hash && row.article_translation_json && row.translated_title_zh);
   const priorityOf = row => { const value = root.CULTURE_BOOTSTRAP?.priorities?.[row.id]; return value?.source_title === row.title_original ? value : null; };
   const priorityRank = row => Number(priorityOf(row)?.priority?.slice(1) || 2);
   const priorityCompare = (a, b) => { const x=priorityOf(a)||{}, y=priorityOf(b)||{}, importance={high:0,medium:1,normal:2}; return priorityRank(a)-priorityRank(b) || (importance[x.importance]??2)-(importance[y.importance]??2) || (x.due?.days??999)-(y.due?.days??999) || String(b.published_at||'').localeCompare(String(a.published_at||'')); };
   const articleBlocks = (row, translated = false) => {
     try {
-      const blocks = JSON.parse((translated ? (editorialReady(row) ? row.editorial_blocks_json : null) : row.article_blocks_json) || '[]');
+      const blocks = JSON.parse((translated ? (editorialReady(row) ? row.editorial_blocks_json : machineReady(row) ? row.article_translation_json : null) : row.article_blocks_json) || '[]');
       if (!Array.isArray(blocks)) return [];
       return blocks.slice(0, 2000).filter(block => block && ['paragraph','heading','quote','list_item','image'].includes(block.type)).map(block => block.type === 'image' ? { ...block, url: safeImageUrl(block.url) } : { ...block, text: String(block.text || ''), links: (Array.isArray(block.links) ? block.links : []).filter(link => link && typeof link === 'object').map(link => ({ text: String(link.text || ''), url: safeImageUrl(link.url) })).filter(link => link.url) }).filter(block => block.type === 'image' ? block.url : block.text);
     } catch { return []; }
@@ -38,6 +39,15 @@
     searchTextCache.set(row, { blocks: row.article_blocks_json, text });
     return text;
   }
+  const readingTextCache = new WeakMap();
+  function readingText(row) {
+    const key = editorialReady(row) ? row.editorial_blocks_json : machineReady(row) ? row.article_translation_json : '';
+    const cached = readingTextCache.get(row);
+    if (cached && cached.key === key) return cached.text;
+    const text = key ? articleBlocks(row, true).map(block => block.text || block.caption || '').join('\n\n') : '';
+    readingTextCache.set(row, {key, text});
+    return text;
+  }
 
   const readerRoute = id => '#reader/' + encodeURIComponent(id);
   function parseRoute(hash) {
@@ -46,8 +56,8 @@
     return { view: ['today','explore','calendar','bookmarks','settings','coverage'].includes(value) ? value : 'today' };
   }
   const reviewedHeadline = row => { const pack = root.CULTURE_BOOTSTRAP?.headlines?.[row.id]; return pack?.source_title === row.title_original ? pack.title_zh : null; };
-  const displayTitle = row => (editorialReady(row) ? row.editorial_title_zh : null) || reviewedHeadline(row) || row.title_zh || row.title_original || '标题未取得';
-  const readingSummary = row => (editorialReady(row) ? row.editorial_excerpt_zh : null) || row.summary_zh || row.excerpt_original || articleBlocks(row).find(block => ['paragraph','quote'].includes(block.type))?.text.slice(0,400) || '正文尚未取得';
+  const displayTitle = row => (editorialReady(row) ? row.editorial_title_zh : null) || reviewedHeadline(row) || row.title_zh || (machineReady(row) ? row.translated_title_zh : null) || row.title_original || '标题未取得';
+  const readingSummary = row => (editorialReady(row) ? row.editorial_excerpt_zh : null) || row.summary_zh || (machineReady(row) ? row.translated_excerpt_zh : null) || row.excerpt_original || articleBlocks(row).find(block => ['paragraph','quote'].includes(block.type))?.text.slice(0,400) || '正文尚未取得';
   const safeImageUrl = value => { try { const u = new URL(value); return u.protocol === 'https:' && !u.username && !u.password && !['localhost', '127.0.0.1', '[::1]'].includes(u.hostname) ? u.href : ''; } catch { return ''; } };
   const translatedArticleUrl = row => { const original = safeUrl(row.original_page_url || row.canonical_url || row.evidence_url); return original ? 'https://translate.google.com/translate?sl=auto&tl=zh-CN&u=' + encodeURIComponent(original) : ''; };
   const dateNumber = value => { if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return null; const [y, m, d] = value.split('-').map(Number), date = new Date(Date.UTC(y, m - 1, d)); return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d ? date.getTime() / 86400000 : null; };
@@ -67,7 +77,7 @@
     if (filters.language && filters.language !== 'all' && row.language && row.language !== filters.language) return false;
     if (filters.buzz === false && row.kind === 'industry_buzz') return false;
     const needle = (filters.query || '').trim().toLocaleLowerCase();
-    return !needle || [displayTitle(row), row.title_zh, row.translated_title_zh, row.title_original, row.editorial_title_zh, row.editorial_excerpt_zh, row.summary_zh, row.translated_excerpt_zh, row.excerpt_original, sourceText(row), row.city, row.venue].join(' ').toLocaleLowerCase().includes(needle);
+    return !needle || [displayTitle(row), row.title_zh, row.translated_title_zh, row.title_original, row.editorial_title_zh, row.editorial_excerpt_zh, row.summary_zh, row.translated_excerpt_zh, row.excerpt_original, sourceText(row), readingText(row), row.city, row.venue].join(' ').toLocaleLowerCase().includes(needle);
   }
   function isCurrentContent(row, reference, linkedEvents = [], maxAge = 30) {
     const published = row.published_at?.slice(0, 10);
@@ -176,7 +186,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

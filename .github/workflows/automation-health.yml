@@ -1,0 +1,40 @@
+name: Check autonomous workflow health
+on:
+  workflow_run:
+    workflows: ['Refresh cultural news', 'Automatic full-text translation', 'Publish public news page']
+    types: [completed]
+  schedule:
+    - cron: '5 */6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: cultural-news-health-write
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -S scripts/automation_health.py
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Save real workflow health evidence
+        run: |
+          git config user.name 'Intermission workflow monitor'
+          git config user.email 'updater@users.noreply.github.com'
+          git add data/automation-health.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Record actual autonomous workflow health'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Fail visibly when a stage stopped advancing
+        run: python -c 'import json; r=json.load(open("data/automation-health.json")); raise SystemExit(bool(r["issues"]))'

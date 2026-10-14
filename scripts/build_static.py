@@ -30,6 +30,8 @@ def build():
             return json.loads(path.read_text(encoding='utf-8')) if path.exists() else None
         bundle['coverage'] = coverage_report(bundle['live'], bundle['sources'],
                                              optional_data('coverage-audit.json'), optional_data('coverage-benchmarks.json'))
+        bundle['automation'] = {'translation': optional_data('auto-translation-status.json'),
+                                'health': optional_data('automation-health.json')}
     # Compute all reporting from the full archive, then compact transport only.
     for key in ('live', 'dataset'): bundle[key] = browser_snapshot(bundle[key])
     text = "window.CULTURE_BOOTSTRAP = " + json.dumps(bundle, ensure_ascii=False, separators=(',', ':')).replace("<", "\\u003c") + ";\n"
@@ -38,7 +40,9 @@ def build():
     output.mkdir(exist_ok=True)
     for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "data.js", "core.js", "ui.js", "app.js"):
         shutil.copy2(ROOT / "frontend" / name, output / name)
-    shutil.copytree(ROOT / 'frontend/fonts', output / 'fonts', dirs_exist_ok=True)
+    if (output / 'fonts').exists():
+        shutil.rmtree(output / 'fonts')
+    shutil.copytree(ROOT / 'frontend/fonts', output / 'fonts')
     html = (output / "index.html").read_text(encoding="utf-8")
     # The portable edition embeds its own fonts, without external requests.
     html = html.replace('<link rel="preload" href="fonts/intermission-masthead-v1.woff2" as="font" type="font/woff2" crossorigin>', '')

@@ -148,3 +148,5 @@ EDITORIAL_PROVIDER=chatgpt-task为当前默认。OpenAI-compatible API模式仅�
 当前报版已重新排成头条/次条/简讯三栏，报头与查询工具紧凑，重复介绍隐藏，开发与处理说明按需展开。公共新闻查询/阅览为主，收藏/偏好为辅助。后端重复记录合并UPDATE、统计分组、浏览器去冗余正文，实测与兼容约定见[BACKEND_OPTIMIZATION](docs/BACKEND_OPTIMIZATION.md)。
 
 当前公开报版：未译正文默认直接刊载保存的原文，标原文·待译；已有中文全文优先，原文切换保留。报头、栏线与双栏正文采用报纸排印，手机单栏。其他AI修改入口仍是frontend/theme.css及CultureUI v1，见docs/UI_CUSTOMIZATION.md。
+
+无人值守运行：每2小时采集，采集结束自动执行免费离线机翻并发布，保存断点并监测停滞；AI全文优先且机器稿分别标注。详见[自动工作流](docs/AUTONOMOUS_WORKFLOW.md)。中文字体已改为自托管黑体。

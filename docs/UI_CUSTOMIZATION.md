@@ -84,3 +84,7 @@ browser_snapshot只精简传输副本，data/live.json为完整档案；article_
 ## T036 · 幕间休息与字体（最新）
 
 正式名称“幕间休息”。报头/页脚使用--display的Intermission Masthead（Ma Shan Zheng四字子集）；中文标题/正文宋体与拉丁Newsreader经--serif混排，--sans用于操作控件。字体均自托管于frontend/fonts，OFL许可和来源/重建/hash见fonts/README.md及manifest.json。不要引入第三方字体CDN或删许可证。brand现在仅四字，不能恢复“映间文化报”。移动字号用clamp；标题真实字重、无伪粗体；正文光学字号与行距独立。静态发布复制字体，本地API明确白名单，单文件预览字体内嵌。收藏键culture-desk-v1、项目路径/ID保持，改站名不迁移数据。
+
+## T037 · 当前工作：黑体与无人值守主链
+
+用户否定宋体，中文标题与正文改自托管Noto Sans SC黑体；书法报头、栏目和其他AI修改接口保持。采集结束触发GitHub后台离线机翻，再由工作流完成数据保存与Pages发布，不依赖当前聊天。免费模型/数字检查/断点/退避/健康记录见AUTONOMOUS_WORKFLOW.md。已有AI全文保护且优先，机器稿明确标自动机翻，与AI计数/全量精译队列分开。当前本机已实际完成5篇（约1.18万字符、129秒）；69Python＋25JS＝94检查通过，公开真实链路尚待验收。T037保持doing，T028全量AI精译仍doing。

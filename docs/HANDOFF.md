@@ -240,3 +240,9 @@ T036：正式更名幕间休息。报头/标签页/描述/页脚、favicon、导
 T036本地验收：65Python＋24JS＝89检查通过（本地API三字库返回200），python -S静态构建与审计0错误。Chromium1440/768/390全537资料分页/查询/阅读/收藏持久及六页无溢出/脚本错误，三个Intermission字体均loaded；320px正常/阻断字体请求时均可读且无溢出。HTTP单文件内嵌三字库，loaded且无外部字体请求。站名/导出文件名/ICS日历名同步，收藏键和原始UID保持。公开验证待后续补记。
 
 T036公开已验收done：实现d55db4d；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38531313820 与Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38531313853 均success。真实站点Chromium1440/768/390站名/标签页为幕间休息，三套自托管Intermission字体均loaded；全部537资料分页/查询/三阅读入口/中文和原文/收藏状态持久及六页长文无溢出/脚本错误。公开HTTP单文件字库内嵌加载成功；本地320px正常与字库失败回退均通过。实际公开截图已更新。T028仍doing，442待译/44已有中文译稿；本轮无新增译稿或外部API调用。字体职责及其他AI入口见UI_CUSTOMIZATION和frontend/fonts/README。
+
+## T037 · 当前工作：黑体与无人值守主链
+
+用户否定宋体，中文标题与正文改自托管Noto Sans SC黑体；书法报头、栏目和其他AI修改接口保持。采集结束触发GitHub后台离线机翻，再由工作流完成数据保存与Pages发布，不依赖当前聊天。免费模型/数字检查/断点/退避/健康记录见AUTONOMOUS_WORKFLOW.md。已有AI全文保护且优先，机器稿明确标自动机翻，与AI计数/全量精译队列分开。当前本机已实际完成5篇（约1.18万字符、129秒）；69Python＋25JS＝94检查通过，公开真实链路尚待验收。T037保持doing，T028全量AI精译仍doing。
+
+已合并真实schedule刷新38537277827的6caf11e：543资料/198活动/26源，AI44/原生中文49/AI待译448，5份本机机翻，仅在原文hash/标题/摘录全匹配时合并，全部最新原文和AI字段、198活动逐条等价。用新完整库runtime/t037-merged.db继续，不导出旧库。实际schedule分别02:42/04:44/06:53/08:44 UTC启动，GitHub有约半小时调度延迟，不能承诺精确cron时刻。T037公开后台闭环验收仍待完成。

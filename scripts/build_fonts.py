@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / 'frontend/fonts'
 FONTS = [
     ('mashanzheng', 'MaShanZheng-Regular.ttf', 'intermission-masthead-v1.woff2', 'Intermission Masthead'),
-    ('notoserifsc', 'NotoSerifSC[wght].ttf', 'intermission-song-v1.woff2', 'Intermission Song'),
+    ('notosanssc', 'NotoSansSC[wght].ttf', 'intermission-sans-v1.woff2', 'Intermission Sans'),
     ('newsreader', 'Newsreader[opsz,wght].ttf', 'intermission-news-v1.woff2', 'Intermission News'),
 ]
 
@@ -55,7 +55,7 @@ def build(source_dir):
         sub = subset.Subsetter(options=options)
         if upstream == 'mashanzheng':
             sub.populate(text='幕间休息')
-        elif upstream == 'notoserifsc':
+        elif upstream == 'notosanssc':
             sub.populate(text=charset.read_text(encoding='utf-8'))
         else:
             sub.populate(unicodes=list(font.getBestCmap()))

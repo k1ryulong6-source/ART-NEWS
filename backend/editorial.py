@@ -30,6 +30,9 @@ def numbers(text):
     # Codes, years, opening times, prices and quantities must survive translation.
     values = set()
     text = text or ''
+    # Noon/whole-hour Chinese notation preserves the :00 minutes implicitly.
+    # Do not normalize half-hours or explicit minute expressions this way.
+    text = re.sub(r'(\d{1,2})[点时](?!\d|半)', r'\1:00', text)
     for match in re.finditer(r'\d+(?:,\d{3})*(?:\.\d+)?', text):
         value = Decimal(match.group().replace(',', ''))
         suffix = text[match.end():]

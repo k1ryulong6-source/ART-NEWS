@@ -200,3 +200,12 @@ test('compact browser payload keeps full original-body search and invalidates it
   row.article_blocks_json='[{"type":"paragraph","text":"Updated original content."}]';
   assert.equal(C.matches(row,{query:'updated original'}),true);assert.equal(C.matches(row,{query:'unabridged river'}),false);
 });
+
+test('verified offline machine copy is readable separately from AI and stale or legacy copy stays hidden',()=>{
+ const row={id:'machine',language:'en',title_original:'Original',article_blocks_json:'[{"type":"paragraph","text":"Original body"}]',article_translation_provider:'offline-m2m100:pinned:v1',translation_status:'machine',article_translation_hash:'bound-source',article_translation_json:'[{"type":"paragraph","text":"自动机翻正文","translated":true}]',translated_title_zh:'自动标题',machine_translation_ready:true};
+ assert.equal(C.editorialReady(row),false);assert.equal(C.machineReady(row),true);assert.equal(C.articleBlocks(row,true)[0].text,'自动机翻正文');assert.equal(C.displayTitle(row),'自动标题');assert.ok(C.matches(row,{query:'自动机翻正文'}));
+ assert.equal(C.machineReady({...row,machine_translation_ready:false}),false);assert.deepEqual(C.articleBlocks({...row,machine_translation_ready:false},true),[]);
+ assert.equal(C.machineReady({...row,article_translation_provider:'google-public'}),false);
+ const ai={...row,editorial_status:'translated',editorial_title_zh:'AI标题',editorial_blocks_json:'[{"type":"paragraph","text":"AI全文"}]'};
+ assert.equal(C.displayTitle(ai),'AI标题');assert.equal(C.articleBlocks(ai,true)[0].text,'AI全文');
+});

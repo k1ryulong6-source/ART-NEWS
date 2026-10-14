@@ -8,6 +8,7 @@ import re
 import xml.etree.ElementTree as ET
 from urllib.error import HTTPError
 from .storage import now
+from .autonomous_translation import machine_ready
 
 
 def translation_progress(snapshot):
@@ -18,12 +19,15 @@ def translation_progress(snapshot):
     done = reviewed + direct
     completed_ids = {id(r) for r in done}
     pending = [r for r in rows if r.get('language') != 'zh' and r.get('article_blocks_json') and id(r) not in completed_ids]
+    machine = [r for r in pending if machine_ready(r)]
     return {'total': len(rows), 'foreign_total': sum(r.get('language') != 'zh' for r in rows),
             'reviewed': len(reviewed), 'reviewed_partial': sum(r.get('article_status') == 'partial' for r in reviewed),
             'direct_translated': len(direct), 'completed': len(done),
             'completed_partial': sum(r.get('article_status') == 'partial' for r in done),
             'native_chinese': sum(r.get('language') == 'zh' and bool(r.get('article_blocks_json')) for r in rows),
-            'pending': len(pending), 'without_body': sum(not r.get('article_blocks_json') for r in rows),
+            'pending': len(pending), 'machine_completed': len(machine),
+            'without_chinese_body': len(pending) - len(machine),
+            'without_body': sum(not r.get('article_blocks_json') for r in rows),
             'pending_characters': sum(len(r.get('article_text') or '') for r in pending)}
 
 

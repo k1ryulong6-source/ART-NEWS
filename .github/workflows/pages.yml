@@ -13,10 +13,12 @@ on:
       - 'backend/coverage.py'
       - 'backend/priority.py'
       - 'backend/presentation.py'
+      - 'backend/autonomous_translation.py'
+      - 'backend/offline_model.py'
       - 'scripts/build_static.py'
       - '.github/workflows/pages.yml'
   workflow_run:
-    workflows: ['Refresh cultural news', 'Publish daily AI translations']
+    workflows: ['Refresh cultural news', 'Publish daily AI translations', 'Automatic full-text translation']
     types: [completed]
 permissions:
   contents: read
@@ -27,7 +29,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   readiness:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' || (github.event.workflow_run.name == 'Automatic full-text translation' && github.event.workflow_run.conclusion == 'failure')
     runs-on: ubuntu-latest
     outputs:
       enabled: ${{ steps.pages.outputs.enabled }}

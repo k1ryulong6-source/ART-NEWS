@@ -56,3 +56,5 @@ class CoverageTests(unittest.TestCase):
         self.assertEqual(numbers('$35 M.'),numbers('3500万美元'))
         self.assertNotEqual(numbers('$4.6 million'),numbers('460美元'))
         self.assertEqual(numbers('2026, 9:30 and 600 yen'),numbers('2026年9:30，600日元'))
+        self.assertEqual(numbers('Saturday 10 October 12:00'),numbers('10月10日星期六12点'))
+        self.assertNotEqual(numbers('12:00'),numbers('12点半'))

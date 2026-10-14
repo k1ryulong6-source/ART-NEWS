@@ -197,3 +197,5 @@ backend/priority与config/translation-priority定义重要/明确活动时效/�
 运行数据仍用runtime/full-coverage-20261014.db，勿导出旧runtime/culture-desk.db。新增模型任务不假称用户已授权外部API凭据/费用。检查与发布证据待下条补记。
 
 T029最终批次：两个gpt-6-luna会话工作者共完成12篇，其中大都会歌剧院访谈原文28,532字符、73块，未因长稿跳过。新增8篇为当前优先级前列稿件。12份pack的标题、source hash、块序、数字程序检查全部通过，实际模型记录为gpt-6-luna (session worker)、review_model=null；未调用外部模型API，未安排二轮模型校对。当前44已完成（32旧校译＋12直接AI），49原生中文，430待译，2正文缺失，6篇已完成稿仅来源公开部分；525资料／198活动／26来源不变。77项自动检查和桌面1440／手机390浏览器验收，全部12新译稿的中文默认／原文切换／直译标识／收藏、优先级筛选、六页布局无溢出或脚本错误通过。T028仍doing。
+
+公开实现9f5c006；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38496208635、译稿工作流 https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38496208976、Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38496208634 全部success。真实公开网站1440/390px全部12篇直译稿、中文默认/原文切换、优先级筛选、收藏/刷新、六页无溢出与脚本错误通过。 T029已验收done；T028全量翻译仍doing。下批读取最新版next与全量分页，按优先级和旧稿份额继续，不重译匹配hash的有效稿，不重启已被用户取消的二轮模型校对。

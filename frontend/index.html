@@ -7,7 +7,6 @@
   <meta name="description" content="幕间休息：面向公众的艺术、电影与摄影新闻资讯平台，支持新闻查询、中文阅览和原文切换。">
   <title>幕间休息</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="fonts/intermission-masthead-v1.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="theme.css">
   <script defer src="data.js"></script>
@@ -16,13 +15,14 @@
   <script defer src="app.js"></script>
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="wordmark" viewBox="0 14 4032 961"><path d="M30 545L935 545L935 656L30 656ZM407 646L548 646L548 975L407 975ZM311 489L452 512Q403 620 316 700Q229 781 79 837Q72 820 58 799Q45 778 30 759Q14 740 0 729Q90 702 152 665Q213 628 252 584Q291 539 311 489ZM689 579Q715 613 757 642Q799 670 852 691Q906 712 965 724Q944 743 920 775Q895 807 881 832Q817 813 762 781Q706 749 662 706Q617 664 585 613ZM188 692L724 692L724 803L327 803L327 938L188 938ZM647 692L787 692L787 826Q787 867 778 889Q768 911 741 923Q715 934 680 936Q645 938 604 938Q600 913 590 886Q579 858 569 836Q586 837 606 838Q626 838 633 838Q641 838 644 835Q647 832 647 825ZM260 407L260 434L702 434L702 407ZM260 302L260 329L702 329L702 302ZM121 218L848 218L848 518L121 518ZM42 65L925 65L925 179L42 179ZM249 25L390 25L390 205L249 205ZM572 25L715 25L715 205L572 205ZM1045 275L1196 275L1196 973L1045 973ZM1059 98L1174 28Q1197 50 1222 78Q1246 105 1266 132Q1287 160 1298 184L1175 262Q1165 239 1146 210Q1127 182 1104 152Q1082 123 1059 98ZM1317 71L1867 71L1867 206L1317 206ZM1786 71L1938 71L1938 824Q1938 872 1928 899Q1918 926 1890 943Q1862 959 1824 963Q1786 967 1738 967Q1734 939 1722 902Q1711 864 1698 839Q1718 840 1740 840Q1762 840 1770 840Q1780 840 1783 836Q1786 832 1786 823ZM2582 43L2726 43L2726 975L2582 975ZM2342 262L2973 262L2973 403L2342 403ZM2750 306Q2768 368 2794 430Q2820 492 2853 550Q2886 608 2924 658Q2963 707 3005 744Q2988 757 2967 777Q2946 797 2928 819Q2909 841 2897 861Q2853 815 2814 756Q2776 698 2743 630Q2710 561 2684 487Q2657 413 2636 337ZM2564 312L2688 348Q2656 449 2612 545Q2568 641 2514 723Q2459 805 2395 866Q2383 848 2364 826Q2345 805 2325 784Q2305 764 2288 751Q2348 702 2401 630Q2454 559 2496 476Q2538 394 2564 312ZM2262 30L2407 77Q2372 165 2324 254Q2275 344 2218 423Q2162 502 2102 561Q2095 542 2080 512Q2065 483 2048 453Q2031 423 2018 405Q2067 360 2112 300Q2158 240 2196 171Q2235 102 2262 30ZM2163 331L2305 189L2307 191L2307 973L2163 973ZM3378 348L3378 375L3738 375L3738 348ZM3378 477L3378 504L3738 504L3738 477ZM3378 220L3378 247L3738 247L3738 220ZM3238 111L3885 111L3885 613L3238 613ZM3487 14L3666 34Q3648 71 3630 102Q3611 133 3597 156L3462 131Q3470 103 3477 72Q3484 40 3487 14ZM3311 670L3458 670L3458 793Q3458 816 3470 822Q3481 827 3522 827Q3529 827 3542 827Q3556 827 3573 827Q3590 827 3607 827Q3624 827 3639 827Q3654 827 3663 827Q3686 827 3698 820Q3709 813 3714 790Q3719 768 3722 723Q3737 734 3760 744Q3784 754 3810 762Q3835 770 3854 774Q3846 848 3827 888Q3808 928 3772 943Q3736 958 3674 958Q3664 958 3647 958Q3630 958 3610 958Q3590 958 3570 958Q3549 958 3532 958Q3515 958 3506 958Q3428 958 3386 943Q3343 928 3327 892Q3311 856 3311 795ZM3475 645L3586 583Q3609 604 3632 630Q3656 657 3675 684Q3694 711 3705 734L3586 803Q3577 780 3559 752Q3541 725 3519 696Q3497 668 3475 645ZM3795 679L3924 626Q3946 660 3968 700Q3990 739 4007 777Q4024 815 4032 847L3893 907Q3887 876 3872 837Q3856 798 3836 756Q3816 715 3795 679ZM3177 646L3307 700Q3295 735 3280 776Q3266 817 3251 856Q3236 894 3221 925L3085 860Q3102 831 3119 795Q3136 759 3152 720Q3167 682 3177 646Z"/><path class="wordmark-light" d="M1403 606L1403 680L1570 680L1570 606ZM1403 418L1403 491L1570 491L1570 418ZM1274 303L1705 303L1705 795L1274 795Z"/></symbol></svg>
   <a class="skip-link" href="#main">跳到主要内容</a>
   <div class="paper-shell">
     <header class="masthead" data-ui="masthead">
       <div class="nameplate">
-        <div class="ear ear-left"><time id="edition-date"></time><span>艺术 · 电影 · 摄影</span></div>
-        <a class="brand" href="#today" aria-label="幕间休息首页">幕间休息</a>
-        <div class="ear ear-right"><span id="edition-updated"></span></div>
+        <a class="brand" href="#today" aria-label="幕间休息首页"><svg class="wordmark" role="img" aria-label="幕间休息"><use href="#wordmark"/></svg></a>
+        <p class="brand-sections" aria-label="艺术、电影、摄影"><span>艺术</span><span>电影</span><span>摄影</span></p>
+        <p class="edition-block"><time id="edition-date"></time><span id="edition-updated"></span></p>
       </div>
     </header>
     <div class="paper-toolbar">
@@ -31,7 +31,7 @@
       <div class="read-progress" aria-hidden="true"><span></span></div>
     </div>
     <main id="main" tabindex="-1"></main>
-    <footer><span class="footer-brand">幕间休息</span><span id="edition-note" hidden></span><span class="footer-links"><a class="text-link" href="#coverage">收录与译文</a><button id="coordinate-button" class="text-link">阅读设置</button></span></footer>
+    <footer><a class="footer-brand" href="#today" aria-label="幕间休息"><svg class="wordmark" aria-hidden="true"><use href="#wordmark"/></svg></a><span id="edition-note" hidden></span><span class="footer-links"><a class="text-link" href="#coverage">收录与译文</a><button id="coordinate-button" class="text-link">阅读设置</button></span></footer>
   </div>
   <dialog id="detail-dialog" aria-labelledby="detail-title"><button id="close-detail" class="dialog-close" aria-label="关闭详情">×</button><div id="detail-body"></div></dialog>
   <div id="toast" role="status" aria-live="polite"></div>

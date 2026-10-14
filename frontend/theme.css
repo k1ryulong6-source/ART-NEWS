@@ -1,5 +1,4 @@
 /* Licensed local webfonts: see fonts/README.md and OFL notices. */
-@font-face{font-family:'Intermission Masthead';src:url("fonts/intermission-masthead-v1.woff2") format('woff2');font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:'Intermission Sans';src:url("fonts/intermission-sans-v1.woff2") format('woff2');font-weight:200 900;font-style:normal;font-display:swap}
 @font-face{font-family:'Intermission News';src:url("fonts/intermission-news-v1.woff2") format('woff2');font-weight:200 800;font-style:normal;font-display:swap}
 /* Apostrophes inside Chinese headlines (Paris’s) stay proportional instead of full width. */
@@ -9,11 +8,12 @@
    Tokens first; change colours, faces and measures here. Chinese copy is set in
    Noto Sans SC; Latin-language originals (lang≠zh) switch to Newsreader. */
 :root{
+  --wordmark-height:92px;
   --canvas:#f3efe4; --paper:#f3efe4; --white:#faf8f1;
   --ink:#151412; --muted:#615c52; --line:#cdc6b6; --accent:#9e2a1f; --green:#3f453b;
   --serif:'Intermission Apostrophe','Intermission Sans','Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif;
   --latin:'Intermission News',Georgia,'Times New Roman',serif;
-  --display:'Intermission Masthead','Intermission Sans','Noto Sans CJK SC',serif;
+  --display:'Intermission Sans','Noto Sans CJK SC',sans-serif;
   --sans:'Intermission Apostrophe','Intermission Sans','Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif;
   --paper-width:1320px; --paper-gutter:32px; --headline-size:46px; --article-size:17px;
   --rule:1px solid var(--line); --rule-ink:1px solid var(--ink);
@@ -35,17 +35,27 @@ input[type=checkbox]{accent-color:var(--ink)}
 .skip-link{background:var(--ink);color:var(--paper)}
 
 /* Masthead */
-.masthead{padding-top:18px}
-.nameplate{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:24px;padding:4px 0 10px;border-bottom:3px solid var(--ink)}
-.brand{font-family:var(--display);font-size:96px;line-height:1;letter-spacing:.12em;margin-right:-.12em;white-space:nowrap;font-weight:400}
-.ear{display:flex;flex-direction:column;gap:2px;font-family:var(--sans);font-size:12px;line-height:1.6;color:var(--ink);padding-bottom:8px}
-.ear-right{text-align:right;color:var(--muted)}
-#edition-date{font-weight:600}
+/* Masthead: drawn wordmark (Noto Sans SC Black outlines; the 日 inside 间 is lit red),
+   a stacked section lockup and a dated edition block, closed by a thick-thin rule. */
+.masthead{padding-top:24px}
+.nameplate{display:flex;align-items:stretch;padding-bottom:14px;border-bottom:6px solid var(--ink)}
+.brand{display:block;line-height:0;flex:none}
+.wordmark{display:block;height:var(--wordmark-height,92px);width:auto;aspect-ratio:4032/961;fill:var(--ink);overflow:visible}
+.wordmark-light{fill:var(--accent)}
+.brand:hover .wordmark-light{fill:var(--ink)}
+.brand-sections{display:flex;flex-direction:column;justify-content:space-between;margin:0 0 0 20px;padding:1px 0 1px 16px;border-left:2px solid var(--ink);font-family:var(--sans);font-size:calc(var(--wordmark-height,92px) * .2);font-weight:800;line-height:1;letter-spacing:.24em}
+.edition-block{display:grid;grid-template-columns:auto auto;grid-template-rows:repeat(3,auto);column-gap:12px;align-content:space-between;margin:0 0 0 auto;font-family:var(--sans);font-size:12.5px;line-height:1.25;text-align:left}
+#edition-date{display:contents}
+.edition-day{grid-row:1/4;grid-column:1;align-self:center;font-family:var(--latin);font-size:calc(var(--wordmark-height,92px) * .92);font-weight:500;line-height:.8;letter-spacing:-.04em;font-variant-numeric:lining-nums}
+#edition-date span{grid-column:2;font-weight:700}
+#edition-updated{grid-column:2;grid-row:3;align-self:end;color:var(--muted)}
+.nav-button{font-family:var(--sans);font-size:15px;font-weight:600;padding:9px 0 7px;margin-right:30px;letter-spacing:.08em;border-bottom:3px solid transparent}
+.nav-button:hover{border-bottom-color:var(--line)}
+.nav-button.active{border-bottom-color:var(--accent)}
+.footer-brand{display:block;line-height:0}
+.footer-brand .wordmark{height:24px}
 .paper-toolbar{position:relative;display:flex;align-items:center;gap:24px;margin-top:2px;border-top:var(--rule-ink);border-bottom:var(--rule-ink);min-height:40px}
 #navigation{display:flex;gap:0}
-.nav-button{font-family:var(--sans);font-size:15px;font-weight:500;padding:8px 18px 8px 0;margin-right:18px;position:relative;letter-spacing:.06em}
-.nav-button+.nav-button::before{content:'';position:absolute;left:-18px;top:13px;bottom:13px;border-left:var(--rule)}
-.nav-button.active{font-weight:800}
 .nav-count{font-size:11px;font-weight:400;margin-left:4px;color:var(--muted)}
 .topbar{display:flex;align-items:center;gap:16px;margin-left:auto}
 .search-field input{width:220px;border:0;border-bottom:1px solid var(--ink);background:transparent;padding:4px 0;font-size:13px}
@@ -297,14 +307,13 @@ dialog::backdrop{background:#1514124d}
 
 /* Footer and toast */
 footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:12px 0 28px;border-top:3px solid var(--ink)}
-.footer-brand{font-family:var(--display);font-size:26px;letter-spacing:.1em}
 .footer-links{display:flex;gap:18px}
 #toast{background:var(--ink);color:var(--paper);font-family:var(--sans);font-size:13px;padding:8px 18px}
 
 /* Tablet */
 @media(max-width:1100px){
   :root{--paper-gutter:24px;--headline-size:40px}
-  .brand{font-size:80px}
+  :root{--wordmark-height:80px}
   .broadsheet{grid-template-columns:minmax(0,1fr) minmax(0,1.9fr) minmax(0,1fr)}
   .lead-column{padding:0 20px}.brief-column{padding-right:18px}.focus-column{padding-left:18px}
   .card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -314,9 +323,7 @@ footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
 }
 @media(max-width:860px){
   :root{--headline-size:36px}
-  .brand{font-size:66px}
-  .nameplate{gap:14px}
-  .ear{font-size:11px}
+  :root{--wordmark-height:64px}
   .broadsheet{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
   .lead-column{grid-column:1;grid-row:1;padding:0 20px 0 0}
   .brief-column{grid-column:2;grid-row:1;padding:0 0 0 18px;border-right:0;border-left:var(--rule-ink)}
@@ -345,17 +352,21 @@ footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
 @media(max-width:600px){
   :root{--paper-gutter:16px;--headline-size:29px}
   html{-webkit-tap-highlight-color:transparent}
-  .masthead{padding-top:12px}
-  .nameplate{grid-template-columns:1fr 1fr;gap:2px 8px;padding-bottom:6px;align-items:baseline}
-  .brand{grid-column:1/-1;grid-row:1;justify-self:center;font-size:clamp(40px,12.5vw,52px)}
-  .ear{grid-row:2;flex-direction:row;padding:0;font-size:11px}
-  .ear-left span{display:none}
-  .ear-right{justify-content:flex-end}
+  :root{--wordmark-height:clamp(36px,13vw,52px)}
+  .masthead{padding-top:14px}
+  .nameplate{padding-bottom:10px;border-bottom-width:4px}
+  .brand-sections{display:none}
+  .edition-day{font-size:calc(var(--wordmark-height) * .82)}
+  .edition-block{column-gap:7px;font-size:11px;line-height:1.2;align-self:center}
+  #edition-date span{font-weight:600}
+  #edition-updated{display:none}
+  .edition-block{grid-template-rows:repeat(2,auto)}
+  .edition-day{grid-row:1/3}
+  .footer-brand .wordmark{height:22px}
   .paper-toolbar{position:sticky;top:0;z-index:20;background:var(--paper);gap:14px;min-height:44px;transition:transform .22s ease}
   body.bar-hidden .paper-toolbar{transform:translateY(-110%)}
   #navigation{gap:16px}
-  .nav-button{padding:10px 0;margin:0;font-size:16px;letter-spacing:.02em}
-  .nav-button+.nav-button::before{display:none}
+  .nav-button{padding:10px 0 8px;margin:0;font-size:16px;letter-spacing:.02em}
   .nav-count{display:none}
   .topbar{flex:1;min-width:0;margin:0}
   .search-field{flex:1;min-width:0}

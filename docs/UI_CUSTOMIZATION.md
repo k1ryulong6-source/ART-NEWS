@@ -99,3 +99,7 @@ theme.css已整体重写为v4：令牌在`:root`（新增`--latin`用于外文�
 ## T041 · 手机阅读
 
 `.paper-toolbar`现为`.masthead`之后的兄弟元素（`#navigation`/`#search`等ID不变），手机端`position:sticky`；app.js滚动监听只切换`body.bar-hidden`和`.read-progress span`的scaleX，不改数据。`state.readerScroll`保存进入文章前的列表位置。手机样式集中在theme.css的“Phone”段。
+
+## T042 · 报头
+
+`.nameplate`内为`.brand`（内联SVG `<use href="#wordmark">`）、`.brand-sections`与`.edition-block`（`#edition-date`为大号日＋年月＋星期，`#edition-updated`）。尺寸只改`--wordmark-height`，红色部分是`.wordmark-light`（默认`--accent`）。重新生成字标：`python scripts/build_wordmark.py`，把输出的symbol替换进index.html。

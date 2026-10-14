@@ -79,10 +79,11 @@
     const labels = { today: '头版', explore: '资讯', calendar: '日历', bookmarks: '剪报' };
     $('navigation').innerHTML = Object.entries(labels).map(([key, label]) => `<button class="nav-button ${state.view === key ? 'active' : ''}" data-view="${key}" ${state.view === key ? 'aria-current="page"' : ''}>${label}${key === 'bookmarks' && bookmarks.length ? `<span class="nav-count">${bookmarks.length}</span>` : ''}</button>`).join('');
     const [y, m, d] = readingDate().split('-').map(Number);
-    $('edition-date').textContent = `${y}年${m}月${d}日 星期${'日一二三四五六'[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]}`;
+    $('edition-date').innerHTML = `<b class="edition-day">${d}</b><span>${y}年${m}月</span><span>星期${'日一二三四五六'[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]}</span>`;
+    $('edition-date').setAttribute('aria-label', `${y}年${m}月${d}日`);
     $('edition-date').dateTime = readingDate();
     const last = sourceStatus.map(source => source.last_success_at).filter(Boolean).sort().at(-1);
-    $('edition-updated').textContent = state.mode === 'demo' ? '示例版 · 内容虚构' : last ? '更新于 ' + new Intl.DateTimeFormat('zh-CN', { timeZone: preferences.reading_timezone, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(last)) : '';
+    $('edition-updated').textContent = state.mode === 'demo' ? '示例版 · 内容虚构' : last ? '更新 ' + new Intl.DateTimeFormat('zh-CN', { timeZone: preferences.reading_timezone, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(last)) : '';
     document.querySelector('.refresh-control').hidden = !server;
     const unread = notifications.filter(row => !row.read).length;
     $('inbox-button').hidden = !server || !unread; $('inbox-button').textContent = `提醒 ${unread}`;

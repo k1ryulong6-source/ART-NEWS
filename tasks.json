@@ -1306,6 +1306,37 @@
         "390px：下滑1800px后导航隐藏，上滑200px重新出现于顶部；文章进度按滚动比例（0.24→0.48）；资讯列表1600px处进入文章，文末返回与浏览器后退均回到1600px；检索框16px；☆点击区44×36。",
         "桌面1440与平板768截图及交互回归（剪报持久、31页分页、搜索、阅读切换、筛选、日程弹窗）通过。"
       ]
+    },
+    {
+      "id": "T042",
+      "title": "报头重新设计：自绘字标",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T041"
+      ],
+      "scope": [
+        "frontend/index.html",
+        "frontend/theme.css",
+        "frontend/app.js",
+        "frontend/favicon.svg",
+        "scripts/build_wordmark.py",
+        "AGENTS.md",
+        "docs/",
+        "frontend/fonts/README.md"
+      ],
+      "acceptance": [
+        "用户认为旧标题栏丑，允许不拘原字体与版型：报头重新设计且无模板化/AI装饰",
+        "字标可复现、自托管、无新增外部请求，单文件预览可用",
+        "桌面/平板/手机均紧凑、无溢出；导航吸顶与所有交互契约保持"
+      ],
+      "evidence": [
+        "scripts/build_wordmark.py重新生成的symbol与favicon与提交内容逐字节一致。",
+        "1440/768/390/320截图：字标92/80/64/clamp(36–52)px，无横向溢出；本站与culture-desk-preview.html字标渲染386×92、标题幕间休息。",
+        "69Python＋25JS通过（合并main后）；交互回归（剪报持久、分页、搜索、阅读切换、筛选、日程弹窗）与手机吸顶/进度/返回原位置回归通过。"
+      ]
     }
   ]
 }

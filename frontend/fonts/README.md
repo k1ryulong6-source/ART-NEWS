@@ -2,7 +2,7 @@
 
 | 用途 | 上游字体 | CSS 字体名 |
 | --- | --- | --- |
-| 报头和页脚 | Ma Shan Zheng | Intermission Masthead |
+| （已停用）旧书法报头 | Ma Shan Zheng | Intermission Masthead |
 | 中文新闻标题和正文 | Noto Sans SC 可变黑体，200–900 | Intermission Sans |
 | 拉丁字母原文和中英混排 | Newsreader 可变衬线，200–800，光学字号 | Intermission News |
 
@@ -26,4 +26,4 @@ mashanzheng-OFL.txt、notosanssc-OFL.txt、newsreader-OFL.txt。修改后的内�
 
 保留使用中的字库文件名，变更字库内容时递增v后缀并同步theme.css、index.html预加载、build_static.py和backend/app.py白名单。日常视觉修改只需CSS里的`--display`、`--serif`、`--sans`与字号/字重。
 
-用户否定宋体后，当前正文与新闻标题已改黑体；旧宋体字库已移除。书法报头与报纸栏线保留。
+用户否定宋体后，当前正文与新闻标题已改黑体；旧宋体字库已移除。报头不再用书法字：现为`scripts/build_wordmark.py`从本目录Noto Sans SC（900字重）轮廓绘制的内联SVG字标，favicon取同一“间”字，适用Noto Sans SC的OFL。Ma Shan Zheng文件暂留（本地API白名单与测试仍列出），页面不再加载。

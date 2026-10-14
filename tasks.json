@@ -970,7 +970,7 @@
       "id": "T031",
       "title": "修复资讯图片与摘要无法进入阅读页",
       "milestone": "M4",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-10-14",
       "depends_on": [
@@ -991,7 +991,8 @@
       "evidence": [
         "标题由button改真实hash链接，摘要与图片同route；首页大图同修，图片链接与收藏按钮为兄弟节点",
         "Chromium 1440/390本地三个入口/中文默认/键盘Enter/中键新标签/坏图回退点击/收藏独立/状态选择/收藏摘要/布局无溢出和脚本错误通过",
-        "node --check frontend/app.js、python scripts/check_project.py及python -S scripts/build_static.py通过"
+        "node --check frontend/app.js、python scripts/check_project.py及python -S scripts/build_static.py通过",
+        "公开实现c5f066d；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38497204397 与Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38497204425 全部success。真实公开网站Chromium 1440/390：卡片及首页精选标题/摘要/图片同篇阅读、中文默认、坏图回退点击、键盘Enter、中键新标签、独立收藏/已看过状态、收藏摘要及布局无溢出或脚本错误通过。"
       ]
     }
   ]

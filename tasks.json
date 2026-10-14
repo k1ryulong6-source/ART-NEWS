@@ -1593,6 +1593,33 @@
       "evidence": [
         "条件改为!server && https；26JS＋全部Python通过；线上验证见合并后。"
       ]
+    },
+    {
+      "id": "T051",
+      "title": "幕间休息片头动画：門中見日",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T043"
+      ],
+      "scope": [
+        "frontend/index.html",
+        "frontend/theme.css",
+        "docs/UI_CUSTOMIZATION.md",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md"
+      ],
+      "acceptance": [
+        "扉页片头约3.4秒：放映灯闪烁＋颗粒、四字逐帧闪入与对焦、間中日如霓虹点亮并留红晕、光泽扫过；任意输入可跳过",
+        "报头胶片边走片后停下，再点亮間中日；扉页打开期间暂停",
+        "prefers-reduced-motion下无动画、静态终态；扉页可关闭；数据/路由/收藏契约不变"
+      ],
+      "evidence": [
+        "Playwright录屏1440×900与390×844逐帧检查扉页、翻页、走片与报头点亮；reduced-motion下getAnimations()=0、字可见、点击后扉页移除、无页面错误",
+        "node --test tests/core.test.js tests/ui.test.js：26通过；check_project.py通过；build_static.py构建成功（index与单文件预览均含片头）。Python单测19个错误在未改动的main上同样出现（本容器缺依赖），与本改动无关"
+      ]
     }
   ]
 }

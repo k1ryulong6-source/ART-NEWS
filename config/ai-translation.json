@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "provider": "gemini",
-  "model": "gemini-2.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
   "paid_activation": false,
   "requests_per_day": 100,
@@ -12,7 +12,10 @@
   "source_characters_per_unit": 2500,
   "max_output_tokens": 16384,
   "article_retry_hours": 6,
-  "price_checked_at": "2026-10-14",
-  "paid_standard_usd_per_million": {"input": 0.10, "output": 0.40},
-  "notes": "AI为主，离线机翻临时兜底。未授权付费，不绑定计费的AI Studio项目才可称免费；本地请求上限不能证明账号不会计费。账户实际配额以AI Studio为准，429退避。无需二轮模型校对。"
+  "price_checked_at": "2026-10-15",
+  "paid_standard_usd_per_million": {
+    "input": 0.3,
+    "output": 2.5
+  },
+  "notes": "用户选择免费项目试跑一天；2.5 Flash-Lite实际404不再向新用户开放，按Google返回建议改3.5 Flash-Lite，官方Standard仍有Free Tier。保持free-project-only、paid_activation=false、100请求/太平洋日上限；真实账号配额以Google为准，不能由key判断计费状态。单轮全文直译，MINIMAL thinking，机翻仅临时兜底。"
 }

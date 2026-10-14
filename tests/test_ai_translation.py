@@ -37,6 +37,17 @@ class AITranslationTests(unittest.TestCase):
         self.assertEqual(row['editorial_model'], 'gemini-2.5-flash-lite-test')
         self.assertEqual(self.run_ai_worker(provider)['requests'], 0)
 
+    def test_generation_controls_match_model_family_without_extra_review_or_calls(self):
+        for model, expected in [('gemini-3.5-flash-lite', {'thinkingLevel': 'MINIMAL'}),
+                                ('gemini-2.5-flash-lite', {'thinkingBudget': 0})]:
+            observed = []
+            def transport(payload):
+                observed.append(payload['generationConfig']['thinkingConfig'])
+                return {'candidates': [{'finishReason': 'STOP', 'content': {'parts': [{'text': '{"outputs":{"title":"标题"}}'}]}}]}
+            provider = GeminiTranslator('fixture', transport=transport, cfg={**configuration(), 'model': model})
+            provider.translate({'original_units': [{'key': 'title', 'text': 'Title'}]}, ['title'])
+            self.assertEqual(observed, [expected])
+
     def test_request_limit_and_checkpoints_survive_new_worker(self):
         provider = self.provider()
         first = self.run_ai_worker(provider, source_characters_per_chunk=25, requests_per_run=1)

@@ -334,3 +334,7 @@ T039公开完成：ART-NEWS b994269，CI38554022279（85Python+26JS）和Pages38
 ## T050 · 自定义域名下的运行状态读取（Claude）· 2026-10-15
 
 域名迁到mujianrest.work后，收录页“自动运行”原先只在`*.github.io`上读取raw.githubusercontent的实时健康记录，新域名会退回构建时快照。app.js改为静态站任何HTTPS主机（非本地API模式）都读取。
+
+## T051 · 品牌宣传动画（Claude）· 2026-10-14
+
+用户要求为网站做宣传动画、自由发挥。新增独立目录`promo/`：36秒1920×1080宣传片（片头倒数→竖排字幕→扉页→头版→中文/原文切换→放映與展期→片尾字标与mujianrest.work），网页版`promo/index.html`与逐帧渲染的`intermission-promo.mp4`（无声）。字标轮廓由构建脚本从frontend/index.html注入，字体为站内OFL字体的子集；画面条目取自真实数据。网站代码、数据、工作流与静态构建均未改动，promo不进入Pages构建。修改与重新渲染步骤见promo/README.md。

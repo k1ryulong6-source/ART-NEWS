@@ -1594,6 +1594,28 @@
       "evidence": [
         "条件改为!server && https；26JS＋全部Python通过；线上验证见合并后。"
       ]
+    },
+    {
+      "id": "T051",
+      "title": "品牌宣传动画（幕間休息宣傳片）",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T048"
+      ],
+      "scope": [
+        "promo/"
+      ],
+      "acceptance": [
+        "36秒1920×1080动画网页与MP4成片，沿用字标/胶片边/扉页/报版视觉",
+        "画面内容取自真实条目，外文标原文·待译，不补造",
+        "不改网站运行代码、数据或工作流"
+      ],
+      "evidence": [
+        "python promo/build.py 字体子集覆盖全部片中文字；record.cjs逐帧渲染1080帧H.264；关键帧截图逐场检查（扉页按D037改为两段淡出）。"
+      ]
     }
   ]
 }

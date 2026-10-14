@@ -1621,6 +1621,33 @@
         "Playwright录屏1440×900与390×844逐帧检查扉页、翻页、走片与报头点亮；reduced-motion下getAnimations()=0、字可见、点击后扉页移除、无页面错误",
         "node --test tests/core.test.js tests/ui.test.js：26通过；check_project.py通过；build_static.py构建成功（index与单文件预览均含片头）。Python单测19个错误在未改动的main上同样出现（本容器缺依赖），与本改动无关"
       ]
+    },
+    {
+      "id": "T052",
+      "title": "手机扉页改为黄金分割宽度并发布片头动画",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T051"
+      ],
+      "scope": [
+        "frontend/theme.css",
+        "AGENTS.md",
+        "docs/UI_CUSTOMIZATION.md",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md"
+      ],
+      "acceptance": [
+        "≤700px扉页宽61.8%（黄金分割），书沟阴影随之移动，标题按比例放大",
+        "桌面/平板仍为半屏；无横向溢出",
+        "T051片头动画经PR合并进main并由Pages发布"
+      ],
+      "evidence": [
+        "Playwright 390×844/375×667/430×932：扉页宽241/232/266px（61.8%），标题底558/454/615px高于版权日期747/579/830px；768与1440仍为半屏；均无横向溢出",
+        "node --test tests/core.test.js tests/ui.test.js 26通过；check_project.py与build_static.py通过"
+      ]
     }
   ]
 }

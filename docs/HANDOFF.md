@@ -338,3 +338,7 @@ T039公开完成：ART-NEWS b994269，CI38554022279（85Python+26JS）和Pages38
 ## T051 · 片头动画（Claude · 2026-10-14）
 
 完成：扉页片头「門中見日」（放映灯＋颗粒、四字逐帧闪入对焦、間中日霓虹点亮与红晕、光泽扫过、翻页红光）与报头胶片走片后点亮日。只改frontend/index.html与theme.css，接口说明见UI_CUSTOMIZATION.md的T051段。验证：Playwright录屏桌面/手机逐帧、reduced-motion无动画；26项JS测试、check_project与静态构建通过。未完成：Safari/Firefox未实际验收（自定义属性离散动画在不支持的浏览器上退化为直接显示红色，不影响阅读）。
+
+## T052 · 手机扉页黄金分割（Claude · 2026-10-14）
+
+≤700px扉页宽61.8%，标题放大到min(50vh,104vw)；桌面/平板半屏不变。与T051片头一起经PR合并发布。验证见tasks.json T052。

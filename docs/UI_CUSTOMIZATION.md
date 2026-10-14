@@ -116,3 +116,4 @@ theme.css已整体重写为v4：令牌在`:root`（新增`--latin`用于外文�
 - 字标红色改为继承变量：`.wordmark-light{fill:var(--wordmark-light,var(--accent))}`。要单独改某处字标的红色，在该`<svg>`或其祖先上设`--wordmark-light`（选择器无法进入`<use>`影子树）。`.brand:hover`据此变墨色。
 - 报头`.film-edge`走片456px（24个齿孔）后停下，`.brand .wordmark`再点亮；`html.cover-open`期间暂停，扉页移除后才播放。
 - 所有时长/延迟集中在theme.css「Opening sequence」与「Masthead」两段keyframes；`prefers-reduced-motion`全部关闭。去掉片头只需删这两段CSS，扉页本身照常。
+- T052：≤700px时扉页宽为黄金分割61.8%（`.cover-leaf{right:38.2%}`、`.cover-veil{left:61.8%}`），标题高`min(50vh,104vw)`；桌面与平板仍为半屏。改比例只需同时改这两个值。

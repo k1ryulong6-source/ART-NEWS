@@ -499,7 +499,7 @@ footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
   .reader-page{max-width:none}
 }
 
-/* Opening page. The left half of the screen — on phones too — is the title page of a
+/* Opening page. The left half of the screen (on phones the golden section, 61.8%) is the title page of a
    vertical book on glossy coated stock: a small thin title in open space, crop marks as on a
    print proof, a colophon date, page edges at the fore-edge and a gutter that falls into the
    front page beside it. A click, key, wheel or swipe fades it away. Markup and the small
@@ -525,11 +525,14 @@ html.cover-open{overflow:hidden}
 .cover.turning{opacity:0;pointer-events:none;transition-delay:.15s}
 .cover.turning :is(.cover-title,.cover-note,.cover-colophon,.cover-turn,.cover-marks){opacity:0}
 @media(max-width:700px){
+  /* Phones: the leaf takes the golden section of the screen (61.8%), the front page the rest. */
+  .cover-leaf{right:38.2%}
+  .cover-veil{left:61.8%}
   .cover-front{--mark:12px}
   .cover-front::before{width:5px}
   .cover-marks{inset:5vh 9% 5vh calc(9% + 5px)}
-  .cover-title{top:19vh;height:min(46vh,92vw)}
-  .cover-note{top:20vh;left:calc(50% - min(46vh,92vw) * .1044 - 2.6em);font-size:10.5px;letter-spacing:.45em}
+  .cover-title{top:18vh;height:min(50vh,104vw)}
+  .cover-note{top:19vh;left:calc(50% - min(50vh,104vw) * .1044 - 2.8em);font-size:10.5px;letter-spacing:.45em}
   .cover-colophon{bottom:calc(5vh + 26px);font-size:9.5px;letter-spacing:.16em}
   .cover-colophon::before{width:16px;margin-bottom:12px}
   .cover-turn{left:calc(9% + 5px + var(--mark) + 6px);bottom:calc(5vh - 5px);font-size:9.5px;letter-spacing:.3em}

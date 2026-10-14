@@ -32,6 +32,16 @@ def write_json(path, value):
     temporary.replace(path)
 
 
+def read_checkpoint(path):
+    try:
+        value = json.loads(path.read_text())
+        if not isinstance(value, dict) or not isinstance(value.get('outputs'), dict) or any(not isinstance(text, str) for text in value['outputs'].values()):
+            return {}
+        return value
+    except (OSError, ValueError):
+        return {}
+
+
 def build_units(row, provider):
     blocks = json.loads(row['article_blocks_json'])
     fields = [('title', row['title_original']), ('excerpt', row.get('excerpt_original') or '')]
@@ -80,7 +90,7 @@ def run_autonomous(store, provider, directory=None, *, seconds=None, articles=No
     eligible = []
     for row in rows:
         path = directory / (row['id'] + '.json')
-        previous = json.loads(path.read_text()) if path.exists() else {}
+        previous = read_checkpoint(path)
         if previous.get('input_hash') == digest(row, provider.name) and previous.get('retry_after', '') > now():
             deferred.append(row['id'])
         else:
@@ -110,7 +120,7 @@ def run_autonomous(store, provider, directory=None, *, seconds=None, articles=No
             raise ValueError('invalid_content_id')
         path = directory / (row['id'] + '.json')
         fingerprint = digest(row, provider.name)
-        state = json.loads(path.read_text()) if path.exists() else {}
+        state = read_checkpoint(path)
         if state.get('input_hash') != fingerprint:
             state = {'schema_version': 1, 'id': row['id'], 'input_hash': fingerprint, 'provider': provider.name,
                      'source_hash': row['article_hash'], 'outputs': {}}

@@ -32,7 +32,7 @@ def numbers(text):
     text = text or ''
     # Noon/whole-hour Chinese notation preserves the :00 minutes implicitly.
     # Do not normalize half-hours or explicit minute expressions this way.
-    text = re.sub(r'(\d{1,2})[点时](?!\d|半)', r'\1:00', text)
+    text = re.sub(r'(?<!\d)([01]?\d|2[0-3])[点时](?!\d|半|间|代|期)', r'\1:00', text)
     for match in re.finditer(r'\d+(?:,\d{3})*(?:\.\d+)?', text):
         value = Decimal(match.group().replace(',', ''))
         suffix = text[match.end():]
@@ -136,13 +136,14 @@ class ContextTranslator:
         return self.call(self.review_model, instruction, {'original': self.document(row), 'draft': draft})
 
 
-def publish_translation(store, row, result, provider, model, review_model, review, input_hash=None):
+def publish_translation(store, row, result, provider, model, review_model, review, input_hash=None, protect_existing=False):
     checked = checked_result(row, result)
     direct = review.get('status') == 'not_requested' and review.get('approved') is False
     if (not direct and review.get('approved') is not True) or review.get('issues') != []: raise ValueError('review_not_approved')
     stamp = now()
     with store.connect() as db:
-        return db.execute('UPDATE content SET editorial_title_zh=?,editorial_excerpt_zh=?,editorial_blocks_json=?,editorial_review_json=?,editorial_status=?,editorial_provider=?,editorial_model=?,editorial_review_model=?,editorial_at=?,editorial_notes_json=?,editorial_input_hash=? WHERE id=? AND article_hash=? AND title_original=?',
+        guard = " AND coalesce(editorial_status,'') NOT IN ('reviewed','translated')" if protect_existing else ''
+        return db.execute('UPDATE content SET editorial_title_zh=?,editorial_excerpt_zh=?,editorial_blocks_json=?,editorial_review_json=?,editorial_status=?,editorial_provider=?,editorial_model=?,editorial_review_model=?,editorial_at=?,editorial_notes_json=?,editorial_input_hash=? WHERE id=? AND article_hash=? AND title_original=?' + guard,
                           (checked['title_zh'], checked['excerpt_zh'], json.dumps(checked['blocks'], ensure_ascii=False), json.dumps(review, ensure_ascii=False), 'translated' if direct else 'reviewed', provider, model, None if direct else review_model, stamp, json.dumps(checked['notes'], ensure_ascii=False), input_hash or fingerprint(row, provider), row['id'], row['article_hash'], row['title_original'])).rowcount
 
 

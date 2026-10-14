@@ -103,3 +103,10 @@ class AutonomousTranslationTests(unittest.TestCase):
         result = self.run_worker(provider, characters=5000)
         self.assertEqual(result['stale'], [self.row['id']])
         self.assertIsNone(self.store.dataset('live')['content'][0]['article_translation_hash'])
+
+    def test_broken_checkpoint_recovers_without_blocking_future_runs(self):
+        self.directory.mkdir()
+        (self.directory / (self.row['id'] + '.json')).write_text('{interrupted file')
+        result = self.run_worker(FixtureTranslator(), characters=5000)
+        self.assertEqual(result['translated'], [self.row['id']])
+        self.assertTrue(machine_ready(self.store.dataset('live')['content'][0]))

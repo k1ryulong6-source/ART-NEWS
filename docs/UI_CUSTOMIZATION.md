@@ -89,10 +89,13 @@ browser_snapshot只精简传输副本，data/live.json为完整档案；article_
 
 用户否定宋体，中文标题与正文改自托管Noto Sans SC黑体；书法报头、栏目和其他AI修改接口保持。采集结束触发GitHub后台离线机翻，再由工作流完成数据保存与Pages发布，不依赖当前聊天。免费模型/数字检查/断点/退避/健康记录见AUTONOMOUS_WORKFLOW.md。已有AI全文保护且优先，机器稿明确标自动机翻，与AI计数/全量精译队列分开。当前本机已实际完成5篇（约1.18万字符、129秒）；69Python＋25JS＝94检查通过，公开真实链路尚待验收。T037保持doing，T028全量AI精译仍doing。
 
-## T038 · 报纸版面 v4（当前）
+
+2026-10-14最新分工：Claude负责前端设计与文章排版，Codex负责后端/API/自动更新/重要新闻覆盖。语境AI API为主，离线机翻仅临时兜底；无key不冒称已启用。免费接入和真实状态见docs/AUTONOMOUS_WORKFLOW.md。此前不另配API的偏好已被最新指令覆盖，未授权费用不自动付费。
+
+## T040 · 报纸版面 v4
 
 theme.css已整体重写为v4：令牌在`:root`（新增`--latin`用于外文原文、`--rule`/`--rule-ink`栏线）；styles.css只保留重置与可访问性基础。CultureUI v1新增`brief(row)`（无图简讯），`card(row, showStatus, {art:false})`可关图；卡片标题/摘要、头条正文带`lang`，CSS用`:not([lang^=zh])`切换外文排印。收藏按钮改在卡片底栏（仍是链接的兄弟元素）。`artwork()`无来源图时返回空字符串，不再生成示意图；图片失败时隐藏`.card-art/.feature-art/.reader-cover/.detail-art`。报头新增`#edition-updated`；`#coordinate-button`在页脚；`.refresh-control`与`#inbox-button`仅本地API显示。
 
-## T039 · 手机阅读
+## T041 · 手机阅读
 
 `.paper-toolbar`现为`.masthead`之后的兄弟元素（`#navigation`/`#search`等ID不变），手机端`position:sticky`；app.js滚动监听只切换`body.bar-hidden`和`.read-progress span`的scaleX，不改数据。`state.readerScroll`保存进入文章前的列表位置。手机样式集中在theme.css的“Phone”段。

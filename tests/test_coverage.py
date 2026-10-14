@@ -50,6 +50,25 @@ class CoverageTests(unittest.TestCase):
             snapshot['content']=[rows[0]];prepare_queue(snapshot,Path(tmp))
             self.assertEqual(len(list((Path(tmp)/'translation-queue').glob('*.json'))),1)
 
+    def test_all_configured_feeds_are_checked_and_partial_outage_is_visible(self):
+        source = {'id': 'multi', 'name': 'Multi', 'language': 'en', 'channels': ['art'], 'source_type': 'media',
+                  'enabled': True, 'adapter': 'rss', 'homepage_url': 'https://example.org',
+                  'feed_url': 'https://example.org/first',
+                  'pages': [{'url': 'https://example.org/first'}, {'url': 'https://example.org/second'}]}
+        feed = b'<rss><channel><item><title>Turner Prize 2026 winners</title><link>https://example.org/art</link></item></channel></rss>'
+        seen = []
+        def fetch(url):
+            seen.append(url)
+            if url.endswith('second'): raise HTTPError(url, 503, 'Unavailable', None, None)
+            return feed
+        snapshot = {'content': [{'id': stable_id('https://example.org/art'), 'source_id': 'another-feed'}]}
+        result = audit_sources(snapshot, {'sources': [source]}, fetch)['sources'][0]
+        self.assertEqual(len(seen), 2)
+        self.assertEqual(result['status'], 'partial')
+        self.assertEqual(result['missing'], [])
+        self.assertEqual(result['in_inventory'], 1)
+        self.assertEqual(result['feeds'][1]['status'], 'failed')
+
     def test_natural_chinese_currency_conversion_keeps_numeric_value(self):
         self.assertEqual(numbers('$4.6 million'),numbers('460万美元'))
         self.assertEqual(numbers('$100 million'),numbers('1亿美元'))

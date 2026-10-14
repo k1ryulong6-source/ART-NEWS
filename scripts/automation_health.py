@@ -34,5 +34,15 @@ for name, workflow in stages.items():
     except Exception as error:
         report['stages'][name] = {'status': 'unknown', 'error': type(error).__name__}
         report['issues'].append(name + ':unverified')
+ai_path = ROOT / 'data/ai-translation-status.json'
+if ai_path.exists():
+    try:
+        ai = json.loads(ai_path.read_text())
+        report['ai_translation'] = {key: ai.get(key) for key in ('status', 'finished_at', 'retry_after', 'requests', 'model')}
+        report['ai_translation']['translated_count'] = len(ai.get('translated', []))
+        if ai.get('status') in ('failed', 'configuration_error'):
+            report['issues'].append('ai_translation:' + ai['status'])
+    except (ValueError, TypeError):
+        report['ai_translation'] = {'status': 'unknown'}
 write_json(ROOT / 'data/automation-health.json', report)
 print(json.dumps(report, ensure_ascii=False, indent=2))

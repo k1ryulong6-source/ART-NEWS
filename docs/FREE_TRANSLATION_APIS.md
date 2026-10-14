@@ -1,19 +1,36 @@
-# 免费翻译API选项 · 2026-10-14核对
+# AI翻译API选择 · 2026-10-14官方核对
 
-用户询问免费API，本轮仅核对官方额度和用途，没有开户、提交密钥、启用API、切换翻译路线或自动付费。此前不另配API的选择仍保持。用户当前偏好是足够完成语境全文翻译且费用合适，不再要求第二轮模型校对。
+最新需求：AI按全文语境直译全部现存及新增外文正文，不做第二轮模型校对；离线机翻仅临时兜底。用户允许研究/接入免费或低价API，尚未授权付费金额。
 
-| 服务 | 官方页面当前额度 | 对本项目的用途与边界 |
+| 模型 | 标准输入/输出，每百万tokens美元 | 免费与适用性 |
 | --- | --- | --- |
-| Gemini 2.5 Flash-Lite | 标准Free Tier输入/输出为Free of charge；限频、日配额和实际可用性按型号与账号 | 通用AI，可输入整篇语境和术语表，最接近当前翻译方式。免费档不保证能清空全部欠账或每天完成所有新增；部分账号地区可能不支持。 |
-| Azure AI Translator F0 | 每月200万字符：标准翻译与自定义翻译训练额度合计 | 专用翻译服务，额度较大；与通用AI按整篇语境翻译不是同一种流程。 |
-| DeepL API Free | 每月50万字符 | 专用翻译服务，确认是API Free而不是网页试用套餐；注册资格及文档限制另核验。 |
-| Google Cloud Translation | NMT标准文本翻译每月前50万字符免费，以每月10美元credit体现 | 此额度不能套用于页面上的LLM Adaptive Translation价格。需Cloud项目/API密钥或服务账号，超额度有收费，不能把账单预算提醒当硬性停止。 |
+| Gemini 2.5 Flash-Lite | 0.10 / 0.40 | 推荐起点；标准Free Tier输入/输出免费，未宣布停用日期。地区/账号和实际配额须验证。 |
+| Gemini 3.1 Flash-Lite | 0.25 / 1.50 | 免费档可试；不因型号更新就默认升级，本轮没有翻译质量比较证据。 |
+| Gemini 3.5 Flash-Lite | 0.30 / 2.50 | 免费档可试；付费高于2.5，暂不默认采用。 |
+| DeepSeek-V4.1-Flash（请求名deepseek-flash） | 高峰缓存未命中0.30 / 1.20；非高峰0.15 / 0.60 | Google账号/地区不可用时的低价替代；不承诺长期免费。默认thinking须关闭，付费上限和接入待验收。 |
 
-官方证据：
+这是已核对服务的价格，不是所有模型的市场排名或真实调用证明。Gemini免费档资料可能用于改善产品；本项目只发送公开新闻原文，不发送个人收藏或凭据。
 
-- Gemini：https://ai.google.dev/gemini-api/docs/pricing 。已读gemini-2.5-flash-lite段，标准免费输入/输出，不把收费档每百万token单价误作免费配额。
-- Azure：https://azure.microsoft.com/en-us/pricing/details/translator/ 。已读F0 Free标准翻译200万字符/月。
-- DeepL：https://support.deepl.com/hc/en-us/articles/360021200939-DeepL-API-Free 。已读“up to 500,000 characters per month for free”；usage-limits中的50万字符文件大小限制不是月额度证据。
-- Google：https://cloud.google.com/products/translate/pricing 。已读NMT前50万字符/月与10美元credit，LLM Adaptive段另收费。
+623条库存中外文待AI正文528篇/约215万原文字符。按30–60篇/天、约4千字符/篇粗估，Gemini 2.5 Flash-Lite基本文字费约5–15元/月，旧稿清理另需几元；JSON、长稿分块重复全文语境、重试和语言token差异会增加费用。尚无真实API账单，20元是建议起步预算，未获付费授权，也不保证足够。稳定日量需要连续记录，首次来源回补不能当日均。
 
-若用户以后选择接入：先根据地区/账号可用性选实际免费档，服务端或GitHub Secrets保存密钥，设置可计量的请求上限、429退避与用完停止；禁止浏览器暴露密钥、默认开收费回退或跨档升级。需完整块、源hash及数字检查，按真实提供方/型号/模式标译文，不把专用翻译冒称已校译。现有原文和译稿缓存保留，不为换提供方重复翻译有效稿。
+## 免费项目一次性接入
+
+1. 在支持地区/账号打开 https://aistudio.google.com/ 创建API key，选择**未绑定计费的Free Tier项目**。实际限频和配额在AI Studio核查，不为此步骤开启billing。
+2. 打开 https://github.com/k1ryulong6-source/ART-NEWS/settings/secrets/actions/new ，Name填`GEMINI_API_KEY`，Secret粘贴key。不要发聊天、提交源码或放前端。
+3. 保存后下次采集/备用调度自动执行；也可Actions → Automatic full-text translation → Run workflow即时验证。实际译文、status和Pages发布成功才算接入。
+
+当前连接读取Secrets public-key端点返回403“Resource not accessible by integration”，不能代设置；这是仓库主人一次操作，不是每日工作。放入已绑定billing的项目key仍可能收费：程序无法凭key可靠识别计费状态，本地免费模式不保证这种key零收费。因此当前仅提供未计费项目接入，付费模式关闭。
+
+程序最多100生成请求/太平洋日、40请求/批、480秒/批、15秒间隔，是项目上限，**不是**Google承诺配额。推理前把本批请求预留提交Git，正常结束释放未用量；硬中断保留预留至当日结束。请求前本地计数，未知usage另标，不伪称完整账单；429及服务错误保存全局退避并自动续跑。额度不足不删除待译稿，不自动升级或付费。免费档无法保证当天清空全部欠账。
+
+## 官方依据
+
+- 价格：https://ai.google.dev/gemini-api/docs/pricing
+- 实际配额/太平洋日重置：https://ai.google.dev/gemini-api/docs/rate-limits
+- 型号：https://ai.google.dev/gemini-api/docs/models
+- 生命周期：https://ai.google.dev/gemini-api/docs/deprecations
+- 地区：https://ai.google.dev/gemini-api/docs/available-regions
+- DeepSeek价格/高峰规则：https://api-docs.deepseek.com/quick_start/pricing
+- GitHub Models于2026-07-30完全退役：https://docs.github.com/en/github-models/prototyping-with-ai-models
+
+Azure Translator F0每月200万字符、DeepL API Free每月50万字符、Google NMT每月前50万字符是专用机翻额度，不是全文语境AI配额，已不作为主路线。

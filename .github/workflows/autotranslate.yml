@@ -11,6 +11,10 @@ on:
     paths:
       - '.github/workflows/autotranslate.yml'
       - 'config/automation.json'
+      - 'config/ai-translation.json'
+      - 'backend/ai_translation.py'
+      - 'scripts/run_ai_translation.py'
+      - 'scripts/reserve_ai_quota.py'
       - 'backend/offline_model.py'
       - 'backend/autonomous_translation.py'
       - 'scripts/run_auto_translation.py'
@@ -23,7 +27,9 @@ concurrency:
 jobs:
   translate:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
+    env:
+      AI_RUN_RESERVATION: ${{ github.run_id }}:${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,12 +44,35 @@ jobs:
       - run: pip install -r requirements.txt
       - id: restore
         run: python scripts/import_snapshot.py
+      - name: Commit request reservation before inference
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python scripts/reserve_ai_quota.py
+          if [ -f data/ai-translation-ledger.json ]; then
+            git config user.name 'Intermission automatic translator'
+            git config user.email 'updater@users.noreply.github.com'
+            git add data/ai-translation-ledger.json
+            if ! git diff --cached --quiet; then
+              git commit -m 'Reserve bounded AI requests before background inference'
+              git pull --rebase origin main
+              git push origin HEAD:main
+            fi
+          fi
+      - name: Translate with contextual AI when the free-project key is configured
+        id: ai
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/run_ai_translation.py
       - uses: actions/cache@v4
+        if: success() || failure()
         with:
           path: runtime/models/m2m100-int8
           key: offline-m2m100-int8-18e406c615ef2991-v1
       - run: pip install -r requirements-translation.txt
-      - name: Translate pending full articles without an API key
+        if: success() || failure()
+      - name: Temporary offline machine translation fallback
+        if: success() || failure()
         id: translation
         run: python scripts/run_auto_translation.py
       - name: Save accepted work and checkpoints even after a worker error
@@ -57,13 +86,15 @@ jobs:
           python scripts/export_snapshot.py
           python scripts/audit_data.py --output data/quality.json --strict
           python scripts/prepare_translation_queue.py
+          python scripts/audit_important_news.py
           python scripts/build_static.py
           git restore frontend/data.js
           git config user.name 'Intermission automatic translator'
           git config user.email 'updater@users.noreply.github.com'
-          git add data/live.json data/quality.json data/translation-queue.json data/translation-queue data/translation-input data/auto-translation-progress data/auto-translation-status.json
+          git add data/live.json data/quality.json data/important-news-audit.json data/translation-queue.json data/translation-queue data/translation-input data/auto-translation-progress data/auto-translation-status.json data/ai-translation-progress data/ai-translation-status.json
+          if [ -f data/ai-translation-ledger.json ]; then git add data/ai-translation-ledger.json; fi
           if ! git diff --cached --quiet; then
-            git commit -m 'Automatically publish verified offline machine translations'
+            git commit -m 'Save automatic AI translations and temporary machine fallback progress'
             git pull --rebase origin main
             git push origin HEAD:main
           fi
@@ -74,4 +105,7 @@ jobs:
           path: |
             data/auto-translation-progress/
             data/auto-translation-status.json
+            data/ai-translation-progress/
+            data/ai-translation-status.json
+            data/ai-translation-ledger.json
           retention-days: 7

@@ -25,6 +25,8 @@
 
 ## 官方依据
 
+2026-10-15 JST：用户已确认配置密钥，最新费用选择为先观察免费项目24小时，再由用户决定是否付费及金额。未授权开启结算或自动切换付费服务。试运行起点见data/ai-free-trial-baseline.json，实际接通须核查API输出和发布，不以Secrets存在或Actions绿色代替。
+
 - 价格：https://ai.google.dev/gemini-api/docs/pricing
 - 实际配额/太平洋日重置：https://ai.google.dev/gemini-api/docs/rate-limits
 - 型号：https://ai.google.dev/gemini-api/docs/models

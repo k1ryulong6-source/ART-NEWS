@@ -219,3 +219,5 @@ T033旧报纸版：四主导航、偏好/覆盖页保留、更多筛选折叠、
 T034：按公共艺术新闻查询/阅览平台定位重做报版，紧凑报头/竖线三栏/头条次条简讯，介绍隐藏与开发处理说明折叠；原文/译文/查询/分页/收藏/日历保留。CultureUI v1新增frontpage；公共浏览器包不再假定article_text必有，使用CultureCore.sourceText。原文档案data/live.json未改，536资料（最新自动新增1）、198活动、26源、44已译/49原生中文/441待译/2缺正文。T028仍doing。优化实测见BACKEND_OPTIMIZATION，65Python+23JS=88检查通过；尚需公开验收记录。
 
 发布前已合并自动采集9a5ce82：最新537资料/198活动/26源，44已译/49原生中文/442待译/2缺正文；重新逐条核验全部537原文、译文及搜索文本等价。优化对比使用此前同一536条样本，不能把新增数据混成性能变化。
+
+公开实现913ffb9；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38527095026 与Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38527094941 全部success（88检查）。真实公开网站Chromium1440/768/390：537条完整分页/全量旧稿搜索/折叠筛选/三处阅读入口/原文切换/收藏状态持久/六页长文无溢出或脚本错误；首条标题400px内、介绍不渲染、v1 frontpage接口和HTTP单文件运行通过。 T034已验收done。界面定位以公共艺术新闻检索和阅览为主，保留独立theme/UI接口；不要恢复私人介绍/黄纸卡片或冗长宣传。T028仍doing，442待译，本轮没有翻译API调用。

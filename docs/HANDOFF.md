@@ -1,3 +1,5 @@
+> T049最新：Porkbun五条DNS已正确，Babel7976620 Pages38609603860已success；主站迁移PR#12 CI已通过。Pages cname写入403，等待主人在ART-NEWS/settings/pages保存mujianrest.work后合并PR/验证HTTPS。
+
 > 2026-10-15 JST当前T049：用户已在Porkbun购买mujianrest.work，授权迁移幕间休息；巴别塔地址保持。迁移代码和验证见CUSTOM_DOMAIN.md，需先发布接收端双接口，再确认DNS/Pages后合并生产者迁移。未就绪不能冒称新域已上线；不覆盖Claude主题或自动采集新数据。
 
 > 当前工作（2026-10-14，T038）：用户分工为Claude做前端/文章排版，Codex做后端/API/自动运行/重要新闻覆盖。免费或低价语境AI API为主，机翻仅临时兜底，覆盖之前“不另配API”的选择。Gemini 2.5 Flash-Lite接入代码已准备，真实调用须GEMINI_API_KEY；本次GitHub Secrets管理API为403，需仓库主人一次性设置。费用尚未授权，不自动开启付费。详细当前流程见AUTONOMOUS_WORKFLOW.md，当前API证据见FREE_TRANSLATION_APIS.md。不要根据下方历史日志恢复iframe、旧只读标题或旧型号/不接API规则。

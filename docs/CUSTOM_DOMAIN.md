@@ -43,3 +43,5 @@ https://github.com/k1ryulong6-source/ART-NEWS/settings/pages → Custom domain�
 86Python＋26新闻端JS＋8巴别塔JS＝120检查，课程检查通过；python -S静态构建和质量审计0错误。689篇原文API返回链接全部指向新域名，两个静态版本canonical及CNAME正确。1440/390模拟新根域静态资源、中文/原文和跨域导入、新接口与DNS失败旧接口回退、重复笔记保持，无脚本错误或横向溢出。这是本地验证，尚未表示新域名已经公开上线。
 
 初次DNS查询NXDOMAIN，随后根域/www已解析到Porkbun停车页207.207.210.107/207.207.210.229，www CNAME=pixie.porkbun.com；Pages cname=null。等待用户修改DNS及Pages绑定，后续实际发布证据追加。
+
+DNS已核实正确：根域四个185.199.108–111.153，www CNAME=k1ryulong6-source.github.io。Babel7976620已公开发布，Pages38609603860 success。迁移PR https://github.com/k1ryulong6-source/ART-NEWS/pull/12 两轮CI成功。PUT仓库Pages cname实际返回403 Resource not accessible by integration；需要主人在仓库Settings/Pages手动保存mujianrest.work，已请求此一次设置。尚未合并生产者，不冒称新站已上线。

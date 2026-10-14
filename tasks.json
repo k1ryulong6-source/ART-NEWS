@@ -1482,6 +1482,30 @@
         "令牌--paper/--canvas #f5f4f0、--white #fbfbf9、--line #d3d1cb；body::before固定反光层在内容之后；手机吸顶栏半透明。",
         "1440/390截图（头版、阅读页）；26JS＋全部Python通过；交互、手机320–430与扉页专项回归通过。"
       ]
+    },
+    {
+      "id": "T047",
+      "title": "扉页半页重新设计",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T046"
+      ],
+      "scope": [
+        "frontend/index.html",
+        "frontend/theme.css",
+        "docs/"
+      ],
+      "acceptance": [
+        "用户认为半页太丑：重做为书籍扉页式排版——留白、较小细标题、角线、版权页式日期、书口页边与书沟阴影",
+        "右侧不再压灰，头版像对页直接露出",
+        "桌面与320–430手机均不拥挤、可点击/按键淡出"
+      ],
+      "evidence": [
+        "1440/390/320截图；covertest（深链接、Enter、reduced-motion、单文件预览）通过；26JS＋全部Python通过；交互回归无错误。"
+      ]
     }
   ]
 }

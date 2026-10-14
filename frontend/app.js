@@ -212,10 +212,10 @@
     const original = blocks.length ? `<div class="reader-document" lang="${e(row.language)}"><p class="reading-note">${row.article_author ? `作者：${e(row.article_author)} · ` : ''}来源：${e(sourceName(row))} · 正文采集于 ${e((row.article_fetched_at || '').slice(0,10))}</p>${partial ? '<p class="article-status">仅采集到公开可见的正文部分；来源的订阅内容或超出采集上限的内容未包含。</p>' : ''}${row.article_reason?.startsWith('cached_body_after_') ? '<p class="article-status">本次更新未成功，正在显示此前保存的原文。</p>' : ''}${headerImage}${newspaperBody(blocks)}</div>` : `<div class="original-unavailable" role="status"><h2>正文尚未取得</h2><p>${statusMessage}</p>${row.excerpt_original ? `<p class="reading-note">当前仅有来源短摘录：</p><p class="original-excerpt" lang="${e(row.language)}">${e(row.excerpt_original)}</p>` : ''}</div>`;
     let notes = []; try { notes = JSON.parse(row.editorial_notes_json || '[]'); } catch {}
     const chinese = translatedBlocks.length ? `<div class="reader-document" lang="zh-CN"><p class="reading-note">${row.language === 'zh' ? '来源原文为中文。' : !C.editorialReady(row) && C.machineReady(row) ? '自动机翻 · 免费离线模型 · 未经人工审核，专名与细节请对照原文。' : row.editorial_status === 'translated' ? 'AI 按全文语境翻译。' : 'AI 按全文语境翻译并校对 · 非人工译者审核。'}</p>${partial ? '<p class="article-status">来源仅取得公开部分，译文也仅包含这部分内容。</p>' : ''}${row.language !== 'zh' && notes.length ? `<div class="translation-notes"><h2>译名与表达说明</h2>${notes.map(note => `<p>${e(note)}</p>`).join('')}</div>` : ''}${headerImage}${newspaperBody(translatedBlocks, true)}</div>` : `<p class="article-status original-pending" role="status">${blocks.length ? `原文·待译 · 以下为${e(C.languageLabels[row.language] || '外文')}原文，中文译文尚未完成。` : '正文尚未取得。'}</p>${original}`;
-    return `<article class="reader-page"><div class="reader-toolbar"><button class="text-link" data-action="reader-back">‹ 返回</button><button class="text-link reader-save" data-save-type="content" data-save-id="${e(row.id)}">${saved ? '★ 已剪报' : '☆ 剪报'}</button></div><div class="eyebrow"><span class="channel-tag">${e(C.channels[row.channel] || '文化')}</span>${e(sourceName(row))} · ${e(publicationLabel(row))}</div>${(() => { const title = state.readerTab === 'original' ? row.title_original : C.displayTitle(row); return `<h1 lang="${e(title === row.title_original && row.language !== 'zh' ? row.language : 'zh-CN')}">${e(title)}</h1>`; })()}<div class="reader-tabs" role="tablist" aria-label="阅读内容"><button role="tab" aria-selected="${state.readerTab === 'chinese'}" data-reader-tab="chinese">${translatedBlocks.length ? '中文' : '正文'}</button><button role="tab" aria-selected="${state.readerTab === 'original'}" data-reader-tab="original">原文</button><button role="tab" aria-selected="${state.readerTab === 'info'}" data-reader-tab="info">资料</button></div><div class="reader-content" role="tabpanel">${state.readerTab === 'original' ? original : state.readerTab === 'chinese' ? chinese : `<div class="reader-information">${meta(row)}${C.priorityOf(row) ? `<p>重要程度：${e({high:'高',medium:'中',normal:'一般'}[C.priorityOf(row).importance])} · 翻译优先级：${e(C.priorityOf(row).label)} · ${e(C.priorityOf(row).reasons.join('；'))}</p>` : ''}<p>原始来源：${e(sourceName(row))} · ${e(C.languageLabels[row.language] || row.language)}</p>${dataset.content_events.filter(link => link.content_id === row.id).map(link => dataset.events.find(item => item.id === link.event_id)).filter(Boolean).map(item => eventRow(item)).join('') || '<p>这篇资讯没有关联的日历活动。</p>'}</div>`}</div>${!row.is_demo && url ? `<div class="reader-source-link"><span>原文</span><a href="${e(url)}" target="_blank" rel="noopener noreferrer">${e(url)}</a></div>` : ''}</article>`;
+    return `<article class="reader-page"><div class="reader-toolbar"><button class="text-link" data-action="reader-back">‹ 返回</button><button class="text-link reader-save" data-save-type="content" data-save-id="${e(row.id)}">${saved ? '★ 已剪报' : '☆ 剪报'}</button></div><div class="eyebrow"><span class="channel-tag">${e(C.channels[row.channel] || '文化')}</span>${e(sourceName(row))} · ${e(publicationLabel(row))}</div>${(() => { const title = state.readerTab === 'original' ? row.title_original : C.displayTitle(row); return `<h1 lang="${e(title === row.title_original && row.language !== 'zh' ? row.language : 'zh-CN')}">${e(title)}</h1>`; })()}<div class="reader-tabs" role="tablist" aria-label="阅读内容"><button role="tab" aria-selected="${state.readerTab === 'chinese'}" data-reader-tab="chinese">${translatedBlocks.length ? '中文' : '正文'}</button><button role="tab" aria-selected="${state.readerTab === 'original'}" data-reader-tab="original">原文</button><button role="tab" aria-selected="${state.readerTab === 'info'}" data-reader-tab="info">资料</button></div><div class="reader-content" role="tabpanel">${state.readerTab === 'original' ? original : state.readerTab === 'chinese' ? chinese : `<div class="reader-information">${meta(row)}${C.priorityOf(row) ? `<p>重要程度：${e({high:'高',medium:'中',normal:'一般'}[C.priorityOf(row).importance])} · 翻译优先级：${e(C.priorityOf(row).label)} · ${e(C.priorityOf(row).reasons.join('；'))}</p>` : ''}<p>原始来源：${e(sourceName(row))} · ${e(C.languageLabels[row.language] || row.language)}</p>${dataset.content_events.filter(link => link.content_id === row.id).map(link => dataset.events.find(item => item.id === link.event_id)).filter(Boolean).map(item => eventRow(item)).join('') || '<p>这篇资讯没有关联的日历活动。</p>'}</div>`}</div>${!row.is_demo && url ? `<div class="reader-source-link"><span>原文</span><a href="${e(url)}" target="_blank" rel="noopener noreferrer">${e(url)}</a></div>` : ''}<div class="reader-toolbar reader-end"><button class="text-link" data-action="reader-back">‹ 返回</button><button class="text-link reader-save" data-save-type="content" data-save-id="${e(row.id)}">${saved ? '★ 已剪报' : '☆ 剪报'}</button></div></article>`;
   }
   function openReader(id, route = true) {
-    if (state.view !== 'reader') state.readerReturn = state.view;
+    if (state.view !== 'reader') { state.readerReturn = state.view; state.readerScroll = window.scrollY; }
     state.readerId = id; state.readerTab = 'chinese'; state.view = 'reader';
     if ($('detail-dialog').open) $('detail-dialog').close();
     if (route) history.pushState(null, '', C.readerRoute(id));
@@ -252,7 +252,7 @@
         bookmarks.unshift(row);
       }
       const persisted = server || writeLocal();
-      if (state.view === 'reader') { nav(); const button = document.querySelector('.reader-save'); if (button) button.textContent = findBookmark('content', state.readerId) ? '★ 已剪报' : '☆ 剪报'; }
+      if (state.view === 'reader') { nav(); document.querySelectorAll('.reader-save').forEach(button => { button.textContent = findBookmark('content', state.readerId) ? '★ 已剪报' : '☆ 剪报'; }); }
       else render();
       if (persisted) toast(old ? '已移出剪报' : '已加入剪报');
       if ($('detail-dialog').open) showDetail($('detail-dialog').dataset.type, $('detail-dialog').dataset.recordId);
@@ -285,7 +285,7 @@
     else if (button.dataset.action === 'editorial-news') { state.view = 'explore'; state.editorialOnly = true; state.channel = state.kind = state.country = state.city = state.language = state.priority = 'all'; state.query = ''; $('search').value = ''; render(); }
     else if (button.dataset.action === 'all-news') { state.editorialOnly = false; state.priority = 'all'; state.view = 'explore'; render(); }
     else if (button.dataset.readerTab) { state.readerTab = button.dataset.readerTab; render(); }
-    else if (button.dataset.action === 'reader-back') { state.view = state.readerReturn || 'today'; render(); window.scrollTo({ top: 0 }); }
+    else if (button.dataset.action === 'reader-back') { state.view = state.readerReturn || 'today'; render(); window.scrollTo({ top: state.readerScroll || 0 }); }
     else if (button.dataset.channel) { state.channel = button.dataset.channel; state.kind = 'all'; render(); }
     else if (button.dataset.kind) { state.kind = state.kind === button.dataset.kind ? 'all' : button.dataset.kind; state.channel = 'all'; state.view = 'explore'; render(); }
     else if (button.dataset.detail) showDetail(button.dataset.type, button.dataset.detail);
@@ -370,7 +370,19 @@
   $('coordinate-button').addEventListener('click', () => { state.view = 'settings'; render(); });
   $('close-detail').addEventListener('click', () => $('detail-dialog').close());
   $('detail-dialog').addEventListener('click', event => { if (event.target === $('detail-dialog')) { const r = $('detail-dialog').getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) $('detail-dialog').close(); } });
-  window.addEventListener('hashchange', () => { if (location.hash === '#main') return; const route = C.parseRoute(location.hash); if (route.view === 'reader') openReader(route.id, false); else { state.view = route.view; render(); } });
+  window.addEventListener('hashchange', () => { if (location.hash === '#main') return; const route = C.parseRoute(location.hash); if (route.view === 'reader') openReader(route.id, false); else { const back = state.view === 'reader' && route.view === state.readerReturn; state.view = route.view; render(); if (back) window.scrollTo({ top: state.readerScroll || 0 }); } });
+  let lastScroll = 0, scrollFrame = 0;
+  window.addEventListener('scroll', () => {
+    if (scrollFrame) return;
+    scrollFrame = requestAnimationFrame(() => {
+      scrollFrame = 0;
+      const y = window.scrollY;
+      document.body.classList.toggle('bar-hidden', y > lastScroll + 4 && y > document.querySelector('.masthead').offsetHeight + 200 ? true : y < lastScroll - 4 ? false : document.body.classList.contains('bar-hidden'));
+      lastScroll = y;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      document.querySelector('.read-progress span').style.transform = `scaleX(${state.view === 'reader' && max > 0 ? Math.min(1, y / max) : 0})`;
+    });
+  }, { passive: true });
   const initialRoute = C.parseRoute(location.hash); state.view = initialRoute.view; if (initialRoute.id) state.readerId = initialRoute.id;
   render();
 })();

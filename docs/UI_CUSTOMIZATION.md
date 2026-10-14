@@ -92,3 +92,7 @@ browser_snapshot只精简传输副本，data/live.json为完整档案；article_
 ## T038 · 报纸版面 v4（当前）
 
 theme.css已整体重写为v4：令牌在`:root`（新增`--latin`用于外文原文、`--rule`/`--rule-ink`栏线）；styles.css只保留重置与可访问性基础。CultureUI v1新增`brief(row)`（无图简讯），`card(row, showStatus, {art:false})`可关图；卡片标题/摘要、头条正文带`lang`，CSS用`:not([lang^=zh])`切换外文排印。收藏按钮改在卡片底栏（仍是链接的兄弟元素）。`artwork()`无来源图时返回空字符串，不再生成示意图；图片失败时隐藏`.card-art/.feature-art/.reader-cover/.detail-art`。报头新增`#edition-updated`；`#coordinate-button`在页脚；`.refresh-control`与`#inbox-button`仅本地API显示。
+
+## T039 · 手机阅读
+
+`.paper-toolbar`现为`.masthead`之后的兄弟元素（`#navigation`/`#search`等ID不变），手机端`position:sticky`；app.js滚动监听只切换`body.bar-hidden`和`.read-progress span`的scaleX，不改数据。`state.readerScroll`保存进入文章前的列表位置。手机样式集中在theme.css的“Phone”段。

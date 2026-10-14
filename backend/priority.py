@@ -28,6 +28,20 @@ def classify(row, events=(), reference=None, rules=None):
         importance = 'high'; reasons.append('机构／行业重大变化相关信号，自动初判')
     if importance == 'normal' and re.search(rules['new_work_pattern'], text, re.I):
         importance = 'medium'; reasons.append('新作／上映／展览相关资讯')
+    exhibit_rules = rules.get('exhibition_preference', {})
+    exhibit_events = [event for event in events if event.get('event_type') == 'exhibition']
+    exhibition = bool(exhibit_events) or row.get('kind') == 'exhibition' or (
+        row.get('channel') in ('art', 'photography') and
+        bool(re.search(exhibit_rules.get('exhibition_pattern', r'(?!)'), text, re.I)))
+    countries = {event.get('country') for event in exhibit_events if event.get('country') and event.get('country') != 'GLOBAL'}
+    if not countries and row.get('country') and row['country'] != 'GLOBAL': countries.add(row['country'])
+    preferred = exhibit_rules.get('preferred_country', 'JP')
+    exhibit_region = 'japan' if preferred in countries else 'outside_japan' if countries else 'unknown'
+    if exhibition and re.search(exhibit_rules.get('major_pattern', r'(?!)'), text, re.I):
+        importance = 'high'; reasons.append('重大双年展／奖项展／重要回顾展相关信号，自动初判')
+    override = rules.get('manual_overrides', {}).get(row['id'])
+    if override and override.get('importance') in ('high', 'medium', 'normal'):
+        importance = override['importance']
     age_hours = None
     try:
         published = reference_time(row.get('published_at')) if row.get('published_at') else None
@@ -64,15 +78,26 @@ def classify(row, events=(), reference=None, rules=None):
     else: rank = 'P2'
     if fresh: reasons.append(f"来源发布时间在{rules['fresh_hours']}小时内")
     if archive: reasons.append('超过近期新闻窗口，仍保留待译')
-    override = rules.get('manual_overrides', {}).get(row['id'])
+    deprioritized = exhibition and exhibit_region == 'outside_japan' and importance != 'high'
+    if deprioritized:
+        rank = exhibit_rules.get('ordinary_outside_priority', 'P3')
+        reasons.append('用户偏好：非日本普通展览降为资料优先级；临近开闭展仍记录，不据此提升')
+    elif exhibition and exhibit_region == 'outside_japan' and importance == 'high':
+        reasons.append('非日本重大展览／重要新闻保留原优先规则')
+    elif exhibition and exhibit_region == 'unknown':
+        reasons.append('展览地区未确定，未按语言或媒体所在地降级')
     if override:
-        if override.get('priority') in rules['labels']: rank = override['priority']
+        if override.get('priority') in rules['labels']:
+            rank = override['priority']; deprioritized = False
         if override.get('importance') in ('high','medium','normal'): importance = override['importance']
         reasons.append('人工指定：' + override.get('reason','未补充理由'))
     return {'priority': rank, 'label': rules['labels'][rank], 'importance': importance,
             'time_sensitive': bool(due), 'due': due, 'fresh': fresh, 'archive': archive,
             'reasons': reasons or ['一般资讯；未确认临近活动日期'],
-            'source_title': row.get('title_original'), 'model_route': 'fast-direct'}
+            'source_title': row.get('title_original'), 'model_route': 'fast-direct',
+            'exhibition': exhibition, 'exhibition_region': exhibit_region if exhibition else None,
+            'exhibition_deprioritized': deprioritized,
+            'recommendation_penalty': exhibit_rules.get('homepage_penalty', 12) if deprioritized else 0}
 
 
 def rank_snapshot(snapshot, reference=None):

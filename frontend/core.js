@@ -82,8 +82,8 @@
       const synonyms = { 电影: ['film', 'cinema', 'película'], 艺术: ['art', 'exhibition'], 摄影: ['photograph', '写真'], 摄影集: ['photobook', '写真集'], 电影访谈: ['interview'], 街头摄影: ['street photography'] };
       const interestScore = interests.filter(x => x && [x, ...(synonyms[x] || [])].some(term => text.includes(term.toLocaleLowerCase()))).length * 4;
       const cityBoost = preferences.news_scope === 'follow_city' && row.city === preferences.default_city;
-      const score = interestScore + (cityBoost ? 2 : 0);
-      return { ...row, selection_reason: score >= 4 ? '与你关注的主题相关' : cityBoost ? `发生在你关注的${preferences.default_city}` : '全球文化动态', score };
+      const score = interestScore + (cityBoost ? 2 : 0) - (priorityOf(row)?.recommendation_penalty || 0);
+      return { ...row, selection_reason: priorityOf(row)?.exhibition_deprioritized ? '非日本普通展览，按偏好稍后阅读' : score >= 4 ? '与你关注的主题相关' : cityBoost ? `发生在你关注的${preferences.default_city}` : '全球文化动态', score };
     }).sort((a, b) => b.score - a.score || String(b.published_at || '').localeCompare(String(a.published_at || '')));
     // Balance channels and publishers before filling spare slots by relevance.
     const balanced = [], remaining = [...scored];

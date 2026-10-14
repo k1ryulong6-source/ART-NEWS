@@ -994,6 +994,45 @@
         "node --check frontend/app.js、python scripts/check_project.py及python -S scripts/build_static.py通过",
         "公开实现c5f066d；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38497204397 与Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38497204425 全部success。真实公开网站Chromium 1440/390：卡片及首页精选标题/摘要/图片同篇阅读、中文默认、坏图回退点击、键盘Enter、中键新标签、独立收藏/已看过状态、收藏摘要及布局无溢出或脚本错误通过。"
       ]
+    },
+    {
+      "id": "T032",
+      "title": "降低非日本普通展览优先级，核实免费翻译API选项",
+      "milestone": "M4",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T029"
+      ],
+      "scope": [
+        "backend/priority.py",
+        "config/translation-priority.json",
+        "frontend/core.js",
+        "frontend/data.js",
+        "data/translation-queue.json",
+        "data/translation-queue/",
+        "tests/",
+        "AGENTS.md",
+        "docs/",
+        "tasks.json",
+        "frontend/app.js"
+      ],
+      "acceptance": [
+        "非日本普通展览进入低优先级，日本和重大展览保留原规则；未知地区不以语言/媒体位置推定",
+        "翻译全量队列、探索排序及首页推荐同步，原文/全部资料/日历/旧稿份额保留",
+        "每日任务提示同步展览偏好，免费API只核对官方额度，不擅自开户/付费或改变此前不接API要求",
+        "验证临近闭展降级/重要例外/日本/未知/跨地区/手动覆盖及公开手机桌面"
+      ],
+      "evidence": [
+        "已合并自动采集bb7bebb并逐项比较data/live.json不变：535资料/198活动/26源，44已译/49原生中文/440待译/2缺正文",
+        "23明确非日本普通展览降级，1重要奖项展例外；5日本与21未知地区未按地区降级。关联场地优先，多地含JP保留，语言不当举办地",
+        "全量队列440、8旧稿份额、探索排序/首页推荐扣分；日期及原文保持",
+        "每日任务update成功，展览偏好/重大例外/未知地区/全量保留同步，启用与日程不变",
+        "官方页面证实Gemini轻量免费档、Azure200万/月、DeepL50万/月、Google NMT50万/月；无开户/实际模型API调用或付费启用",
+        "62Python＋19JS=81项通过，node语法/项目检查/stdlib静态构建通过",
+        "Chromium 1440/390：535全部卡片/23降级P3筛选/日本未知重要例外/阅读页依据/本站原文/首页推荐/覆盖说明、无溢出和脚本错误通过"
+      ]
     }
   ]
 }

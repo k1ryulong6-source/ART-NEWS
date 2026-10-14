@@ -17,5 +17,13 @@
   "shortlist_limit": 36,
   "backlog_slots": 8,
   "manual_overrides": {},
-  "notes": "自动初判，优先级不是新闻真伪或艺术价值结论。只用关联活动的明确日期判断期限，媒体所在地和正文关键词不补造日期；全部文章保持。"
+  "notes": "自动初判，优先级不是新闻真伪或艺术价值结论。只用关联活动的明确日期判断期限，媒体所在地和正文关键词不补造日期；全部文章保持。",
+  "exhibition_preference": {
+    "preferred_country": "JP",
+    "ordinary_outside_priority": "P3",
+    "homepage_penalty": 12,
+    "exhibition_pattern": "exhibitions?|exhibit\\b|retrospective|写真展|展覧|展览|展覽|exposition|exposici[oó]n|exposi[cç][aã]o|retrospectiv",
+    "major_pattern": "Venice Biennale|Biennale di Venezia|Whitney Biennial|documenta\\b|Manifesta\\b|Korea Artist Prize|威尼斯双年展|威尼斯雙年展|惠特尼双年展|卡塞尔文献展|卡塞爾文獻展|史上最大|百年首次|首(?:个|場|场)大型回顾|largest[- ]ever.{0,50}(?:exhibition|retrospective)|landmark retrospective|once[- ]in[- ]a[- ]generation.{0,50}(?:exhibition|retrospective)|career[- ]spanning retrospective",
+    "notes": "仅调整新闻/翻译及首页推荐顺序，非日本普通展览保留全部资料及原文、到期时间和日历。重大信号或人工重要性指定为例外；未知地区不按语言或媒体总部推定。"
+  }
 }

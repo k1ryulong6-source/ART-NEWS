@@ -176,3 +176,17 @@ test('direct AI translation is readable without pretending a bilingual review an
   assert.equal(C.priorityOf({...row,title_original:'Updated'}),null);
   delete globalThis.CULTURE_BOOTSTRAP;
 });
+
+test('today lowers ordinary foreign exhibitions without hiding inventory or major exhibitions', () => {
+  const ordinary={id:'ordinary-exhibit',title_original:'An exhibition',channel:'art',kind:'news',source_id:'a',evidence_status:'media_reported',published_at:'2026-10-14'};
+  const major={...ordinary,id:'major-exhibit',source_id:'b',published_at:'2026-10-13'};
+  const previous=global.CULTURE_BOOTSTRAP;
+  global.CULTURE_BOOTSTRAP={priorities:{[ordinary.id]:{source_title:ordinary.title_original,priority:'P3',exhibition_deprioritized:true,recommendation_penalty:12},[major.id]:{source_title:major.title_original,priority:'P0',recommendation_penalty:0}}};
+  try {
+    const selected=C.selectToday([ordinary,major],{...prefs,daily_selection_limit:1,interests:[],followed_entities:[]});
+    assert.equal(selected[0].id,major.id);
+    assert.equal(C.matches(ordinary,{}),true);
+    const both=C.selectToday([ordinary,major],{...prefs,daily_selection_limit:2,interests:[],followed_entities:[]});
+    assert.equal(both.length,2);assert.match(both.find(r=>r.id===ordinary.id).selection_reason,/稍后阅读/);
+  } finally { if(previous===undefined)delete global.CULTURE_BOOTSTRAP;else global.CULTURE_BOOTSTRAP=previous; }
+});

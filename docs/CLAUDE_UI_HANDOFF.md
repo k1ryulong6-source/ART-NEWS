@@ -69,3 +69,5 @@ python -m http.server 8002 --directory dist
 用户新增要求：全量翻译现存与新增文章，T028持续进行，不能把next短名单当全部。覆盖页展示逐源列表核对、未入库／失败／未知状态和官方抽查缺口；改视觉时保留该页与data/translation-queue全量分页，不能把未知覆盖渲染成100%。详见docs/COVERAGE.md。
 
 最新T029要求优先于之前校译流程说明：用户取消二次模型校对，新稿直接AI翻译，旧校译身份保持；探索四级优先级和资料页依据、覆盖进度直译/旧校译分开都要保留。当前会话使用快模型分工，不另配API，不冒称译文已经校对。
+
+T032用户阅读偏好：普通非日本展览降低排序，重大例外、日本及未知地区保留原规则。priority数据新增exhibition_region/exhibition_deprioritized/recommendation_penalty；探索/翻译队列和今日推荐使用这些字段。不要因低优先级删资讯/原文或隐藏日历；阅读页资料可查看降级依据。

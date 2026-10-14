@@ -1,0 +1,24 @@
+name: Inspect Gemini access without generation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: List available models with the existing repository secret
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/check_gemini_access.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gemini-access
+          path: runtime/gemini-access.json
+          retention-days: 7

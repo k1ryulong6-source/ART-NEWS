@@ -2,7 +2,8 @@ import io
 import json
 import unittest
 from urllib.error import HTTPError
-from backend.gemini_access import inspect_access
+from backend.gemini_access import inspect_access, DiagnosticGeminiTranslator
+from backend.ai_translation import ServiceError, configuration
 
 
 class GeminiAccessTests(unittest.TestCase):
@@ -34,3 +35,17 @@ class GeminiAccessTests(unittest.TestCase):
         self.assertEqual(report['http_status'], 403)
         self.assertNotIn('private-key', json.dumps(report))
         self.assertEqual(inspect_access('', 'gemini-missing')['status'], 'needs_configuration')
+
+    def test_generation_diagnostic_redacts_key_and_preserves_http_status(self):
+        key = 'fixture-private-key'
+        def denied(request, timeout):
+            self.assertEqual(request.get_method(), 'POST')
+            self.assertNotIn(key, request.full_url)
+            body = json.dumps({'error': {'message': 'Model missing; key=' + key}}).encode()
+            raise HTTPError(request.full_url, 404, '', {}, io.BytesIO(body))
+        provider = DiagnosticGeminiTranslator(key, configuration(), denied)
+        with self.assertRaises(ServiceError):
+            provider.request({'contents': []})
+        self.assertEqual(provider.error_detail['http_status'], 404)
+        self.assertIn('[redacted]', provider.error_detail['message'])
+        self.assertNotIn(key, json.dumps(provider.error_detail))

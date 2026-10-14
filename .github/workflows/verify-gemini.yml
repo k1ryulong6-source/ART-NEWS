@@ -1,0 +1,64 @@
+name: Verify Gemini full-text translation
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: cultural-news-data-write
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      AI_RUN_RESERVATION: ${{ github.run_id }}:${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - id: restore
+        run: python scripts/import_snapshot.py
+      - name: Verify availability and reserve at most two generation requests
+        id: reserve
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python scripts/verify_ai_translation.py --reserve
+          git config user.name 'Intermission API verifier'
+          git config user.email 'updater@users.noreply.github.com'
+          git add data/ai-translation-ledger.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'T038 Reserve bounded Gemini verification requests'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Translate original news with the existing free-project key
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/verify_ai_translation.py
+      - name: Save actual verification output and original news snapshot
+        if: always() && steps.reserve.outcome == 'success'
+        run: |
+          python scripts/export_snapshot.py
+          python scripts/audit_data.py --strict
+          python scripts/prepare_translation_queue.py
+          python scripts/audit_important_news.py
+          git add data/live.json data/ai-translation-status.json data/ai-translation-ledger.json data/ai-translation-progress data/translation-queue.json data/translation-queue data/translation-input data/important-news-audit.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'T038 Save actual Gemini verification and accepted translations'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gemini-verification
+          path: |
+            data/ai-translation-status.json
+            data/ai-translation-ledger.json
+            runtime/gemini-verification-access.json
+          retention-days: 7

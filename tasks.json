@@ -1118,7 +1118,7 @@
       "id": "T035",
       "title": "报纸排印与待译正文直接阅读",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-10-14",
       "depends_on": [
@@ -1137,7 +1137,12 @@
         "CI及公开Pages验收"
       ],
       "evidence": [
-        "本地89检查通过；Chromium1440/768/390全537条分页及原文回退逐块核验；公开验收待完成。"
+        "65Python＋24JS＝89检查通过；python -S静态构建与审计0错误。",
+        "公开实现f433f80；CI38529814910与Pages38529814722均success。",
+        "真实公开网站Chromium1440/768/390：全部537条分页/全量搜索/三阅读入口/收藏状态持久/六页无溢出及脚本错误。",
+        "未译各语种/最长正文/公开部分样本默认全部文本块精确等于保存原文，原文·待译与lang正确，缺正文状态保留；桌面双栏、手机单栏。",
+        "每日任务prompt已同步原文直接刊载；日程/启用不变；原文与译稿未改；T028全量翻译仍doing。",
+        "公开截图docs/images/newspaper-desktop.png、newspaper-mobile.png及newspaper-reader-desktop.png、newspaper-reader-mobile.png。"
       ]
     }
   ]

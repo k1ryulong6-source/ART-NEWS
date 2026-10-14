@@ -209,3 +209,5 @@ T030型号偏好和任务提示已实际更新并验收；T031本地1440/390三�
 公开实现c5f066d；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38497204397 与Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38497204425 全部success。真实公开网站Chromium 1440/390：卡片及首页精选标题/摘要/图片同篇阅读、中文默认、坏图回退点击、键盘Enter、中键新标签、独立收藏/已看过状态、收藏摘要及布局无溢出或脚本错误通过。 T031已验收done。T028仍doing，430待译；本轮没有调用任何翻译模型。
 
 T032执行：已合并自动采集bb7bebb，当前535/198/26；44已译（32旧校译＋12直译）/49原生中文/440待译/2缺正文。23明确非日本普通展览降至P3及首页扣分；1重要奖项展例外，5日本及21未知地区维持原规则。关联展览举办地优先，多地含JP不降级，不以语种/总部猜。全量分页440及8旧稿份额保持，data/live.json和全部原文未改。每日任务prompt更新成功、启用与日程不变；免费API官方方案已核实，没有实际模型API调用。62Python＋19JS=81项通过；公开发布需后续记录。T028仍doing。
+
+公开实现a0503d4；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38503655258 与Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38503655263 全部success。真实公开网站Chromium 1440/390：535全量卡片、23非日本普通展览P3筛选/阅读页依据/原文、重要日本未知例外、首页推荐及覆盖说明、无溢出或脚本错误通过。 T032已验收done；T028仍doing，440待译。免费API只查官方页面，当前没有接入或调用；下一批按新的日本展览偏好与重要例外读取队列，全部旧/新原文继续。

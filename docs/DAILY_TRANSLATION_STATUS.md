@@ -11,3 +11,5 @@
 本轮发布验证：CI [38496208635](https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38496208635)、译稿工作流 [38496208976](https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38496208976)、Pages [38496208634](https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38496208634)成功；公开网站手机／桌面12篇直译稿及原文切换通过。这是交互会话批次的证据，不是未来每日任务已运行的证明。
 
 最新核验：任务is_enabled=true、last_run_time=null，尚无实际每日定时翻译产能数据。每批36条是排序短名单，不是每日保证产量或上限。运营统计口径见 docs/OPERATING_METRICS.md。
+
+T032最新采集快照2026-10-14T02:42:42Z：535资料/198活动/26源，44已译、49原生中文、440待译、2缺正文；相对上批自动新增10条，没有新增模型译文。每日任务prompt已同步非日本普通展览降级与重大/日本/未知例外，schedule及启用状态不变。免费API仅咨询，尚未接入。

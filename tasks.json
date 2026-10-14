@@ -1431,6 +1431,33 @@
       "evidence": [
         "26JS＋全部Python测试通过；交互回归：阅读页切换为“正文/原文”，正文渲染正常，剪报持久、36页分页、搜索、筛选、日程弹窗正常；390px阅读页截图无溢出。"
       ]
+    },
+    {
+      "id": "T045",
+      "title": "扉页改淡出、手机半页、光泽纸",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T043"
+      ],
+      "scope": [
+        "frontend/index.html",
+        "frontend/theme.css",
+        "AGENTS.md",
+        "docs/"
+      ],
+      "acceptance": [
+        "反馈认为翻页难看：去掉3D翻页，点击后文字先淡、纸页随后淡出",
+        "手机也只占左半屏，像半页书；320px可容纳",
+        "扉页纸面改为光泽铜版纸：亮白、高光带、书脊暗影"
+      ],
+      "evidence": [
+        "Chromium 1440/390/320：扉页半屏显示，点击后约1.1秒移除，中间帧为纯淡出无翻转；320px标题、栏目与胶片条不重叠。",
+        "covertest：深链接不显示、Enter进入、reduced-motion 0.35秒移除、单文件预览可用。",
+        "26JS＋全部Python测试通过；交互与手机320–430回归通过。"
+      ]
     }
   ]
 }

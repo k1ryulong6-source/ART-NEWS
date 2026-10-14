@@ -2,11 +2,11 @@
   "schema_version": 1,
   "days": {
     "2026-10-14": {
-      "requests": 75,
-      "input_tokens": 171810,
-      "output_tokens": 76875,
-      "reserved_requests": 21,
-      "unknown_usage_requests": 3
+      "requests": 77,
+      "input_tokens": 174345,
+      "output_tokens": 78143,
+      "reserved_requests": 0,
+      "unknown_usage_requests": 4
     }
   },
   "reservations": {
@@ -62,8 +62,9 @@
     "38634187465:1": {
       "day": "2026-10-14",
       "allocated": 40,
-      "remaining": 21,
-      "status": "reserved"
+      "remaining": 0,
+      "status": "closed",
+      "actual_requests": 21
     }
   },
   "configuration_repair": {
@@ -72,5 +73,6 @@
     "to_model": "gemini-3.5-flash-lite",
     "reason": "Actual Google 404: old model no longer available to new users; recommended 3.5 has Free Tier. Clear only this stale configuration backoff, preserve all requests/tokens/reservations.",
     "cleared_retry_after": "2026-10-15T00:02:01.690921+00:00"
-  }
+  },
+  "retry_after": "2026-10-14T21:49:30.844831+00:00"
 }

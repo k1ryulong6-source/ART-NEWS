@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
-from backend.editorial import ContextTranslator, checked_result, run_editorial
+from backend.editorial import ContextTranslator, checked_result, run_editorial, rules
 from backend.storage import Store
 from backend.ingestion import content_record
 from backend.articles import collect_articles
@@ -12,6 +12,7 @@ from backend.articles import collect_articles
 
 class EditorialTests(unittest.TestCase):
     def setUp(self):
+        current_rules=rules(); legacy=patch("backend.editorial.rules",return_value={**current_rules,"quality_mode":"reviewed"});legacy.start();self.addCleanup(legacy.stop)
         self.tmp = TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
         self.store = Store(Path(self.tmp.name)/'quality.db')
         self.source = {'id':'film-stage','name':'Film Stage','homepage_url':'https://thefilmstage.com',
@@ -88,3 +89,13 @@ class EditorialTests(unittest.TestCase):
         with self.store.connect() as db:
             status=json.loads(db.execute("SELECT value FROM job_state WHERE id='last-editorial'").fetchone()[0])
         self.assertEqual(status['status'],'chatgpt_task')
+
+    def test_direct_mode_spends_one_call_and_does_not_invoke_review(self):
+        provider=self.provider()
+        provider.review=lambda *args: (_ for _ in ()).throw(AssertionError('User opted out of review'))
+        with patch('backend.editorial.rules',return_value={**rules(),'quality_mode':'direct-ai'}):
+            result=run_editorial(self.store,provider,daily_limit=1)
+        self.assertEqual(result['calls'],1);self.assertEqual(result['direct_translated'],1)
+        row=self.store.dataset('live')['content'][0]
+        self.assertEqual(row['editorial_status'],'translated');self.assertIsNone(row['editorial_review_model'])
+        self.assertFalse(json.loads(row['editorial_review_json'])['approved'])

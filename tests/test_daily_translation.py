@@ -47,3 +47,13 @@ class DailyTranslationTests(unittest.TestCase):
         original=json.loads(input_file.read_text());self.assertEqual(original['article_hash'],self.row['article_hash'])
         self.assertEqual(original['blocks'],json.loads(self.row['article_blocks_json']))
         self.write();import_packs(self.store,self.directory);result=prepare_queue(self.store.dataset('live'),self.root/'public');self.assertEqual(result['pending'],0);self.assertTrue(input_file.exists())
+
+    def test_direct_fast_model_pack_publishes_without_false_review_approval(self):
+        self.pack.update(quality_mode='direct-ai',draft_model='gpt-6-luna (session worker)')
+        self.pack['review']={'approved':False,'status':'not_requested','issues':[],'method':'AI直接翻译'}
+        self.write();self.assertEqual(import_packs(self.store,self.directory)['imported'],[self.row['id']])
+        row=self.store.dataset('live')['content'][0]
+        self.assertEqual(row['editorial_status'],'translated');self.assertIsNone(row['editorial_review_model'])
+        self.assertEqual(row['editorial_model'],'gpt-6-luna (session worker)')
+        self.assertEqual(import_packs(self.store,self.directory)['unchanged'],[self.row['id']])
+        self.assertEqual(prepare_queue(self.store.dataset('live'),self.root/'public')['pending'],0)

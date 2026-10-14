@@ -113,8 +113,8 @@ test('exact screening and deadline exports preserve UTC instants rather than tur
 
 test('reading hides legacy machine translations and shows only reviewed context translations', () => {
   const row = { title_original: 'A photo exhibition', translated_title_zh: '摄影展', translated_excerpt_zh: '城市摄影作品', excerpt_original: 'Original introduction', canonical_url: 'https://example.org/story' };
-  assert.equal(C.displayTitle(row), '中文标题待校译');
-  assert.equal(C.readingSummary(row), '中文正文待校译，可在阅读页切换原文。');
+  assert.equal(C.displayTitle(row), '中文标题待翻译');
+  assert.equal(C.readingSummary(row), '中文正文待翻译，可在阅读页切换原文。');
   row.editorial_status='reviewed'; row.editorial_title_zh='摄影展'; row.editorial_excerpt_zh='城市摄影作品'; row.editorial_blocks_json=JSON.stringify([{type:'paragraph',text:'已校对的正文'}]);
   assert.equal(C.displayTitle(row), '摄影展');
   assert.equal(C.readingSummary(row), '城市摄影作品');
@@ -152,7 +152,7 @@ test('stored body blocks display without executable links and search uses the or
 
 test('draft or legacy body translation is never presented as reviewed copy', () => {
   const row={title_original:'Original',translated_title_zh:'旧机翻标题',article_translation_json:'[{"type":"paragraph","text":"旧机翻正文"}]',editorial_status:'draft',editorial_title_zh:'未校对标题',editorial_blocks_json:'[{"type":"paragraph","text":"未审核初稿"}]'};
-  assert.equal(C.displayTitle(row),'中文标题待校译');
+  assert.equal(C.displayTitle(row),'中文标题待翻译');
   assert.deepEqual(C.articleBlocks(row,true),[]);
   row.editorial_status='reviewed';assert.equal(C.displayTitle(row),'未校对标题');assert.equal(C.articleBlocks(row,true)[0].text,'未审核初稿');
 });
@@ -163,7 +163,16 @@ test('reviewed title-only packs support Chinese search but never imply full-body
   globalThis.CULTURE_BOOTSTRAP={headlines:{headline:{source_title:'An exhibition',title_zh:'一场展览'}}};
   assert.equal(C.displayTitle(row),'一场展览'); assert.ok(C.matches(row,{query:'一场展览'}));
   assert.equal(C.editorialReady(row),false); assert.deepEqual(C.articleBlocks(row,true),[]);
-  assert.equal(C.displayTitle({...row,title_original:'Updated exhibition'}),'中文标题待校译');
+  assert.equal(C.displayTitle({...row,title_original:'Updated exhibition'}),'中文标题待翻译');
   assert.equal(C.displayTitle({language:'zh',title_original:'中文原生报道'}),'中文原生报道');
+  delete globalThis.CULTURE_BOOTSTRAP;
+});
+
+test('direct AI translation is readable without pretending a bilingual review and priority filters match', () => {
+  const row={id:'direct',title_original:'A story',editorial_status:'translated',editorial_title_zh:'一篇报道',editorial_blocks_json:'[{"type":"paragraph","text":"AI译文"}]'};
+  assert.ok(C.editorialReady(row));assert.equal(C.articleBlocks(row,true)[0].text,'AI译文');assert.equal(C.displayTitle(row),'一篇报道');
+  globalThis.CULTURE_BOOTSTRAP={priorities:{direct:{source_title:'A story',priority:'P0',label:'紧急'}}};
+  assert.equal(C.priorityRank(row),0);assert.ok(C.matches(row,{priority:'P0'}));assert.ok(!C.matches(row,{priority:'P1'}));
+  assert.equal(C.priorityOf({...row,title_original:'Updated'}),null);
   delete globalThis.CULTURE_BOOTSTRAP;
 });

@@ -14,9 +14,13 @@ def translation_progress(snapshot):
     rows = [r for r in snapshot.get('content', []) if not r.get('is_demo')]
     reviewed = [r for r in rows if r.get('editorial_status') == 'reviewed'
                 and r.get('editorial_blocks_json') and r.get('editorial_title_zh')]
-    pending = [r for r in rows if r.get('language') != 'zh' and r.get('article_blocks_json') and r not in reviewed]
+    direct = [r for r in rows if r.get('editorial_status') == 'translated' and r.get('editorial_blocks_json') and r.get('editorial_title_zh')]
+    done = reviewed + direct
+    pending = [r for r in rows if r.get('language') != 'zh' and r.get('article_blocks_json') and r not in done]
     return {'total': len(rows), 'foreign_total': sum(r.get('language') != 'zh' for r in rows),
             'reviewed': len(reviewed), 'reviewed_partial': sum(r.get('article_status') == 'partial' for r in reviewed),
+            'direct_translated': len(direct), 'completed': len(done),
+            'completed_partial': sum(r.get('article_status') == 'partial' for r in done),
             'native_chinese': sum(r.get('language') == 'zh' and bool(r.get('article_blocks_json')) for r in rows),
             'pending': len(pending), 'without_body': sum(not r.get('article_blocks_json') for r in rows),
             'pending_characters': sum(len(r.get('article_text') or '') for r in pending)}

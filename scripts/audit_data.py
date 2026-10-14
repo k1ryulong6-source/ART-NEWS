@@ -114,6 +114,8 @@ def audit_payload(snapshot, catalog, reference=None):
             'article_bodies_not_obtained': sum(not row.get('article_blocks_json') for row in content),
             'machine_translated_article_bodies': sum(bool(row.get('article_translation_hash')) for row in content),
             'ai_reviewed_article_translations': sum(row.get('editorial_status')=='reviewed' for row in content),
+            'ai_direct_article_translations': sum(row.get('editorial_status')=='translated' for row in content),
+            'ai_completed_article_translations': sum(row.get('editorial_status') in ('reviewed','translated') for row in content),
         },
         'languages': dict(Counter(row['language'] for row in content)),
         'event_countries': dict(Counter(row['country'] for row in events)),

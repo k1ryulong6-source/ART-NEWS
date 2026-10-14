@@ -83,7 +83,7 @@ class ContextTranslator:
             raise ValueError('校译服务地址必须为无内嵌凭据的 HTTPS 地址')
         self.endpoint = base.rstrip('/') + '/chat/completions'
         self.key = key if key is not None else os.getenv('EDITORIAL_API_KEY', '')
-        self.model = model or os.getenv('EDITORIAL_MODEL', 'gpt-4.1')
+        self.model = model or os.getenv('EDITORIAL_MODEL', 'gpt-4.1-mini')
         self.review_model = review_model or os.getenv('EDITORIAL_REVIEW_MODEL') or self.model
         self.name = 'editorial-ai:' + self.model + ':' + self.review_model + ':' + PIPELINE_VERSION
         if not self.key and transport is None: raise ValueError('未配置 EDITORIAL_API_KEY')
@@ -135,11 +135,12 @@ class ContextTranslator:
 
 def publish_translation(store, row, result, provider, model, review_model, review, input_hash=None):
     checked = checked_result(row, result)
-    if review.get('approved') is not True or review.get('issues') != []: raise ValueError('review_not_approved')
+    direct = review.get('status') == 'not_requested' and review.get('approved') is False
+    if (not direct and review.get('approved') is not True) or review.get('issues') != []: raise ValueError('review_not_approved')
     stamp = now()
     with store.connect() as db:
-        return db.execute('UPDATE content SET editorial_title_zh=?,editorial_excerpt_zh=?,editorial_blocks_json=?,editorial_review_json=?,editorial_status=\'reviewed\',editorial_provider=?,editorial_model=?,editorial_review_model=?,editorial_at=?,editorial_notes_json=?,editorial_input_hash=? WHERE id=? AND article_hash=? AND title_original=?',
-                          (checked['title_zh'], checked['excerpt_zh'], json.dumps(checked['blocks'], ensure_ascii=False), json.dumps(review, ensure_ascii=False), provider, model, review_model, stamp, json.dumps(checked['notes'], ensure_ascii=False), input_hash or fingerprint(row, provider), row['id'], row['article_hash'], row['title_original'])).rowcount
+        return db.execute('UPDATE content SET editorial_title_zh=?,editorial_excerpt_zh=?,editorial_blocks_json=?,editorial_review_json=?,editorial_status=?,editorial_provider=?,editorial_model=?,editorial_review_model=?,editorial_at=?,editorial_notes_json=?,editorial_input_hash=? WHERE id=? AND article_hash=? AND title_original=?',
+                          (checked['title_zh'], checked['excerpt_zh'], json.dumps(checked['blocks'], ensure_ascii=False), json.dumps(review, ensure_ascii=False), 'translated' if direct else 'reviewed', provider, model, None if direct else review_model, stamp, json.dumps(checked['notes'], ensure_ascii=False), input_hash or fingerprint(row, provider), row['id'], row['article_hash'], row['title_original'])).rowcount
 
 
 def run_editorial(store, provider=None, daily_limit=None, article_limit=None):
@@ -161,7 +162,12 @@ def run_editorial(store, provider=None, daily_limit=None, article_limit=None):
     with store.connect() as db:
         db.execute('CREATE TABLE IF NOT EXISTS editorial_usage(day TEXT PRIMARY KEY,calls INTEGER NOT NULL)')
         rows = [dict(r) for r in db.execute("SELECT * FROM content WHERE is_demo=0 AND language!='zh' AND article_blocks_json IS NOT NULL ORDER BY CASE editorial_status WHEN 'draft' THEN 0 ELSE 1 END,published_at DESC")]
-    rows = [r for r in rows if r.get('editorial_status') != 'reviewed' or r.get('editorial_input_hash') != fingerprint(r, provider.name)]
+    rows = [r for r in rows if r.get('editorial_status') not in ('reviewed','translated')]
+    from .priority import rank_snapshot, priority_key
+    priorities = rank_snapshot(store.dataset('live'))
+    for row in rows: row['translation_priority'] = priorities[row['id']]
+    rows.sort(key=priority_key)
+    direct_mode = rules().get('quality_mode') == 'direct-ai'
     result = {'status': 'completed', 'provider': provider.name, 'reviewed': 0, 'rejected': 0, 'failed': 0, 'too_long': 0, 'changed_during_request': 0, 'calls': 0}
     def reserve():
         with store.connect() as db:
@@ -180,6 +186,11 @@ def run_editorial(store, provider=None, daily_limit=None, article_limit=None):
                 reserve(); draft = provider.draft(row); checked_result(row, draft)
                 with store.connect() as db:
                     db.execute("UPDATE content SET editorial_draft_json=?,editorial_input_hash=?,editorial_status='draft',editorial_provider=? WHERE id=? AND article_hash=? AND title_original=?", (json.dumps(draft, ensure_ascii=False), digest, provider.name, row['id'], row['article_hash'], row['title_original']))
+            if direct_mode:
+                direct_review = {'approved': False, 'status': 'not_requested', 'issues': [], 'method': 'AI直接翻译；仅程序结构与数字检查，未二次模型校对。'}
+                key = 'direct_translated' if publish_translation(store,row,draft,provider.name,provider.model,None,direct_review,digest) else 'changed_during_request'
+                result[key] = result.get(key, 0) + 1
+                continue
             reserve(); review = provider.review(row, draft)
             if review.get('approved') is not True or review.get('issues') != []:
                 with store.connect() as db:

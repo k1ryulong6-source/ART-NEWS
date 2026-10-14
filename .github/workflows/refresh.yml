@@ -34,7 +34,7 @@ jobs:
           ARTICLE_TRANSLATION_LIMIT: '120'
           EDITORIAL_PROVIDER: ${{ vars.EDITORIAL_PROVIDER || 'chatgpt-task' }}
           EDITORIAL_BASE_URL: ${{ vars.EDITORIAL_BASE_URL || 'https://api.openai.com/v1' }}
-          EDITORIAL_MODEL: ${{ vars.EDITORIAL_MODEL || 'gpt-4.1' }}
+          EDITORIAL_MODEL: ${{ vars.EDITORIAL_MODEL || 'gpt-4.1-mini' }}
           EDITORIAL_REVIEW_MODEL: ${{ vars.EDITORIAL_REVIEW_MODEL || 'gpt-4.1' }}
           EDITORIAL_DAILY_LIMIT: ${{ vars.EDITORIAL_DAILY_LIMIT || '20' }}
           EDITORIAL_ARTICLE_LIMIT: ${{ vars.EDITORIAL_ARTICLE_LIMIT || '5' }}

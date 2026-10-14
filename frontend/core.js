@@ -17,7 +17,10 @@
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const safeUrl = value => { try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } };
   const originalPageUrl = row => safeImageUrl(row.original_page_url || row.canonical_url);
-  const editorialReady = row => row.editorial_status === 'reviewed' && Boolean(row.editorial_blocks_json && row.editorial_title_zh);
+  const editorialReady = row => ['reviewed','translated'].includes(row.editorial_status) && Boolean(row.editorial_blocks_json && row.editorial_title_zh);
+  const priorityOf = row => { const value = root.CULTURE_BOOTSTRAP?.priorities?.[row.id]; return value?.source_title === row.title_original ? value : null; };
+  const priorityRank = row => Number(priorityOf(row)?.priority?.slice(1) || 2);
+  const priorityCompare = (a, b) => { const x=priorityOf(a)||{}, y=priorityOf(b)||{}, importance={high:0,medium:1,normal:2}; return priorityRank(a)-priorityRank(b) || (importance[x.importance]??2)-(importance[y.importance]??2) || (x.due?.days??999)-(y.due?.days??999) || String(b.published_at||'').localeCompare(String(a.published_at||'')); };
   const articleBlocks = (row, translated = false) => {
     try {
       const blocks = JSON.parse((translated ? (editorialReady(row) ? row.editorial_blocks_json : null) : row.article_blocks_json) || '[]');
@@ -33,8 +36,8 @@
     return { view: ['today','explore','calendar','bookmarks','settings','coverage'].includes(value) ? value : 'today' };
   }
   const reviewedHeadline = row => { const pack = root.CULTURE_BOOTSTRAP?.headlines?.[row.id]; return pack?.source_title === row.title_original ? pack.title_zh : null; };
-  const displayTitle = row => (editorialReady(row) ? row.editorial_title_zh : null) || reviewedHeadline(row) || row.title_zh || (row.language === 'zh' ? row.title_original : '中文标题待校译');
-  const readingSummary = row => (editorialReady(row) ? row.editorial_excerpt_zh : null) || row.summary_zh || (row.language === 'zh' ? row.excerpt_original : null) || '中文正文待校译，可在阅读页切换原文。';
+  const displayTitle = row => (editorialReady(row) ? row.editorial_title_zh : null) || reviewedHeadline(row) || row.title_zh || (row.language === 'zh' ? row.title_original : '中文标题待翻译');
+  const readingSummary = row => (editorialReady(row) ? row.editorial_excerpt_zh : null) || row.summary_zh || (row.language === 'zh' ? row.excerpt_original : null) || '中文正文待翻译，可在阅读页切换原文。';
   const safeImageUrl = value => { try { const u = new URL(value); return u.protocol === 'https:' && !u.username && !u.password && !['localhost', '127.0.0.1', '[::1]'].includes(u.hostname) ? u.href : ''; } catch { return ''; } };
   const translatedArticleUrl = row => { const original = safeUrl(row.original_page_url || row.canonical_url || row.evidence_url); return original ? 'https://translate.google.com/translate?sl=auto&tl=zh-CN&u=' + encodeURIComponent(original) : ''; };
   const dateNumber = value => { if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return null; const [y, m, d] = value.split('-').map(Number), date = new Date(Date.UTC(y, m - 1, d)); return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d ? date.getTime() / 86400000 : null; };
@@ -44,6 +47,7 @@
   function matches(row, filters = {}) {
     if (row.source_id && filters.disabledSources?.includes(row.source_id)) return false;
     if (filters.reviewedOnly && !editorialReady(row)) return false;
+    if (filters.priority && filters.priority !== 'all' && priorityOf(row)?.priority !== filters.priority) return false;
     if (filters.disabledEventIds?.includes(row.id)) return false;
     if (filters.channel && filters.channel !== 'all' && row.channel !== filters.channel) return false;
     if (filters.kind && filters.kind !== 'all' && row.kind !== filters.kind && row.event_type !== filters.kind) return false;
@@ -162,7 +166,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { editorialReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { priorityOf, priorityRank, priorityCompare, editorialReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

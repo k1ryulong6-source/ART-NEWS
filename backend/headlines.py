@@ -14,11 +14,13 @@ def load_headlines(snapshot, directory=None):
         identifier = pack.get("id", "")
         title = pack.get("title_zh")
         review = pack.get("review") or {}
+        direct = pack.get('quality_mode') == 'direct-ai'
         if (pack.get("schema_version") != 1 or not re.fullmatch(r"live-[a-f0-9]{24}", identifier)
                 or path.stem != identifier or not isinstance(pack.get("source_title"), str)
                 or not isinstance(title, str) or not 1 <= len(title.strip()) <= 600
                 or not re.search(r"[\u4e00-\u9fff]", title)
-                or review.get("approved") is not True or review.get("issues") != []
+                or (direct and (review.get('approved') is not False or review.get('status') != 'not_requested'))
+                or (not direct and review.get("approved") is not True) or review.get("issues") != []
                 or not isinstance(review.get("method"), str) or not review["method"].strip()):
             raise ValueError(f"Invalid reviewed headline: {path.name}")
         row = content.get(identifier)
@@ -31,7 +33,7 @@ def load_headlines(snapshot, directory=None):
         event, row = events.get(link["event_id"]), content.get(link["content_id"])
         if not event or not row or event["title_original"] != row["title_original"]:
             continue
-        if row.get("editorial_status") == "reviewed" and row.get("editorial_title_zh"):
+        if row.get("editorial_status") in ("reviewed","translated") and row.get("editorial_title_zh"):
             result[event["id"]] = {"source_title": event["title_original"], "title_zh": row["editorial_title_zh"]}
         elif row["id"] in result:
             result[event["id"]] = result[row["id"]]

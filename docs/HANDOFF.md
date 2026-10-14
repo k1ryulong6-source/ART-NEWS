@@ -286,3 +286,10 @@ T039公开完成：ART-NEWS b994269，CI38554022279（85Python+26JS）和Pages38
 ## T042 · 报头重新设计（Claude）· 2026-10-14
 
 用户认为标题栏丑，允许不拘原字体与版型。新报头：左为自绘字标“幕间休息”（Noto Sans SC 900字重轮廓，间字内的“日”印红：门里亮着的光），旁边竖排“艺术／电影／摄影”，右侧是大号衬线日期数字＋年月、星期、更新时间；下接粗细双线与导航（当前栏目红色下划线）。手机隐藏竖排栏目，字标与日期同行。页脚用同一字标，favicon为黑底“间”。字标是index.html里的`<symbol id="wordmark">`，由`scripts/build_wordmark.py`生成（需可选fonttools），改字距/颜色见脚本与theme.css的`--wordmark-height`、`.wordmark-light`。不再加载Ma Shan Zheng。
+
+## T043 · 王家卫式细繁体标题、书页扉页与胶片元素（Claude）· 2026-10-14
+
+- 标题：用户要“王家卫那种比较瘦的繁体”。字标改为细明体繁体“幕間休息”（Noto Serif TC子集，`frontend/fonts/intermission-title-v1.woff2`，11KB，含扉页用字），間内“日”仍印红。`<title>`与元信息仍是简体“幕间休息”。
+- 扉页：首页打开时左半屏是一页竖排书的扉页（竖排标题、藝術・電影・攝影、中文数字日期、外侧35mm胶片条），右半屏为压暗的头版；点击、Enter/空格/方向键、滚轮或滑动后，扉页绕书脊向右翻（传统直排书方向），纸背透出镜像标题，随后淡出。手机为整屏书页。每个浏览器会话只显示一次（sessionStorage `intermission-cover`，不动culture-desk-v1）；从#reader等深链接进入不显示；减少动态效果时只淡出。标记与小脚本在index.html，样式在theme.css“Opening page”段。
+- 胶片元素：报头下沿为35mm胶片边（齿孔＋琥珀色边码，帧号随当日日期），扉页外侧为竖向胶片条。
+- 新资源：字体加入`backend/app.py`本地API白名单（只加两行文件名）；静态构建与单文件预览自动复制/内联。

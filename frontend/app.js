@@ -81,6 +81,7 @@
     const [y, m, d] = readingDate().split('-').map(Number);
     $('edition-date').innerHTML = `<b class="edition-day">${d}</b><span>${y}年${m}月</span><span>星期${'日一二三四五六'[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]}</span>`;
     $('edition-date').setAttribute('aria-label', `${y}年${m}月${d}日`);
+    $('film-edge-print').textContent = Array.from({ length: 24 }, (_, i) => (i % 6 ? '' : '幕間休息　') + `▸ ${d + i}　${d + i}A`).join('　　');
     $('edition-date').dateTime = readingDate();
     const last = sourceStatus.map(source => source.last_success_at).filter(Boolean).sort().at(-1);
     $('edition-updated').textContent = state.mode === 'demo' ? '示例版 · 内容虚构' : last ? '更新 ' + new Intl.DateTimeFormat('zh-CN', { timeZone: preferences.reading_timezone, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(last)) : '';

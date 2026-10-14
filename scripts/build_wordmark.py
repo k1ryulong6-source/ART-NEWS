@@ -1,9 +1,11 @@
-"""Draw the 幕间休息 wordmark and favicon from the self-hosted Noto Sans SC outlines.
+"""Draw the 幕間休息 wordmarks and favicon from the self-hosted title face.
 
-The wordmark is Noto Sans SC at weight 900 with tightened spacing; the contours of
-the 日 inside 间 are emitted as a separate path (class "wordmark-light") so the
-theme can print it in the accent colour. Output is printed for pasting into
-frontend/index.html (the <symbol id="wordmark">) and written to frontend/favicon.svg.
+The title face (fonts/intermission-title-v1.woff2, Noto Serif TC subset) gives the thin
+traditional Ming letterforms. The contours of the 日 inside 間 are emitted as a
+separate path (class "wordmark-light") so the theme can print it in the accent
+colour. Two symbols are printed for frontend/index.html — "wordmark" (horizontal,
+masthead and footer) and "wordmark-vertical" (cover page) — and the favicon is
+written to frontend/favicon.svg.
 
 Optional tooling only: python -m pip install 'fonttools[woff]'
 """
@@ -17,34 +19,37 @@ from fontTools.ttLib import TTFont
 from fontTools.varLib.instancer import instantiateVariableFont
 
 ROOT = Path(__file__).resolve().parents[1]
-ASCENT, GAP = 880, 80
+FACE = ROOT / 'frontend/fonts/intermission-title-v1.woff2'
+TEXT = '幕間休息'
 
 
-def glyph_paths(text):
-    font = instantiateVariableFont(TTFont(ROOT / 'frontend/fonts/intermission-sans-v1.woff2'), {'wght': 900})
+def glyph_paths(text, weight, gap, vertical=False):
+    font = instantiateVariableFont(TTFont(FACE), {'wght': weight})
     glyphs, cmap = font.getGlyphSet(), font.getBestCmap()
-    ink, light, x = [], [], 0
+    ink, light, offset = [], [], 0
     for char in text:
         name = cmap[ord(char)]
         bounds = BoundsPen(glyphs); glyphs[name].draw(bounds); x0, y0, x1, y1 = bounds.bounds
         pen = RecordingPen(); glyphs[name].draw(pen)
+        dx, dy = (-x0 + (1000 - (x1 - x0)) / 2, offset - (880 - y1)) if vertical else (offset - x0, 0)
         contour = []
         for op, args in pen.value:
             contour.append((op, args))
             if op not in ('closePath', 'endPath'):
                 continue
             xs = [p[0] for _, a in contour for p in a]; ys = [p[1] for _, a in contour for p in a]
-            inner = char == '间' and x0 + 180 < min(xs) and max(xs) < x1 - 180 and y0 + 60 < min(ys) and max(ys) < y1 - 200
-            (light if inner else ink).append(path_data(contour, x - x0))
+            w, h = x1 - x0, y1 - y0
+            inner = char == '間' and x0 + .25 * w < min(xs) and max(xs) < x1 - .25 * w and y0 + .05 * h < min(ys) and max(ys) < y1 - .3 * h
+            (light if inner else ink).append(path_data(contour, dx, dy))
             contour = []
-        x += (x1 - x0) + GAP
-    return ''.join(ink), ''.join(light), x - GAP
+        offset += ((y1 - y0) if vertical else (x1 - x0)) + gap
+    return ''.join(ink), ''.join(light)
 
 
-def path_data(contour, dx):
+def path_data(contour, dx, dy):
     out = []
     for op, args in contour:
-        points = [(px + dx, ASCENT - py) for px, py in args]
+        points = [(px + dx, 880 - py + dy) for px, py in args]
         if op == 'moveTo':
             out.append('M%d %d' % tuple(map(round, points[0])))
         elif op == 'lineTo':
@@ -61,21 +66,26 @@ def path_data(contour, dx):
     return ''.join(out)
 
 
-def view_box(ink, light, width):
-    ys = [int(v) for v in re.findall(r'-?\d+', ink + light)[1::2]]
-    return 0, min(ys), width, max(ys) - min(ys)
+def box(ink, light):
+    numbers = [int(v) for v in re.findall(r'-?\d+', ink + light)]
+    xs, ys = numbers[0::2], numbers[1::2]
+    return min(xs), min(ys), max(xs) - min(xs), max(ys) - min(ys)
+
+
+def symbol(name, ink, light):
+    x, y, w, h = box(ink, light)
+    return f'<symbol id="{name}" viewBox="{x} {y} {w} {h}"><path d="{ink}"/><path class="wordmark-light" d="{light}"/></symbol>'
 
 
 def main():
-    ink, light, width = glyph_paths('幕间休息')
-    x, y, w, h = view_box(ink, light, width)
-    sys.stdout.write(f'<symbol id="wordmark" viewBox="{x} {y} {w} {h}"><path d="{ink}"/><path class="wordmark-light" d="{light}"/></symbol>\n')
-    ink, light, width = glyph_paths('间')
-    x, y, w, h = view_box(ink, light, width)
-    side = max(w, h) + 220; left, top = x - (side - w) // 2, y - (side - h) // 2
+    sys.stdout.write(symbol('wordmark', *glyph_paths(TEXT, 300, 260)) + '\n')
+    sys.stdout.write(symbol('wordmark-vertical', *glyph_paths(TEXT, 200, 300, vertical=True)) + '\n')
+    ink, light = glyph_paths('間', 400, 0)
+    x, y, w, h = box(ink, light)
+    side = max(w, h) + 260; left, top = x - (side - w) // 2, y - (side - h) // 2
     (ROOT / 'frontend/favicon.svg').write_text(
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{left} {top} {side} {side}"><rect x="{left}" y="{top}" width="{side}" height="{side}" fill="#151412"/>'
-        f'<path fill="#f3efe4" d="{ink}"/><path fill="#c4281c" d="{light}"/></svg>\n', encoding='utf-8')
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{left} {top} {side} {side}"><rect x="{left}" y="{top}" width="{side}" height="{side}" fill="#b3261e"/>'
+        f'<path fill="#f6efe2" d="{ink}{light}"/></svg>\n', encoding='utf-8')
 
 
 if __name__ == '__main__':

@@ -1373,6 +1373,41 @@
         "1440/768/390/320截图：字标92/80/64/clamp(36–52)px，无横向溢出；本站与culture-desk-preview.html字标渲染386×92、标题幕间休息。",
         "69Python＋25JS通过（合并main后）；交互回归（剪报持久、分页、搜索、阅读切换、筛选、日程弹窗）与手机吸顶/进度/返回原位置回归通过。"
       ]
+    },
+    {
+      "id": "T043",
+      "title": "王家卫式细繁体标题、书页扉页翻页与胶片元素",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T042"
+      ],
+      "scope": [
+        "frontend/index.html",
+        "frontend/theme.css",
+        "frontend/app.js",
+        "frontend/favicon.svg",
+        "frontend/fonts/",
+        "scripts/build_title_font.py",
+        "scripts/build_wordmark.py",
+        "backend/app.py（仅字体白名单）",
+        "AGENTS.md",
+        "docs/"
+      ],
+      "acceptance": [
+        "网站标题为瘦细明体繁体“幕間休息”，自托管、可复现",
+        "打开首页时左半屏为书页扉页，点击/按键/滚轮/滑动翻页后进入网站；每个浏览器会话一次；深链接不拦",
+        "加入电影/摄影元素：报头胶片边（齿孔与边码）、扉页胶片条",
+        "桌面/平板/手机无溢出；减少动态效果时改为淡出；所有既有交互契约保持"
+      ],
+      "evidence": [
+        "Noto Serif TC子集intermission-title-v1.woff2：42字形11,324字节，wght 200–400；manifest记录上游/sha256；OFL随附；本地API白名单加入。",
+        "covertest：#reader深链接不显示扉页；首页扉页获得焦点并锁定滚动，Enter翻页1.6秒内移除；reduced-motion点击0.6秒内移除；单文件预览扉页存在并可翻页，Intermission Title等字体loaded；刷新后同会话不再显示。",
+        "1440与390截图：翻页中纸背透出镜像标题，翻过后淡出；报头与胶片边在1440/768/390正常。",
+        "合并main后69+Python与26JS全部通过；交互回归（剪报持久、36页分页、搜索、阅读切换、筛选、日程弹窗）及手机320–430八视图溢出为0、吸顶/进度/返回原位置通过。"
+      ]
     }
   ]
 }

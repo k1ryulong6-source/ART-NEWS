@@ -100,6 +100,12 @@ theme.css已整体重写为v4：令牌在`:root`（新增`--latin`用于外文�
 
 `.paper-toolbar`现为`.masthead`之后的兄弟元素（`#navigation`/`#search`等ID不变），手机端`position:sticky`；app.js滚动监听只切换`body.bar-hidden`和`.read-progress span`的scaleX，不改数据。`state.readerScroll`保存进入文章前的列表位置。手机样式集中在theme.css的“Phone”段。
 
-## T042 · 报头
+## T042 · 报头（已由T043替换为细明体字标）
 
 `.nameplate`内为`.brand`（内联SVG `<use href="#wordmark">`）、`.brand-sections`与`.edition-block`（`#edition-date`为大号日＋年月＋星期，`#edition-updated`）。尺寸只改`--wordmark-height`，红色部分是`.wordmark-light`（默认`--accent`）。重新生成字标：`python scripts/build_wordmark.py`，把输出的symbol替换进index.html。
+
+## T043 · 标题字体、扉页与胶片边
+
+- 字标symbol `wordmark`（横）与`wordmark-vertical`（竖）由`python scripts/build_wordmark.py`输出，字体子集由`scripts/build_title_font.py --source NotoSerifTC[wght].ttf`生成；扉页/栏目用字若要增减，先改该脚本的`CHARS`再重建。
+- 扉页`#cover`：`.cover-leaf`（正反两面`.cover-front/.cover-back`）、`.cover-veil`、`.cover-film`、`.cover-title`、`.cover-note`、`.cover-turn`。翻页时长与曲线在`.cover-leaf` transition，结束移除时间在index.html脚本（1600ms）。想关闭扉页：删除`#cover`和紧随的脚本即可，其他代码不依赖它。
+- 胶片边`.film-edge`与`#film-edge-print`（app.js nav()按日期写帧号）。

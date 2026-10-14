@@ -213,3 +213,5 @@ T032执行：已合并自动采集bb7bebb，当前535/198/26；44已译（32旧�
 公开实现a0503d4；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38503655258 与Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38503655263 全部success。真实公开网站Chromium 1440/390：535全量卡片、23非日本普通展览P3筛选/阅读页依据/原文、重要日本未知例外、首页推荐及覆盖说明、无溢出或脚本错误通过。 T032已验收done；T028仍doing，440待译。免费API只查官方页面，当前没有接入或调用；下一批按新的日本展览偏好与重要例外读取队列，全部旧/新原文继续。
 
 T033旧报纸版：四主导航、偏好/覆盖页保留、更多筛选折叠、18条分页/全量搜索；源图加载占位标原创示意，读取正文原图不滤色。frontend/ui.js提供CultureUI v1（heading/meta/card/feature/pagination）；theme.css主题变量与响应式独立。index/app/构建及本地API资源同步；UI_CUSTOMIZATION与Claude交接文档重写为最新要求，data/原文/存储/任务日程不变。折叠栏在重绘时先同步open避免丢状态；skip-link hash不误回首页。62Python＋21JS=83检查通过，公开验证待记录。
+
+公开实现ea933f5；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38512575722 与Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38512575751 全部success。真实公开网站Chromium1440/768/390完整遍历535条/30页、搜索/折叠筛选/三个阅读链接/中文与原文/收藏状态刷新、六页及长文无溢出或脚本错误、CultureUI v1及HTTP单文件无外部CSS/JS并可运行。 T033已验收done。修改接口已公开，主题/展示/状态/核心逻辑分层见docs/UI_CUSTOMIZATION.md，Claude接力说明指向该接口。T028仍doing，440待译，本次未调用翻译API或改日程。

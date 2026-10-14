@@ -115,6 +115,6 @@ def coverage_report(snapshot, config, audit=None, benchmarks=None):
             'sources': sources, 'source_audit_at': (audit or {}).get('checked_at'),
             'benchmarks': probes, 'global_completeness': 'unknown',
             'known_gaps': ['来源是有限名单，未覆盖全球全部媒体、片方、美术馆和摄影机构。',
-                           '近期RSS会滚动，12小时刷新间隔仍可能错过高频来源的条目；没有全站历史回补。',
+                           '近期RSS会滚动，即使设置每2小时检查仍可能错过高频来源的条目；没有全站历史回补。',
                            '官方活动只覆盖配置页面，日本以外上映、拉美／中东／东南亚展览仍明显不足。',
                            '没有持续独立编辑审核，跨来源重点清单仅是抽查样本。']}

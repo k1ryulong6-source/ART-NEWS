@@ -934,6 +934,65 @@
         "59 Python＋18 JS=77项通过；Chromium 1440/390全部12直译稿/原文切换/收藏/筛选/覆盖拆分/六页布局无溢出和脚本错误通过",
         "公开实现9f5c006；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38496208635、译稿工作流 https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38496208976、Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38496208634 全部success。真实公开网站1440/390px全部12篇直译稿、中文默认/原文切换、优先级筛选、收藏/刷新、六页无溢出与脚本错误通过。"
       ]
+    },
+    {
+      "id": "T030",
+      "title": "按用户费用偏好选择翻译模型并核实每日量和覆盖口径",
+      "milestone": "M4",
+      "status": "done",
+      "owner": "Codex",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T029"
+      ],
+      "scope": [
+        "AGENTS.md",
+        "config/translation.json",
+        "backend/coverage.py",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "按性价比和足够完成全文翻译选择可用会话模型，当前按用户费用反馈默认gpt-5.6-sol，不把Luna默认当廉价模型，不自动升级较贵型号，不另配API；历史出处保留",
+        "每日任务提示同步最新费用偏好，不改启用状态与日程；5.6不可用且无可靠省费用替代时保留待译并报告",
+        "按真实快照、任务状态与来源对照回答量和覆盖，不把发布时间条数/36短名单当固定每日吞吐量"
+      ],
+      "evidence": [
+        "每日任务update成功，提示明确gpt-5.6-sol/禁止Luna/不可用保留待译，未请求修改schedule",
+        "快照2026-10-14T01:27:44Z：525条/198活动/26源/6语种；271电影/153艺术/101摄影；44已翻译/430待译/49原生中文/2缺正文",
+        "快照前24h发布时间102条，157条缺发布时间；没有稳定日新增基线。每日任务last_run_time=null，暂无实测每日翻译产能",
+        "17 RSS当时列表289合格记录全部在库，9配置页面来源未独立核验；英国活动144/198，全球完整性unknown",
+        "用户后续允许按性价比选足够翻译的模型，update再次成功；无实时单价依据，默认5.6，禁止猜价格和自动升级较贵型号",
+        "最新任务update回包确认success、is_enabled=true、性价比提示/默认5.6及原Asia/Tokyo日程；配置和全部接续文件一致，历史Luna译稿未改"
+      ]
+    },
+    {
+      "id": "T031",
+      "title": "修复资讯图片与摘要无法进入阅读页",
+      "milestone": "M4",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T029"
+      ],
+      "scope": [
+        "frontend/app.js",
+        "frontend/styles.css",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "探索、今日卡片、首页精选及收藏中标题/摘要/图片均进入同篇本站阅读页",
+        "收藏按钮及状态选择保持独立，不误触阅读，不嵌套按钮与链接",
+        "手机/桌面验证三个入口、键盘链接与收藏；发布并核验真实网站"
+      ],
+      "evidence": [
+        "标题由button改真实hash链接，摘要与图片同route；首页大图同修，图片链接与收藏按钮为兄弟节点",
+        "Chromium 1440/390本地三个入口/中文默认/键盘Enter/中键新标签/坏图回退点击/收藏独立/状态选择/收藏摘要/布局无溢出和脚本错误通过",
+        "node --check frontend/app.js、python scripts/check_project.py及python -S scripts/build_static.py通过"
+      ]
     }
   ]
 }

@@ -30,7 +30,7 @@
   function parseRoute(hash) {
     const value = (hash || '').replace(/^#/, '');
     if (value.startsWith('reader/')) { try { const id = decodeURIComponent(value.slice(7)); return id ? { view: 'reader', id } : { view: 'today' }; } catch { return { view: 'today' }; } }
-    return { view: ['today','explore','calendar','bookmarks','settings'].includes(value) ? value : 'today' };
+    return { view: ['today','explore','calendar','bookmarks','settings','coverage'].includes(value) ? value : 'today' };
   }
   const reviewedHeadline = row => { const pack = root.CULTURE_BOOTSTRAP?.headlines?.[row.id]; return pack?.source_title === row.title_original ? pack.title_zh : null; };
   const displayTitle = row => (editorialReady(row) ? row.editorial_title_zh : null) || reviewedHeadline(row) || row.title_zh || (row.language === 'zh' ? row.title_original : '中文标题待校译');

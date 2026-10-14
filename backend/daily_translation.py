@@ -72,6 +72,20 @@ def prepare_queue(snapshot, output=None):
     # A bounded shortlist avoids downloading the entire 6+ MB snapshot in a task.
     # Rotate sources/channels; older items get a dedicated share instead of starving.
     pending.sort(key=lambda r: r.get('published_at') or '', reverse=True)
+    # The shortlist is a starting order, never the complete translation scope.
+    # Every pending original is also accessible through small, exhaustive pages.
+    queue_directory = output / 'translation-queue'
+    queue_directory.mkdir(parents=True, exist_ok=True)
+    pages = []
+    backlog_all = sorted(pending, key=lambda r: (r.get('published_at') or '', r['id']))
+    for offset in range(0, len(backlog_all), 30):
+        filename = f'{offset // 30 + 1:04d}.json'
+        page = {'schema_version': 1, 'snapshot_at': snapshot.get('snapshot_at'),
+                'items': backlog_all[offset:offset + 30]}
+        (queue_directory / filename).write_text(json.dumps(page, ensure_ascii=False, indent=2) + '\n')
+        pages.append({'path': 'data/translation-queue/' + filename, 'count': len(page['items'])})
+    for path in queue_directory.glob('*.json'):
+        if path.name not in {p['path'].split('/')[-1] for p in pages}: path.unlink()
     headlines = load_headlines(snapshot, output / 'headlines')
     headline_pending = []
     for row in sorted(snapshot['content'], key=lambda r: r.get('published_at') or '', reverse=True):
@@ -98,6 +112,12 @@ def prepare_queue(snapshot, output=None):
              'originals_without_body': sum(not r.get('article_blocks_json') for r in snapshot['content']),
              'instructions_path': 'docs/DAILY_TRANSLATION.md', 'glossary_path': 'config/translation.json',
              'pending_headlines': len(headline_pending), 'headlines_next': headline_pending[:120],
+             'scope': 'all_existing_and_new_articles', 'pending_pages': pages,
+             'pending_characters': sum(row['characters'] for row in pending),
+             'blocked_without_body': [{'id': r['id'], 'title_original': r['title_original'],
+                                       'source_id': r['source_id'], 'article_status': r.get('article_status'),
+                                       'reason': r.get('article_reason')}
+                                      for r in snapshot['content'] if not r.get('article_blocks_json') and not r.get('is_demo')],
              'next': selected}
     output.mkdir(exist_ok=True)
     (output / 'translation-queue.json').write_text(json.dumps(queue, ensure_ascii=False, indent=2) + '\n')

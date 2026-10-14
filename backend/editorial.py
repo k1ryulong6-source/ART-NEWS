@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import re
+from decimal import Decimal
 from datetime import datetime, timezone
 from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
@@ -27,7 +28,19 @@ def fingerprint(row, provider):
 
 def numbers(text):
     # Codes, years, opening times, prices and quantities must survive translation.
-    return {m.replace(',', '') for m in re.findall(r'\d+(?:,\d{3})*(?:\.\d+)?', text or '')}
+    values = set()
+    text = text or ''
+    for match in re.finditer(r'\d+(?:,\d{3})*(?:\.\d+)?', text):
+        value = Decimal(match.group().replace(',', ''))
+        suffix = text[match.end():]
+        unit = re.match(r'\s*(million\b|billion\b|thousand\b|万|亿)', suffix, re.I)
+        if unit:
+            value *= {'million': 1_000_000, 'billion': 1_000_000_000, 'thousand': 1000,
+                      '万': 10_000, '亿': 100_000_000}[unit.group(1).lower()]
+        elif re.match(r'\s*M\b', suffix) and re.search(r'[$£€]\s*$', text[:match.start()]):
+            value *= 1_000_000
+        values.add(format(value.normalize(), 'f'))
+    return values
 
 
 def checked_result(row, result):

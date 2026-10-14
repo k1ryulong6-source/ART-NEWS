@@ -7,6 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from backend.headlines import load_headlines
+from backend.coverage import coverage_report
 
 
 def build():
@@ -20,6 +21,11 @@ def build():
     if live_path.exists():
         bundle["live"] = json.loads(live_path.read_text(encoding="utf-8"))
         bundle["headlines"] = load_headlines(bundle["live"])
+        def optional_data(name):
+            path = ROOT / 'data' / name
+            return json.loads(path.read_text(encoding='utf-8')) if path.exists() else None
+        bundle['coverage'] = coverage_report(bundle['live'], bundle['sources'],
+                                             optional_data('coverage-audit.json'), optional_data('coverage-benchmarks.json'))
     text = "window.CULTURE_BOOTSTRAP = " + json.dumps(bundle, ensure_ascii=False).replace("<", "\\u003c") + ";\n"
     (ROOT / "frontend/data.js").write_text(text, encoding="utf-8")
     output = ROOT / "dist"

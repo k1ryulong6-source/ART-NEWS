@@ -1,0 +1,67 @@
+# UI 修改接口 v1 · 报纸版
+
+仓库：https://github.com/k1ryulong6-source/ART-NEWS
+
+网站：https://k1ryulong6-source.github.io/ART-NEWS/
+
+这是原生HTML/CSS/JS＋Python FastAPI，不需要React、额外模型API或在线编辑器。其他AI从最新main创建分支，通过GitHub工具或本地checkout改代码并提交PR；仓库链接可供阅读，直接写入仍取决于该AI客户端的GitHub授权。
+
+## 三个视觉入口
+
+| 文件 | 修改内容 |
+| --- | --- |
+| `frontend/theme.css` | 主视觉入口。纸色、墨色、衬线字体、字号、宽度、间距、响应式；末尾加载覆盖基础样式。 |
+| `frontend/ui.js` | 展示组件接口`window.CultureUI`，版本1；改标题、卡片、头条、分页的HTML。支持CommonJS，便于独立测试。 |
+| `frontend/index.html` | 报头、导航容器、搜索、页脚和资源加载顺序。 |
+
+`frontend/styles.css`为现有基础行为/布局样式。`frontend/app.js`管理状态、渲染页面和事件；新增组件或改交互时在此接入。`frontend/core.js`处理筛选、优先级、时间、安全转义和导入等公共逻辑。`frontend/data.js`与`dist/`是生成文件，不手改。
+
+主题变量：`--canvas`、`--paper`、`--white`、`--ink`、`--muted`、`--line`、`--accent`、`--green`、`--serif`、`--sans`、`--paper-width`、`--paper-gutter`、`--headline-size`、`--article-size`。改变颜色与字号不用改采集或数据库。内容图片只在卡片/头条采用报纸滤色，阅读正文原图保持正常颜色；占位图必须注明原创示意。
+
+## CultureUI v1
+
+加载顺序：data.js → core.js → ui.js → app.js。app创建：
+
+```js
+const ui = CultureUI.create({
+  C: CultureCore,
+  artwork, saveButton, findBookmark,
+  sourceName, publicationLabel, priorityBadge
+});
+```
+
+返回组件：`heading(title, subtitle)`、`meta(row)`、`card(row, showStatus=false)`、`feature(row)`、`pagination(total, page, size)`，返回HTML字符串。`row`为现有content数据，保持稳定ID和原文身份。纯展示组件不修改数据、不调用API、不读写localStorage。文本使用`C.escape()`；URL采用`C.readerRoute()`或core已有安全URL工具。注入的artwork/saveButton/priorityBadge返回可信项目HTML，其余字符串须转义。
+
+提供者：`artwork(row,large=false)`渲染来源图或示意图；`saveButton('content',id)`渲染独立收藏按钮；`findBookmark('content',id)`提供当前收藏或空；`sourceName(row)`、`publicationLabel(row)`提供展示文本；`priorityBadge(row)`提供优先级标记。组件不通过媒体总部猜举办地，不把标题译完算作全文译完。
+
+稳定展示标记：`data-ui="masthead"`、`news-card`、`lead-story`、`pagination`。可以改这些组件内部布局和CSS，但须保留下面的行为契约。
+
+## 交互契约
+
+- 标题、摘要和图片为同一`#reader/ID`链接；收藏按钮为链接的兄弟元素，不能嵌套在链接内。支持键盘与新标签打开。
+- 主页面容器`#main`；搜索`#search`；导航`#navigation`；偏好入口`#coordinate-button`；提醒`#inbox-button`；日期`#edition-date`；页脚说明`#edition-note`；弹窗`#detail-dialog`/`#detail-body`/`#close-detail`；消息`#toast`。
+- 导航按钮`data-view`使用today/explore/calendar/bookmarks/settings/coverage。路由键不随中文标签改变；“剪报”仍是bookmarks。
+- 折叠筛选`#advanced-filters`；保留country-filter/city-filter/language-filter/priority-filter/event-type-filter/buzz-filter及原事件绑定。全球/日本用`data-scope`；频道`data-channel`；种类`data-kind`。
+- 分页默认18条。`data-list-page`按钮与`#article-page`跳页选择器；筛选/搜索时回第一页。搜索查全部库存，不只当前页；所有记录通过分页可达。页面状态在当前会话中保存，不改变收藏格式。
+- 收藏保留`data-save-type`/`data-save-id`，状态保留`data-bookmark-status`。浏览器存储键`culture-desk-v1`、schema版本1保持。
+- 阅读页保留中文/原文/资料三个tab、深链接、原标题及保存正文；未译明确待译、公开部分与缺正文如实标注。
+- 保留日历/活动当地时区、来源开关、JSON与ICS导出、覆盖进度、非日本普通展览降级和重大例外。全部来源/原文/ID不能为精简UI删掉。
+
+## 构建与验证
+
+新增资源须同时改`frontend/index.html`、`scripts/build_static.py`复制/内联规则，以及`backend/app.py`安全资源白名单。本轮theme.css与ui.js已加入三处，Pages、本地API和单文件预览均包含接口。
+
+```sh
+python scripts/check_project.py
+python -m unittest discover -s tests
+node --test tests/core.test.js tests/ui.test.js
+node --check frontend/app.js
+node --check frontend/ui.js
+python scripts/audit_data.py --strict
+python -S scripts/build_static.py
+python -m http.server 8002 --directory dist
+```
+
+浏览器验证1440、768、390px：六页与阅读无横向溢出；遍历全部分页、搜索旧稿、折叠筛选切换不意外收起、三个阅读入口、中文/原文/刷新、收藏状态持久保存。HTTP单文件`culture-desk-preview.html`没有外部CSS/JS引用并可运行；本环境浏览器禁止file协议导航，因此不冒称file协议已实际验收。未来在普通本地浏览器打开文件时另行核验。
+
+完成后更新tasks.json/HANDOFF，提交PR并写实际验证结果。自动采集可能提交新data，提交前fetch并合并；不要强推或用旧data.js覆盖新资讯。

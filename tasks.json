@@ -1035,6 +1035,42 @@
         "Chromium 1440/390：535全部卡片/23降级P3筛选/日本未知重要例外/阅读页依据/本站原文/首页推荐/覆盖说明、无溢出和脚本错误通过",
         "公开实现a0503d4；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38503655258 与Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38503655263 全部success。真实公开网站Chromium 1440/390：535全量卡片、23非日本普通展览P3筛选/阅读页依据/原文、重要日本未知例外、首页推荐及覆盖说明、无溢出或脚本错误通过。"
       ]
+    },
+    {
+      "id": "T033",
+      "title": "旧报纸风格与页面精简，提供独立UI修改入口",
+      "milestone": "M4",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T031",
+        "T032"
+      ],
+      "scope": [
+        "frontend/",
+        "scripts/build_static.py",
+        "backend/app.py",
+        "tests/",
+        ".github/workflows/checks.yml",
+        "AGENTS.md",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "旧报纸视觉：纸底/报头/衬线标题/分栏/细线，手机与桌面可阅读",
+        "简化导航与重复提示，更多筛选折叠，全量资讯通过18条分页与搜索可达",
+        "标题/摘要/图片同篇阅读、中文默认/原文切换/收藏/日历/来源偏好/覆盖进度保持",
+        "ui.js展示组件接口和theme.css主题变量独立，其他AI无需改采集或核心逻辑即可改版，交接与版本契约明确",
+        "GitHub Pages/本地API/单文件预览全部支持新增文件，实际浏览器验收和公开发布完成"
+      ],
+      "evidence": [
+        "62Python＋21JS=83检查通过；API资源白名单及CultureUI组件/分页契约检查通过，项目/数据审计/语法/stdlib构建通过",
+        "theme.css主题变量、ui.js CultureUI v1五个展示组件独立，GitHub/Claude接力文档及DOM事件/存储契约完成",
+        "数据与原文逐项比较最新HEAD不变：535资料/198活动/26来源，44已译/49原生中文/440待译/2缺正文；无翻译API调用",
+        "本地Chromium1440/768/390：全部535记录遍历30页/全量旧稿搜索/折叠筛选保持/图片摘要标题同阅读/原文切换/收藏状态刷新持久/六页与长文无溢出和脚本错误",
+        "HTTP单文件预览无外部CSS/JS引用并可运行；环境浏览器禁止file协议，未冒称直接file协议验证。桌面/手机截图已保存docs/images"
+      ]
     }
   ]
 }

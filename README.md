@@ -8,7 +8,7 @@
 
 同域名旧 PWA 的导航缓存冲突已修复并上线。若浏览器仍显示「Selah」，在该页点击“更新 Selah”，再打开上述完整资讯地址；无需删除浏览器数据。详见 [Pages 排查记录](docs/PAGES_TROUBLESHOOTING.md)。
 
-## 当前版本 v0.13
+## 当前版本 v0.14
 
 **重要性、时效与快模型直接翻译**：用户取消二次模型校对，并选择本会话快模型分工、不另配API。新闻标紧急／优先／普通／资料，重要程度与明确日期时效分别记录；重大新消息、临近上映／展期／截止先翻译，每批保留8条旧稿份额。自动初判可在资料页查看原因，支持按级别筛选；不代表消息真伪或艺术价值。
 
@@ -142,3 +142,5 @@ TRANSLATION_PROVIDER=google-public（disabled 可关闭）；TRANSLATION_DAILY_L
 EDITORIAL_PROVIDER=chatgpt-task为当前默认。OpenAI-compatible API模式仅为可选替代，配置与凭据仍来自用户环境；不会在直接ChatGPT任务中暗中调用。
 
 最新展览偏好：明确非日本普通展览降低排序，日本和重大展览按原规则，未知地区不按语言推断；全部资料/原文/日历保持。免费API选项与官方额度见docs/FREE_TRANSLATION_APIS.md，本轮仅咨询，未启用外部API。
+
+界面已改为旧报纸风格：报头、纸底、衬线分栏，四主导航与折叠筛选；资讯18条分页并搜索全部库存。其他AI的修改入口是frontend/theme.css和frontend/ui.js（CultureUI v1），完整契约见[UI_CUSTOMIZATION](docs/UI_CUSTOMIZATION.md)，Claude交接见docs/CLAUDE_UI_HANDOFF.md。

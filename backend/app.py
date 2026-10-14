@@ -194,7 +194,7 @@ def create_app(db_path=None):
 
     # A bounded asset allowlist keeps the small local edition independent of
     # background file-worker threads and never exposes project/runtime files.
-    assets = {"index.html", "styles.css", "favicon.svg", "data.js", "core.js", "app.js"}
+    assets = {"index.html", "styles.css", "theme.css", "favicon.svg", "data.js", "core.js", "ui.js", "app.js"}
 
     @app.get("/")
     async def index():

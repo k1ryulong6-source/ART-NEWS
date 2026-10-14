@@ -19,7 +19,7 @@ jobs:
       - run: pip install -r requirements-dev.txt
       - run: python scripts/check_project.py
       - run: python -m unittest discover -s tests -v
-      - run: node tests/core.test.js
+      - run: node --test tests/core.test.js tests/ui.test.js
       - run: node --check frontend/app.js
       - run: python scripts/audit_data.py --strict
       - run: python scripts/build_static.py

@@ -3,30 +3,34 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f7f5ef">
-  <meta name="description" content="映间：个人电影、艺术、摄影资讯台，发现值得看的作品与展览。">
-  <title>映间 · 个人文化信息台</title>
+  <meta name="theme-color" content="#eee6d2">
+  <meta name="description" content="映间文化报：世界电影、艺术与摄影资讯，中文阅读与原文对照。">
+  <title>映间 · 文化报</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="theme.css">
   <script defer src="data.js"></script>
   <script defer src="core.js"></script>
+  <script defer src="ui.js"></script>
   <script defer src="app.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要内容</a>
-  <aside class="sidebar">
-    <a class="brand" href="#today" aria-label="映间首页"><span class="brand-seal">映</span><span>映间<small>BETWEEN FRAMES</small></span></a>
-    <p class="brand-note">电影 · 艺术 · 摄影<br>一份留给自己的文化日常。</p>
-    <nav aria-label="主要导航" id="navigation"></nav>
-    <div class="sidebar-bottom"><div class="mini-label">MY CULTURAL COORDINATES</div><button class="city-link" id="coordinate-button">全球视野 <span>↗</span></button><p>在日常之外，<br>给好作品留一个位置。</p><span class="edition">PERSONAL EDITION · VOL. 01</span></div>
-  </aside>
-  <div class="workspace">
-    <header class="topbar"><span class="topbar-title">你的个人文化信息台</span><div class="topbar-right"><label class="search-field"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="搜索作品、展览、关键词" aria-label="搜索资讯"></label><button class="refresh-control" data-action="refresh" aria-label="刷新资讯">↻ 更新</button><button class="profile" id="inbox-button" data-action="inbox" aria-label="收藏活动提醒">铃</button></div></header>
-    <main id="main" tabindex="-1"></main>
-    <footer>映间 · 在电影、艺术与摄影之间 <span>示例明确标注；配图注明来源，缺图使用原创示意。</span></footer>
+  <div class="paper-shell">
+    <header class="masthead" data-ui="masthead">
+      <div class="masthead-kicker"><span>世界文化 · 独立阅读</span><span>电影 / 艺术 / 摄影</span></div>
+      <a class="brand" href="#today" aria-label="映间文化报首页">映间<span>THE CULTURE DESK</span></a>
+      <div class="edition-line"><time id="edition-date"></time><span>在世界的消息里，留一页给艺术。</span><button id="coordinate-button" class="text-link" aria-label="阅读偏好">阅读偏好</button></div>
+      <nav aria-label="主要导航" id="navigation"></nav>
+    </header>
+    <div class="workspace">
+      <div class="topbar"><label class="search-field"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="搜索作品、人物、展览" aria-label="搜索资讯"></label><div class="topbar-right"><button class="refresh-control" data-action="refresh" aria-label="刷新资讯">↻ 更新</button><button class="profile" id="inbox-button" data-action="inbox" aria-label="收藏活动提醒">提醒</button></div></div>
+      <main id="main" tabindex="-1"></main>
+      <footer><span class="footer-brand">映间 · 文化报</span><span id="edition-note">原文与译文标注。</span><a class="text-link" href="#coverage">收录与译文</a><a class="text-link" href="#settings">阅读偏好</a></footer>
+    </div>
   </div>
   <dialog id="detail-dialog" aria-labelledby="detail-title"><button id="close-detail" class="dialog-close" aria-label="关闭详情">×</button><div id="detail-body"></div></dialog>
   <div id="toast" role="status" aria-live="polite"></div>
-  <noscript><p class="noscript">请启用 JavaScript 使用筛选、日历和收藏。资讯内容和虚构示例分别显示。</p></noscript>
+  <noscript><p class="noscript">请启用 JavaScript 阅读资讯与使用筛选、日历和收藏。</p></noscript>
 </body>
 </html>

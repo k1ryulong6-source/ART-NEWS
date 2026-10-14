@@ -1,73 +1,23 @@
-# 给 Claude 的 UI 与美术改版交接
+# Claude 与其他AI的界面接力
 
-公开仓库：https://github.com/k1ryulong6-source/ART-NEWS
+仓库：https://github.com/k1ryulong6-source/ART-NEWS
 
-在线网站：https://k1ryulong6-source.github.io/ART-NEWS/
+网站：https://k1ryulong6-source.github.io/ART-NEWS/
 
-## 如何接手
+用户已确认旧报纸风格与页面精简。当前实现：泛黄纸底、黑色报头、衬线标题、分栏/细线；四个主导航“头版/资讯/日历/剪报”，偏好在页眉；频道与日本专题直接可见，其他筛选折叠；资讯18条分页，全库存搜索。中文默认、原文切换、收藏、日历和收录进度保留。
 
-把仓库链接和下面的任务说明发给 Claude，即可开始读代码与提出设计。Claude 的网页浏览／GitHub 连接是否可用，取决于你使用的客户端；单独一个链接不会自动授予推送权限。要直接提交改动，连接 Claude 的 GitHub 工具并授权此仓库，或用 Claude Code 在本地克隆仓库。仅能读网页的会话可交付补丁，再由有写权限的工具提交。
+先读AGENTS.md、docs/HANDOFF.md、docs/PRODUCT.md、docs/DECISIONS.md和tasks.json。详细可修改接口见[UI_CUSTOMIZATION.md](UI_CUSTOMIZATION.md)。优先修改theme.css主题变量和ui.js展示组件；index.html控制报头与容器，app.js负责状态/事件，core.js保留数据与安全逻辑。CultureUI v1包含heading/meta/card/feature/pagination，其他AI无需改后端即可改视觉。
 
-建议从最新 main 创建 claude-ui 分支，通过 PR 合并。main 有自动资讯更新和每日校译提交；提交前拉取最新代码，不强推、不用旧源码包覆盖整个仓库。各 AI 的聊天记忆与额度不共享，本文件与仓库才是交接依据。
+本项目是原生HTML/CSS/JS＋Python FastAPI/SQLite，不是React/Vite。data.js和dist为生成文件，不能手改。新增资产同步静态构建与本地API白名单。保留GitHub Pages的/ART-NEWS/路径和单文件预览；不要让视觉依赖模型密钥。
 
-先读 AGENTS.md、docs/HANDOFF.md、docs/PRODUCT.md、docs/DECISIONS.md、tasks.json。登记新的视觉任务，约定文件范围；T026 完成后再以实际 Git 与部署状态确认。
+保留全部来源、稳定ID、保存原文、图片出处和消息状态；所有旧/新外文仍需翻译，T028未全量完成保持doing。用户取消二轮模型校对，最新按足够完成翻译的性价比选型号，当前按费用反馈默认GPT-5.6，不另配API；新稿称AI翻译，旧已校译身份保持。标题译文不代表正文完成，不能展示旧逐句机翻或外文冒充中文。未知信息不补造。
 
-## 产品与改版目标
+非日本普通展览降低排序，日本/重大/未知地点维持原规则；不因此删资讯或日历。覆盖页显示真实有限来源和缺口，不称全球100%。公开采集每2小时，每日会话翻译任务与全量分页保持。
 
-这是中文阅读为主的世界电影、艺术、摄影资讯网站，名称为“映间 / Culture Desk”。保留日本上映与展览专题，少量圈内动态，不收录器材评测。公开访问，静态版收藏保存在各浏览器。
+浏览器收藏继续使用culture-desk-v1版本1。标题/摘要/图片指向同篇阅读；收藏按钮独立。18条分页仍覆盖全量，筛选/搜索回到第一页。CSS颜色或组件布局变更不能破坏这些契约。
 
-本次请设计和实现 UI、美术、排版、配色、字形层级、导航与手机体验。可以替换原创占位插画和图标，改善卡片、日历与长文阅读；优先显示已有来源配图并保留出处。具体风格由用户与 Claude 决定，本交接不假设已确认风格。
+代码验证和手机/平板/桌面验收命令见UI_CUSTOMIZATION.md。桌面与手机截图见images/newspaper-desktop.png与images/newspaper-mobile.png。从最新main创建分支，通过PR接续；无需问已明确风格，但更改数据或功能另建任务。单给链接不自动授予写权限；Claude Code可在已授权checkout工作，网页会话需GitHub连接，只有只读工具时交付可应用补丁，不声称已发布。
 
-所有标题默认中文；正文默认“中文”，阅读页可切换“原文”，同时显示原标题与本站保存的原文内容。中文标题校译与全文校译是两个独立状态，标题中文不等于正文完成。尚未全文校译的稿件必须明确显示“待校译”及原文入口，不显示旧 Google 逐句译文，不以外文段落填充中文页。原生中文稿直接显示正文。未核实作品译名注明暂译或保留原名。
+可直接转发：
 
-## 实际结构与可改范围
-
-这是原生 HTML/CSS/JavaScript，配 Python FastAPI 和 SQLite，不是 React/Vite 项目。
-
-- frontend/index.html：页面容器、导航、弹窗、脚本入口。
-- frontend/styles.css：全站样式、响应式与阅读排版。
-- frontend/app.js：页面渲染与交互，视觉变化可在这里调整。
-- frontend/favicon.svg：图标；新增美术资源须同步 scripts/build_static.py 的复制与单文件构建规则。
-- frontend/core.js：日期、筛选、安全处理、译文状态、收藏导入、日历导出等公共逻辑。尽量保留行为，有功能改动时执行对应检查。
-- frontend/data.js、dist/：构建产物，不手工编辑。用 python scripts/build_static.py 再生成。
-- backend/、schema.sql、config/、data/、.github/workflows/：数据与自动更新链路。UI 任务不要顺带重写或删改；必要变化另建任务、解释原因。
-
-继续支持 GitHub Pages 的 /ART-NEWS/ 路径、单文件预览与本地服务。图片外链失败时有清晰占位；不能用虚构艺术作品或虚构新闻配图冒充真实来源图片。
-
-## 必须保留的行为
-
-今日／探索／日历／收藏／设置与覆盖及翻译进度页、全球与日本筛选、原文语言筛选、搜索、完整校译筛选、全部资讯入口、来源开关、圈内动态比例、收藏状态、JSON 导入导出与 ICS 导出保持可用。保留 culture-desk-v1 浏览器存储键与版本，避免用户已有收藏丢失。
-
-全部来源、稳定 content/event ID、原文 blocks、图片出处、消息状态、来源读取失败提示保持。活动用各自当地时区，未知日期／场馆／票价保持未知；新闻标题不能被当作新活动日期证据。
-
-公开新闻每2小时更新；ChatGPT 每日东京时间约11:30翻译并二次对照，使用 data/translations/完整译稿与 data/headlines/标题稿。标题稿不设置 editorial_status=reviewed。不要删除这两条自动流程，也不要让新视觉依赖模型密钥。不要提交密码、实际收藏或运行数据库。
-
-## 验证与交付
-
-安装：python -m pip install -r requirements-dev.txt
-
-检查：
-
-```sh
-python scripts/check_project.py
-python -m unittest discover -s tests -v
-node tests/core.test.js
-node --check frontend/app.js
-python scripts/audit_data.py --strict
-python scripts/build_static.py
-python -m http.server 8002 --directory dist
-```
-
-在 http://127.0.0.1:8002/ 检查1440px桌面与390px手机。至少验证五页无横向溢出，长中文标题可读，中文默认／原文切换／深链接刷新、待校译提示、图片失败、来源筛选、中文搜索、收藏刷新保留和日历导出。不要把仅做静态图或只编译通过当作功能验收。需要本地API时运行 python -m backend。
-
-提交时提供桌面与手机截图、改动说明和实际检查结果；更新任务、HANDOFF 与必要的 DECISIONS。在PR中确认自动数据提交仍保留，合并后核对 GitHub Actions 与线上真实页面。
-
-## 可直接发送给 Claude 的说明
-
-> 请读取 https://github.com/k1ryulong6-source/ART-NEWS ，先看 AGENTS.md 和 docs/CLAUDE_UI_HANDOFF.md，再设计并实现这个文化资讯网站的 UI 和美术改版。重点改善视觉、排版、配图呈现、导航、日历与手机长文体验。标题和正文中文优先，阅读页可切换原文；保留采集、每日AI校译、全部来源、收藏和导出等现有功能。基于最新main建立claude-ui分支，完成实际浏览器验收并提交PR。需要我确定视觉方向时给我可比较的方案；若当前客户端没有GitHub写权限，请交付可应用的代码补丁并明确说明，别声称已发布。
-
-用户新增要求：全量翻译现存与新增文章，T028持续进行，不能把next短名单当全部。覆盖页展示逐源列表核对、未入库／失败／未知状态和官方抽查缺口；改视觉时保留该页与data/translation-queue全量分页，不能把未知覆盖渲染成100%。详见docs/COVERAGE.md。
-
-最新T029要求优先于之前校译流程说明：用户取消二次模型校对，新稿直接AI翻译，旧校译身份保持；探索四级优先级和资料页依据、覆盖进度直译/旧校译分开都要保留。当前会话使用快模型分工，不另配API，不冒称译文已经校对。
-
-T032用户阅读偏好：普通非日本展览降低排序，重大例外、日本及未知地区保留原规则。priority数据新增exhibition_region/exhibition_deprioritized/recommendation_penalty；探索/翻译队列和今日推荐使用这些字段。不要因低优先级删资讯/原文或隐藏日历；阅读页资料可查看降级依据。
+> 请读取 https://github.com/k1ryulong6-source/ART-NEWS 的AGENTS.md、docs/CLAUDE_UI_HANDOFF.md及docs/UI_CUSTOMIZATION.md，在当前旧报纸风格上继续改界面。优先用theme.css和CultureUI v1展示组件，保留中文/原文、三处阅读链接、全部分页、收藏/日历/覆盖页和自动更新。基于最新main创建分支，完成1440/768/390px实际浏览器验证并提交PR；没有写权限则给补丁。

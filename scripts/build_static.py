@@ -32,14 +32,15 @@ def build():
     (ROOT / "frontend/data.js").write_text(text, encoding="utf-8")
     output = ROOT / "dist"
     output.mkdir(exist_ok=True)
-    for name in ("index.html", "styles.css", "favicon.svg", "data.js", "core.js", "app.js"):
+    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "data.js", "core.js", "ui.js", "app.js"):
         shutil.copy2(ROOT / "frontend" / name, output / name)
     html = (output / "index.html").read_text(encoding="utf-8")
-    html = html.replace('<link rel="stylesheet" href="styles.css">', '<style>' + (output / "styles.css").read_text(encoding="utf-8") + '</style>')
+    for name in ('styles.css', 'theme.css'):
+        html = html.replace(f'<link rel="stylesheet" href="{name}">', '<style>' + (output / name).read_text(encoding='utf-8') + '</style>')
     favicon = (output / "favicon.svg").read_bytes()
     import base64
     html = html.replace('href="favicon.svg"', 'href="data:image/svg+xml;base64,' + base64.b64encode(favicon).decode('ascii') + '"')
-    for name in ("data.js", "core.js", "app.js"):
+    for name in ("data.js", "core.js", "ui.js", "app.js"):
         script = (output / name).read_text(encoding="utf-8").replace('</script', '<\\/script')
         html = html.replace(f'<script defer src="{name}"></script>', '')
         html = html.replace('</body>', '<script>' + script + '</script>\n</body>')

@@ -2,7 +2,7 @@
 
 An RSS reconciliation describes that one observed feed, never worldwide coverage.
 """
-from collections import Counter
+from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 import re
 import xml.etree.ElementTree as ET
@@ -16,7 +16,8 @@ def translation_progress(snapshot):
                 and r.get('editorial_blocks_json') and r.get('editorial_title_zh')]
     direct = [r for r in rows if r.get('editorial_status') == 'translated' and r.get('editorial_blocks_json') and r.get('editorial_title_zh')]
     done = reviewed + direct
-    pending = [r for r in rows if r.get('language') != 'zh' and r.get('article_blocks_json') and r not in done]
+    completed_ids = {id(r) for r in done}
+    pending = [r for r in rows if r.get('language') != 'zh' and r.get('article_blocks_json') and id(r) not in completed_ids]
     return {'total': len(rows), 'foreign_total': sum(r.get('language') != 'zh' for r in rows),
             'reviewed': len(reviewed), 'reviewed_partial': sum(r.get('article_status') == 'partial' for r in reviewed),
             'direct_translated': len(direct), 'completed': len(done),
@@ -92,10 +93,12 @@ def coverage_report(snapshot, config, audit=None, benchmarks=None):
                           'missing': [r for r in check.get('missing') or [] if r['id'] not in inventory],
                           'in_inventory': sum(identifier in inventory for identifier in check['eligible_ids'])}
               if check.get('eligible_ids') else check for identifier, check in checks.items()}
+    by_source = defaultdict(list)
+    for row in rows: by_source[row['source_id']].append(row)
     sources = []
     for source in config['sources']:
         if not source.get('enabled'): continue
-        items = [r for r in rows if r['source_id'] == source['id']]
+        items = by_source[source['id']]
         state = statuses.get(source['id'], {})
         sources.append({'id': source['id'], 'name': source['name'], 'adapter': source.get('adapter'),
                         'language': source.get('language'), 'homepage_url': source['homepage_url'],

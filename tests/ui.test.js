@@ -22,3 +22,12 @@ test('pagination retains a route to the full inventory and bounds first and last
   assert.match(ui.pagination(535,30,18),/data-list-page="31" disabled/);
   assert.match(ui.pagination(535,30,18),/value="30" selected/);
 });
+
+test('frontpage separates a lead and nine distinct stories into newspaper columns without repeating introductions',()=>{
+  const rows=Array.from({length:10},(_,n)=>({...row,id:'story-'+n}));
+  const html=ui.frontpage(rows,'<aside class="agenda">Dates</aside>');
+  assert.match(html,/class="broadsheet"/);assert.match(html,/class="lead-column"/);
+  assert.equal((html.match(/data-ui="news-card"/g)||[]).length,9);assert.equal((html.match(/data-ui="lead-story"/g)||[]).length,1);
+  for(const r of rows)assert.ok(html.includes(C.readerRoute(r.id)));
+  assert.ok(!ui.heading('新闻','冗长介绍').includes('冗长介绍'));
+});

@@ -190,3 +190,13 @@ test('today lowers ordinary foreign exhibitions without hiding inventory or majo
     assert.equal(both.length,2);assert.match(both.find(r=>r.id===ordinary.id).selection_reason,/稍后阅读/);
   } finally { if(previous===undefined)delete global.CULTURE_BOOTSTRAP;else global.CULTURE_BOOTSTRAP=previous; }
 });
+
+test('compact browser payload keeps full original-body search and invalidates its derived text cache',()=>{
+  const blocks=JSON.stringify([{type:'paragraph',text:'An unabridged river report.'},{type:'image',url:'https://example.org/a.jpg'},{type:'quote',text:'A second original statement.'}]);
+  const row={id:'search',title_original:'A story',article_blocks_json:blocks};
+  const full={...row,article_text:'An unabridged river report.\n\nA second original statement.'};
+  assert.equal(C.sourceText(row),full.article_text);
+  for(const query of ['unabridged river','second original','missing term'])assert.equal(C.matches(row,{query}),C.matches(full,{query}));
+  row.article_blocks_json='[{"type":"paragraph","text":"Updated original content."}]';
+  assert.equal(C.matches(row,{query:'updated original'}),true);assert.equal(C.matches(row,{query:'unabridged river'}),false);
+});

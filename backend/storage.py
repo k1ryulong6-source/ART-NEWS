@@ -196,15 +196,14 @@ class Store:
                         for field in TRANSLATION_FIELDS:
                             record[field] = None
                     if old["body_hash"] == record["body_hash"]:
-                        for field in READING_FIELDS + ORIGINAL_FIELDS + ARTICLE_FIELDS + EDITORIAL_FIELDS + (TRANSLATION_FIELDS if reading_changed else ()):
-                            if field in record:
-                                db.execute(f"UPDATE content SET {field}=? WHERE id=?", (record[field], old['id']))
-                        db.execute("UPDATE content SET fetched_at=?,raw_excerpt=? WHERE id=?", (record["fetched_at"], record.get("raw_excerpt"), old["id"]))
-                        for field in ("country", "city", "geography_status", "locations_json", "kind"):
-                            if field in record:
-                                db.execute(f"UPDATE content SET {field}=? WHERE id=?", (record[field], old["id"]))
+                        fields = READING_FIELDS + ORIGINAL_FIELDS + ARTICLE_FIELDS + EDITORIAL_FIELDS + (TRANSLATION_FIELDS if reading_changed else ())
+                        changes = {field: record[field] for field in fields if field in record}
+                        changes.update(fetched_at=record["fetched_at"], raw_excerpt=record.get("raw_excerpt"))
+                        changes.update({field: record[field] for field in ("country", "city", "geography_status", "locations_json", "kind") if field in record})
                         if not old["summary_zh"] and record.get("summary_zh"):
-                            db.execute("UPDATE content SET title_zh=?,summary_zh=?,summary_status=?,summary_provider=?,summary_generated_at=? WHERE id=?", (record.get("title_zh"), record["summary_zh"], record["summary_status"], record.get("summary_provider"), record.get("summary_generated_at"), old["id"]))
+                            changes.update({field: record.get(field) for field in ("title_zh", "summary_zh", "summary_status", "summary_provider", "summary_generated_at")})
+                        assignments = ','.join(f'{field}=?' for field in changes)
+                        db.execute(f"UPDATE content SET {assignments} WHERE id=?", [*changes.values(), old['id']])
                         continue
                     updated += 1
                 else:

@@ -30,6 +30,24 @@ class StorageChecks(unittest.TestCase):
         self.assertEqual(releases["CN"]["start_date"], "2026-10-23")
         self.assertEqual(releases["JP"]["timezone"], "Asia/Tokyo")
 
+    def test_unchanged_refresh_uses_one_update_and_preserves_saved_body_and_translation(self):
+        from contextlib import contextmanager
+        record={**self.store.dataset()['content'][0], 'id':'live-refresh', 'canonical_url':'https://example.org/live', 'is_demo':0, 'body_hash':'stable', 'article_blocks_json':'[{"type":"paragraph","text":"Original"}]', 'editorial_blocks_json':'[{"type":"paragraph","text":"已译原文"}]', 'editorial_title_zh':'真实译题', 'editorial_status':'translated'}
+        self.store.ingest_records([dict(record)],[],[])
+        statements=[];original=self.store.connect
+        @contextmanager
+        def traced():
+            with original()as db:
+                db.set_trace_callback(lambda sql:statements.append(sql) if sql.startswith('UPDATE content SET ') else None)
+                yield db
+        self.store.connect=traced
+        updated={**record,'fetched_at':'2026-10-14T12:00:00Z'}
+        result=self.store.ingest_records([updated],[],[])
+        self.assertEqual(result,{'inserted':0,'updated':0});self.assertEqual(len(statements),1)
+        row=self.store.dataset('live')['content'][0]
+        for field in ('article_blocks_json','editorial_blocks_json','editorial_title_zh','editorial_status'):self.assertEqual(row[field],record[field])
+        self.assertEqual(row['fetched_at'],updated['fetched_at'])
+
     def test_restart_and_idempotent_bookmark(self):
         first = self.store.save_bookmark("content", "demo-film")
         updated = self.store.save_bookmark("content", "demo-film", "planning")

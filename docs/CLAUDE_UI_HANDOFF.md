@@ -4,7 +4,7 @@
 
 网站：https://k1ryulong6-source.github.io/ART-NEWS/
 
-用户已确认旧报纸风格与页面精简。当前实现：泛黄纸底、黑色报头、衬线标题、分栏/细线；四个主导航“头版/资讯/日历/剪报”，偏好在页眉；频道与日本专题直接可见，其他筛选折叠；资讯18条分页，全库存搜索。中文默认、原文切换、收藏、日历和收录进度保留。
+用户要求面向公众的艺术新闻查询/阅览平台，重做真正报版并隐藏介绍。当前实现：紧凑报头、三栏竖线、头条/次条/简讯与正文排印；四个主导航“头版/资讯/日历/剪报”，偏好在页眉；频道与日本专题直接可见，其他筛选折叠；资讯18条分页，全库存搜索。中文默认、原文切换、收藏、日历和收录进度保留。
 
 先读AGENTS.md、docs/HANDOFF.md、docs/PRODUCT.md、docs/DECISIONS.md和tasks.json。详细可修改接口见[UI_CUSTOMIZATION.md](UI_CUSTOMIZATION.md)。优先修改theme.css主题变量和ui.js展示组件；index.html控制报头与容器，app.js负责状态/事件，core.js保留数据与安全逻辑。CultureUI v1包含heading/meta/card/feature/pagination，其他AI无需改后端即可改视觉。
 
@@ -21,3 +21,5 @@
 可直接转发：
 
 > 请读取 https://github.com/k1ryulong6-source/ART-NEWS 的AGENTS.md、docs/CLAUDE_UI_HANDOFF.md及docs/UI_CUSTOMIZATION.md，在当前旧报纸风格上继续改界面。优先用theme.css和CultureUI v1展示组件，保留中文/原文、三处阅读链接、全部分页、收藏/日历/覆盖页和自动更新。基于最新main创建分支，完成1440/768/390px实际浏览器验证并提交PR；没有写权限则给补丁。
+
+T034已优化后端重复数据库写入及覆盖统计，并精简浏览器传输；完整档案/原文/译文不删。CultureUI v1新增frontpage，sourceText为可选article_text的统一读取入口。修改界面先理解UI_CUSTOMIZATION与BACKEND_OPTIMIZATION，避免恢复私人介绍页/黄纸卡片/大量重复说明。新闻检索和阅览为主，收藏与偏好为辅助。

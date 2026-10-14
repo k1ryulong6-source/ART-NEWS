@@ -1,4 +1,4 @@
-# 当前交接记录 · v0.14
+# 当前交接记录 · v0.15
 
 更新时间：2026-10-14 JST。建设者：Codex。
 
@@ -215,3 +215,7 @@ T032执行：已合并自动采集bb7bebb，当前535/198/26；44已译（32旧�
 T033旧报纸版：四主导航、偏好/覆盖页保留、更多筛选折叠、18条分页/全量搜索；源图加载占位标原创示意，读取正文原图不滤色。frontend/ui.js提供CultureUI v1（heading/meta/card/feature/pagination）；theme.css主题变量与响应式独立。index/app/构建及本地API资源同步；UI_CUSTOMIZATION与Claude交接文档重写为最新要求，data/原文/存储/任务日程不变。折叠栏在重绘时先同步open避免丢状态；skip-link hash不误回首页。62Python＋21JS=83检查通过，公开验证待记录。
 
 公开实现ea933f5；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38512575722 与Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38512575751 全部success。真实公开网站Chromium1440/768/390完整遍历535条/30页、搜索/折叠筛选/三个阅读链接/中文与原文/收藏状态刷新、六页及长文无溢出或脚本错误、CultureUI v1及HTTP单文件无外部CSS/JS并可运行。 T033已验收done。修改接口已公开，主题/展示/状态/核心逻辑分层见docs/UI_CUSTOMIZATION.md，Claude接力说明指向该接口。T028仍doing，440待译，本次未调用翻译API或改日程。
+
+T034：按公共艺术新闻查询/阅览平台定位重做报版，紧凑报头/竖线三栏/头条次条简讯，介绍隐藏与开发处理说明折叠；原文/译文/查询/分页/收藏/日历保留。CultureUI v1新增frontpage；公共浏览器包不再假定article_text必有，使用CultureCore.sourceText。原文档案data/live.json未改，536资料（最新自动新增1）、198活动、26源、44已译/49原生中文/441待译/2缺正文。T028仍doing。优化实测见BACKEND_OPTIMIZATION，65Python+23JS=88检查通过；尚需公开验收记录。
+
+发布前已合并自动采集9a5ce82：最新537资料/198活动/26源，44已译/49原生中文/442待译/2缺正文；重新逐条核验全部537原文、译文及搜索文本等价。优化对比使用此前同一536条样本，不能把新增数据混成性能变化。

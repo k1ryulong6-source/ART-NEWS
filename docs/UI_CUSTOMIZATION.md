@@ -1,4 +1,4 @@
-# UI 修改接口 v1 · 报纸版
+# UI 修改接口 v1 · 公共新闻报版
 
 仓库：https://github.com/k1ryulong6-source/ART-NEWS
 
@@ -30,7 +30,7 @@ const ui = CultureUI.create({
 });
 ```
 
-返回组件：`heading(title, subtitle)`、`meta(row)`、`card(row, showStatus=false)`、`feature(row)`、`pagination(total, page, size)`，返回HTML字符串。`row`为现有content数据，保持稳定ID和原文身份。纯展示组件不修改数据、不调用API、不读写localStorage。文本使用`C.escape()`；URL采用`C.readerRoute()`或core已有安全URL工具。注入的artwork/saveButton/priorityBadge返回可信项目HTML，其余字符串须转义。
+返回组件（兼容v1并新增`frontpage(rows, agendaHTML)`）：`heading(title, subtitle)`（副标题默认不展示）、`meta(row)`、`card(row, showStatus=false)`、`feature(row)`、`pagination(total, page, size)`，返回HTML字符串。`row`为现有content数据，保持稳定ID和原文身份。纯展示组件不修改数据、不调用API、不读写localStorage。文本使用`C.escape()`；URL采用`C.readerRoute()`或core已有安全URL工具。注入的artwork/saveButton/priorityBadge返回可信项目HTML，其余字符串须转义。
 
 提供者：`artwork(row,large=false)`渲染来源图或示意图；`saveButton('content',id)`渲染独立收藏按钮；`findBookmark('content',id)`提供当前收藏或空；`sourceName(row)`、`publicationLabel(row)`提供展示文本；`priorityBadge(row)`提供优先级标记。组件不通过媒体总部猜举办地，不把标题译完算作全文译完。
 
@@ -65,3 +65,9 @@ python -m http.server 8002 --directory dist
 浏览器验证1440、768、390px：六页与阅读无横向溢出；遍历全部分页、搜索旧稿、折叠筛选切换不意外收起、三个阅读入口、中文/原文/刷新、收藏状态持久保存。HTTP单文件`culture-desk-preview.html`没有外部CSS/JS引用并可运行；本环境浏览器禁止file协议导航，因此不冒称file协议已实际验收。未来在普通本地浏览器打开文件时另行核验。
 
 完成后更新tasks.json/HANDOFF，提交PR并写实际验证结果。自动采集可能提交新data，提交前fetch并合并；不要强推或用旧data.js覆盖新资讯。
+
+## T034报版与浏览器数据形态
+
+平台定位为面向公众的艺术新闻查询/阅览。frontpage把新闻分为简讯/头条次条/焦点栏，主题改为连续报版、多栏竖线、紧凑报头；宣传/重复介绍默认不渲染，开发与处理说明默认折叠。正文中的来源促销段落仅在首页预览中跳过，完整原文/译文仍保持。
+
+browser_snapshot只精简传输副本，data/live.json为完整档案；article_text可能省去，读取搜索正文用CultureCore.sourceText(row)，正文渲染仍用articleBlocks。弱引用缓存按原文块内容变动失效。不要恢复大段重复JSON或用摘要代替原文以“提速”。相关实测见BACKEND_OPTIMIZATION.md。

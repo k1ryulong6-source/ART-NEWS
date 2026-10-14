@@ -1,6 +1,6 @@
 # ART-NEWS · 映间 / Culture Desk
 
-个人电影、艺术、摄影资讯平台，以世界文化新闻为主，日本上映与展览保留专题，加入少量圈内动态，排除器材评测。不同 AI 可以在同一仓库接力建设。
+面向公众、供查询与阅览的艺术、电影、摄影新闻资讯平台，以世界文化新闻为主，日本上映与展览保留专题，加入少量圈内动态，排除器材评测。不同 AI 可以在同一仓库接力建设。
 
 仓库：https://github.com/k1ryulong6-source/ART-NEWS 。根据用户选择保持公开；本地数据库、收藏、密码和 API 密钥不入库。
 
@@ -8,7 +8,7 @@
 
 同域名旧 PWA 的导航缓存冲突已修复并上线。若浏览器仍显示「Selah」，在该页点击“更新 Selah”，再打开上述完整资讯地址；无需删除浏览器数据。详见 [Pages 排查记录](docs/PAGES_TROUBLESHOOTING.md)。
 
-## 当前版本 v0.14
+## 当前版本 v0.15
 
 **重要性、时效与快模型直接翻译**：用户取消二次模型校对，并选择本会话快模型分工、不另配API。新闻标紧急／优先／普通／资料，重要程度与明确日期时效分别记录；重大新消息、临近上映／展期／截止先翻译，每批保留8条旧稿份额。自动初判可在资料页查看原因，支持按级别筛选；不代表消息真伪或艺术价值。
 
@@ -85,11 +85,11 @@ python3 -m backend.jobs --schedule --interval-hours 12
 
 .github/workflows/checks.yml 在 push／PR 执行检查并提供静态构建下载。
 
-.github/workflows/refresh.yml 每天 UTC 01:15、13:15 更新公开快照，也可手动触发。只保存公开元数据与处理次数账本，不保存个人收藏或凭据。GitHub 调度可能延迟；可在 Actions 查看实际执行结果。
+.github/workflows/refresh.yml 设置每2小时更新公开快照，也可手动触发。只保存公开元数据与处理次数账本，不保存个人收藏或凭据。GitHub 调度可能延迟；可在 Actions 查看实际执行结果。
 
 任务编号、负责人、依赖、验收条件在 tasks.json。领取任务前读取 AGENTS.md 和 docs/HANDOFF.md。用分支与 Pull Request 提交；每次完成或额度接近用尽时更新交接记录。GitHub 不会自动转移各 AI 的账号或额度。
 
-## 私人服务部署
+## 维护用本地服务（可选）
 
 ```sh
 docker compose up -d --build
@@ -144,3 +144,5 @@ EDITORIAL_PROVIDER=chatgpt-task为当前默认。OpenAI-compatible API模式仅�
 最新展览偏好：明确非日本普通展览降低排序，日本和重大展览按原规则，未知地区不按语言推断；全部资料/原文/日历保持。免费API选项与官方额度见docs/FREE_TRANSLATION_APIS.md，本轮仅咨询，未启用外部API。
 
 界面已改为旧报纸风格：报头、纸底、衬线分栏，四主导航与折叠筛选；资讯18条分页并搜索全部库存。其他AI的修改入口是frontend/theme.css和frontend/ui.js（CultureUI v1），完整契约见[UI_CUSTOMIZATION](docs/UI_CUSTOMIZATION.md)，Claude交接见docs/CLAUDE_UI_HANDOFF.md。
+
+当前报版已重新排成头条/次条/简讯三栏，报头与查询工具紧凑，重复介绍隐藏，开发与处理说明按需展开。公共新闻查询/阅览为主，收藏/偏好为辅助。后端重复记录合并UPDATE、统计分组、浏览器去冗余正文，实测与兼容约定见[BACKEND_OPTIMIZATION](docs/BACKEND_OPTIMIZATION.md)。

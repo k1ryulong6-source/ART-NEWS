@@ -9,6 +9,7 @@ sys.path.insert(0, str(ROOT))
 from backend.headlines import load_headlines
 from backend.coverage import coverage_report
 from backend.priority import rank_snapshot
+from backend.presentation import browser_snapshot
 
 
 def build():
@@ -28,7 +29,9 @@ def build():
             return json.loads(path.read_text(encoding='utf-8')) if path.exists() else None
         bundle['coverage'] = coverage_report(bundle['live'], bundle['sources'],
                                              optional_data('coverage-audit.json'), optional_data('coverage-benchmarks.json'))
-    text = "window.CULTURE_BOOTSTRAP = " + json.dumps(bundle, ensure_ascii=False).replace("<", "\\u003c") + ";\n"
+    # Compute all reporting from the full archive, then compact transport only.
+    for key in ('live', 'dataset'): bundle[key] = browser_snapshot(bundle[key])
+    text = "window.CULTURE_BOOTSTRAP = " + json.dumps(bundle, ensure_ascii=False, separators=(',', ':')).replace("<", "\\u003c") + ";\n"
     (ROOT / "frontend/data.js").write_text(text, encoding="utf-8")
     output = ROOT / "dist"
     output.mkdir(exist_ok=True)

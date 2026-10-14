@@ -29,6 +29,16 @@
     } catch { return []; }
   };
 
+  const searchTextCache = new WeakMap();
+  function sourceText(row) {
+    if (typeof row.article_text === 'string') return row.article_text;
+    const cached = searchTextCache.get(row);
+    if (cached && cached.blocks === row.article_blocks_json) return cached.text;
+    const text = articleBlocks(row).filter(block => block.type !== 'image').map(block => block.text).join('\n\n');
+    searchTextCache.set(row, { blocks: row.article_blocks_json, text });
+    return text;
+  }
+
   const readerRoute = id => '#reader/' + encodeURIComponent(id);
   function parseRoute(hash) {
     const value = (hash || '').replace(/^#/, '');
@@ -57,7 +67,7 @@
     if (filters.language && filters.language !== 'all' && row.language && row.language !== filters.language) return false;
     if (filters.buzz === false && row.kind === 'industry_buzz') return false;
     const needle = (filters.query || '').trim().toLocaleLowerCase();
-    return !needle || [displayTitle(row), row.title_zh, row.translated_title_zh, row.title_original, row.editorial_title_zh, row.editorial_excerpt_zh, row.summary_zh, row.translated_excerpt_zh, row.excerpt_original, row.article_text, row.city, row.venue].join(' ').toLocaleLowerCase().includes(needle);
+    return !needle || [displayTitle(row), row.title_zh, row.translated_title_zh, row.title_original, row.editorial_title_zh, row.editorial_excerpt_zh, row.summary_zh, row.translated_excerpt_zh, row.excerpt_original, sourceText(row), row.city, row.venue].join(' ').toLocaleLowerCase().includes(needle);
   }
   function isCurrentContent(row, reference, linkedEvents = [], maxAge = 30) {
     const published = row.published_at?.slice(0, 10);
@@ -166,7 +176,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { priorityOf, priorityRank, priorityCompare, editorialReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -1,7 +1,7 @@
 name: Check autonomous workflow health
 on:
   workflow_run:
-    workflows: ['Refresh cultural news', 'Automatic full-text translation', 'Publish public news page']
+    workflows: ['Refresh cultural news', 'Automatic full-text translation', 'Verify Gemini full-text translation', 'Publish public news page']
     types: [completed]
   schedule:
     - cron: '5 */6 * * *'

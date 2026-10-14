@@ -43,10 +43,26 @@ class AITranslationTests(unittest.TestCase):
             observed = []
             def transport(payload):
                 observed.append(payload['generationConfig']['thinkingConfig'])
+                schema = payload['generationConfig']['responseJsonSchema']
+                self.assertFalse(schema['additionalProperties'])
+                self.assertEqual(schema['properties']['outputs']['required'], ['title'])
                 return {'candidates': [{'finishReason': 'STOP', 'content': {'parts': [{'text': '{"outputs":{"title":"标题"}}'}]}}]}
             provider = GeminiTranslator('fixture', transport=transport, cfg={**configuration(), 'model': model})
             provider.translate({'original_units': [{'key': 'title', 'text': 'Title'}]}, ['title'])
             self.assertEqual(observed, [expected])
+
+    def test_failed_json_and_truncated_output_preserve_usage_without_publishing(self):
+        for reason in ('STOP', 'MAX_TOKENS'):
+            def malformed(payload):
+                return {'usageMetadata': {'promptTokenCount': 200, 'candidatesTokenCount': 50, 'thoughtsTokenCount': 7},
+                        'candidates': [{'finishReason': reason, 'content': {'parts': [{'text': '{bad json'}]}}]}
+            result = self.run_ai_worker(GeminiTranslator('fixture', transport=malformed))
+            self.assertEqual((result['input_tokens'], result['output_tokens']), (200, 57))
+            self.assertEqual(result['unknown_usage_requests_today'], 0)
+            self.assertEqual(result['translated'], [])
+            self.assertIsNone(self.store.dataset('live')['content'][0]['editorial_blocks_json'])
+            for path in (self.root / 'ai-progress').glob('*.json'):
+                path.unlink()
 
     def test_request_limit_and_checkpoints_survive_new_worker(self):
         provider = self.provider()

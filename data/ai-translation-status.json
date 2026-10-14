@@ -1,22 +1,30 @@
 {
-  "status": "quota_wait",
+  "status": "partial_failure",
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-14T18:06:23.872548+00:00",
-  "translated": [],
-  "failed": [],
+  "started_at": "2026-10-14T18:07:28.686518+00:00",
+  "translated": [
+    "live-866889eefca2811385d0780f"
+  ],
+  "failed": [
+    {
+      "id": "live-c2367afcd740e86516db8dab",
+      "reason": "Expecting ',' delimiter: line 1 column 2489 (char 2488)"
+    }
+  ],
   "deferred": [],
   "resumed": [],
   "stale": [],
-  "requests": 0,
-  "input_tokens": 0,
-  "output_tokens": 0,
-  "retry_after": "2026-10-15T00:02:01.690921+00:00",
-  "finished_at": "2026-10-14T18:06:23.990109+00:00",
-  "seconds": 0.12,
-  "requests_today": 2,
+  "requests": 2,
+  "input_tokens": 2301,
+  "output_tokens": 1577,
+  "pending_before": 596,
+  "pending_after": 595,
+  "finished_at": "2026-10-14T18:07:54.126797+00:00",
+  "seconds": 25.44,
+  "requests_today": 4,
   "daily_request_limit": 100,
-  "unknown_usage_requests_today": 2,
+  "unknown_usage_requests_today": 3,
   "verification_run": true
 }

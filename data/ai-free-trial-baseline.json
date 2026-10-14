@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "observation_started_at": "2026-10-14T17:23:12.943185+00:00",
-  "review_after": "2026-10-15T17:23:12.943185+00:00",
+  "observation_started_at": "2026-10-14T18:07:54.126797+00:00",
+  "review_after": "2026-10-15T18:07:54.126797+00:00",
   "timezone": "Asia/Tokyo",
   "policy": "Observe free-project Gemini for 24 hours. No paid activation or budget is authorized. Key presence and billing tier cannot be verified from repository settings access.",
   "provider": "gemini",
@@ -102,12 +102,27 @@
     },
     "ai_ledger": null
   },
-  "verification_run": "https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38605781397",
+  "verification_run": "https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38612425164",
   "report_requirements": [
     "Compare the observation window with this baseline, including the actual elapsed time.",
     "Count Gemini full-body output separately from historical AI, title-only translations, native Chinese and offline machine fallback.",
     "Report new collected records, first-source backfills separately, AI pending delta, failures, provider quota and actual request/token usage.",
     "Free tier is account-side; a successful Actions job is not evidence of a successful AI translation or zero charges.",
     "Estimate paid costs from measured throughput and currently verified prices only; no automatic billing activation."
-  ]
+  ],
+  "configuration_observed_at": "2026-10-14T17:23:12.943185+00:00",
+  "api_activated_at": "2026-10-14T18:07:54.126797+00:00",
+  "active_model": "gemini-3.5-flash-lite",
+  "model_change_reason": "2.5 actually rejected new users with 404; Google recommended 3.5; official Standard Free Tier confirmed and a real complete article published.",
+  "first_success": {
+    "id": "live-866889eefca2811385d0780f",
+    "source_characters": 4102,
+    "published": true,
+    "verification_requests": 2,
+    "verification_successful_articles": 1,
+    "verification_failed_articles": 1,
+    "known_input_tokens": 2301,
+    "known_output_tokens": 1577,
+    "historical_unknown_usage_requests": 3
+  }
 }

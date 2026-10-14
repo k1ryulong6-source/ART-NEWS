@@ -170,7 +170,7 @@
   }
   let workflowHealth = boot.automation?.health, healthRequested = false;
   function automationPanel(stamp) {
-    if (!healthRequested && location.hostname.endsWith('github.io')) {
+    if (!healthRequested && !server && location.protocol === 'https:') {
       healthRequested = true;
       fetch('https://raw.githubusercontent.com/k1ryulong6-source/ART-NEWS/main/data/automation-health.json', {cache:'no-cache'})
         .then(response => response.ok ? response.json() : Promise.reject())

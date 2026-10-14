@@ -27,6 +27,7 @@ class BabelExportTests(unittest.TestCase):
         self.assertEqual(result['access'], 'public-partial')
         self.assertEqual(result['translation_zh']['kind'], 'ai-direct')
         self.assertEqual(result['translation_zh']['model'], 'actual-model')
+        self.assertEqual(result['news_url'], 'https://mujianrest.work/#reader/' + self.row['id'])
         self.assertNotIn('bookmarks', result)
         self.assertNotIn('editorial_draft_json', result)
 
@@ -39,6 +40,7 @@ class BabelExportTests(unittest.TestCase):
             self.assertEqual(json.loads((directory / 'index.json').read_text())['count'], 1)
             result = json.loads((directory / (self.row['id'] + '.json')).read_text())
             self.assertEqual(result['source_hash'], self.row['article_hash'])
+            self.assertEqual(result['news_url'], 'https://mujianrest.work/#reader/' + self.row['id'])
             export_articles({'content': []}, {'sources': []}, tmp)
             self.assertEqual(len(list(directory.glob('live-*.json'))), 0)
 
@@ -46,3 +48,13 @@ class BabelExportTests(unittest.TestCase):
         long = '原文保留。' * 10000
         row = {**self.row, 'article_text': long, 'article_blocks_json': json.dumps([{'type': 'paragraph', 'text': long}])}
         self.assertEqual(article_payload(row, {})['text'], long)
+
+    def test_site_migration_preserves_article_identity_and_legacy_path(self):
+        original = article_payload(self.row, {}, site_url='https://k1ryulong6-source.github.io/ART-NEWS/')
+        migrated = article_payload(self.row, {}, site_url='https://mujianrest.work/')
+        self.assertEqual(original['news_url'], 'https://k1ryulong6-source.github.io/ART-NEWS/#reader/' + self.row['id'])
+        self.assertEqual({k: v for k, v in original.items() if k != 'news_url'},
+                         {k: v for k, v in migrated.items() if k != 'news_url'})
+        for unsafe in ('javascript:alert(1)', 'https://user:pass@example.org/', 'https://example.org/?x=y', 'https://example.org/#other'):
+            with self.assertRaises(ValueError):
+                article_payload(self.row, {}, site_url=unsafe)

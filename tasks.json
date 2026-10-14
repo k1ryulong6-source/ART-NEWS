@@ -1458,6 +1458,30 @@
         "covertest：深链接不显示、Enter进入、reduced-motion 0.35秒移除、单文件预览可用。",
         "26JS＋全部Python测试通过；交互与手机320–430回归通过。"
       ]
+    },
+    {
+      "id": "T046",
+      "title": "全站改为光泽纸",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T045"
+      ],
+      "scope": [
+        "frontend/theme.css",
+        "frontend/index.html",
+        "docs/"
+      ],
+      "acceptance": [
+        "整站纸色由米色新闻纸改为光泽铜版纸：冷调亮白、固定斜向反光、底部轻微落差",
+        "文字对比度不下降，其它版式与交互不变"
+      ],
+      "evidence": [
+        "令牌--paper/--canvas #f5f4f0、--white #fbfbf9、--line #d3d1cb；body::before固定反光层在内容之后；手机吸顶栏半透明。",
+        "1440/390截图（头版、阅读页）；26JS＋全部Python通过；交互、手机320–430与扉页专项回归通过。"
+      ]
     }
   ]
 }

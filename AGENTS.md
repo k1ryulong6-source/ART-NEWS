@@ -58,3 +58,5 @@
 各 AI 的额度、登录权限和聊天上下文相互独立；需要把同一目录、压缩包或仓库提供给它们。
 
 15. 用户明确分工：Claude负责前端设计与文章排版，Codex负责后端/API/自动更新/重要新闻覆盖；保护frontend主题与CultureUI v1接口，交接见docs/CLAUDE_UI_HANDOFF.md。重要新闻覆盖通过核心来源、多专栏逐源核对、故障/漏采/待译清单证明，不能宣称无遗漏。
+
+16. 用户授权与公开巴别塔仓库babel联动：原文一键导入阅读查词，原图/出处/公开部分与中文参考分开；同版本不覆盖生词/笔记，更新另存版本。Claude可改入口设计，保留CultureCore.babelReaderUrl、data-ui=babel-import和版本化JSON接口。联动不依赖Gemini密钥，不自动调用巴别塔AI。

@@ -36,6 +36,12 @@ def build():
                                 'ai': optional_data('ai-translation-status.json'),
                                 'health': optional_data('automation-health.json')}
     # Compute all reporting from the full archive, then compact transport only.
+    from backend.babel_export import export_articles, integrations
+    output = ROOT / 'dist'
+    output.mkdir(exist_ok=True)
+    bundle['integrations'] = integrations()
+    if 'live' in bundle:
+        export_articles(bundle['live'], bundle['sources'], output / 'integrations/babel')
     for key in ('live', 'dataset'): bundle[key] = browser_snapshot(bundle[key])
     text = "window.CULTURE_BOOTSTRAP = " + json.dumps(bundle, ensure_ascii=False, separators=(',', ':')).replace("<", "\\u003c") + ";\n"
     (ROOT / "frontend/data.js").write_text(text, encoding="utf-8")

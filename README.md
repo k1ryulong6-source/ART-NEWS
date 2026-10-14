@@ -152,3 +152,5 @@ EDITORIAL_PROVIDER=chatgpt-task为当前默认。OpenAI-compatible API模式仅�
 无人值守运行：每2小时采集，采集结束优先执行已配置的语境AI API，离线机翻临时兜底并发布，保存断点并监测停滞；AI全文优先且机器稿分别标注。详见[自动工作流](docs/AUTONOMOUS_WORKFLOW.md)。中文字体已改为自托管黑体。
 
 后端/API由Codex维护，前端视觉及文章排版交给Claude。已准备Gemini 2.5 Flash-Lite免费项目接入（未配置密钥不冒称已运行）；一次性设置与官方价格见[API方案](docs/FREE_TRANSLATION_APIS.md)。重要新闻监测与实际新增记录分别存于data/important-news-audit.json和data/collection-metrics.json，供Claude设计状态展示。
+
+文章页可一键进入[巴别塔](https://k1ryulong6-source.github.io/babel/)导入原文、查词与保存生词，中文另作参考；重复不覆盖标注。开发及Claude界面契约见[联动说明](docs/BABEL_INTEGRATION.md)。

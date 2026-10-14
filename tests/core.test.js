@@ -5,6 +5,15 @@ const C = require('../frontend/core.js');
 const demo = JSON.parse(fs.readFileSync(new URL('../data/demo.json', 'file://' + __filename), 'utf8'));
 const prefs = JSON.parse(fs.readFileSync(new URL('../config/preferences.json', 'file://' + __filename), 'utf8'));
 
+test('Babel reading uses a stable original-article link and refuses demos, missing bodies and unsafe URLs',()=>{
+ const row={id:'live-'+'a'.repeat(24),article_hash:'b'.repeat(64),article_blocks_json:'[{"type":"paragraph","text":"Original body"}]',language:'ja'};
+ const url=new URL(C.babelReaderUrl(row));
+ assert.equal(url.pathname,'/babel/');assert.equal(url.searchParams.get('intermission'),row.id);assert.equal(url.hash,'#reading');
+ assert.equal(C.babelReaderUrl({...row,is_demo:true}),'');assert.equal(C.babelReaderUrl({...row,article_blocks_json:null}),'');
+ global.CULTURE_BOOTSTRAP={integrations:{babel:{enabled:true,reader_url:'javascript:alert(1)'}}};
+ assert.equal(C.babelReaderUrl(row),'');delete global.CULTURE_BOOTSTRAP;
+});
+
 test('country, city, category and search filters compose', () => {
   const rows = demo.content.filter(row => C.matches(row, { channel: 'photography', country: 'JP', city: '东京', query: '摄影展' }));
   assert.ok(rows.some(row => row.id === 'demo-photo'));

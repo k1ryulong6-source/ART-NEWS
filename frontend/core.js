@@ -50,6 +50,18 @@
   }
 
   const readerRoute = id => '#reader/' + encodeURIComponent(id);
+  function babelReaderUrl(row) {
+    const integration = root.CULTURE_BOOTSTRAP?.integrations?.babel;
+    if (integration?.enabled === false || row.is_demo || !/^live-[a-f0-9]{24}$/.test(row.id) || !/^[a-f0-9]{64}$/.test(row.article_hash || '') || !sourceText(row).trim() || !articleBlocks(row).length) return '';
+    try {
+      const url = new URL(integration?.reader_url || 'https://k1ryulong6-source.github.io/babel/');
+      if (url.protocol !== 'https:' && !(url.protocol === 'http:' && ['localhost','127.0.0.1'].includes(url.hostname))) return '';
+      if (url.username || url.password) return '';
+      url.searchParams.set('intermission', row.id);
+      url.hash = 'reading';
+      return url.href;
+    } catch { return ''; }
+  }
   function parseRoute(hash) {
     const value = (hash || '').replace(/^#/, '');
     if (value.startsWith('reader/')) { try { const id = decodeURIComponent(value.slice(7)); return id ? { view: 'reader', id } : { view: 'today' }; } catch { return { view: 'today' }; } }
@@ -186,7 +198,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

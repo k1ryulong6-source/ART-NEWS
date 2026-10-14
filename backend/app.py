@@ -106,6 +106,20 @@ def create_app(db_path=None):
         rows = store.dataset(mode)["content"]
         return [r for r in rows if (not channel or r["channel"] == channel) and matches_region(r, country, city) and (not kind or r["kind"] == kind) and (not language or r["language"] == language) and (not q or q.lower() in " ".join(str(r.get(k) or "") for k in ("title_original", "title_zh", "summary_zh")).lower())]
 
+    @app.get("/api/integrations/babel/{content_id}")
+    @app.get("/integrations/babel/{content_id}.json")
+    async def babel_article(content_id: str):
+        from .babel_export import CONTENT_ID, article_payload
+        if not CONTENT_ID.fullmatch(content_id):
+            raise HTTPException(404, "正文不存在")
+        with store.connect() as db:
+            row = db.execute("SELECT * FROM content WHERE id=? AND is_demo=0", (content_id,)).fetchone()
+        catalog = {source['id']: source for source in json.loads((ROOT / 'config/sources.json').read_text())['sources']}
+        payload = article_payload(dict(row), catalog) if row else None
+        if not payload:
+            raise HTTPException(404, "正文尚未取得")
+        return payload
+
     @app.get("/api/events")
     async def events(mode: Literal["demo", "live"] = "live", country: str | None = None, city: str | None = None, start: str | None = None, end: str | None = None):
         return [r for r in store.dataset(mode)["events"] if matches_region(r, country, city) and (not start or (r["date_precision"] == "day" and (r["end_date"] or r["start_date"]) >= start)) and (not end or (r["date_precision"] == "day" and r["start_date"] <= end))]

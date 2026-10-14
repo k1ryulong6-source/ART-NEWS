@@ -1144,6 +1144,33 @@
         "每日任务prompt已同步原文直接刊载；日程/启用不变；原文与译稿未改；T028全量翻译仍doing。",
         "公开截图docs/images/newspaper-desktop.png、newspaper-mobile.png及newspaper-reader-desktop.png、newspaper-reader-mobile.png。"
       ]
+    },
+    {
+      "id": "T036",
+      "title": "幕间休息命名与报纸字体",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T035"
+      ],
+      "scope": [
+        "frontend/",
+        "scripts/build_static.py",
+        "scripts/build_fonts.py",
+        "backend/app.py",
+        "docs/"
+      ],
+      "acceptance": [
+        "报头/标签页/描述/页脚统一幕间休息",
+        "字体自托管且许可来源清楚，静态/本地/独立预览均可加载",
+        "桌面手机无溢出，原文/中文/查询与收藏保持",
+        "发布与接力证据记录"
+      ],
+      "evidence": [
+        "89检查通过，本地API字库200；静态和单文件三字体实际loaded；1440/768/390阅读/查询/537分页/收藏持久，320px字体失败回退均无溢出或脚本错误；公开验证待完成。"
+      ]
     }
   ]
 }

@@ -28,7 +28,7 @@ def send_notifications(store, smtp_factory=None):
     if not rows:
         return {"status": "idle", "sent": 0}
     message = EmailMessage()
-    message["Subject"] = "映间：你收藏的活动即将开始或结束"
+    message["Subject"] = "幕间休息：你收藏的活动即将开始或结束"
     message["From"], message["To"] = sender, recipient
     message.set_content("你收藏的活动有新的时间提醒：\n\n" + "\n".join(row["title"] for row in rows) + "\n\n开放时间与预约请以官方原文为准。")
     try:

@@ -301,14 +301,14 @@
     else if (button.dataset.action === 'clear-date') { state.selectedDate = null; render(); }
     else if (button.dataset.action === 'export') {
       const blob = new Blob([JSON.stringify({ schema_version: 1, exported_at: new Date().toISOString(), preferences, bookmarks }, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob), link = document.createElement('a'); link.href = url; link.download = `culture-desk-${new Date().toISOString().slice(0, 10)}.json`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 3000); toast('收藏与偏好已导出');
+      const url = URL.createObjectURL(blob), link = document.createElement('a'); link.href = url; link.download = `幕间休息-${new Date().toISOString().slice(0, 10)}.json`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 3000); toast('收藏与偏好已导出');
     }
     else if (button.dataset.action === 'import') $('import-input').click();
     else if (button.dataset.action === 'ics') {
       const all = [...(boot.live?.events || []), ...dataset.events], ids = new Set(bookmarks.map(row => row.event_id).filter(Boolean));
       const events = [...new Map(all.filter(event => ids.has(event.id)).map(event => [event.id, event])).values()];
       if (!events.some(event => event.date_precision === 'day')) { toast('请先收藏一项有确切日期的活动'); return; }
-      const url = URL.createObjectURL(new Blob([C.calendarFile(events)], { type: 'text/calendar;charset=utf-8' })); const link = document.createElement('a'); link.href = url; link.download = 'culture-desk.ics'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 3000); toast('已导出确切日期的活动；仅到月份的活动未导出');
+      const url = URL.createObjectURL(new Blob([C.calendarFile(events)], { type: 'text/calendar;charset=utf-8' })); const link = document.createElement('a'); link.href = url; link.download = '幕间休息.ics'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 3000); toast('已导出确切日期的活动；仅到月份的活动未导出');
     }
     else if (button.dataset.action === 'refresh') {
       if (!server) { location.reload(); return; }

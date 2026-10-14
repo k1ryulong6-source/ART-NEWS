@@ -1,10 +1,10 @@
-# ART-NEWS · 映间 / Culture Desk
+# ART-NEWS · 幕间休息 / Intermission
 
 面向公众、供查询与阅览的艺术、电影、摄影新闻资讯平台，以世界文化新闻为主，日本上映与展览保留专题，加入少量圈内动态，排除器材评测。不同 AI 可以在同一仓库接力建设。
 
 仓库：https://github.com/k1ryulong6-source/ART-NEWS 。根据用户选择保持公开；本地数据库、收藏、密码和 API 密钥不入库。
 
-**在线访问：[映间资讯平台](https://k1ryulong6-source.github.io/ART-NEWS/)**
+**在线访问：[幕间休息](https://k1ryulong6-source.github.io/ART-NEWS/)**
 
 同域名旧 PWA 的导航缓存冲突已修复并上线。若浏览器仍显示「Selah」，在该页点击“更新 Selah”，再打开上述完整资讯地址；无需删除浏览器数据。详见 [Pages 排查记录](docs/PAGES_TROUBLESHOOTING.md)。
 

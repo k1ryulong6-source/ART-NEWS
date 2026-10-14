@@ -136,7 +136,7 @@
     return { label: untilStart === 0 ? '今日开始' : '已开始', tone: 'active' };
   }
   function validateImport(data, dataset, defaults) {
-    if (!data || data.schema_version !== 1 || !Array.isArray(data.bookmarks) || !data.preferences || data.bookmarks.length > 5000) throw new Error('不是兼容的映间导出文件');
+    if (!data || data.schema_version !== 1 || !Array.isArray(data.bookmarks) || !data.preferences || data.bookmarks.length > 5000) throw new Error('不是兼容的幕间休息导出文件');
     const preferences = { ...defaults, ...data.preferences };
     if (!Number.isInteger(preferences.daily_selection_limit) || preferences.daily_selection_limit < 1 || preferences.daily_selection_limit > 50) throw new Error('精选数量无效');
     if (!Array.isArray(preferences.interests) || !Array.isArray(preferences.followed_entities) || [...preferences.interests, ...preferences.followed_entities].some(x => typeof x !== 'string' || x.length > 200)) throw new Error('兴趣或关注名单无效');
@@ -161,7 +161,7 @@
   }
   function calendarFile(events) {
     const clean = value => String(value || '').replace(/\\/g, '\\\\').replace(/\r\n|\r|\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
-    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Culture Desk//Personal Culture Calendar//ZH', 'CALSCALE:GREGORIAN'];
+    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Intermission//Arts News Calendar//ZH', 'X-WR-CALNAME:幕间休息', 'CALSCALE:GREGORIAN'];
     for (const event of events) {
       if (event.date_precision !== 'day' || dateNumber(event.start_date) === null) continue;
       const end = new Date((dateNumber(event.end_date || event.start_date) + 1) * 86400000).toISOString().slice(0, 10);

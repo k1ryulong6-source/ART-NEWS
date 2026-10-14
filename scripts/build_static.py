@@ -1,5 +1,6 @@
 """Create a portable static edition using the same frontend and demo records."""
 import json
+import base64
 import shutil
 import sys
 from pathlib import Path
@@ -37,11 +38,16 @@ def build():
     output.mkdir(exist_ok=True)
     for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "data.js", "core.js", "ui.js", "app.js"):
         shutil.copy2(ROOT / "frontend" / name, output / name)
+    shutil.copytree(ROOT / 'frontend/fonts', output / 'fonts', dirs_exist_ok=True)
     html = (output / "index.html").read_text(encoding="utf-8")
+    # The portable edition embeds its own fonts, without external requests.
+    html = html.replace('<link rel="preload" href="fonts/intermission-masthead-v1.woff2" as="font" type="font/woff2" crossorigin>', '')
     for name in ('styles.css', 'theme.css'):
-        html = html.replace(f'<link rel="stylesheet" href="{name}">', '<style>' + (output / name).read_text(encoding='utf-8') + '</style>')
+        css = (output / name).read_text(encoding='utf-8')
+        for font in sorted((output / 'fonts').glob('*.woff2')):
+            css = css.replace('fonts/' + font.name, 'data:font/woff2;base64,' + base64.b64encode(font.read_bytes()).decode('ascii'))
+        html = html.replace(f'<link rel="stylesheet" href="{name}">', '<style>' + css + '</style>')
     favicon = (output / "favicon.svg").read_bytes()
-    import base64
     html = html.replace('href="favicon.svg"', 'href="data:image/svg+xml;base64,' + base64.b64encode(favicon).decode('ascii') + '"')
     for name in ("data.js", "core.js", "ui.js", "app.js"):
         script = (output / name).read_text(encoding="utf-8").replace('</script', '<\\/script')

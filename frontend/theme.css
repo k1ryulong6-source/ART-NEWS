@@ -1,8 +1,13 @@
+/* Licensed local webfonts: see fonts/README.md and OFL notices. */
+@font-face{font-family:'Intermission Masthead';src:url("fonts/intermission-masthead-v1.woff2") format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Intermission Song';src:url("fonts/intermission-song-v1.woff2") format('woff2');font-weight:200 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Intermission News';src:url("fonts/intermission-news-v1.woff2") format('woff2');font-weight:200 800;font-style:normal;font-display:swap}
 /* Newspaper theme v3. Foundation below; print-edition overrides and breakpoints follow. */
 :root {
   --canvas:#d9d5cc; --paper:#eee9dc; --white:#f5f1e7;
   --ink:#1c1b17; --muted:#6b665b; --line:#a9a293; --accent:#8d342b; --green:#45463d;
-  --serif:'Noto Serif CJK SC','Songti SC',SimSun,Georgia,serif;
+  --serif:'Intermission News','Intermission Song','Noto Serif CJK SC','Songti SC',SimSun,serif;
+  --display:'Intermission Masthead','Intermission Song','Noto Serif CJK SC','Songti SC',serif;
   --sans:'Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif;
   --paper-width:1340px; --paper-gutter:32px; --headline-size:34px; --article-size:17px;
 }
@@ -186,3 +191,23 @@ footer span{display:inline}
 .feature-columns p:first-child:first-letter{float:none;font-size:inherit;line-height:inherit;padding:0;font-weight:inherit}
 
 .text-link,.reader-page .eyebrow{color:var(--ink)}
+
+/* Typography: brush nameplate, Song Chinese copy, optical Latin serif. */
+body{font-family:var(--sans);font-kerning:normal;font-optical-sizing:auto}
+.brand{font-family:var(--display);font-size:88px;font-weight:400;letter-spacing:8px;line-height:1.12;font-synthesis:none;white-space:nowrap}
+.nameplate{min-height:126px}
+h1,h2,h3,.feature-summary,.card-summary,.reader-document{font-synthesis:none;font-optical-sizing:auto}
+.feature h2{font-size:37px;font-weight:700;letter-spacing:.01em;line-height:1.35}
+.content-card h3{font-size:21px;font-weight:700;letter-spacing:.01em;line-height:1.45}
+.lead-column>.content-card h3{font-size:24px;font-weight:650}
+.column-heading{font-size:18px;font-weight:600;letter-spacing:3px}
+.feature-summary{font-size:15px;font-weight:400;line-height:1.92}
+.card-summary{font-size:14px;font-weight:400;line-height:1.85}
+.reader-page h1{font-weight:700;letter-spacing:.015em;line-height:1.4}
+.reader-document{font-weight:400;letter-spacing:.01em;line-height:1.95}
+.reader-document h2{font-weight:600;letter-spacing:.015em}
+.card-footer,.meta{font-size:10px;line-height:1.6}
+.footer-brand{font-family:var(--display);font-size:22px;letter-spacing:2px}
+@media(max-width:1100px){.brand{font-size:78px;letter-spacing:6px}.feature h2{font-size:33px}}
+@media(max-width:850px){.brand{font-size:66px;letter-spacing:4px}.nameplate{min-height:108px}.feature h2{font-size:31px}}
+@media(max-width:600px){.brand{font-size:clamp(40px,12vw,54px);letter-spacing:3px}.nameplate{min-height:88px}.feature h2{font-size:29px;line-height:1.42}.content-card h3{font-size:22px;line-height:1.45}.feature-summary{font-size:16px;line-height:1.9}.card-summary{font-size:14px}.reader-page h1{font-size:28px;line-height:1.45}.reader-document{font-size:17px;line-height:1.95}.column-heading{font-size:18px}}

@@ -21,8 +21,22 @@
     <div class="cover-veil"></div>
     <div class="cover-leaf" role="button" tabindex="0" aria-label="翻開《幕間休息》">
       <div class="cover-face cover-front">
+        <div class="cover-grain" aria-hidden="true"></div>
         <div class="cover-marks" aria-hidden="true"></div>
-        <svg class="cover-title" role="img" aria-label="幕間休息"><use href="#wordmark-vertical"/></svg>
+        <svg class="cover-title" viewBox="32 0 936 4486" role="img" aria-label="幕間休息">
+          <defs>
+            <radialGradient id="cover-glow-fill"><stop offset="0" stop-color="#d23a22" stop-opacity=".42"/><stop offset=".38" stop-color="#c8321f" stop-opacity=".14"/><stop offset="1" stop-color="#c8321f" stop-opacity="0"/></radialGradient>
+            <clipPath id="cover-char-0"><rect x="-500" y="-300" width="2000" height="1450"/></clipPath>
+            <clipPath id="cover-char-1"><rect x="-500" y="1150" width="2000" height="1100"/></clipPath>
+            <clipPath id="cover-char-2"><rect x="-500" y="2250" width="2000" height="1200"/></clipPath>
+            <clipPath id="cover-char-3"><rect x="-500" y="3450" width="2000" height="1300"/></clipPath>
+          </defs>
+          <ellipse class="cover-glow" cx="476" cy="1812" rx="820" ry="900" fill="url(#cover-glow-fill)"/>
+          <use class="cover-char" style="--i:0" href="#wordmark-vertical" x="32" width="936" height="4486" clip-path="url(#cover-char-0)"/>
+          <use class="cover-char" style="--i:1" href="#wordmark-vertical" x="32" width="936" height="4486" clip-path="url(#cover-char-1)"/>
+          <use class="cover-char" style="--i:2" href="#wordmark-vertical" x="32" width="936" height="4486" clip-path="url(#cover-char-2)"/>
+          <use class="cover-char" style="--i:3" href="#wordmark-vertical" x="32" width="936" height="4486" clip-path="url(#cover-char-3)"/>
+        </svg>
         <p class="cover-note">藝術・電影・攝影</p>
         <p class="cover-colophon"><time id="cover-date"></time></p>
         <span class="cover-turn" aria-hidden="true">翻頁</span>

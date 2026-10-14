@@ -1207,6 +1207,38 @@
         "已接收真实schedule采集38537277827及6caf11e，最新543资料/198活动/26源；匹配hash的5份机翻安全合并，44AI稿和全部原文/事件不变。",
         "本地1440/768/390全量537旧快照浏览及字体/搜索/原文回退/收藏通过；需最新543及真实GitHub后台闭环验收。"
       ]
+    },
+    {
+      "id": "T038",
+      "title": "报纸版面重排：去除示意图与多余说明",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T036"
+      ],
+      "scope": [
+        "frontend/index.html",
+        "frontend/styles.css",
+        "frontend/theme.css",
+        "frontend/ui.js",
+        "frontend/app.js",
+        "docs/"
+      ],
+      "acceptance": [
+        "报头/栏线/简讯-头条-焦点-更多报道版式接近印刷报纸",
+        "无来源配图时不再绘制原创示意图，只排文字",
+        "去掉冗余说明、按钮和口语化提示；静态站不显示刷新/空提醒",
+        "中文黑体与拉丁原文Newsreader按lang分别排印",
+        "原文·待译/自动机翻标注、全部分页、搜索、三处阅读链接、收藏键与日历保持"
+      ],
+      "evidence": [
+        "69Python＋25JS通过；check_project PASS；audit_data --strict 0错误；node --check通过。",
+        "本地dist Chromium 1440/768/390：头版、资讯、日历、剪报、设置、收录、阅读七页无横向溢出、无脚本错误。",
+        "交互：收藏★写入culture-desk-v1并刷新后保留；资讯31页末页3条覆盖543条；搜索Rothko 6篇；标题进入阅读、正文/原文/资料切换；筛选展开后切换语言不收起；日程弹窗正常。",
+        "单文件预览四套字体（含仅U+2019的撇号子集）均loaded，仅/api/health静态探测404。"
+      ]
     }
   ]
 }

@@ -1,3 +1,5 @@
+> 2026-10-15 JST当前T049：用户已在Porkbun购买mujianrest.work，授权迁移幕间休息；巴别塔地址保持。迁移代码和验证见CUSTOM_DOMAIN.md，需先发布接收端双接口，再确认DNS/Pages后合并生产者迁移。未就绪不能冒称新域已上线；不覆盖Claude主题或自动采集新数据。
+
 > 当前工作（2026-10-14，T038）：用户分工为Claude做前端/文章排版，Codex做后端/API/自动运行/重要新闻覆盖。免费或低价语境AI API为主，机翻仅临时兜底，覆盖之前“不另配API”的选择。Gemini 2.5 Flash-Lite接入代码已准备，真实调用须GEMINI_API_KEY；本次GitHub Secrets管理API为403，需仓库主人一次性设置。费用尚未授权，不自动开启付费。详细当前流程见AUTONOMOUS_WORKFLOW.md，当前API证据见FREE_TRANSLATION_APIS.md。不要根据下方历史日志恢复iframe、旧只读标题或旧型号/不接API规则。
 
 > 2026-10-15 JST补充：用户确认已配置GEMINI_API_KEY，要求先按免费额度观察24小时，再决定是否付费及预算；没有付费授权。手动验证38605781397已排队，当前不能把密钥配置等同于实际AI完成。data/ai-free-trial-baseline.json保存本次起点（44既有AI全文、596有正文待AI、695总资讯及采集计数），24小时后按实际API全文、临时机翻、入库/首次补库、待译增减、限流/失败与真实tokens分别复盘。一次性复盘任务已创建；实际调用与发布证据另行追加。

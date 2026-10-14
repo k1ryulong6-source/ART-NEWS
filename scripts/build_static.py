@@ -3,7 +3,9 @@ import json
 import base64
 import shutil
 import sys
+from html import escape
 from pathlib import Path
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -40,6 +42,15 @@ def build():
     output = ROOT / 'dist'
     output.mkdir(exist_ok=True)
     bundle['integrations'] = integrations()
+    site_url = bundle['integrations'].get('site_url')
+    domain = bundle['integrations'].get('custom_domain')
+    if domain:
+        site = urlsplit(site_url or '')
+        if site.scheme != 'https' or site.hostname != domain or site.netloc != domain or site.path not in ('', '/') or site.query or site.fragment:
+            raise ValueError('custom_domain_must_match_https_site_url')
+        (output / 'CNAME').write_text(domain + '\n', encoding='utf-8')
+    else:
+        (output / 'CNAME').unlink(missing_ok=True)
     if 'live' in bundle:
         export_articles(bundle['live'], bundle['sources'], output / 'integrations/babel')
     for key in ('live', 'dataset'): bundle[key] = browser_snapshot(bundle[key])
@@ -53,6 +64,9 @@ def build():
         shutil.rmtree(output / 'fonts')
     shutil.copytree(ROOT / 'frontend/fonts', output / 'fonts')
     html = (output / "index.html").read_text(encoding="utf-8")
+    if site_url:
+        html = html.replace('</head>', '<link rel="canonical" href="' + escape(site_url, quote=True) + '">\n</head>')
+        (output / 'index.html').write_text(html, encoding='utf-8')
     # The portable edition embeds its own fonts, without external requests.
     html = html.replace('<link rel="preload" href="fonts/intermission-masthead-v1.woff2" as="font" type="font/woff2" crossorigin>', '')
     for name in ('styles.css', 'theme.css'):

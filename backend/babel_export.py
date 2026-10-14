@@ -23,7 +23,7 @@ def public_url(value):
         return None
 
 
-def article_payload(row, sources):
+def article_payload(row, sources, site_url=None):
     if row.get('is_demo') or not CONTENT_ID.fullmatch(row['id']):
         return None
     try:
@@ -34,6 +34,9 @@ def article_payload(row, sources):
     if not blocks or not text.strip() or not re.fullmatch(r'[a-f0-9]{64}', row.get('article_hash') or ''):
         return None
     source = sources.get(row['source_id'], {})
+    site_url = site_url or integrations().get('site_url', 'https://k1ryulong6-source.github.io/ART-NEWS/')
+    if not public_url(site_url) or urlsplit(site_url).query or urlsplit(site_url).fragment:
+        raise ValueError('invalid_public_site_url')
     reference = None
     if row.get('editorial_status') in ('reviewed', 'translated') and row.get('editorial_blocks_json') and row.get('editorial_title_zh'):
         reference = {'kind': 'ai-reviewed' if row['editorial_status'] == 'reviewed' else 'ai-direct',
@@ -48,7 +51,7 @@ def article_payload(row, sources):
             'source': {'name': source.get('name') or row['source_id'],
                        'url': public_url(row.get('article_source_url') or row.get('original_page_url') or row['canonical_url']),
                        'author': row.get('article_author'), 'published_at': row.get('published_at')},
-            'news_url': 'https://k1ryulong6-source.github.io/ART-NEWS/#reader/' + row['id'],
+            'news_url': site_url.rstrip('/') + '/#reader/' + row['id'],
             'access': 'public-partial' if row.get('article_status') == 'partial' else 'collected',
             'collected_at': row.get('article_fetched_at'), 'translation_zh': reference}
 
@@ -60,8 +63,9 @@ def export_articles(snapshot, config, directory):
     directory.mkdir(parents=True)
     sources = {source['id']: source for source in config['sources']}
     items = []
+    site_url = integrations().get('site_url')
     for row in snapshot.get('content', []):
-        payload = article_payload(row, sources)
+        payload = article_payload(row, sources, site_url=site_url)
         if payload:
             (directory / (row['id'] + '.json')).write_text(json.dumps(payload, ensure_ascii=False) + '\n', encoding='utf-8')
             items.append({'id': row['id'], 'language': row['language'], 'source_hash': row['article_hash']})

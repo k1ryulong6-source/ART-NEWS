@@ -45,3 +45,9 @@ https://github.com/k1ryulong6-source/ART-NEWS/settings/pages → Custom domain�
 初次DNS查询NXDOMAIN，随后根域/www已解析到Porkbun停车页207.207.210.107/207.207.210.229，www CNAME=pixie.porkbun.com；Pages cname=null。等待用户修改DNS及Pages绑定，后续实际发布证据追加。
 
 DNS已核实正确：根域四个185.199.108–111.153，www CNAME=k1ryulong6-source.github.io。Babel7976620已公开发布，Pages38609603860 success。迁移PR https://github.com/k1ryulong6-source/ART-NEWS/pull/12 两轮CI成功。PUT仓库Pages cname实际返回403 Resource not accessible by integration；需要主人在仓库Settings/Pages手动保存mujianrest.work，已请求此一次设置。尚未合并生产者，不冒称新站已上线。
+
+## 公开迁移已完成 · 2026-10-15 JST
+
+用户已保存Pages域名并开启HTTPS。API确认cname=mujianrest.work、https_enforced=true、证书approved覆盖根域和www。迁移PR#12合并10c6782，Project checks38610234915及Pages38610235002 success；巴别塔7976620 Pages38609603860 success。
+
+公开https主站返回200；http、www和原/ART-NEWS/均跳转到https://mujianrest.work/，浏览器旧#reader/ID完整保持。公开CNAME和canonical正确；原文API689篇，英日样本JSON返回news_url指向新域，原文与保存原稿一致。Chromium1440/390真实生产链接、中文/原文、英日导入和词典、笔记/marks刷新保持、旧文章跳转，无网络模拟/脚本错误/横向溢出。T049已done。未来续费/DNS或Pages域名变化按本文件维护，用户收藏仍按上述JSON方式跨域迁移。

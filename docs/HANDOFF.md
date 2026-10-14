@@ -1,3 +1,5 @@
+> T049已完成（2026-10-15 JST）：https://mujianrest.work/ 已上线并强制HTTPS，根域/www证书approved，旧GitHub URL与文章hash自动跳转；PR#12合并10c6782，CI38610234915/Pages38610235002 success。Babel7976620兼容已发布；生产1440/390英日原文/词典/导入/笔记marks刷新/旧链接通过，689篇API。早先“等待DNS/Pages”记录为历史，详见CUSTOM_DOMAIN.md末尾。原免费API试运行计费政策和T038/T028未完成状态保持，不能用域名成功冒称AI调用成功。
+
 > T049最新：Porkbun五条DNS已正确，Babel7976620 Pages38609603860已success；主站迁移PR#12 CI已通过。Pages cname写入403，等待主人在ART-NEWS/settings/pages保存mujianrest.work后合并PR/验证HTTPS。
 
 > 2026-10-15 JST当前T049：用户已在Porkbun购买mujianrest.work，授权迁移幕间休息；巴别塔地址保持。迁移代码和验证见CUSTOM_DOMAIN.md，需先发布接收端双接口，再确认DNS/Pages后合并生产者迁移。未就绪不能冒称新域已上线；不覆盖Claude主题或自动采集新数据。

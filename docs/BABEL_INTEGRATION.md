@@ -6,7 +6,7 @@
 
 文章页最小新增「巴别塔阅读 ↗」入口，始终导入原文，已有中文全文另为参考，和当前中文/原文tab无关。无正文/示例不显示可用入口；原文仍在本站完整阅览。链接形如`https://k1ryulong6-source.github.io/babel/?intermission=live-ID#reading`，仅传稳定ID，不把长文或个人记录塞URL，手机、新标签和复制链接可用。
 
-CultureCore.babelReaderUrl(row)为Claude可用的可选接口，CultureUI v1保持。data-ui=babel-import为展示入口。config/integrations.json配置目标，禁用enabled即可隐藏入口；迁移域名时同时同步接收端固定baseURL，不接受任意URL抓取参数。
+CultureCore.babelReaderUrl(row)为Claude可用的可选接口，CultureUI v1保持。data-ui=babel-import为展示入口。config/integrations.json配置目标，禁用enabled即可隐藏入口；迁移域名时同时同步接收端固定baseURLs，不接受任意URL抓取参数。
 
 backend/babel_export.article_payload/export_articles每次Pages构建从最新完整live档案生成`dist/integrations/babel/ID.json`与index.json。不是先前队列36条精选，全部已保存正文均导出；未取得正文没有伪造JSON。无需提交生成的dist到仓库，采集/翻译结束自动发布新接口。单文件离线预览的入口仍打开在线巴别塔/公开接口；首次跨项目导入需联网。
 
@@ -30,3 +30,5 @@ backend/babel_export.article_payload/export_articles每次Pages构建从最新�
 - 法语在日语界面使用法语提示，不调用日语词典；源端断网仍可读本机副本；存储失败有重试且无假导入。
 
 发布已验收：ART-NEWS b994269 CI38554022279/Pages38554022552 success，babel ab63fb4 Pages38553447792 success。真实公开1440/390六语种/词典/词本/去重/刷新/长稿/404通过，API639篇HTTP200。旧PWA缓存从20261012.1823升级到20261014.1059，个人文章保持。AI主链T038仍等待用户方便时配置Gemini免费密钥，不影响本文联动。
+
+T049公开域名：https://mujianrest.work/ ，原文接口https://mujianrest.work/integrations/babel/。巴别塔固定新旧接口兼容，域名迁移已完成并强制HTTPS；公开验证详见CUSTOM_DOMAIN.md。

@@ -4,7 +4,7 @@
 
 仓库：https://github.com/k1ryulong6-source/ART-NEWS 。根据用户选择保持公开；本地数据库、收藏、密码和 API 密钥不入库。
 
-**在线访问：[幕间休息](https://k1ryulong6-source.github.io/ART-NEWS/)**
+**在线访问：[幕间休息](https://mujianrest.work/)**
 
 同域名旧 PWA 的导航缓存冲突已修复并上线。若浏览器仍显示「Selah」，在该页点击“更新 Selah”，再打开上述完整资讯地址；无需删除浏览器数据。详见 [Pages 排查记录](docs/PAGES_TROUBLESHOOTING.md)。
 
@@ -14,7 +14,7 @@
 
 已实际用gpt-6-luna完成12篇直接全文翻译，不增加第二轮模型调用，只做程序结构／数字／来源检查。当前44篇已翻译（旧校译32＋直接翻译12，6篇仅公开部分），49篇原生中文，440篇待译，2条正文缺失；全量目标仍未完成。每日任务同步新策略和优先顺序，实际模型来源保留，不能假称每次任务都能选择子模型。 最新费用偏好：以足够完成全文翻译的性价比选择模型，当前默认GPT-5.6；不把Luna默认当便宜型号，无可靠费用依据不自动升级。每日量和覆盖范围见docs/OPERATING_METRICS.md。
 
-[覆盖与翻译进度](https://k1ryulong6-source.github.io/ART-NEWS/#coverage)继续显示逐源对照、地区和官方抽查缺口。525条资料／198活动／26来源保持，公开采集每2小时。[Claude UI／美术交接](docs/CLAUDE_UI_HANDOFF.md)继续适用，保留分级、直译身份、全量队列及来源。
+[覆盖与翻译进度](https://mujianrest.work/#coverage)继续显示逐源对照、地区和官方抽查缺口。525条资料／198活动／26来源保持，公开采集每2小时。[Claude UI／美术交接](docs/CLAUDE_UI_HANDOFF.md)继续适用，保留分级、直译身份、全量队列及来源。
 
 已实现今日、探索、日历、收藏和设置；筛选／搜索、圈内动态开关、详情、关注排序；SQLite 持久保存；JSON 导出／恢复、ICS 日历导出；真实采集、去重、来源开关、手动更新、更新状态、站内提醒；可替换摘要接口与可选邮件提醒。
 
@@ -97,7 +97,7 @@ docker compose up -d --build
 
 app 与 updater 共用持久数据卷；默认只绑定本机 8000。部署到远程私人服务时可设置 CULTURE_DESK_PASSWORD，用户名 owner，并由 HTTPS 网关提供访问。同一受保护服务的多个浏览器共享 SQLite 状态；静态版各浏览器状态独立。
 
-Docker 与托管细节见 docs/OPERATIONS.md。用户已选择其他人均可访问的公开资讯页。网站已公开上线：[https://k1ryulong6-source.github.io/ART-NEWS/](https://k1ryulong6-source.github.io/ART-NEWS/)，HTTP 200 与桌面／手机交互验收通过。pages.yml 在前端／公开快照变更和定时刷新完成后自动部署。各读者收藏保存在各自浏览器。
+Docker 与托管细节见 docs/OPERATIONS.md。用户已选择其他人均可访问的公开资讯页。网站已公开上线：[https://mujianrest.work/](https://mujianrest.work/)，HTTP 200 与桌面／手机交互验收通过。pages.yml 在前端／公开快照变更和定时刷新完成后自动部署。各读者收藏保存在各自浏览器。
 
 ## 检查
 
@@ -154,3 +154,5 @@ EDITORIAL_PROVIDER=chatgpt-task为当前默认。OpenAI-compatible API模式仅�
 后端/API由Codex维护，前端视觉及文章排版交给Claude。已准备Gemini 2.5 Flash-Lite免费项目接入（未配置密钥不冒称已运行）；一次性设置与官方价格见[API方案](docs/FREE_TRANSLATION_APIS.md)。重要新闻监测与实际新增记录分别存于data/important-news-audit.json和data/collection-metrics.json，供Claude设计状态展示。
 
 文章页可一键进入[巴别塔](https://k1ryulong6-source.github.io/babel/)导入原文、查词与保存生词，中文另作参考；重复不覆盖标注。开发及Claude界面契约见[联动说明](docs/BABEL_INTEGRATION.md)。
+
+自定义域名、Porkbun DNS与收藏迁移说明见[域名运维](docs/CUSTOM_DOMAIN.md)。

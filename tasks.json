@@ -1543,7 +1543,7 @@
       "id": "T049",
       "title": "mujianrest.work自定义域名及巴别塔接口迁移",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-10-15",
       "depends_on": [
@@ -1568,7 +1568,8 @@
       "evidence": [
         "用户已购买mujianrest.work，注册商Porkbun；当前公开DNS NXDOMAIN，ART-NEWS Pages尚无cname，待DNS/Pages绑定。",
         "86Python＋26新闻JS＋8巴别塔JS＝120检查、课程检查通过；689篇API新返回链接/CNAME/canonical正确；1440/390本地新根域及跨域API回退/原文/重复笔记保持通过。尚待DNS/Pages及公开验收。",
-        "Porkbun根域4条GitHub A及www CNAME已公开核实；迁移PR#12两轮Project checks均success。Babel7976620 Pages38609603860 success。更新ART-NEWS Pages cname实际403 Resource not accessible by integration，已请主人在Settings/Pages保存域名；主站迁移PR待此绑定后合并。"
+        "Porkbun根域4条GitHub A及www CNAME已公开核实；迁移PR#12两轮Project checks均success。Babel7976620 Pages38609603860 success。更新ART-NEWS Pages cname实际403 Resource not accessible by integration，已请主人在Settings/Pages保存域名；主站迁移PR待此绑定后合并。",
+        "用户已保存Pages域名并开启HTTPS，证书approved覆盖根域/www；PR#12合并10c6782，Project checks38610234915及Pages38610235002均success。公开HTTPS/http/www/旧项目地址均200最终HTTPS主域。生产689篇API，1440/390英日完整原文/中文切换/原词典/导入笔记marks刷新保持/旧#reader跳转，无脚本错误或溢出；无接口模拟。Babel7976620已发布且自身域名不变。"
       ]
     }
   ]

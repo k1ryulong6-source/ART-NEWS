@@ -26,12 +26,11 @@
         <p class="cover-note"><span>藝術・電影・攝影</span><time id="cover-date"></time></p>
         <span class="cover-turn" aria-hidden="true">翻頁</span>
       </div>
-      <div class="cover-face cover-back" aria-hidden="true"><svg class="cover-title"><use href="#wordmark-vertical"/></svg></div>
     </div>
   </div>
   <script>
   /* Opening page: shown once per browser session on the front page; any click,
-     key, wheel or swipe turns it over the spine like a page of a vertical book. */
+     key, wheel or swipe fades it away. */
   (function () {
     var cover = document.getElementById('cover'), root = document.documentElement, seen = false;
     try { seen = sessionStorage.getItem('intermission-cover') === 'turned'; } catch (error) {}
@@ -47,7 +46,7 @@
       try { sessionStorage.setItem('intermission-cover', 'turned'); } catch (error) {}
       cover.classList.add('turning');
       var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      setTimeout(function () { cover.remove(); root.classList.remove('cover-open'); }, still ? 450 : 1600);
+      setTimeout(function () { cover.remove(); root.classList.remove('cover-open'); }, still ? 350 : 1100);
     }
     cover.addEventListener('click', turn);
     cover.addEventListener('wheel', turn, { passive: true });

@@ -238,3 +238,5 @@ T035本地验收：65Python＋24JS＝89项通过，python -S静态构建及数�
 T036：正式更名幕间休息。报头/标签页/描述/页脚、favicon、导入提示/API标题/邮件模板同步（未发送邮件）。使用自托管OFL字体三层：四字Ma Shan Zheng报头、Noto Serif SC宋体、Newsreader英文；来源/hash/覆盖/重建见frontend/fonts。主题--display/--serif/--sans保留AI修改入口，Pages不新增字体依赖，本地API白名单和单文件字体内嵌已同步。稳定项目路径/ID/收藏键不迁移，原文和译稿不变。每日任务prompt仅更名成功，启用与原日程保持。公开验收待追加。
 
 T036本地验收：65Python＋24JS＝89检查通过（本地API三字库返回200），python -S静态构建与审计0错误。Chromium1440/768/390全537资料分页/查询/阅读/收藏持久及六页无溢出/脚本错误，三个Intermission字体均loaded；320px正常/阻断字体请求时均可读且无溢出。HTTP单文件内嵌三字库，loaded且无外部字体请求。站名/导出文件名/ICS日历名同步，收藏键和原始UID保持。公开验证待后续补记。
+
+T036公开已验收done：实现d55db4d；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38531313820 与Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38531313853 均success。真实站点Chromium1440/768/390站名/标签页为幕间休息，三套自托管Intermission字体均loaded；全部537资料分页/查询/三阅读入口/中文和原文/收藏状态持久及六页长文无溢出/脚本错误。公开HTTP单文件字库内嵌加载成功；本地320px正常与字库失败回退均通过。实际公开截图已更新。T028仍doing，442待译/44已有中文译稿；本轮无新增译稿或外部API调用。字体职责及其他AI入口见UI_CUSTOMIZATION和frontend/fonts/README。

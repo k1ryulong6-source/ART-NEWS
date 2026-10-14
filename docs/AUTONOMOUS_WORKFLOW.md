@@ -1,40 +1,49 @@
-# 无人值守采集、翻译与发布
+# 后台自动采集、AI翻译与发布
 
 网站：https://k1ryulong6-source.github.io/ART-NEWS/
 
-当前主链在GitHub Actions上执行，不依赖打开ChatGPT，也不需要独立模型API密钥。
+最新分工：Codex负责后端/API/自动运行/重要新闻覆盖，Claude负责前端/文章排版。**AI全文直译为主，离线机翻仅临时兜底**，不依赖每日打开ChatGPT。
 
-| 阶段 | 执行方式 | 实际产物 |
+| 阶段 | 执行 | 证据 |
 | --- | --- | --- |
-| 采集 | refresh.yml，UTC每两小时15分附近 | 原文/图片/日期/逐源成功失败/全量队列 |
-| 翻译 | autotranslate.yml，采集结束触发；另有每4小时45分备用调度 | 免费离线M2M100机翻/逐单元断点/真实完成报告 |
-| 发布 | pages.yml，采集/翻译工作流结束触发 | 最新公开网页，机器译文与AI稿分别标注 |
-| 检查 | automation-health.yml，每6小时及上述工作流结束 | 真实Actions记录、成功时间、失败/超过6小时不推进 |
+| 采集 | refresh.yml，每2小时UTC15分附近 | 原文/图片/出处、逐源成功失败、实际新增量 |
+| 核对 | 每次采集后遍历配置列表并检查重要新闻 | 多专栏缺条/部分故障/核心来源停滞/重要稿待译 |
+| AI | autotranslate.yml，采集结束触发；每4小时UTC45分备用 | 全文语境直译、断点/配额/退避/真实模型与tokens |
+| 临时兜底 | 同一任务AI之后执行离线M2M100 | 机翻身份明确，不冒称AI，不覆盖AI |
+| 发布 | pages.yml，采集/翻译结束触发 | 最新安全快照，AI/机翻/待译原文分别标注 |
+| 监测 | automation-health.yml，每6小时及任务完成 | 实际Actions链接/最近成功/AI配置与等待状态 |
 
-调度是GitHub的尽力执行，运行可能排队；时间不是精确到点的承诺。采集/AI导入/离线翻译共用数据写锁并checkout最新main；健康记录使用独立锁，不抢占采集和翻译的待执行名额。健康提交不触发Pages，避免监测→发布→监测循环。覆盖页读取最新公开健康记录，网站长期未更新时也能看到停滞。
+GitHub尽力调度，可能排队和延迟，不承诺精确到点。采集/译稿导入/翻译共用数据写锁，checkout最新main；监测独立锁且不触发Pages，避免循环。覆盖页读取最新公开健康记录，workflow成功不等于AI已配置或产出。
 
-## 翻译选择与成本
+## AI主路线
 
-用户不想另配API，允许未译正文使用机械翻译。选免费离线M2M100 418M int8，由CTranslate2 CPU推理；预训练模型支持100种语言，当前全部外文来源的英/日/法/葡/西已实际试跑。机翻不是语境大模型精译或人工审核，专名/表达可能出错，阅读页原文始终可切换。已有44篇AI全文优先保留，不被机翻覆盖；AI队列继续存在，机器译文不算AI精译完成。
+Gemini 2.5 Flash-Lite免费项目优先，一次性Secrets设置、官方价格和账号边界见[FREE_TRANSLATION_APIS.md](FREE_TRANSLATION_APIS.md)。无密钥时needs_configuration/0篇，不生成伪API数据；费用未授权，付费关闭。
 
-公开仓库使用GitHub标准Ubuntu托管runner，不调用任何付费推理API、不使用大型runner。不承诺后台AI精译：原ChatGPT每日任务没有实际运行记录，只是可选增强，不构成主链依赖。GitHub Models官方明确2026-07-30退役，不能使用过期的免费模型方案：https://docs.github.com/en/github-models/prototyping-with-ai-models 。
+backend/ai_translation.py调用原生REST，无额外SDK，key只在header。整篇原文单元/术语表始终在上下文；长稿限制每次输出并保存断点，不永久跳过。顺序拼回全部段落，图片/出处/版权信息保持；仅程序块数/数字/源hash检查，不作第二轮模型校对。入库editorial_status=translated、review_model=null，优先记录返回modelVersion。
 
-config/automation.json固定模型仓库、revision及4份文件SHA256；首次下载约499MB，后续缓存，校验不符重新获取/失败退出，不运行远程模型代码。MIT上游：https://huggingface.co/facebook/m2m100_418M ；量化副本：https://huggingface.co/gn64/M2M100_418M_CTranslate2 。字库和模型是资源，原文不发送给推理服务。
+最多40生成请求/480秒/批、100请求/太平洋日，15秒间隔，账号实际配额可能更低。每批推理前把最多40请求的预留写入Git ledger并推送，正常结束释放未使用部分；硬中断留下保守预留至当天结束，不会在新runner清空重花配额。每个生成请求前本地记账，成功后记已知真实tokens；unknown_usage_requests区分无法取得usage的失败请求，不能拿可见tokens冒称完整账单。429/服务错误全局退避，日额度次日接续，不自动付费；损坏配额账本失败关闭，不能清空继续调用。data/ai-translation-progress保存通过单元，GitHub每分钟推送一次接受进度，临时DB中已完成副本也留完整断点以免中断后重调模型；硬中断最多可能丢最近未推送的一分钟，配额预留仍在。完整检查后才发布；源hash/原标题/摘录/术语规则变更使旧断点失效。
 
-## 接续和故障
+重要性/明确日期时效优先，每批留旧稿份额并交错处理。有效AI稿不因换模型重译，入库再核对source hash/原标题/已有AI，避免竞态覆盖。ChatGPT定时任务仅可选补充，last_run_time=null，无实际日均。
 
-每批最多40篇/60,000原文字符/900秒（先到的停止），不是每天固定翻译量。最高优先级在前，8个旧稿名额交错进入，防止资源限额使旧稿永远排在批尾。整个队列保留；不按来源、长度、语种永久删除。短源片段128 tokens，拼接前后严格保持源字符完整；检查段落、数字、URL与出处。数值缺失时仅重新处理该单元，保留数值/作品代码原貌；错误不冒称完成。
+## 临时离线机翻
 
-每个通过的单元立即写data/auto-translation-progress/ID.json，完整通过后才写正文译文并删除断点。源码hash/标题/摘录/引擎配置变更使旧断点失效；失败记录6小时退避并继续其他稿。即使后续单元失败，也不用重译已通过部分。900秒提前停止，为快照导出、审计、提交留余量；出错后的安全步骤和7日Artifacts保留已接受工作。发布只使用完成的正文，不在待译空白里假称已译。原文缺失/仅公开部分照常标注。
+MIT M2M100 418M int8经CTranslate2 CPU执行，支持100语种，不调用推理API。config/automation.json固定revision与4文件SHA256，约499MB资源缓存，校验错误失败，不执行远程模型代码。上游 https://huggingface.co/facebook/m2m100_418M ，量化副本 https://huggingface.co/gn64/M2M100_418M_CTranslate2 。
 
-机器正文复用已有article_translation字段；编辑AI稿与机器字段分开。浏览器只传有效新离线机翻，不恢复旧未核实机器稿；源码/图片/出处独立保留。backend.coverage分别记录AI全文、离线机翻、尚无中文正文与尚未取得正文。
+每批40篇/60,000字符/900秒，逐单元断点、6小时错误退避，AI稿不覆盖。article_translation机器字段与editorial AI字段分开，机器稿仍在AI待译队列；阅读标自动机翻。worker出错后仍审核/保存已接受工作，7日Artifacts留存。
 
-## 验证与手动维修（不属于每日操作）
+真实GitHub批次38538667521完成24篇/59,960字符/735.72秒，3篇检查失败保留原文/断点；Pages38540275326和38540316341自动发布成功。加本地5篇累计29有效机翻；现有AI全文44。AI API尚需一次性密钥和实际运行验收，不冒称已有产出。
 
-- Actions页面核查Refresh cultural news → Automatic full-text translation → Publish public news page的实际conclusion和提交。
-- data/auto-translation-status.json记录本批实际ID、字符、单元、耗时、失败与剩余，不用“已启用”替代产量。
-- data/automation-health.json核查各阶段最近成功和失败；首次运行未完成不能称正常。
-- 修复后可从Actions手动dispatch，正常情况下按计划自行接续。
-- 本地使用新的完整快照数据库：CULTURE_DESK_DB=runtime/auto.db python scripts/import_snapshot.py；安装requirements.txt和requirements-translation.txt；同一DB运行scripts/run_auto_translation.py。不要导出旧runtime/culture-desk.db覆盖新资料。
+## 重要新闻与实际产能
 
-采集来源仍为有限名单；来源403、滚动RSS与未知地区保留覆盖缺口，自动执行不等于全球所有重要资讯收齐。
+28来源，新增Guardian电影/艺术/摄影三专栏和Deadline电影专栏，实际取得80条正文（68完整/12仅来源公开部分），原543原文/44AI/198活动全部保持。多页面单页失败不丢成功页但保留故障；核对遍历全部配置RSS，重合URL去重。正文采集先重大未取正文，再留旧稿复核份额。
+
+config/news-watch维护17核心来源；important-news-audit记录重要漏条、核心来源故障/超过6小时不成功、48小时重要稿、缺原文/待AI数。影展/欧洲电影奖/野生动物摄影大奖/机构行业变化等信号为可解释自动初判。当前名单零重要漏条不等于世界无遗漏；未接入媒体、滚动历史、非RSS未独立核验官方页仍有盲区。
+
+collection-metrics从声明的启用时间开始统计实际新增，按source run去重，首次来源回补另记；发布时间/fetched_at/恢复旧快照不能当入库量。连续积累后才能调整API配额和预算，不用搭建日当日均。来源403和重点独立抽查缺口保留。
+
+## 维护接口
+
+- GeminiTranslator.translate(document,keys)返回selected outputs与真实usage；模型更换保持断点/配额/出处/完整块契约，不开放浏览器密钥。
+- ai-translation-status和auto-translation-status分别核查实际产量；automation-health核查真实Actions，不能互相冒称。
+- 必须从最新main恢复新DB：CULTURE_DESK_DB=runtime/new.db python scripts/import_snapshot.py；不得导出旧DB覆盖新采集。
+- Claude接口见[CLAUDE_UI_HANDOFF.md](CLAUDE_UI_HANDOFF.md)，不会要求恢复iframe、删原文或把摘要当全文。

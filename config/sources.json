@@ -656,6 +656,91 @@
         "#audioText",
         ".audioText"
       ]
+    },
+    {
+      "id": "guardian-culture",
+      "name": "The Guardian · Culture",
+      "homepage_url": "https://www.theguardian.com",
+      "channels": [
+        "film",
+        "art",
+        "photography"
+      ],
+      "country": null,
+      "publisher_country": "GB",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "feed_url": "https://www.theguardian.com/film/rss",
+      "adapter": "rss",
+      "coverage": "global",
+      "verified_at": "2026-10-14",
+      "pages": [
+        {
+          "url": "https://www.theguardian.com/film/rss",
+          "channels": [
+            "film",
+            "art",
+            "photography"
+          ]
+        },
+        {
+          "url": "https://www.theguardian.com/artanddesign/rss",
+          "channels": [
+            "art",
+            "film",
+            "photography"
+          ]
+        },
+        {
+          "url": "https://www.theguardian.com/artanddesign/photography/rss",
+          "channels": [
+            "photography",
+            "art",
+            "film"
+          ]
+        }
+      ],
+      "channel_rules": [
+        {
+          "channel": "film",
+          "pattern": "/film/|\\bFilm\\b"
+        },
+        {
+          "channel": "photography",
+          "pattern": "\\bPhotography\\b|photobook|photographer"
+        }
+      ],
+      "article_selectors": [
+        "[data-gu-name=\"body\"]"
+      ],
+      "notes": "2026-10-14 三专栏实际HTTP200/RSS32、23、20项；全球电影、艺术与摄影报道，重合URL去重。公开正文保存本站，来源未提供的订阅内容不补造；发行地不推定事件地点。"
+    },
+    {
+      "id": "deadline-film",
+      "name": "Deadline · Film",
+      "homepage_url": "https://deadline.com",
+      "channels": [
+        "film"
+      ],
+      "country": null,
+      "publisher_country": "US",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "feed_url": "https://deadline.com/v/film/feed/",
+      "adapter": "rss",
+      "coverage": "global",
+      "verified_at": "2026-10-14",
+      "article_selectors": [
+        ".a-content",
+        ".entry-content"
+      ],
+      "notes": "2026-10-14 实际HTTP200/RSS12项，使用v/film专栏而非全部娱乐政治新闻；category/film端点当时空列表，未采用。电影节、奖项、电影发行与行业报道；公开正文保存本站，订阅部分不补造。"
     }
   ],
   "notes": "全球电影、艺术、摄影为主，日本上映与展览保留专题；地区由报道线索或明确场馆资料决定，不能按媒体总部推断。覆盖仍有限，未验证来源保持停用。"

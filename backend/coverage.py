@@ -34,9 +34,10 @@ def translation_progress(snapshot):
 def reconcile_rss(snapshot, source, payload):
     from .ingestion import rss_records, GEAR, GEAR_MULTILINGUAL
     records, _, _ = rss_records(source, payload)
-    stored = {r['id'] for r in snapshot.get('content', []) if r['source_id'] == source['id']}
+    stored = {r['id'] for r in snapshot.get('content', [])}
     accepted = {r['id']: r for r in records}
     missing = [{'id': r['id'], 'title_original': r['title_original'], 'url': r['canonical_url'],
+                'channel': r['channel'], 'source_id': source['id'], 'country': r.get('country'),
                 'published_at': r.get('published_at')} for key, r in accepted.items() if key not in stored]
     observed = ET.fromstring(payload.lstrip(b'\xef\xbb\xbf \t\r\n')).findall('.//item')
     excluded = []
@@ -68,7 +69,27 @@ def audit_sources(snapshot, config, fetcher, previous=None):
                           note='只读取配置页面；全站、整个影展和全年展览完整性未核验。')
             return result
         try:
-            result.update(reconcile_rss(snapshot, source, fetcher(source['feed_url'])))
+            feeds = []
+            for page in source.get('pages') or [{'url': source['feed_url']}]:
+                try:
+                    check = reconcile_rss(snapshot, {**source, **page}, fetcher(page['url']))
+                    feeds.append({**check, 'reference_url': page['url']})
+                except Exception as exc:
+                    feeds.append({'status': 'failed', 'reference_url': page['url'],
+                                  'error': type(exc).__name__ + (f' HTTP {exc.code}' if isinstance(exc, HTTPError) else '')})
+            good = [feed for feed in feeds if feed['status'] == 'checked']
+            if not good:
+                result.update(status='failed', scope='observed_rss_only', observed=None, eligible=None,
+                              in_inventory=None, missing=None, feeds=feeds, error=feeds[0].get('error'))
+                return result
+            ids = list(dict.fromkeys(identifier for feed in good for identifier in feed['eligible_ids']))
+            missing = {row['id']: row for feed in good for row in feed['missing']}
+            result.update(status='checked' if len(good) == len(feeds) else 'partial', scope='observed_rss_only',
+                          observed=sum(feed['observed'] for feed in good), eligible=len(ids), eligible_ids=ids,
+                          in_inventory=len(ids) - len(missing), missing=list(missing.values()),
+                          excluded=[row for feed in good for row in feed['excluded']], feeds=feeds,
+                          oldest_publication=min((feed['oldest_publication'] for feed in good if feed['oldest_publication']), default=None),
+                          newest_publication=max((feed['newest_publication'] for feed in good if feed['newest_publication']), default=None))
             old_ids = set(previous_checks.get(source['id'], {}).get('eligible_ids') or [])
             new_ids = set(result['eligible_ids'])
             result['previous_check_at'] = previous_checks.get(source['id'], {}).get('checked_at')

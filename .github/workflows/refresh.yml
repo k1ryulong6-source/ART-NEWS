@@ -22,6 +22,7 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: python scripts/import_snapshot.py
+      - run: python scripts/record_collection_metrics.py --initialize
       - run: python -m backend.jobs
         env:
           SUMMARY_PROVIDER: 'noop'
@@ -31,16 +32,18 @@ jobs:
           EDITORIAL_PROVIDER: 'chatgpt-task'
       - run: python scripts/import_daily_translations.py
       - run: python scripts/export_snapshot.py
+      - run: python scripts/record_collection_metrics.py
       - run: python scripts/audit_data.py --output data/quality.json --strict
       - run: python scripts/prepare_translation_queue.py
       - run: python scripts/audit_coverage.py
+      - run: python scripts/audit_important_news.py
       - run: python scripts/build_static.py
       - name: Save public news and article snapshot
         run: |
           git config user.name 'Culture Desk updater'
           git config user.email 'updater@users.noreply.github.com'
           git restore frontend/data.js
-          git add data/live.json data/quality.json data/coverage-audit.json data/translation-queue.json data/translation-queue data/translation-input
+          git add data/live.json data/quality.json data/collection-metrics.json data/coverage-audit.json data/important-news-audit.json data/translation-queue.json data/translation-queue data/translation-input
           if ! git diff --cached --quiet; then
             git commit -m 'Refresh verified cultural news snapshot'
             git pull --rebase origin main

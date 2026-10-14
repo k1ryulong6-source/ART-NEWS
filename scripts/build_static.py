@@ -30,7 +30,10 @@ def build():
             return json.loads(path.read_text(encoding='utf-8')) if path.exists() else None
         bundle['coverage'] = coverage_report(bundle['live'], bundle['sources'],
                                              optional_data('coverage-audit.json'), optional_data('coverage-benchmarks.json'))
+        bundle['coverage']['important_news'] = optional_data('important-news-audit.json')
+        bundle['coverage']['collection_metrics'] = optional_data('collection-metrics.json')
         bundle['automation'] = {'translation': optional_data('auto-translation-status.json'),
+                                'ai': optional_data('ai-translation-status.json'),
                                 'health': optional_data('automation-health.json')}
     # Compute all reporting from the full archive, then compact transport only.
     for key in ('live', 'dataset'): bundle[key] = browser_snapshot(bundle[key])

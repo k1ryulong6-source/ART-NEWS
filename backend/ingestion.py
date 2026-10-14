@@ -91,6 +91,10 @@ def rss_records(source, payload):
         except (TypeError, ValueError):
             pass
         record = content_record(source, title, link, excerpt, published)
+        for rule in source.get('channel_rules', []):
+            if rule['channel'] in source['channels'] and re.search(rule['pattern'], link + ' ' + categories, re.I):
+                record['channel'] = rule['channel']
+                break
         from .reading import rss_image
         record.update(rss_image(source, item, (item.findtext('description') or '') + (item.findtext('{http://purl.org/rss/1.0/modules/content/}encoded') or ''), record['canonical_url']))
         if source["language"] == "zh":
@@ -312,18 +316,30 @@ def run_ingestion(store, source_ids=None, fetcher=get_url):
                 first, last = date.fromisoformat(source["season_start"]), date.fromisoformat(source["season_end"])
                 start = min(last, max(first, local))
                 pages = [{"url": source["url_template"].format(day=(start+timedelta(days=i)).strftime("%Y%m%d"))} for i in range(3) if start+timedelta(days=i) <= last]
-            records_by_id, events_by_id, relations = {}, {}, set()
+            records_by_id, events_by_id, relations, page_errors = {}, {}, set(), []
             for page in pages[:6]:
                 current = {**source, **page, "feed_url": page["url"]}
-                records, events, links = handler(current, fetcher(page["url"]))
+                try:
+                    records, events, links = handler(current, fetcher(page["url"]))
+                except Exception as exc:
+                    message = type(exc).__name__ + (f" HTTP {exc.code}" if isinstance(exc, HTTPError) else "")
+                    page_errors.append({'url': page['url'], 'error': message})
+                    continue
                 records_by_id.update({r["id"]: r for r in records})
                 events_by_id.update({e["id"]: e for e in events})
                 relations.update((l["content_id"], l["event_id"]) for l in links)
             records, events = list(records_by_id.values()), list(events_by_id.values())
             links = [{"content_id": c, "event_id": e} for c, e in sorted(relations)]
             counts = store.ingest_records(records, events, links)
-            store.finish_run(run_id, "success", len(records), counts["inserted"])
-            results.append({"source": source["id"], "status": "success", "fetched": len(records), "events": len(events), **counts})
+            # A failed page does not discard successful siblings. The source run
+            # remains failed in durable history until every configured page works.
+            status = 'partial' if records and page_errors else 'failed' if page_errors else 'success'
+            error = '; '.join(e['error'] for e in page_errors) or None
+            store.finish_run(run_id, 'failed' if page_errors else 'success', len(records), counts['inserted'], error)
+            result = {"source": source["id"], "status": status, "fetched": len(records), "events": len(events), **counts}
+            if page_errors:
+                result.update(error=error, page_errors=page_errors)
+            results.append(result)
         except Exception as exc:
             # Record exception type/status only; URLs and request headers may carry credentials.
             message = type(exc).__name__ + (f" HTTP {exc.code}" if isinstance(exc, HTTPError) else "")

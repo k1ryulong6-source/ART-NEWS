@@ -18,9 +18,21 @@
 
 代码验证和手机/平板/桌面验收命令见UI_CUSTOMIZATION.md。桌面与手机截图见images/newspaper-desktop.png与images/newspaper-mobile.png。从最新main创建分支，通过PR接续；无需问已明确风格，但更改数据或功能另建任务。单给链接不自动授予写权限；Claude Code可在已授权checkout工作，网页会话需GitHub连接，只有只读工具时交付可应用补丁，不声称已发布。
 
+## 当前分工与文章排版接口 · 2026-10-14
+
+用户明确让Claude负责前端设计与文章排版，Codex负责后端/API/自动更新/重要新闻覆盖。请基于最新main建前端分支，用PR合并；后台每2小时自动写data，避免提交旧快照或重写工作流、供应商配置及配额账本。
+
+- 完整档案在data/live.json；浏览器以window.CULTURE_BOOTSTRAP.live读取压缩后的全量。不要假定article_text一定传到浏览器，原文用CultureCore.sourceText(row)，正文块用CultureCore.articleBlocks(row, translated)。
+- 块type包括paragraph、heading、quote、list_item、image；文字text，图片url/alt/caption/credit；图片和来源信息保留。AI正文存editorial_blocks_json，临时机翻存article_translation_json，两者不能混成同一已译口径。
+- CultureCore.editorialReady判断有效AI全文，machineReady判断有效临时机翻；默认AI→有效机翻→保存原文，无正文显示采集状态。原文开关必须可用，部分公开稿不能冒称订阅全文。原标题、原文语言、译文真实身份清楚但不要塞冗长技术介绍。
+- CultureUI v1保持，theme.css负责主题，ui.js负责卡片/头版/pagination，app.js负责阅读与状态。图/标题/摘要都打开同篇#reader/ID，收藏独立；全文搜索、全部分页与culture-desk-v1收藏保持。
+- boot.coverage.important_news为重要新闻观察：missing_important_items/core_source_problems/fresh_important_items/awaiting_AI_count；boot.coverage.collection_metrics记录真实日新增并单列first_source_run_records。名单漏条为零不等于全球无遗漏。
+- boot.automation.ai与translation分别为AI和临时机翻状态；health记录实际Actions。AI needs_configuration不能显示为已开启，quota_wait/daily_limit为保存进度后等待，不是永久失败；本轮尚未真实调用API。
+- 文章排版至少验证长英文/日文原文、AI中文、机器中文、图片说明、公开部分、缺正文、1440/768/390px无溢出、键盘链接和刷新收藏。
+
 可直接转发：
 
-> 请读取 https://github.com/k1ryulong6-source/ART-NEWS 的AGENTS.md、docs/CLAUDE_UI_HANDOFF.md及docs/UI_CUSTOMIZATION.md，在当前旧报纸风格上继续改界面。优先用theme.css和CultureUI v1展示组件，保留中文/原文、三处阅读链接、全部分页、收藏/日历/覆盖页和自动更新。基于最新main创建分支，完成1440/768/390px实际浏览器验证并提交PR；没有写权限则给补丁。
+> 请读取 https://github.com/k1ryulong6-source/ART-NEWS 的AGENTS.md、docs/CLAUDE_UI_HANDOFF.md和docs/UI_CUSTOMIZATION.md。你负责幕间休息的前端设计与文章排版，Codex负责后端/API/自动更新/重要新闻覆盖。以完整报纸为设计参照，基于最新main创建前端分支，保留中文/原文切换、配图、有效译文身份、图片/摘要/标题入口、全量搜索与分页、收藏、日历和覆盖状态；使用theme.css与CultureUI v1。不要改后台/API密钥/工作流或覆盖自动生成数据。完成1440/768/390px实际浏览器验收并提交PR；没有写权限则交付补丁。
 
 T034已优化后端重复数据库写入及覆盖统计，并精简浏览器传输；完整档案/原文/译文不删。CultureUI v1新增frontpage，sourceText为可选article_text的统一读取入口。修改界面先理解UI_CUSTOMIZATION与BACKEND_OPTIMIZATION，避免恢复私人介绍页/黄纸卡片/大量重复说明。新闻检索和阅览为主，收藏与偏好为辅助。
 

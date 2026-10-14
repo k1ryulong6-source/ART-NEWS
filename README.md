@@ -141,7 +141,7 @@ TRANSLATION_PROVIDER=google-public（disabled 可关闭）；TRANSLATION_DAILY_L
 
 EDITORIAL_PROVIDER=chatgpt-task为当前默认。OpenAI-compatible API模式仅为可选替代，配置与凭据仍来自用户环境；不会在直接ChatGPT任务中暗中调用。
 
-最新展览偏好：明确非日本普通展览降低排序，日本和重大展览按原规则，未知地区不按语言推断；全部资料/原文/日历保持。免费API选项与官方额度见docs/FREE_TRANSLATION_APIS.md，本轮仅咨询，未启用外部API。
+最新展览偏好：明确非日本普通展览降低排序，日本和重大展览按原规则，未知地区不按语言推断；全部资料/原文/日历保持。免费API选项与官方额度见docs/FREE_TRANSLATION_APIS.md，最新选择是AI API为主、离线机翻临时兜底；接入状态见自动工作流。
 
 界面已改为旧报纸风格：报头、纸底、衬线分栏，四主导航与折叠筛选；资讯18条分页并搜索全部库存。其他AI的修改入口是frontend/theme.css和frontend/ui.js（CultureUI v1），完整契约见[UI_CUSTOMIZATION](docs/UI_CUSTOMIZATION.md)，Claude交接见docs/CLAUDE_UI_HANDOFF.md。
 
@@ -149,4 +149,6 @@ EDITORIAL_PROVIDER=chatgpt-task为当前默认。OpenAI-compatible API模式仅�
 
 当前公开报版：未译正文默认直接刊载保存的原文，标原文·待译；已有中文全文优先，原文切换保留。报头、栏线与双栏正文采用报纸排印，手机单栏。其他AI修改入口仍是frontend/theme.css及CultureUI v1，见docs/UI_CUSTOMIZATION.md。
 
-无人值守运行：每2小时采集，采集结束自动执行免费离线机翻并发布，保存断点并监测停滞；AI全文优先且机器稿分别标注。详见[自动工作流](docs/AUTONOMOUS_WORKFLOW.md)。中文字体已改为自托管黑体。
+无人值守运行：每2小时采集，采集结束优先执行已配置的语境AI API，离线机翻临时兜底并发布，保存断点并监测停滞；AI全文优先且机器稿分别标注。详见[自动工作流](docs/AUTONOMOUS_WORKFLOW.md)。中文字体已改为自托管黑体。
+
+后端/API由Codex维护，前端视觉及文章排版交给Claude。已准备Gemini 2.5 Flash-Lite免费项目接入（未配置密钥不冒称已运行）；一次性设置与官方价格见[API方案](docs/FREE_TRANSLATION_APIS.md)。重要新闻监测与实际新增记录分别存于data/important-news-audit.json和data/collection-metrics.json，供Claude设计状态展示。

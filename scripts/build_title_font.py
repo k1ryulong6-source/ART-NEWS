@@ -20,7 +20,7 @@ from fontTools.varLib.instancer import instantiateVariableFont
 ROOT = Path(__file__).resolve().parents[1]
 FONTS = ROOT / 'frontend/fonts'
 OUTPUT = 'intermission-title-v1.woff2'
-CHARS = '幕間休息藝術電影攝翻頁〇一二三四五六七八九十年月日星期第號0123456789・·'
+CHARS = '幕間休息藝術電影攝翻頁放映與展期圈內〇一二三四五六七八九十年月日星期第號0123456789・·'
 
 
 def main():

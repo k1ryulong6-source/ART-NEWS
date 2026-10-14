@@ -1506,6 +1506,36 @@
       "evidence": [
         "1440/390/320截图；covertest（深链接、Enter、reduced-motion、单文件预览）通过；26JS＋全部Python通过；交互回归无错误。"
       ]
+    },
+    {
+      "id": "T048",
+      "title": "自由设计：栏目式头版、单栏阅读、精简信息（预览，待用户确认上线）",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T047"
+      ],
+      "scope": [
+        "frontend/ui.js",
+        "frontend/app.js",
+        "frontend/theme.css",
+        "frontend/index.html",
+        "frontend/fonts/",
+        "scripts/build_title_font.py",
+        "docs/"
+      ],
+      "acceptance": [
+        "头版：头条通栏，下分電影/藝術/攝影三栏（栏名代替逐条频道标签），底部放映與展期时刻表＋圈內边栏；首页无筛选条",
+        "列表不再逐条显示原文·待译/自动机翻（头条与阅读页保留）；收藏星号桌面悬停出现、手机仅在阅读页与剪报页",
+        "文章正文单栏；去掉“正文采集于”和“来源原文为中文”等无用说明；更新时间移到页脚",
+        "用户确认后才合并上线"
+      ],
+      "evidence": [
+        "26JS＋全部Python通过；交互回归（剪报持久、37页分页、搜索、阅读切换、筛选、日程弹窗）无错误；手机320–430八视图无溢出；扉页专项通过。",
+        "1440/390截图已发给用户；分支未合并。"
+      ]
     }
   ]
 }

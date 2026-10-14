@@ -114,24 +114,33 @@
     const date = row.start_date?.split('-') || [];
     return `<div class="event-row"><div class="date-block"><small>${date[1] || '—'} 月</small><strong>${row.date_precision === 'day' ? date[2] : '—'}</strong></div><div class="event-row-main"><span class="event-badge ${status.tone}">${status.label}</span><h3><button class="card-title" data-detail="${e(row.id)}" data-type="event">${e(C.displayTitle(row))}</button></h3><p>${e(C.locationLabel(row))} · ${C.eventTypes[row.event_type]}${detailed ? ` · ${e(C.timeLabel(row))}${row.end_date ? ' — ' + C.dateLabel(row.end_date) : ''}` : ''}</p></div>${saveButton('event', row.id, true)}</div>`;
   }
-  function upcoming() {
-    return dataset.events.filter(row => C.matches(row, { ...filters(), kind: 'all' }) && row.date_precision === 'day' && ((C.daysBetween(referenceFor(row), row.start_date) >= 0 && C.daysBetween(referenceFor(row), row.start_date) <= (preferences.upcoming_window_days || 14)) || (row.end_date && C.daysBetween(referenceFor(row), row.end_date) >= 0 && C.daysBetween(referenceFor(row), row.end_date) <= 7)))
-      .sort((a, b) => { const aEnd = C.daysBetween(referenceFor(a), a.end_date), bEnd = C.daysBetween(referenceFor(b), b.end_date); const aSoon = aEnd !== null && aEnd <= 7, bSoon = bEnd !== null && bEnd <= 7; return Number(bSoon) - Number(aSoon) || String(a.start_date).localeCompare(String(b.start_date)); }).slice(0, 3);
+  function upcoming(limit = 3, scope = filters()) {
+    return dataset.events.filter(row => C.matches(row, { ...scope, kind: 'all' }) && row.date_precision === 'day' && ((C.daysBetween(referenceFor(row), row.start_date) >= 0 && C.daysBetween(referenceFor(row), row.start_date) <= (preferences.upcoming_window_days || 14)) || (row.end_date && C.daysBetween(referenceFor(row), row.end_date) >= 0 && C.daysBetween(referenceFor(row), row.end_date) <= 7)))
+      .sort((a, b) => { const aEnd = C.daysBetween(referenceFor(a), a.end_date), bEnd = C.daysBetween(referenceFor(b), b.end_date); const aSoon = aEnd !== null && aEnd <= 7, bSoon = bEnd !== null && bEnd <= 7; return Number(bSoon) - Number(aSoon) || String(a.start_date).localeCompare(String(b.start_date)); }).slice(0, limit);
   }
   function agenda() {
     const rows = upcoming();
     return `<aside class="agenda"><div class="section-title"><h2>日程</h2></div>${rows.map(row => { const ref = referenceFor(row), closes = row.end_date && C.daysBetween(ref,row.end_date) >= 0 && C.daysBetween(ref,row.end_date) <= 7; const date = (closes ? row.end_date : row.start_date).split('-'), status = C.eventState(row,ref); return `<button class="agenda-item" data-detail="${e(row.id)}" data-type="event"><div class="date-block"><small>${date[1]} 月</small><strong>${date[2]}</strong></div><div><span class="event-badge ${status.tone}">${status.label}</span><h3>${e(C.displayTitle(row))}</h3><p>${e(C.locationLabel(row))} · ${C.eventTypes[row.event_type]}</p></div></button>`; }).join('') || '<p class="compact-note">没有符合条件的近期活动。</p>'}<button class="agenda-more" data-view="calendar">全部日程 ›</button></aside>`;
   }
+  // Front-page listings in the manner of a cinema timetable: date, kind, title, place, state.
+  function listings(scope) {
+    const rows = upcoming(8, scope);
+    return `<section class="listings"><h2 class="desk-name">放映與展期</h2>${rows.map(row => { const ref = referenceFor(row), closes = row.end_date && C.daysBetween(ref, row.end_date) >= 0 && C.daysBetween(ref, row.end_date) <= 7; const [, month, day] = (closes ? row.end_date : row.start_date).split('-'), status = C.eventState(row, ref); return `<button class="listing" data-detail="${e(row.id)}" data-type="event"><time class="listing-date">${Number(month)}.${day}</time><span class="listing-title">${e(C.displayTitle(row))}</span><span class="listing-place">${e(C.locationLabel(row))} · ${C.eventTypes[row.event_type]}</span><span class="listing-state ${status.tone}">${status.label}</span></button>`; }).join('') || '<p class="compact-note">近期没有活动。</p>'}<button class="agenda-more" data-view="calendar">全部日程 ›</button></section>`;
+  }
   function today() {
-    const available = dataset.content.filter(row => C.matches(row, filters()));
+    // The front page reads the whole paper: personal filters from other pages do not narrow it.
+    const scope = { ...filters(), channel: 'all', kind: 'all', country: 'all', city: 'all', language: 'all', query: '' };
+    const available = dataset.content.filter(row => C.matches(row, scope));
     const context = { ...dataset, reference_date: readingDate() };
     const selected = C.selectToday(available, preferences, context);
     const lead = [...selected].sort(C.priorityCompare).find(row => row.kind !== 'industry_buzz' && row.evidence_status !== 'unverified') || selected[0];
-    const chosen = lead ? [lead,...selected.filter(row=>row.id!==lead.id)] : [];
-    // The front page keeps the daily selection on top and fills the lower band with the next most important reports.
-    const ids = new Set(chosen.map(row => row.id)), more = chosen.length ? available.filter(row => !ids.has(row.id) && row.evidence_status !== 'unverified').sort(C.priorityCompare) : [];
-    const rows = [...chosen, ...more].slice(0, Math.max(chosen.length, 18));
-    return heading('头版') + filterBar() + (rows.length ? ui.frontpage(rows,agenda()) : empty('暂无符合条件的新闻', '', '<button class="text-link" data-action="reset-filters">清除筛选</button>'));
+    if (!lead) return heading('头版') + empty('暂无新闻', '');
+    // Each desk takes the daily selection first, then the next most important reports of its channel.
+    const pool = [...selected, ...available.filter(row => !selected.includes(row)).sort(C.priorityCompare)].filter(row => row.id !== lead.id && row.evidence_status !== 'unverified');
+    const seen = new Set([C.displayTitle(lead)]);
+    const take = (test, count) => pool.filter(test).filter(row => !seen.has(C.displayTitle(row)) && seen.add(C.displayTitle(row))).slice(0, count);
+    const rows = [lead, ...take(row => row.kind !== 'industry_buzz' && row.channel === 'film', 5), ...take(row => row.kind !== 'industry_buzz' && row.channel === 'art', 5), ...take(row => row.kind !== 'industry_buzz' && row.channel === 'photography', 5), ...take(row => row.kind === 'industry_buzz', 4)];
+    return heading('头版') + notice() + ui.frontpage(rows, listings(scope));
   }
   function explore() {
     const rows = dataset.content.filter(row => C.matches(row, filters())).sort(C.priorityCompare);
@@ -201,9 +210,7 @@
     }).join('');
   }
   function newspaperBody(blocks, translated = false) {
-    let html = '';
-    for (let i = 0; i < blocks.length; i += 8) html += `<div class="article-columns">${articleMarkup(blocks.slice(i, i + 8), translated)}</div>`;
-    return html;
+    return `<div class="article-columns">${articleMarkup(blocks, translated)}</div>`;
   }
   function readerPage() {
     const row = dataset.content.find(item => item.id === state.readerId);
@@ -213,9 +220,9 @@
     const partial = row.article_status === 'partial';
     const statusMessage = row.is_demo ? '这是虚构示例，没有来源正文。' : row.article_status === 'restricted' ? '来源目前要求登录、订阅或拒绝抓取，正文尚未取得。这条资讯及来源保留。' : row.article_status === 'no_body' ? '已读取来源页面，暂未提取到文章正文。这条资讯及来源保留。' : row.article_checked_at ? '本次未能取得正文，后续更新会重试。这条资讯及来源保留。' : '原文正在等待采集。这条资讯及来源保留。';
     const headerImage = row.image_url && !blocks.some(b => b.type === 'image' && b.url === row.image_url) ? `<div class="reader-cover">${artwork(row, true)}</div>` : '';
-    const original = blocks.length ? `<div class="reader-document" lang="${e(row.language)}"><p class="reading-note">${row.article_author ? `作者：${e(row.article_author)} · ` : ''}来源：${e(sourceName(row))} · 正文采集于 ${e((row.article_fetched_at || '').slice(0,10))}</p>${partial ? '<p class="article-status">仅采集到公开可见的正文部分；来源的订阅内容或超出采集上限的内容未包含。</p>' : ''}${row.article_reason?.startsWith('cached_body_after_') ? '<p class="article-status">本次更新未成功，正在显示此前保存的原文。</p>' : ''}${headerImage}${newspaperBody(blocks)}</div>` : `<div class="original-unavailable" role="status"><h2>正文尚未取得</h2><p>${statusMessage}</p>${row.excerpt_original ? `<p class="reading-note">当前仅有来源短摘录：</p><p class="original-excerpt" lang="${e(row.language)}">${e(row.excerpt_original)}</p>` : ''}</div>`;
+    const original = blocks.length ? `<div class="reader-document" lang="${e(row.language)}">${row.article_author ? `<p class="reading-note">文／${e(row.article_author)}</p>` : ''}${partial ? '<p class="article-status">仅采集到公开可见的正文部分；来源的订阅内容或超出采集上限的内容未包含。</p>' : ''}${row.article_reason?.startsWith('cached_body_after_') ? '<p class="article-status">本次更新未成功，正在显示此前保存的原文。</p>' : ''}${headerImage}${newspaperBody(blocks)}</div>` : `<div class="original-unavailable" role="status"><h2>正文尚未取得</h2><p>${statusMessage}</p>${row.excerpt_original ? `<p class="reading-note">当前仅有来源短摘录：</p><p class="original-excerpt" lang="${e(row.language)}">${e(row.excerpt_original)}</p>` : ''}</div>`;
     let notes = []; try { notes = JSON.parse(row.editorial_notes_json || '[]'); } catch {}
-    const chinese = translatedBlocks.length ? `<div class="reader-document" lang="zh-CN"><p class="reading-note">${row.language === 'zh' ? '来源原文为中文。' : !C.editorialReady(row) && C.machineReady(row) ? '自动机翻 · 免费离线模型 · 未经人工审核，专名与细节请对照原文。' : row.editorial_status === 'translated' ? 'AI 按全文语境翻译。' : 'AI 按全文语境翻译并校对 · 非人工译者审核。'}</p>${partial ? '<p class="article-status">来源仅取得公开部分，译文也仅包含这部分内容。</p>' : ''}${row.language !== 'zh' && notes.length ? `<div class="translation-notes"><h2>译名与表达说明</h2>${notes.map(note => `<p>${e(note)}</p>`).join('')}</div>` : ''}${headerImage}${newspaperBody(translatedBlocks, true)}</div>` : `<p class="article-status original-pending" role="status">${blocks.length ? `原文·待译 · 以下为${e(C.languageLabels[row.language] || '外文')}原文，中文译文尚未完成。` : '正文尚未取得。'}</p>${original}`;
+    const chinese = translatedBlocks.length ? `<div class="reader-document" lang="zh-CN"><p class="reading-note">${row.language === 'zh' ? '' : !C.editorialReady(row) && C.machineReady(row) ? '自动机翻，未经人工审核，细节请对照原文。' : row.editorial_status === 'translated' ? 'AI 按全文语境翻译。' : 'AI 按全文语境翻译并校对 · 非人工译者审核。'}</p>${partial ? '<p class="article-status">来源仅取得公开部分，译文也仅包含这部分内容。</p>' : ''}${row.language !== 'zh' && notes.length ? `<div class="translation-notes"><h2>译名与表达说明</h2>${notes.map(note => `<p>${e(note)}</p>`).join('')}</div>` : ''}${headerImage}${newspaperBody(translatedBlocks, true)}</div>` : `<p class="article-status original-pending" role="status">${blocks.length ? `原文·待译 · 以下为${e(C.languageLabels[row.language] || '外文')}原文，中文译文尚未完成。` : '正文尚未取得。'}</p>${original}`;
     return `<article class="reader-page"><div class="reader-toolbar"><button class="text-link" data-action="reader-back">‹ 返回</button><button class="text-link reader-save" data-save-type="content" data-save-id="${e(row.id)}">${saved ? '★ 已剪报' : '☆ 剪报'}</button>${C.babelReaderUrl(row) ? `<a class="text-link" data-ui="babel-import" href="${e(C.babelReaderUrl(row))}" target="_blank" rel="noopener noreferrer" title="导入原文，在巴别塔查词阅读">巴别塔阅读 ↗</a>` : ''}</div><div class="eyebrow"><span class="channel-tag">${e(C.channels[row.channel] || '文化')}</span>${e(sourceName(row))} · ${e(publicationLabel(row))}</div>${(() => { const title = state.readerTab === 'original' ? row.title_original : C.displayTitle(row); return `<h1 lang="${e(title === row.title_original && row.language !== 'zh' ? row.language : 'zh-CN')}">${e(title)}</h1>`; })()}<div class="reader-tabs" role="tablist" aria-label="阅读内容"><button role="tab" aria-selected="${state.readerTab === 'chinese'}" data-reader-tab="chinese">${translatedBlocks.length ? '中文' : '正文'}</button><button role="tab" aria-selected="${state.readerTab === 'original'}" data-reader-tab="original">原文</button></div><div class="reader-content" role="tabpanel">${state.readerTab === 'original' ? original : chinese}</div>${!row.is_demo && url ? `<div class="reader-source-link"><span>原文</span><a href="${e(url)}" target="_blank" rel="noopener noreferrer">${e(url)}</a></div>` : ''}<div class="reader-toolbar reader-end"><button class="text-link" data-action="reader-back">‹ 返回</button><button class="text-link reader-save" data-save-type="content" data-save-id="${e(row.id)}">${saved ? '★ 已剪报' : '☆ 剪报'}</button></div></article>`;
   }
   function openReader(id, route = true) {

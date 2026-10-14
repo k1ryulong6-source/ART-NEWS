@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const C = require('../frontend/core.js');
 const UI = require('../frontend/ui.js');
 const ui = UI.create({C,artwork:()=>'<div class="source-art">图</div>',saveButton:()=>'<button data-save-id="story">收藏</button>',findBookmark:()=>({id:'saved',status:'seen'}),sourceName:()=>'<script>来源</script>',publicationLabel:()=> '2026.10.14',priorityBadge:()=>''});
-const row={id:'story',channel:'art',language:'zh',title_original:'<img src=x>作品展',excerpt_original:'<script>摘要</script>'};
+const row={id:'story',image_url:'https://example.org/photo.jpg',channel:'art',language:'zh',title_original:'<img src=x>作品展',excerpt_original:'<script>摘要</script>'};
 test('presentation API preserves three reading links and independent bookmark controls while escaping copy',()=>{
   assert.equal(UI.version,1);
   const card=ui.card(row,true);
@@ -30,4 +30,14 @@ test('frontpage separates a lead and nine distinct stories into newspaper column
   assert.equal((html.match(/data-ui="news-card"/g)||[]).length,9);assert.equal((html.match(/data-ui="lead-story"/g)||[]).length,1);
   for(const r of rows)assert.ok(html.includes(C.readerRoute(r.id)));
   assert.ok(!ui.heading('新闻','冗长介绍').includes('冗长介绍'));
+});
+
+test('pending stories preview the saved original safely without claiming translation completion',()=>{
+  const pending={id:'foreign',language:'en',title_original:'Original <title>',article_blocks_json:JSON.stringify([{type:'paragraph',text:'Original <body> with details'},{type:'paragraph',text:'Second paragraph'}])};
+  assert.equal(C.readingSummary(pending),'Original <body> with details');
+  const html=ui.feature(pending);
+  assert.match(html,/原文·待译/);assert.match(html,/Original &lt;body&gt; with details/);assert.match(html,/Second paragraph/);
+  assert.ok(!html.includes('正文待译'));assert.equal(C.editorialReady(pending),false);
+  const translated={...pending,editorial_status:'translated',editorial_title_zh:'中文标题',editorial_blocks_json:JSON.stringify([{type:'paragraph',text:'中文全文'}])};
+  assert.match(ui.feature(translated),/中文全文/);assert.ok(!ui.feature(translated).includes('Original &lt;body&gt;'));
 });

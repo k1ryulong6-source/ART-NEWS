@@ -8,7 +8,7 @@
 
 同域名旧 PWA 的导航缓存冲突已修复并上线。若浏览器仍显示「Selah」，在该页点击“更新 Selah”，再打开上述完整资讯地址；无需删除浏览器数据。详见 [Pages 排查记录](docs/PAGES_TROUBLESHOOTING.md)。
 
-## 当前版本 v0.15
+## 当前版本 v0.16
 
 **重要性、时效与快模型直接翻译**：用户取消二次模型校对，并选择本会话快模型分工、不另配API。新闻标紧急／优先／普通／资料，重要程度与明确日期时效分别记录；重大新消息、临近上映／展期／截止先翻译，每批保留8条旧稿份额。自动初判可在资料页查看原因，支持按级别筛选；不代表消息真伪或艺术价值。
 
@@ -146,3 +146,5 @@ EDITORIAL_PROVIDER=chatgpt-task为当前默认。OpenAI-compatible API模式仅�
 界面已改为旧报纸风格：报头、纸底、衬线分栏，四主导航与折叠筛选；资讯18条分页并搜索全部库存。其他AI的修改入口是frontend/theme.css和frontend/ui.js（CultureUI v1），完整契约见[UI_CUSTOMIZATION](docs/UI_CUSTOMIZATION.md)，Claude交接见docs/CLAUDE_UI_HANDOFF.md。
 
 当前报版已重新排成头条/次条/简讯三栏，报头与查询工具紧凑，重复介绍隐藏，开发与处理说明按需展开。公共新闻查询/阅览为主，收藏/偏好为辅助。后端重复记录合并UPDATE、统计分组、浏览器去冗余正文，实测与兼容约定见[BACKEND_OPTIMIZATION](docs/BACKEND_OPTIMIZATION.md)。
+
+当前公开报版：未译正文默认直接刊载保存的原文，标原文·待译；已有中文全文优先，原文切换保留。报头、栏线与双栏正文采用报纸排印，手机单栏。其他AI修改入口仍是frontend/theme.css及CultureUI v1，见docs/UI_CUSTOMIZATION.md。

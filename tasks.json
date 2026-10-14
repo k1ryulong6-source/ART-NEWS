@@ -1113,6 +1113,32 @@
         "发布前合并9a5ce82最新自动采集537资料/198活动/26源，再逐条检验全部原文/译文/全文搜索等价；44已译/49原生中文/442待译/2缺正文，档案未改",
         "公开实现913ffb9；CI https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38527095026 与Pages https://github.com/k1ryulong6-source/ART-NEWS/actions/runs/38527094941 全部success（88检查）。真实公开网站Chromium1440/768/390：537条完整分页/全量旧稿搜索/折叠筛选/三处阅读入口/原文切换/收藏状态持久/六页长文无溢出或脚本错误；首条标题400px内、介绍不渲染、v1 frontpage接口和HTTP单文件运行通过。"
       ]
+    },
+    {
+      "id": "T035",
+      "title": "报纸排印与待译正文直接阅读",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T034"
+      ],
+      "scope": [
+        "frontend/",
+        "tests/",
+        "docs/",
+        "AGENTS.md"
+      ],
+      "acceptance": [
+        "未译正文默认直接显示保存原文，明确语种与待译身份",
+        "报头、窄栏正文、栏线和新闻层级在桌面手机可阅读",
+        "中文译文优先且全部资料、来源与原文保持",
+        "CI及公开Pages验收"
+      ],
+      "evidence": [
+        "本地89检查通过；Chromium1440/768/390全537条分页及原文回退逐块核验；公开验收待完成。"
+      ]
     }
   ]
 }

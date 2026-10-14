@@ -1279,6 +1279,135 @@
         "旧PWA真实worker缓存shell20261012.1823→20261014.1059更新，个人文章marker保持；Babel07e0fcb/ab63fb4已发布。",
         "公开b994269 CI38554022279/Pages38554022552 success；巴别塔ab63fb4 Pages38553447792 success。生产真实链接和生成API639篇HTTP200，1440/390六语完整原文/图片/中文参考/英日西词典/日生词持久化/重复笔记保持/刷新/32380长稿/404无脚本错误通过，无网络模拟。"
       ]
+    },
+    {
+      "id": "T040",
+      "title": "报纸版面重排：去除示意图与多余说明",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T036"
+      ],
+      "scope": [
+        "frontend/index.html",
+        "frontend/styles.css",
+        "frontend/theme.css",
+        "frontend/ui.js",
+        "frontend/app.js",
+        "docs/"
+      ],
+      "acceptance": [
+        "报头/栏线/简讯-头条-焦点-更多报道版式接近印刷报纸",
+        "无来源配图时不再绘制原创示意图，只排文字",
+        "去掉冗余说明、按钮和口语化提示；静态站不显示刷新/空提醒",
+        "中文黑体与拉丁原文Newsreader按lang分别排印",
+        "原文·待译/自动机翻标注、全部分页、搜索、三处阅读链接、收藏键与日历保持"
+      ],
+      "evidence": [
+        "69Python＋25JS通过；check_project PASS；audit_data --strict 0错误；node --check通过。",
+        "本地dist Chromium 1440/768/390：头版、资讯、日历、剪报、设置、收录、阅读七页无横向溢出、无脚本错误。",
+        "交互：收藏★写入culture-desk-v1并刷新后保留；资讯31页末页3条覆盖543条；搜索Rothko 6篇；标题进入阅读、正文/原文/资料切换；筛选展开后切换语言不收起；日程弹窗正常。",
+        "单文件预览四套字体（含仅U+2019的撇号子集）均loaded，仅/api/health静态探测404。"
+      ]
+    },
+    {
+      "id": "T041",
+      "title": "手机端阅读体验",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T040"
+      ],
+      "scope": [
+        "frontend/index.html",
+        "frontend/theme.css",
+        "frontend/app.js",
+        "docs/"
+      ],
+      "acceptance": [
+        "手机报头紧凑，导航与检索同一行",
+        "导航条吸顶，下滑隐藏、上滑出现，文章内有阅读进度",
+        "从文章返回（按钮或浏览器后退）回到列表原位置",
+        "列表报道小图居右、标题优先，文章图片通栏",
+        "输入框/选择框16px避免iOS缩放，点击区域足够",
+        "320–430px各页无横向溢出，桌面版式不变"
+      ],
+      "evidence": [
+        "69Python＋25JS通过；check_project无失败。",
+        "Chromium移动模拟320/360/390/430px：八个视图（六页＋两篇文章）横向溢出均为0、无脚本错误。",
+        "390px：下滑1800px后导航隐藏，上滑200px重新出现于顶部；文章进度按滚动比例（0.24→0.48）；资讯列表1600px处进入文章，文末返回与浏览器后退均回到1600px；检索框16px；☆点击区44×36。",
+        "桌面1440与平板768截图及交互回归（剪报持久、31页分页、搜索、阅读切换、筛选、日程弹窗）通过。"
+      ]
+    },
+    {
+      "id": "T042",
+      "title": "报头重新设计：自绘字标",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T041"
+      ],
+      "scope": [
+        "frontend/index.html",
+        "frontend/theme.css",
+        "frontend/app.js",
+        "frontend/favicon.svg",
+        "scripts/build_wordmark.py",
+        "AGENTS.md",
+        "docs/",
+        "frontend/fonts/README.md"
+      ],
+      "acceptance": [
+        "用户认为旧标题栏丑，允许不拘原字体与版型：报头重新设计且无模板化/AI装饰",
+        "字标可复现、自托管、无新增外部请求，单文件预览可用",
+        "桌面/平板/手机均紧凑、无溢出；导航吸顶与所有交互契约保持"
+      ],
+      "evidence": [
+        "scripts/build_wordmark.py重新生成的symbol与favicon与提交内容逐字节一致。",
+        "1440/768/390/320截图：字标92/80/64/clamp(36–52)px，无横向溢出；本站与culture-desk-preview.html字标渲染386×92、标题幕间休息。",
+        "69Python＋25JS通过（合并main后）；交互回归（剪报持久、分页、搜索、阅读切换、筛选、日程弹窗）与手机吸顶/进度/返回原位置回归通过。"
+      ]
+    },
+    {
+      "id": "T043",
+      "title": "王家卫式细繁体标题、书页扉页翻页与胶片元素",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T042"
+      ],
+      "scope": [
+        "frontend/index.html",
+        "frontend/theme.css",
+        "frontend/app.js",
+        "frontend/favicon.svg",
+        "frontend/fonts/",
+        "scripts/build_title_font.py",
+        "scripts/build_wordmark.py",
+        "backend/app.py（仅字体白名单）",
+        "AGENTS.md",
+        "docs/"
+      ],
+      "acceptance": [
+        "网站标题为瘦细明体繁体“幕間休息”，自托管、可复现",
+        "打开首页时左半屏为书页扉页，点击/按键/滚轮/滑动翻页后进入网站；每个浏览器会话一次；深链接不拦",
+        "加入电影/摄影元素：报头胶片边（齿孔与边码）、扉页胶片条",
+        "桌面/平板/手机无溢出；减少动态效果时改为淡出；所有既有交互契约保持"
+      ],
+      "evidence": [
+        "Noto Serif TC子集intermission-title-v1.woff2：42字形11,324字节，wght 200–400；manifest记录上游/sha256；OFL随附；本地API白名单加入。",
+        "covertest：#reader深链接不显示扉页；首页扉页获得焦点并锁定滚动，Enter翻页1.6秒内移除；reduced-motion点击0.6秒内移除；单文件预览扉页存在并可翻页，Intermission Title等字体loaded；刷新后同会话不再显示。",
+        "1440与390截图：翻页中纸背透出镜像标题，翻过后淡出；报头与胶片边在1440/768/390正常。",
+        "合并main后69+Python与26JS全部通过；交互回归（剪报持久、36页分页、搜索、阅读切换、筛选、日程弹窗）及手机320–430八视图溢出为0、吸顶/进度/返回原位置通过。"
+      ]
     }
   ]
 }

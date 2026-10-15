@@ -366,3 +366,7 @@ T039公开完成：ART-NEWS b994269，CI38554022279（85Python+26JS）和Pages38
 - 头版：在電影/藝術/攝影三栏之后、放映與展期之前插入专栏条（`ui.attentionBand`）：标题、单元描述、每家媒体的关注地区（红）、媒体名（衬线）与最新一篇（日期＋标题）。示例模式不显示。`CultureCore.frontpageRows`选稿未改。
 - 单元页（`ui.attentionPage`）：只有大号细明体标题（用户要求去掉标题下的说明文字，头版专栏条同样不显示描述；selection_basis/scope_note仍在接口与ATTENTION_UNITS.md）；每家媒体一行：左为地区、名称、推荐理由、专长·语种、最近发布（读取失败时红字说明）与官网；右为最近5篇（标题按站内中文/原文规则，经readerRoute进入阅读）；“来源状态”折叠显示最近成功读取、收录/正文/AI全文数与列表核对。
 - 用户要求栏目名显示为正体字「一種關注」（`ui.unitName`；数据与配置中的正式名称、ID不变）。标题细明体子集加入“一種關注”；导航用的黑体子集只含简体常用字，另建2字Noto Sans TC子集`intermission-sans-tc-v1.woff2`（種關，2.7KB，OFL随附，`scripts/build_title_font.py --source-sans-tc`），加入`--serif/--sans`字体栈；本地API白名单加两项文件名。
+
+## T059 · 资讯排序（Claude）· 2026-10-15
+
+用户要求去掉筛选里的“优先级”，换成排序。资讯数量右侧`#sort-order`：推荐（默认，`C.priorityCompare`，即原重要性＋时效）、最新、最早（按published_at，缺日期排最后）、重要（priorityOf().importance高→低，再按最新）。`state.sort`仅存当前会话。数据里没有浏览/分享等读者信号，故不做“热门”；若以后后端提供真实热度或多来源报道数，可在app.js的`sorters`里加一项。翻译优先级只影响后台队列与“推荐”顺序，不再作为读者筛选项。

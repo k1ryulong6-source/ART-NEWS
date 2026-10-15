@@ -76,7 +76,7 @@
   }
   function findBookmark(type, id) { return bookmarks.find(b => b[type === 'content' ? 'content_id' : 'event_id'] === id); }
   function nav() {
-    const labels = { today: '头版', explore: '资讯', calendar: '日历', bookmarks: '剪报', ...(attentionUnit() ? { attention: '一种关注' } : {}) };
+    const labels = { today: '头版', explore: '资讯', calendar: '日历', bookmarks: '剪报', ...(attentionUnit() ? { attention: ui.unitName(attentionUnit()) } : {}) };
     $('navigation').innerHTML = Object.entries(labels).map(([key, label]) => `<button class="nav-button ${state.view === key ? 'active' : ''}" data-view="${key}" ${state.view === key ? 'aria-current="page"' : ''}>${label}${key === 'bookmarks' && bookmarks.length ? `<span class="nav-count">${bookmarks.length}</span>` : ''}</button>`).join('');
     const [y, m, d] = readingDate().split('-').map(Number);
     $('edition-date').innerHTML = `<b class="edition-day">${d}</b><span>${y}年${m}月</span><span>星期${'日一二三四五六'[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]}</span>`;
@@ -140,7 +140,7 @@
   const contentById = id => dataset.content.find(row => row.id === id) || boot.live?.content?.find(row => row.id === id) || null;
   function attentionPage() {
     const unit = attentionUnit();
-    if (!unit) return empty('一种关注暂未开放', '');
+    if (!unit) return empty('一種關注暂未开放', '');
     const stamp = value => value ? new Intl.DateTimeFormat('zh-CN', { timeZone: preferences.reading_timezone, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(value)) : '未记录';
     return ui.attentionPage(unit, contentById, stamp);
   }

@@ -1843,21 +1843,22 @@
         "frontend/app.js",
         "frontend/core.js（路由attention）",
         "frontend/theme.css",
-        "frontend/fonts/intermission-title-sc-v1.woff2",
+        "frontend/fonts/intermission-sans-tc-v1.woff2",
         "scripts/build_title_font.py",
         "backend/app.py（仅字体白名单）",
         "tests/ui.test.js",
         "docs/"
       ],
       "acceptance": [
-        "导航新增「一种关注」（#attention）；名称精确为一种关注",
+        "导航新增栏目（#attention）；按用户要求显示为正体字「一種關注」，数据正式名称一种关注不变",
         "头版在三栏之后加专栏条：每家媒体的关注地区、名称与最新一篇",
         "单元页：每家媒体左侧地区/名称/推荐理由/专长与语种/最近发布与故障，右侧最近5篇；来源状态与选择说明折叠；收录/正文/AI数量真实展示",
         "阅读路径由稳定ID经CultureCore.readerRoute生成；frontpageRows选稿不变"
       ],
       "evidence": [
         "27JS（新增一种关注转义与路由测试）＋全部Python（含头版前后端一致）通过；check_project无失败。",
-        "1440/390截图；320–430九视图（含#attention）无溢出；#attention深链接不弹扉页、导航高亮、报道进入阅读并返回、头版“全部›”到单元页；扉页专项通过（新增Intermission Title SC字体loaded）。"
+        "1440/390截图；320–430九视图（含#attention）无溢出；#attention深链接不弹扉页、导航高亮、报道进入阅读并返回、头版“全部›”到单元页；扉页专项通过（新增Intermission Title SC字体loaded）。",
+        "改正体：导航“一種關注”实测由Intermission Sans＋Intermission Sans TC各2字形渲染，标题4字均为Intermission Title；27JS＋全部Python通过；1440/390截图。"
       ]
     }
   ]

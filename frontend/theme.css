@@ -1,7 +1,7 @@
 /* Licensed local webfonts: see fonts/README.md and OFL notices. */
 @font-face{font-family:'Intermission Sans';src:url("fonts/intermission-sans-v1.woff2") format('woff2');font-weight:200 900;font-style:normal;font-display:swap}
 @font-face{font-family:'Intermission Title';src:url("fonts/intermission-title-v1.woff2") format('woff2');font-weight:200 400;font-style:normal;font-display:block}
-@font-face{font-family:'Intermission Title SC';src:url("fonts/intermission-title-sc-v1.woff2") format('woff2');font-weight:200 400;font-style:normal;font-display:block}
+@font-face{font-family:'Intermission Sans TC';src:url("fonts/intermission-sans-tc-v1.woff2") format('woff2');font-weight:200 900;font-style:normal;font-display:swap}
 @font-face{font-family:'Intermission News';src:url("fonts/intermission-news-v1.woff2") format('woff2');font-weight:200 800;font-style:normal;font-display:swap}
 /* Apostrophes inside Chinese headlines (Paris’s) stay proportional instead of full width. */
 @font-face{font-family:'Intermission Apostrophe';src:url("fonts/intermission-news-v1.woff2") format('woff2');font-weight:200 800;font-style:normal;font-display:swap;unicode-range:U+2019}
@@ -13,10 +13,10 @@
   --wordmark-height:84px;
   --canvas:#f5f4f0; --paper:#f5f4f0; --white:#fbfbf9;
   --ink:#141312; --muted:#5e5c57; --line:#d3d1cb; --accent:#9e2a1f; --green:#3f453b;
-  --serif:'Intermission Apostrophe','Intermission Sans','Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif;
+  --serif:'Intermission Apostrophe','Intermission Sans','Intermission Sans TC','Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif;
   --latin:'Intermission News',Georgia,'Times New Roman',serif;
-  --display:'Intermission Sans','Noto Sans CJK SC',sans-serif;
-  --sans:'Intermission Apostrophe','Intermission Sans','Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif;
+  --display:'Intermission Sans','Intermission Sans TC','Noto Sans CJK SC',sans-serif;
+  --sans:'Intermission Apostrophe','Intermission Sans','Intermission Sans TC','Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif;
   --paper-width:1320px; --paper-gutter:32px; --headline-size:46px; --article-size:17px;
   --rule:1px solid var(--line); --rule-ink:1px solid var(--ink);
 }
@@ -502,7 +502,7 @@ footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
 
 /* 一种关注: an edited unit of regional media. On the front page a band of five, one latest
    story each; its own page sets each outlet as a profile beside its recent reports. */
-.attention-title{font-family:'Intermission Title SC','Intermission Title',var(--serif)}
+.attention-title{font-family:'Intermission Title',var(--serif)}
 .attention-band{margin-top:30px;padding-top:16px;border-top:3px solid var(--ink)}
 .attention-head{display:flex;align-items:baseline;gap:22px;padding-bottom:12px;border-bottom:var(--rule-ink)}
 .attention-head .desk-name{border:0;padding:0;flex:none}

@@ -169,6 +169,9 @@ class AIPoolTests(unittest.TestCase):
         instant = datetime(2026, 10, 16, 6, tzinfo=timezone.utc)
         lane = {'status': 'run_limit', 'requests': 20, 'requests_today': 100, 'daily_request_limit': 500}
         self.assertTrue(continue_today(cfg, [lane], 20, instant))
+        # A fast batch can reach its article count before its time budget.
+        self.assertTrue(continue_today(cfg, [{**lane, 'status': 'completed'}], 20, instant))
+        self.assertTrue(continue_today(cfg, [{**lane, 'status': 'partial_failure'}], 20, instant))
         self.assertFalse(continue_today(cfg, [lane], 0, instant))
         self.assertFalse(continue_today(cfg, [{**lane, 'requests': 0}], 20, instant))
         self.assertFalse(continue_today(cfg, [{**lane, 'status': 'service_wait'}], 20, instant))

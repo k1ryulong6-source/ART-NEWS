@@ -82,4 +82,4 @@ collection-metrics从声明的启用时间开始统计实际新增，按source r
 5. data/ai-translation-status.json是合计报告，projects分别记录primary/secondary实际请求与完成量；data/ai-translation-projects保存每路最后实际结果。/reports/operations.json的api.projects、quota.projects、quota.combined为Claude可用接口；旧quota顶层字段仍只指primary，legacy_fields_project明确说明，不能把它当两路总量。未配置第二路不加总它的500额度；未知用量不会当零。
 6. 当前key是否真正属于独立项目、实际免费额度多少需在各自AI Studio核实；配置存在与真实生成成功分开。程序不开户/付费/开计费，按服务端429继续退避。
 
-T063用户追加授权：第二密钥已配置，要求本次重置前充分使用免费额度翻译。config.ai-translation.drain_until_quota_day=2026-10-15，实际配额日匹配、有待译且本批真正消耗请求并触及批次限时、该路日额度仍剩时才自动dispatch下一批；有采集等待则让路，由采集接续翻译。503/429仍退避，零请求/全量完成/日上限不循环；配额日过后自动恢复半小时常规计划，不永久提前耗光后续每日额度。实际生成、剩余量和预计篇数需由远端成功证据核实，不保证Google服务异常时耗尽。
+T063用户追加授权：第二密钥已配置，要求本次重置前充分使用免费额度翻译。config.ai-translation.drain_until_quota_day=2026-10-15，实际配额日匹配、有待译且本批真正消耗请求且该路完成/到达批次上限/仅文章检查部分失败、该路日额度仍剩时才自动dispatch下一批；有采集等待则让路，由采集接续翻译。503/429仍退避，零请求/全量完成/日上限不循环；配额日过后自动恢复半小时常规计划，不永久提前耗光后续每日额度。实际生成、剩余量和预计篇数需由远端成功证据核实，不保证Google服务异常时耗尽。

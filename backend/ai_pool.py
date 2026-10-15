@@ -23,7 +23,7 @@ def continue_today(cfg, reports, pending_after, instant=None):
     """One explicitly authorized Pacific quota day; no empty or endless loop."""
     day = (instant or datetime.now(timezone.utc)).astimezone(ZoneInfo('America/Los_Angeles')).date().isoformat()
     return (cfg.get('drain_until_quota_day') == day and pending_after > 0
-            and any(r.get('status') == 'run_limit' and (r.get('requests') or 0) > 0
+            and any(r.get('status') in ('run_limit', 'completed', 'partial_failure') and (r.get('requests') or 0) > 0
                     and type(r.get('requests_today')) is int
                     and r['requests_today'] < r.get('daily_request_limit', 0) for r in reports))
 

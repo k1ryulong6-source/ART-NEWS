@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-15T16:27:20.511928+00:00",
+  "checked_at": "2026-10-15T16:36:18.583943+00:00",
   "list_audit_at": "2026-10-15T14:46:29.840155+00:00",
   "scope": "configured_sources_current_lists_only",
   "global_completeness": "unknown",
@@ -90,6 +90,30 @@
         },
         "tiers_by_field": {
           "film": 1
+        }
+      },
+      {
+        "id": "tokyo-art-beat",
+        "publisher_country": "JP",
+        "editorial_focus": {
+          "role": "core",
+          "regions": [
+            "east_asia"
+          ],
+          "countries": [
+            "JP"
+          ],
+          "basis": "T067用户指定常用日本艺术媒体；仅编辑关注范围，不用于推定单篇地点/艺术家国籍。",
+          "media_weight": {
+            "international": 82,
+            "local_specialist": 96,
+            "discovery": 88,
+            "basis": "人工编辑初始值，非全球流量或艺术价值排名。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 1,
+          "photography": 1
         }
       },
       {
@@ -1360,6 +1384,30 @@
         "tiers_by_field": {
           "photography": 1
         }
+      },
+      {
+        "id": "artexhibition",
+        "publisher_country": "JP",
+        "editorial_focus": {
+          "role": "core",
+          "regions": [
+            "east_asia"
+          ],
+          "countries": [
+            "JP"
+          ],
+          "basis": "T067用户指定常用日本艺术媒体；仅编辑关注范围，不用于推定单篇地点/艺术家国籍。",
+          "media_weight": {
+            "international": 77,
+            "local_specialist": 96,
+            "discovery": 82,
+            "basis": "人工编辑初始值，非全球流量或艺术价值排名。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 1,
+          "photography": 1
+        }
       }
     ],
     "international_gateway_source_ids": [
@@ -1431,13 +1479,15 @@
               "MN": 3
             },
             "source_ids": [
+              "tokyo-art-beat",
               "tokyo-photo-museum",
               "artforum-cn",
               "mmca-seoul",
               "art-it-jp",
               "artnews-japan",
               "artasiapacific",
-              "artomity"
+              "artomity",
+              "artexhibition"
             ],
             "rss_sources": 5,
             "successful_rss_checks": 5,
@@ -1457,8 +1507,10 @@
               "MN": 3
             },
             "source_ids": [
+              "tokyo-art-beat",
               "ima",
-              "tokyo-photo-museum"
+              "tokyo-photo-museum",
+              "artexhibition"
             ],
             "rss_sources": 1,
             "successful_rss_checks": 1,
@@ -2931,6 +2983,35 @@
       "has_original_body": true
     },
     {
+      "id": "live-779cb266f96f095ff7a0867e",
+      "source_id": "variety-film",
+      "title_original": "‘Once Upon a Time in the Middle East’ Review: China’s Oscar Entry Is a Breakneck Blockbuster That Mixes Food Porn With Wartime Devastation",
+      "canonical_url": "https://variety.com/2026/film/reviews/once-upon-in-the-middle-east-review-1236910775/",
+      "language": "en",
+      "article_status": "collected",
+      "editorial_status": "translated",
+      "translation_priority": {
+        "priority": "P0",
+        "label": "紧急",
+        "importance": "high",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": true,
+        "archive": false,
+        "reasons": [
+          "重大影展／奖项相关信号，自动初判",
+          "来源发布时间在48小时内"
+        ],
+        "source_title": "‘Once Upon a Time in the Middle East’ Review: China’s Oscar Entry Is a Breakneck Blockbuster That Mixes Food Porn With Wartime Devastation",
+        "model_route": "fast-direct",
+        "exhibition": false,
+        "exhibition_region": null,
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0
+      },
+      "has_original_body": true
+    },
+    {
       "id": "live-866889eefca2811385d0780f",
       "source_id": "guardian-culture",
       "title_original": "Gary Waddell dies aged 74: the brilliant Australian actor who turned small roles into great ones",
@@ -3009,6 +3090,35 @@
           "来源发布时间在48小时内"
         ],
         "source_title": "European Film Academy unveils shortlist for 2027 European Film Awards",
+        "model_route": "fast-direct",
+        "exhibition": false,
+        "exhibition_region": null,
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0
+      },
+      "has_original_body": true
+    },
+    {
+      "id": "live-e4ba42ee11c3a558d53c0026",
+      "source_id": "deadline-film",
+      "title_original": "New York Times Op-Docs Acquires ‘The Revolution Against Death,’ Oscar Nominee Joshua Oppenheimer’s Film On Quest For Immortality",
+      "canonical_url": "https://deadline.com/2026/10/the-revolution-against-death-new-york-times-op-docs-acquisition-1237156214/",
+      "language": "en",
+      "article_status": "partial",
+      "editorial_status": "translated",
+      "translation_priority": {
+        "priority": "P0",
+        "label": "紧急",
+        "importance": "high",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": true,
+        "archive": false,
+        "reasons": [
+          "重大影展／奖项相关信号，自动初判",
+          "来源发布时间在48小时内"
+        ],
+        "source_title": "New York Times Op-Docs Acquires ‘The Revolution Against Death,’ Oscar Nominee Joshua Oppenheimer’s Film On Quest For Immortality",
         "model_route": "fast-direct",
         "exhibition": false,
         "exhibition_region": null,

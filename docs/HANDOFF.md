@@ -402,3 +402,5 @@ T062补充：已实测共享concurrency的pending取消问题，定期24h证据�
 保存修复真实验收：38707445676 success；同轮日志先正常巡检20篇，再由冲突恢复重算limit0并成功push 98bdc4514dd9f417b1e655c7e8df0a1f4d375797（公开成果副本已归档）。Pages38708157032、健康38708175452/38708159967均success；线上快照08:46:51已更新。AI该批真实3请求、0全文完成、1篇结构/中文检查失败，随后503退避至09:42:28 UTC，不能把工作流通过说API已清积压。
 
 已确认失败保存批次38702099095:1的AI步骤JSON报告requests=0（08:06:39 service_wait），但40次预留未推送释放；证据data/ai-translation-repairs/38702099095-1.json。reserve脚本在串行写锁内仅回收有明确零请求报告、精确day/allocated/remaining匹配的已核实预留；实际请求/tokens/unknown计数与未知崩溃预留保持，非清零配额。156 Python通过，待下一次后台admission确认释放记录。
+
+额度回收生产验收：38702099095:1在main账本已closed、remaining=0、actual_requests=0且有原Actions证据URL；请求13、input37061、output12483、unknown2保持原值。当前reserved40属于新的在途批次，不能当旧预留未释放。新显式主链也已连续执行：采集38707917530/38708565322 success，翻译38708476746/38709356774 success，健康38709960072 success；38709563132仍运行。API最近仍503退避（非清积压），24h观察未到，T028/T062继续doing。

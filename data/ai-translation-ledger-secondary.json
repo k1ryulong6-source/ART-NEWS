@@ -2,11 +2,11 @@
   "schema_version": 1,
   "days": {
     "2026-10-15": {
-      "requests": 492,
-      "input_tokens": 1696288,
-      "output_tokens": 606752,
-      "reserved_requests": 8,
-      "unknown_usage_requests": 1
+      "requests": 494,
+      "input_tokens": 1699798,
+      "output_tokens": 608072,
+      "reserved_requests": 0,
+      "unknown_usage_requests": 2
     }
   },
   "reservations": {
@@ -174,11 +174,12 @@
     "38794607976:1": {
       "day": "2026-10-15",
       "allocated": 13,
-      "remaining": 8,
-      "status": "reserved"
+      "remaining": 0,
+      "status": "closed",
+      "actual_requests": 7
     }
   },
-  "retry_after": "2026-10-15T18:39:25.176324+00:00",
-  "retry_status": "service_wait",
-  "retry_error": "ai_http_503"
+  "retry_after": "2026-10-15T20:33:59.635026+00:00",
+  "retry_status": "quota_wait",
+  "retry_error": "ai_http_429"
 }

@@ -1,6 +1,6 @@
 {
-  "checked_at": "2026-10-15T01:50:58.348196+00:00",
-  "list_audit_at": "2026-10-15T00:51:58.738557+00:00",
+  "checked_at": "2026-10-15T01:53:00.111437+00:00",
+  "list_audit_at": "2026-10-15T01:52:36.296986+00:00",
   "scope": "configured_sources_current_lists_only",
   "global_completeness": "unknown",
   "core_source_problems": [
@@ -23,6 +23,2265 @@
     }
   ],
   "missing_important_items": [],
+  "editorial_regions": {
+    "policy_path": "config/editorial-regions.json",
+    "tiers": {
+      "1": {
+        "label": "重点跟进",
+        "description": "重点建设本地专业媒体、机构和国际观察来源。"
+      },
+      "2": {
+        "label": "持续跟进",
+        "description": "定向地区媒体与跨地区专业来源并行。"
+      },
+      "3": {
+        "label": "全球发现",
+        "description": "所有其他国家地区默认在内，依靠地区来源与全球创作者渠道持续发现；不是排除名单。"
+      }
+    },
+    "default_tier_for_any_unlisted_country": 3,
+    "source_focus_is_editorial_assignment_not_reported_geography": true,
+    "priority_country_gaps": [
+      {
+        "country": "HK",
+        "channel": "film",
+        "reason": "no_country_specific_source_assignment"
+      },
+      {
+        "country": "TW",
+        "channel": "film",
+        "reason": "no_country_specific_source_assignment"
+      },
+      {
+        "country": "DE",
+        "channel": "film",
+        "reason": "no_country_specific_source_assignment"
+      },
+      {
+        "country": "IT",
+        "channel": "film",
+        "reason": "no_country_specific_source_assignment"
+      },
+      {
+        "country": "ES",
+        "channel": "film",
+        "reason": "no_country_specific_source_assignment"
+      },
+      {
+        "country": "FR",
+        "channel": "art",
+        "reason": "no_country_specific_source_assignment"
+      },
+      {
+        "country": "DE",
+        "channel": "art",
+        "reason": "no_country_specific_source_assignment"
+      },
+      {
+        "country": "IT",
+        "channel": "art",
+        "reason": "no_country_specific_source_assignment"
+      },
+      {
+        "country": "NL",
+        "channel": "art",
+        "reason": "no_country_specific_source_assignment"
+      },
+      {
+        "country": "CH",
+        "channel": "art",
+        "reason": "no_country_specific_source_assignment"
+      },
+      {
+        "country": "DE",
+        "channel": "photography",
+        "reason": "no_country_specific_source_assignment"
+      },
+      {
+        "country": "NL",
+        "channel": "photography",
+        "reason": "no_country_specific_source_assignment"
+      },
+      {
+        "country": "CH",
+        "channel": "photography",
+        "reason": "no_country_specific_source_assignment"
+      },
+      {
+        "country": "IR",
+        "channel": "film",
+        "reason": "no_country_specific_source_assignment"
+      }
+    ],
+    "source_weights": [
+      {
+        "id": "eiga-com",
+        "publisher_country": "JP",
+        "editorial_focus": {
+          "role": "core",
+          "regions": [
+            "east_asia"
+          ],
+          "countries": [
+            "JP"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 77,
+            "local_specialist": 94,
+            "discovery": 74,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "film": 1
+        }
+      },
+      {
+        "id": "ima",
+        "publisher_country": "JP",
+        "editorial_focus": {
+          "role": "core",
+          "regions": [
+            "east_asia",
+            "global"
+          ],
+          "countries": [
+            "JP"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 80,
+            "local_specialist": 94,
+            "discovery": 91,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "photography": 1
+        }
+      },
+      {
+        "id": "tokyo-photo-museum",
+        "publisher_country": "JP",
+        "editorial_focus": {
+          "role": "core",
+          "regions": [
+            "east_asia"
+          ],
+          "countries": [
+            "JP"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 81,
+            "local_specialist": 98,
+            "discovery": 83,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "photography": 1,
+          "art": 1
+        }
+      },
+      {
+        "id": "film-stage",
+        "publisher_country": "US",
+        "editorial_focus": {
+          "role": "global_core",
+          "regions": [
+            "north_america",
+            "global"
+          ],
+          "countries": [
+            "US"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 83,
+            "local_specialist": 88,
+            "discovery": 85,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "film": 1
+        }
+      },
+      {
+        "id": "artnews",
+        "publisher_country": "US",
+        "editorial_focus": {
+          "role": "global_core",
+          "regions": [
+            "north_america",
+            "global"
+          ],
+          "countries": [
+            "US"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 92,
+            "local_specialist": 90,
+            "discovery": 76,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 1
+        }
+      },
+      {
+        "id": "aperture",
+        "publisher_country": "US",
+        "editorial_focus": {
+          "role": "global_core",
+          "regions": [
+            "north_america",
+            "global"
+          ],
+          "countries": [
+            "US"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 91,
+            "local_specialist": 94,
+            "discovery": 90,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "photography": 1
+        }
+      },
+      {
+        "id": "artforum-cn",
+        "publisher_country": "CN",
+        "editorial_focus": {
+          "role": "global_core",
+          "regions": [
+            "east_asia",
+            "global"
+          ],
+          "countries": [
+            "CN"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 86,
+            "local_specialist": 89,
+            "discovery": 80,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 1
+        }
+      },
+      {
+        "id": "variety-film",
+        "publisher_country": "US",
+        "editorial_focus": {
+          "role": "global_core",
+          "regions": [
+            "north_america",
+            "global"
+          ],
+          "countries": [
+            "US"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 95,
+            "local_specialist": 90,
+            "discovery": 65,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "film": 1
+        }
+      },
+      {
+        "id": "artnet",
+        "publisher_country": "US",
+        "editorial_focus": {
+          "role": "global_core",
+          "regions": [
+            "north_america",
+            "global"
+          ],
+          "countries": [
+            "US"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 91,
+            "local_specialist": 87,
+            "discovery": 76,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 1
+        }
+      },
+      {
+        "id": "hyperallergic",
+        "publisher_country": "US",
+        "editorial_focus": {
+          "role": "global_core",
+          "regions": [
+            "north_america",
+            "global"
+          ],
+          "countries": [
+            "US"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 86,
+            "local_specialist": 88,
+            "discovery": 88,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 1
+        }
+      },
+      {
+        "id": "bjp",
+        "publisher_country": "GB",
+        "editorial_focus": {
+          "role": "global_core",
+          "regions": [
+            "europe",
+            "global"
+          ],
+          "countries": [
+            "GB"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 88,
+            "local_specialist": 93,
+            "discovery": 88,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "photography": 1
+        }
+      },
+      {
+        "id": "loeil",
+        "publisher_country": "FR",
+        "editorial_focus": {
+          "role": "global_core",
+          "regions": [
+            "europe",
+            "global"
+          ],
+          "countries": [
+            "FR"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 83,
+            "local_specialist": 90,
+            "discovery": 88,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "photography": 1
+        }
+      },
+      {
+        "id": "cinefilos",
+        "publisher_country": "AR",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "latin_america_caribbean",
+            "global"
+          ],
+          "countries": [
+            "AR"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 65,
+            "local_specialist": 85,
+            "discovery": 83,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "film": 2
+        }
+      },
+      {
+        "id": "tate-modern",
+        "publisher_country": "GB",
+        "editorial_focus": {
+          "role": "core",
+          "regions": [
+            "europe"
+          ],
+          "countries": [
+            "GB"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 94,
+            "local_specialist": 98,
+            "discovery": 78,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 1,
+          "photography": 1
+        }
+      },
+      {
+        "id": "artafrica",
+        "publisher_country": "ZA",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "sub_saharan_africa",
+            "global"
+          ],
+          "countries": [
+            "ZA",
+            "NG",
+            "GH",
+            "KE",
+            "SN"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 74,
+            "local_specialist": 92,
+            "discovery": 96,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 2
+        }
+      },
+      {
+        "id": "rapadura",
+        "publisher_country": "BR",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "latin_america_caribbean",
+            "global"
+          ],
+          "countries": [
+            "BR"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 65,
+            "local_specialist": 88,
+            "discovery": 84,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "film": 2
+        }
+      },
+      {
+        "id": "cinepremiere",
+        "publisher_country": "MX",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "latin_america_caribbean",
+            "global"
+          ],
+          "countries": [
+            "MX"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 72,
+            "local_specialist": 90,
+            "discovery": 83,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "film": 2
+        }
+      },
+      {
+        "id": "troiscouleurs",
+        "publisher_country": "FR",
+        "editorial_focus": {
+          "role": "core",
+          "regions": [
+            "europe",
+            "global"
+          ],
+          "countries": [
+            "FR"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 77,
+            "local_specialist": 89,
+            "discovery": 87,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "film": 1
+        }
+      },
+      {
+        "id": "fisheye",
+        "publisher_country": "FR",
+        "editorial_focus": {
+          "role": "global_core",
+          "regions": [
+            "europe",
+            "global"
+          ],
+          "countries": [
+            "FR"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 80,
+            "local_specialist": 90,
+            "discovery": 88,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "photography": 1
+        }
+      },
+      {
+        "id": "asianmoviepulse",
+        "publisher_country": null,
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "east_asia",
+            "south_southeast_asia"
+          ],
+          "countries": [
+            "JP",
+            "KR",
+            "CN",
+            "IN",
+            "TH",
+            "PH",
+            "ID",
+            "VN"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 77,
+            "local_specialist": 91,
+            "discovery": 95,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "film": 1
+        }
+      },
+      {
+        "id": "map-india",
+        "publisher_country": "IN",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "south_southeast_asia"
+          ],
+          "countries": [
+            "IN"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 74,
+            "local_specialist": 97,
+            "discovery": 91,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 2,
+          "photography": 2
+        }
+      },
+      {
+        "id": "zeitz-mocaa",
+        "publisher_country": "ZA",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "sub_saharan_africa"
+          ],
+          "countries": [
+            "ZA"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 82,
+            "local_specialist": 98,
+            "discovery": 94,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 2,
+          "photography": 2
+        }
+      },
+      {
+        "id": "diaphana",
+        "publisher_country": "FR",
+        "editorial_focus": {
+          "role": "core",
+          "regions": [
+            "europe"
+          ],
+          "countries": [
+            "FR"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 75,
+            "local_specialist": 96,
+            "discovery": 82,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "film": 1
+        }
+      },
+      {
+        "id": "bfi-lff",
+        "publisher_country": "GB",
+        "editorial_focus": {
+          "role": "core",
+          "regions": [
+            "europe",
+            "global"
+          ],
+          "countries": [
+            "GB"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 93,
+            "local_specialist": 97,
+            "discovery": 87,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "film": 1
+        }
+      },
+      {
+        "id": "wpo-awards",
+        "publisher_country": "GB",
+        "editorial_focus": {
+          "role": "global_core",
+          "regions": [
+            "global"
+          ],
+          "countries": [],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 91,
+            "local_specialist": 97,
+            "discovery": 89,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "photography": 1
+        }
+      },
+      {
+        "id": "mmca-seoul",
+        "publisher_country": "KR",
+        "editorial_focus": {
+          "role": "core",
+          "regions": [
+            "east_asia"
+          ],
+          "countries": [
+            "KR"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 87,
+            "local_specialist": 98,
+            "discovery": 87,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 1
+        }
+      },
+      {
+        "id": "guardian-culture",
+        "publisher_country": "GB",
+        "editorial_focus": {
+          "role": "global_core",
+          "regions": [
+            "europe",
+            "global"
+          ],
+          "countries": [
+            "GB"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 92,
+            "local_specialist": 85,
+            "discovery": 75,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "film": 1,
+          "art": 1,
+          "photography": 1
+        }
+      },
+      {
+        "id": "deadline-film",
+        "publisher_country": "US",
+        "editorial_focus": {
+          "role": "global_core",
+          "regions": [
+            "north_america",
+            "global"
+          ],
+          "countries": [
+            "US"
+          ],
+          "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+          "media_weight": {
+            "international": 95,
+            "local_specialist": 90,
+            "discovery": 65,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "film": 1
+        }
+      },
+      {
+        "id": "art-it-jp",
+        "publisher_country": "JP",
+        "editorial_focus": {
+          "role": "core",
+          "regions": [
+            "east_asia",
+            "global"
+          ],
+          "countries": [
+            "JP"
+          ],
+          "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+          "media_weight": {
+            "international": 85,
+            "local_specialist": 96,
+            "discovery": 92,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 1
+        }
+      },
+      {
+        "id": "artnews-japan",
+        "publisher_country": "JP",
+        "editorial_focus": {
+          "role": "core",
+          "regions": [
+            "east_asia",
+            "south_southeast_asia",
+            "global"
+          ],
+          "countries": [
+            "JP"
+          ],
+          "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+          "media_weight": {
+            "international": 85,
+            "local_specialist": 93,
+            "discovery": 87,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 1
+        }
+      },
+      {
+        "id": "artasiapacific",
+        "publisher_country": "HK",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "east_asia",
+            "south_southeast_asia",
+            "oceania"
+          ],
+          "countries": [
+            "JP",
+            "CN",
+            "HK",
+            "KR",
+            "TW",
+            "SG",
+            "TH",
+            "ID",
+            "IN",
+            "AU"
+          ],
+          "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+          "media_weight": {
+            "international": 86,
+            "local_specialist": 94,
+            "discovery": 95,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 1
+        }
+      },
+      {
+        "id": "canvas",
+        "publisher_country": "AE",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "middle_east_north_africa",
+            "global"
+          ],
+          "countries": [
+            "AE",
+            "QA",
+            "LB",
+            "PS",
+            "IR",
+            "EG",
+            "SA"
+          ],
+          "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+          "media_weight": {
+            "international": 79,
+            "local_specialist": 94,
+            "discovery": 94,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 2
+        }
+      },
+      {
+        "id": "artishock",
+        "publisher_country": "CL",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "latin_america_caribbean",
+            "global"
+          ],
+          "countries": [
+            "CL",
+            "AR",
+            "MX",
+            "CO",
+            "PE"
+          ],
+          "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+          "media_weight": {
+            "international": 76,
+            "local_specialist": 94,
+            "discovery": 96,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 2
+        }
+      },
+      {
+        "id": "zum",
+        "publisher_country": "BR",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "latin_america_caribbean",
+            "global"
+          ],
+          "countries": [
+            "BR"
+          ],
+          "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+          "media_weight": {
+            "international": 83,
+            "local_specialist": 96,
+            "discovery": 96,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "photography": 2
+        }
+      },
+      {
+        "id": "blind",
+        "publisher_country": "FR",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "global"
+          ],
+          "countries": [],
+          "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+          "media_weight": {
+            "international": 82,
+            "local_specialist": 91,
+            "discovery": 94,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "photography": 3
+        }
+      },
+      {
+        "id": "artthrob",
+        "publisher_country": "ZA",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "sub_saharan_africa",
+            "global"
+          ],
+          "countries": [
+            "ZA"
+          ],
+          "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+          "media_weight": {
+            "international": 74,
+            "local_specialist": 94,
+            "discovery": 96,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 2
+        }
+      },
+      {
+        "id": "take-on-art",
+        "publisher_country": "IN",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "south_southeast_asia"
+          ],
+          "countries": [
+            "IN"
+          ],
+          "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+          "media_weight": {
+            "international": 73,
+            "local_specialist": 94,
+            "discovery": 96,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 2
+        }
+      },
+      {
+        "id": "africanah",
+        "publisher_country": "NL",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "sub_saharan_africa",
+            "global"
+          ],
+          "countries": [
+            "NG",
+            "ZA",
+            "GH",
+            "KE",
+            "ET"
+          ],
+          "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+          "media_weight": {
+            "international": 65,
+            "local_specialist": 87,
+            "discovery": 96,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "art": 2
+        }
+      },
+      {
+        "id": "lenscratch",
+        "publisher_country": "US",
+        "editorial_focus": {
+          "role": "discovery",
+          "regions": [
+            "north_america",
+            "global"
+          ],
+          "countries": [
+            "US"
+          ],
+          "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+          "media_weight": {
+            "international": 76,
+            "local_specialist": 92,
+            "discovery": 96,
+            "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+          }
+        },
+        "tiers_by_field": {
+          "photography": 1
+        }
+      }
+    ],
+    "international_gateway_source_ids": [
+      "film-stage",
+      "artnews",
+      "aperture",
+      "artforum-cn",
+      "variety-film",
+      "artnet",
+      "hyperallergic",
+      "bjp",
+      "loeil",
+      "tate-modern",
+      "fisheye",
+      "bfi-lff",
+      "wpo-awards",
+      "mmca-seoul",
+      "guardian-culture",
+      "deadline-film",
+      "art-it-jp",
+      "artnews-japan",
+      "artasiapacific"
+    ],
+    "weights_are_editorial_settings_not_measured_audience_share": true,
+    "matrix": [
+      {
+        "id": "east_asia",
+        "label": "东亚",
+        "channels": {
+          "film": {
+            "target_country_tiers": {
+              "JP": 1,
+              "CN": 1,
+              "HK": 1,
+              "TW": 1,
+              "MO": 3,
+              "KR": 1,
+              "KP": 3,
+              "MN": 3
+            },
+            "source_ids": [
+              "eiga-com",
+              "asianmoviepulse"
+            ],
+            "rss_sources": 1,
+            "successful_rss_checks": 0,
+            "failed_source_ids": [
+              "asianmoviepulse"
+            ],
+            "inventory_from_assigned_sources": 39,
+            "coverage_status": "assigned_sources_only"
+          },
+          "art": {
+            "target_country_tiers": {
+              "JP": 1,
+              "CN": 1,
+              "HK": 1,
+              "TW": 2,
+              "MO": 3,
+              "KR": 1,
+              "KP": 3,
+              "MN": 3
+            },
+            "source_ids": [
+              "tokyo-photo-museum",
+              "artforum-cn",
+              "mmca-seoul",
+              "art-it-jp",
+              "artnews-japan",
+              "artasiapacific"
+            ],
+            "rss_sources": 4,
+            "successful_rss_checks": 4,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 94,
+            "coverage_status": "assigned_sources_only"
+          },
+          "photography": {
+            "target_country_tiers": {
+              "JP": 1,
+              "CN": 2,
+              "HK": 2,
+              "TW": 2,
+              "MO": 3,
+              "KR": 2,
+              "KP": 3,
+              "MN": 3
+            },
+            "source_ids": [
+              "ima",
+              "tokyo-photo-museum"
+            ],
+            "rss_sources": 1,
+            "successful_rss_checks": 1,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 56,
+            "coverage_status": "assigned_sources_only"
+          }
+        }
+      },
+      {
+        "id": "south_southeast_asia",
+        "label": "南亚与东南亚",
+        "channels": {
+          "film": {
+            "target_country_tiers": {
+              "IN": 1,
+              "PK": 2,
+              "BD": 2,
+              "NP": 3,
+              "LK": 3,
+              "BT": 3,
+              "MV": 3,
+              "AF": 3,
+              "ID": 2,
+              "TH": 2,
+              "VN": 2,
+              "SG": 2,
+              "MY": 2,
+              "PH": 2,
+              "MM": 3,
+              "KH": 3,
+              "LA": 3,
+              "BN": 3,
+              "TL": 3
+            },
+            "source_ids": [
+              "asianmoviepulse"
+            ],
+            "rss_sources": 1,
+            "successful_rss_checks": 0,
+            "failed_source_ids": [
+              "asianmoviepulse"
+            ],
+            "inventory_from_assigned_sources": 13,
+            "coverage_status": "assigned_sources_only"
+          },
+          "art": {
+            "target_country_tiers": {
+              "IN": 2,
+              "PK": 2,
+              "BD": 2,
+              "NP": 2,
+              "LK": 3,
+              "BT": 3,
+              "MV": 3,
+              "AF": 3,
+              "ID": 2,
+              "TH": 2,
+              "VN": 2,
+              "SG": 2,
+              "MY": 2,
+              "PH": 2,
+              "MM": 3,
+              "KH": 3,
+              "LA": 3,
+              "BN": 3,
+              "TL": 3
+            },
+            "source_ids": [
+              "map-india",
+              "artnews-japan",
+              "artasiapacific",
+              "take-on-art"
+            ],
+            "rss_sources": 3,
+            "successful_rss_checks": 3,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 37,
+            "coverage_status": "assigned_sources_only"
+          },
+          "photography": {
+            "target_country_tiers": {
+              "IN": 2,
+              "PK": 2,
+              "BD": 2,
+              "NP": 2,
+              "LK": 3,
+              "BT": 3,
+              "MV": 3,
+              "AF": 3,
+              "ID": 2,
+              "TH": 2,
+              "VN": 2,
+              "SG": 2,
+              "MY": 2,
+              "PH": 2,
+              "MM": 3,
+              "KH": 3,
+              "LA": 3,
+              "BN": 3,
+              "TL": 3
+            },
+            "source_ids": [
+              "map-india"
+            ],
+            "rss_sources": 0,
+            "successful_rss_checks": 0,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 3,
+            "coverage_status": "assigned_sources_only"
+          }
+        }
+      },
+      {
+        "id": "central_asia",
+        "label": "中亚",
+        "channels": {
+          "film": {
+            "target_country_tiers": {
+              "KZ": 3,
+              "KG": 3,
+              "TJ": 3,
+              "TM": 3,
+              "UZ": 3
+            },
+            "source_ids": [],
+            "rss_sources": 0,
+            "successful_rss_checks": 0,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 0,
+            "coverage_status": "no_dedicated_source"
+          },
+          "art": {
+            "target_country_tiers": {
+              "KZ": 3,
+              "KG": 3,
+              "TJ": 3,
+              "TM": 3,
+              "UZ": 3
+            },
+            "source_ids": [],
+            "rss_sources": 0,
+            "successful_rss_checks": 0,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 0,
+            "coverage_status": "no_dedicated_source"
+          },
+          "photography": {
+            "target_country_tiers": {
+              "KZ": 3,
+              "KG": 3,
+              "TJ": 3,
+              "TM": 3,
+              "UZ": 3
+            },
+            "source_ids": [],
+            "rss_sources": 0,
+            "successful_rss_checks": 0,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 0,
+            "coverage_status": "no_dedicated_source"
+          }
+        }
+      },
+      {
+        "id": "europe",
+        "label": "欧洲",
+        "channels": {
+          "film": {
+            "target_country_tiers": {
+              "GB": 1,
+              "FR": 1,
+              "DE": 1,
+              "IT": 1,
+              "ES": 1,
+              "PT": 2,
+              "NL": 2,
+              "BE": 2,
+              "LU": 3,
+              "CH": 2,
+              "AT": 2,
+              "IE": 3,
+              "DK": 2,
+              "SE": 2,
+              "NO": 2,
+              "FI": 2,
+              "IS": 3,
+              "EE": 3,
+              "LV": 3,
+              "LT": 3,
+              "PL": 2,
+              "CZ": 2,
+              "SK": 3,
+              "HU": 2,
+              "RO": 2,
+              "BG": 3,
+              "GR": 2,
+              "CY": 3,
+              "MT": 3,
+              "AL": 3,
+              "BA": 3,
+              "HR": 3,
+              "ME": 3,
+              "MK": 3,
+              "RS": 3,
+              "SI": 3,
+              "XK": 3,
+              "MD": 3,
+              "UA": 2,
+              "BY": 3,
+              "RU": 2,
+              "AD": 3,
+              "LI": 3,
+              "MC": 3,
+              "SM": 3,
+              "VA": 3,
+              "FO": 3,
+              "GI": 3,
+              "GG": 3,
+              "IM": 3,
+              "JE": 3,
+              "AX": 3,
+              "SJ": 3
+            },
+            "source_ids": [
+              "troiscouleurs",
+              "diaphana",
+              "bfi-lff",
+              "guardian-culture"
+            ],
+            "rss_sources": 2,
+            "successful_rss_checks": 2,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 207,
+            "coverage_status": "assigned_sources_only"
+          },
+          "art": {
+            "target_country_tiers": {
+              "GB": 1,
+              "FR": 1,
+              "DE": 1,
+              "IT": 1,
+              "ES": 2,
+              "PT": 2,
+              "NL": 1,
+              "BE": 2,
+              "LU": 3,
+              "CH": 1,
+              "AT": 2,
+              "IE": 3,
+              "DK": 2,
+              "SE": 2,
+              "NO": 2,
+              "FI": 2,
+              "IS": 3,
+              "EE": 3,
+              "LV": 3,
+              "LT": 3,
+              "PL": 3,
+              "CZ": 3,
+              "SK": 3,
+              "HU": 3,
+              "RO": 3,
+              "BG": 3,
+              "GR": 3,
+              "CY": 3,
+              "MT": 3,
+              "AL": 3,
+              "BA": 3,
+              "HR": 3,
+              "ME": 3,
+              "MK": 3,
+              "RS": 3,
+              "SI": 3,
+              "XK": 3,
+              "MD": 3,
+              "UA": 3,
+              "BY": 3,
+              "RU": 3,
+              "AD": 3,
+              "LI": 3,
+              "MC": 3,
+              "SM": 3,
+              "VA": 3,
+              "FO": 3,
+              "GI": 3,
+              "GG": 3,
+              "IM": 3,
+              "JE": 3,
+              "AX": 3,
+              "SJ": 3
+            },
+            "source_ids": [
+              "tate-modern",
+              "guardian-culture"
+            ],
+            "rss_sources": 1,
+            "successful_rss_checks": 1,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 99,
+            "coverage_status": "assigned_sources_only"
+          },
+          "photography": {
+            "target_country_tiers": {
+              "GB": 1,
+              "FR": 1,
+              "DE": 1,
+              "IT": 2,
+              "ES": 2,
+              "PT": 2,
+              "NL": 1,
+              "BE": 2,
+              "LU": 3,
+              "CH": 1,
+              "AT": 2,
+              "IE": 3,
+              "DK": 2,
+              "SE": 2,
+              "NO": 2,
+              "FI": 2,
+              "IS": 3,
+              "EE": 3,
+              "LV": 3,
+              "LT": 3,
+              "PL": 2,
+              "CZ": 2,
+              "SK": 3,
+              "HU": 2,
+              "RO": 2,
+              "BG": 3,
+              "GR": 3,
+              "CY": 3,
+              "MT": 3,
+              "AL": 3,
+              "BA": 3,
+              "HR": 3,
+              "ME": 3,
+              "MK": 3,
+              "RS": 3,
+              "SI": 3,
+              "XK": 3,
+              "MD": 3,
+              "UA": 2,
+              "BY": 3,
+              "RU": 2,
+              "AD": 3,
+              "LI": 3,
+              "MC": 3,
+              "SM": 3,
+              "VA": 3,
+              "FO": 3,
+              "GI": 3,
+              "GG": 3,
+              "IM": 3,
+              "JE": 3,
+              "AX": 3,
+              "SJ": 3
+            },
+            "source_ids": [
+              "bjp",
+              "loeil",
+              "tate-modern",
+              "fisheye",
+              "guardian-culture"
+            ],
+            "rss_sources": 4,
+            "successful_rss_checks": 4,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 139,
+            "coverage_status": "assigned_sources_only"
+          }
+        }
+      },
+      {
+        "id": "middle_east_north_africa",
+        "label": "中东与北非",
+        "channels": {
+          "film": {
+            "target_country_tiers": {
+              "TR": 2,
+              "IR": 1,
+              "IQ": 3,
+              "IL": 3,
+              "PS": 3,
+              "LB": 3,
+              "JO": 3,
+              "SY": 3,
+              "SA": 3,
+              "AE": 3,
+              "QA": 3,
+              "BH": 3,
+              "KW": 3,
+              "OM": 3,
+              "YE": 3,
+              "EG": 2,
+              "MA": 2,
+              "DZ": 3,
+              "TN": 2,
+              "LY": 3,
+              "SD": 3,
+              "EH": 3
+            },
+            "source_ids": [],
+            "rss_sources": 0,
+            "successful_rss_checks": 0,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 0,
+            "coverage_status": "no_dedicated_source"
+          },
+          "art": {
+            "target_country_tiers": {
+              "TR": 2,
+              "IR": 2,
+              "IQ": 2,
+              "IL": 2,
+              "PS": 2,
+              "LB": 2,
+              "JO": 2,
+              "SY": 3,
+              "SA": 2,
+              "AE": 2,
+              "QA": 2,
+              "BH": 3,
+              "KW": 3,
+              "OM": 3,
+              "YE": 3,
+              "EG": 2,
+              "MA": 2,
+              "DZ": 3,
+              "TN": 2,
+              "LY": 3,
+              "SD": 3,
+              "EH": 3
+            },
+            "source_ids": [
+              "canvas"
+            ],
+            "rss_sources": 1,
+            "successful_rss_checks": 1,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 12,
+            "coverage_status": "assigned_sources_only"
+          },
+          "photography": {
+            "target_country_tiers": {
+              "TR": 2,
+              "IR": 2,
+              "IQ": 3,
+              "IL": 3,
+              "PS": 2,
+              "LB": 2,
+              "JO": 3,
+              "SY": 3,
+              "SA": 3,
+              "AE": 3,
+              "QA": 3,
+              "BH": 3,
+              "KW": 3,
+              "OM": 3,
+              "YE": 3,
+              "EG": 2,
+              "MA": 2,
+              "DZ": 3,
+              "TN": 3,
+              "LY": 3,
+              "SD": 3,
+              "EH": 3
+            },
+            "source_ids": [],
+            "rss_sources": 0,
+            "successful_rss_checks": 0,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 0,
+            "coverage_status": "no_dedicated_source"
+          }
+        }
+      },
+      {
+        "id": "sub_saharan_africa",
+        "label": "撒哈拉以南非洲",
+        "channels": {
+          "film": {
+            "target_country_tiers": {
+              "ZA": 2,
+              "NG": 2,
+              "GH": 3,
+              "KE": 3,
+              "ET": 3,
+              "SN": 3,
+              "AO": 3,
+              "BJ": 3,
+              "BW": 3,
+              "BF": 3,
+              "BI": 3,
+              "CV": 3,
+              "CM": 3,
+              "CF": 3,
+              "TD": 3,
+              "KM": 3,
+              "CG": 3,
+              "CD": 3,
+              "CI": 3,
+              "DJ": 3,
+              "GQ": 3,
+              "ER": 3,
+              "SZ": 3,
+              "GA": 3,
+              "GM": 3,
+              "GN": 3,
+              "GW": 3,
+              "LS": 3,
+              "LR": 3,
+              "MG": 3,
+              "MW": 3,
+              "ML": 3,
+              "MR": 3,
+              "MU": 3,
+              "MZ": 3,
+              "NA": 3,
+              "NE": 3,
+              "RW": 3,
+              "ST": 3,
+              "SC": 3,
+              "SL": 3,
+              "SO": 3,
+              "SS": 3,
+              "TZ": 3,
+              "TG": 3,
+              "UG": 3,
+              "ZM": 3,
+              "ZW": 3,
+              "RE": 3,
+              "YT": 3,
+              "SH": 3
+            },
+            "source_ids": [],
+            "rss_sources": 0,
+            "successful_rss_checks": 0,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 0,
+            "coverage_status": "no_dedicated_source"
+          },
+          "art": {
+            "target_country_tiers": {
+              "ZA": 2,
+              "NG": 2,
+              "GH": 2,
+              "KE": 2,
+              "ET": 2,
+              "SN": 2,
+              "AO": 3,
+              "BJ": 3,
+              "BW": 3,
+              "BF": 3,
+              "BI": 3,
+              "CV": 3,
+              "CM": 3,
+              "CF": 3,
+              "TD": 3,
+              "KM": 3,
+              "CG": 3,
+              "CD": 3,
+              "CI": 3,
+              "DJ": 3,
+              "GQ": 3,
+              "ER": 3,
+              "SZ": 3,
+              "GA": 3,
+              "GM": 3,
+              "GN": 3,
+              "GW": 3,
+              "LS": 3,
+              "LR": 3,
+              "MG": 3,
+              "MW": 3,
+              "ML": 3,
+              "MR": 3,
+              "MU": 3,
+              "MZ": 3,
+              "NA": 3,
+              "NE": 3,
+              "RW": 3,
+              "ST": 3,
+              "SC": 3,
+              "SL": 3,
+              "SO": 3,
+              "SS": 3,
+              "TZ": 3,
+              "TG": 3,
+              "UG": 3,
+              "ZM": 3,
+              "ZW": 3,
+              "RE": 3,
+              "YT": 3,
+              "SH": 3
+            },
+            "source_ids": [
+              "artafrica",
+              "zeitz-mocaa",
+              "artthrob",
+              "africanah"
+            ],
+            "rss_sources": 3,
+            "successful_rss_checks": 3,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 48,
+            "coverage_status": "assigned_sources_only"
+          },
+          "photography": {
+            "target_country_tiers": {
+              "ZA": 2,
+              "NG": 2,
+              "GH": 2,
+              "KE": 2,
+              "ET": 2,
+              "SN": 2,
+              "AO": 3,
+              "BJ": 3,
+              "BW": 3,
+              "BF": 3,
+              "BI": 3,
+              "CV": 3,
+              "CM": 3,
+              "CF": 3,
+              "TD": 3,
+              "KM": 3,
+              "CG": 3,
+              "CD": 3,
+              "CI": 3,
+              "DJ": 3,
+              "GQ": 3,
+              "ER": 3,
+              "SZ": 3,
+              "GA": 3,
+              "GM": 3,
+              "GN": 3,
+              "GW": 3,
+              "LS": 3,
+              "LR": 3,
+              "MG": 3,
+              "MW": 3,
+              "ML": 3,
+              "MR": 3,
+              "MU": 3,
+              "MZ": 3,
+              "NA": 3,
+              "NE": 3,
+              "RW": 3,
+              "ST": 3,
+              "SC": 3,
+              "SL": 3,
+              "SO": 3,
+              "SS": 3,
+              "TZ": 3,
+              "TG": 3,
+              "UG": 3,
+              "ZM": 3,
+              "ZW": 3,
+              "RE": 3,
+              "YT": 3,
+              "SH": 3
+            },
+            "source_ids": [
+              "zeitz-mocaa"
+            ],
+            "rss_sources": 0,
+            "successful_rss_checks": 0,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 6,
+            "coverage_status": "assigned_sources_only"
+          }
+        }
+      },
+      {
+        "id": "latin_america_caribbean",
+        "label": "拉美与加勒比",
+        "channels": {
+          "film": {
+            "target_country_tiers": {
+              "MX": 2,
+              "BR": 2,
+              "AR": 2,
+              "CL": 2,
+              "CO": 2,
+              "PE": 3,
+              "CU": 3,
+              "BO": 3,
+              "EC": 3,
+              "VE": 3,
+              "UY": 3,
+              "PY": 3,
+              "GY": 3,
+              "SR": 3,
+              "BZ": 3,
+              "CR": 3,
+              "SV": 3,
+              "GT": 3,
+              "HN": 3,
+              "NI": 3,
+              "PA": 3,
+              "HT": 3,
+              "DO": 3,
+              "JM": 3,
+              "TT": 3,
+              "BS": 3,
+              "BB": 3,
+              "AG": 3,
+              "DM": 3,
+              "GD": 3,
+              "KN": 3,
+              "LC": 3,
+              "VC": 3,
+              "AW": 3,
+              "CW": 3,
+              "SX": 3,
+              "PR": 3,
+              "GP": 3,
+              "MQ": 3,
+              "GF": 3,
+              "FK": 3,
+              "BQ": 3,
+              "MS": 3,
+              "AI": 3,
+              "BM": 3,
+              "KY": 3,
+              "TC": 3,
+              "VG": 3,
+              "VI": 3
+            },
+            "source_ids": [
+              "cinefilos",
+              "rapadura",
+              "cinepremiere"
+            ],
+            "rss_sources": 3,
+            "successful_rss_checks": 3,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 71,
+            "coverage_status": "assigned_sources_only"
+          },
+          "art": {
+            "target_country_tiers": {
+              "MX": 2,
+              "BR": 2,
+              "AR": 2,
+              "CL": 2,
+              "CO": 2,
+              "PE": 2,
+              "CU": 2,
+              "BO": 3,
+              "EC": 3,
+              "VE": 3,
+              "UY": 3,
+              "PY": 3,
+              "GY": 3,
+              "SR": 3,
+              "BZ": 3,
+              "CR": 3,
+              "SV": 3,
+              "GT": 3,
+              "HN": 3,
+              "NI": 3,
+              "PA": 3,
+              "HT": 3,
+              "DO": 3,
+              "JM": 3,
+              "TT": 3,
+              "BS": 3,
+              "BB": 3,
+              "AG": 3,
+              "DM": 3,
+              "GD": 3,
+              "KN": 3,
+              "LC": 3,
+              "VC": 3,
+              "AW": 3,
+              "CW": 3,
+              "SX": 3,
+              "PR": 3,
+              "GP": 3,
+              "MQ": 3,
+              "GF": 3,
+              "FK": 3,
+              "BQ": 3,
+              "MS": 3,
+              "AI": 3,
+              "BM": 3,
+              "KY": 3,
+              "TC": 3,
+              "VG": 3,
+              "VI": 3
+            },
+            "source_ids": [
+              "artishock"
+            ],
+            "rss_sources": 1,
+            "successful_rss_checks": 1,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 10,
+            "coverage_status": "assigned_sources_only"
+          },
+          "photography": {
+            "target_country_tiers": {
+              "MX": 2,
+              "BR": 2,
+              "AR": 2,
+              "CL": 2,
+              "CO": 2,
+              "PE": 2,
+              "CU": 2,
+              "BO": 3,
+              "EC": 3,
+              "VE": 3,
+              "UY": 3,
+              "PY": 3,
+              "GY": 3,
+              "SR": 3,
+              "BZ": 3,
+              "CR": 3,
+              "SV": 3,
+              "GT": 3,
+              "HN": 3,
+              "NI": 3,
+              "PA": 3,
+              "HT": 3,
+              "DO": 3,
+              "JM": 3,
+              "TT": 3,
+              "BS": 3,
+              "BB": 3,
+              "AG": 3,
+              "DM": 3,
+              "GD": 3,
+              "KN": 3,
+              "LC": 3,
+              "VC": 3,
+              "AW": 3,
+              "CW": 3,
+              "SX": 3,
+              "PR": 3,
+              "GP": 3,
+              "MQ": 3,
+              "GF": 3,
+              "FK": 3,
+              "BQ": 3,
+              "MS": 3,
+              "AI": 3,
+              "BM": 3,
+              "KY": 3,
+              "TC": 3,
+              "VG": 3,
+              "VI": 3
+            },
+            "source_ids": [
+              "zum"
+            ],
+            "rss_sources": 1,
+            "successful_rss_checks": 1,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 17,
+            "coverage_status": "assigned_sources_only"
+          }
+        }
+      },
+      {
+        "id": "north_america",
+        "label": "北美",
+        "channels": {
+          "film": {
+            "target_country_tiers": {
+              "US": 1,
+              "CA": 2,
+              "GL": 3,
+              "PM": 3
+            },
+            "source_ids": [
+              "film-stage",
+              "variety-film",
+              "deadline-film"
+            ],
+            "rss_sources": 3,
+            "successful_rss_checks": 3,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 123,
+            "coverage_status": "assigned_sources_only"
+          },
+          "art": {
+            "target_country_tiers": {
+              "US": 1,
+              "CA": 2,
+              "GL": 3,
+              "PM": 3
+            },
+            "source_ids": [
+              "artnews",
+              "artnet",
+              "hyperallergic"
+            ],
+            "rss_sources": 3,
+            "successful_rss_checks": 3,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 95,
+            "coverage_status": "assigned_sources_only"
+          },
+          "photography": {
+            "target_country_tiers": {
+              "US": 1,
+              "CA": 2,
+              "GL": 3,
+              "PM": 3
+            },
+            "source_ids": [
+              "aperture",
+              "lenscratch"
+            ],
+            "rss_sources": 2,
+            "successful_rss_checks": 2,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 11,
+            "coverage_status": "assigned_sources_only"
+          }
+        }
+      },
+      {
+        "id": "oceania",
+        "label": "大洋洲与太平洋",
+        "channels": {
+          "film": {
+            "target_country_tiers": {
+              "AU": 2,
+              "NZ": 2,
+              "PG": 3,
+              "FJ": 3,
+              "SB": 3,
+              "VU": 3,
+              "WS": 3,
+              "TO": 3,
+              "TV": 3,
+              "KI": 3,
+              "NR": 3,
+              "PW": 3,
+              "MH": 3,
+              "FM": 3,
+              "NC": 3,
+              "PF": 3,
+              "GU": 3,
+              "AS": 3,
+              "CK": 3,
+              "NU": 3,
+              "TK": 3,
+              "MP": 3,
+              "NF": 3,
+              "WF": 3,
+              "PN": 3
+            },
+            "source_ids": [],
+            "rss_sources": 0,
+            "successful_rss_checks": 0,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 0,
+            "coverage_status": "no_dedicated_source"
+          },
+          "art": {
+            "target_country_tiers": {
+              "AU": 2,
+              "NZ": 2,
+              "PG": 3,
+              "FJ": 3,
+              "SB": 3,
+              "VU": 3,
+              "WS": 3,
+              "TO": 3,
+              "TV": 3,
+              "KI": 3,
+              "NR": 3,
+              "PW": 3,
+              "MH": 3,
+              "FM": 3,
+              "NC": 3,
+              "PF": 3,
+              "GU": 3,
+              "AS": 3,
+              "CK": 3,
+              "NU": 3,
+              "TK": 3,
+              "MP": 3,
+              "NF": 3,
+              "WF": 3,
+              "PN": 3
+            },
+            "source_ids": [
+              "artasiapacific"
+            ],
+            "rss_sources": 1,
+            "successful_rss_checks": 1,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 15,
+            "coverage_status": "assigned_sources_only"
+          },
+          "photography": {
+            "target_country_tiers": {
+              "AU": 2,
+              "NZ": 2,
+              "PG": 3,
+              "FJ": 3,
+              "SB": 3,
+              "VU": 3,
+              "WS": 3,
+              "TO": 3,
+              "TV": 3,
+              "KI": 3,
+              "NR": 3,
+              "PW": 3,
+              "MH": 3,
+              "FM": 3,
+              "NC": 3,
+              "PF": 3,
+              "GU": 3,
+              "AS": 3,
+              "CK": 3,
+              "NU": 3,
+              "TK": 3,
+              "MP": 3,
+              "NF": 3,
+              "WF": 3,
+              "PN": 3
+            },
+            "source_ids": [],
+            "rss_sources": 0,
+            "successful_rss_checks": 0,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 0,
+            "coverage_status": "no_dedicated_source"
+          }
+        }
+      },
+      {
+        "id": "global",
+        "label": "跨地区／其他／未知",
+        "channels": {
+          "film": {
+            "target_country_tiers": {},
+            "source_ids": [
+              "film-stage",
+              "variety-film",
+              "cinefilos",
+              "rapadura",
+              "cinepremiere",
+              "troiscouleurs",
+              "bfi-lff",
+              "guardian-culture",
+              "deadline-film"
+            ],
+            "rss_sources": 8,
+            "successful_rss_checks": 8,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 395,
+            "coverage_status": "assigned_sources_only"
+          },
+          "art": {
+            "target_country_tiers": {},
+            "source_ids": [
+              "artnews",
+              "artforum-cn",
+              "artnet",
+              "hyperallergic",
+              "artafrica",
+              "guardian-culture",
+              "art-it-jp",
+              "artnews-japan",
+              "canvas",
+              "artishock",
+              "artthrob",
+              "africanah"
+            ],
+            "rss_sources": 12,
+            "successful_rss_checks": 12,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 320,
+            "coverage_status": "assigned_sources_only"
+          },
+          "photography": {
+            "target_country_tiers": {},
+            "source_ids": [
+              "ima",
+              "aperture",
+              "bjp",
+              "loeil",
+              "fisheye",
+              "wpo-awards",
+              "guardian-culture",
+              "zum",
+              "blind",
+              "lenscratch"
+            ],
+            "rss_sources": 9,
+            "successful_rss_checks": 9,
+            "failed_source_ids": [],
+            "inventory_from_assigned_sources": 259,
+            "coverage_status": "assigned_sources_only"
+          }
+        }
+      }
+    ],
+    "unlocated_content": 660,
+    "discovery_share_of_available_new_body_slots": 0.2,
+    "global_completeness": "unknown",
+    "limitations": [
+      "地区来源分配是编辑建设目标，不代表每国都已有独立RSS。",
+      "媒体出版地、报道地点、艺术家国籍不得互相推定；未知保持未知。",
+      "任何未单列国家地区均适用全球发现，不因地区等级拒收重要创作者或新闻。",
+      "保留日本以外普通展览较低推荐/翻译优先级规则，重大新闻不受地区限制。"
+    ]
+  },
   "fresh_important_items": [
     {
       "id": "live-03ffc5c058e7f0b15a8b9dd4",
@@ -190,6 +2449,35 @@
           "来源发布时间在48小时内"
         ],
         "source_title": "‘Goldfish,’ ‘A Chronicle of Minor Things’ Lead Busan Asian Project Market Winners",
+        "model_route": "fast-direct",
+        "exhibition": false,
+        "exhibition_region": null,
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0
+      },
+      "has_original_body": true
+    },
+    {
+      "id": "live-4d7e88c19373cb6846530eee",
+      "source_id": "artnews-japan",
+      "title_original": "建築家・石上純也が第1回「バラガン賞」を受賞。ボッテガ・ヴェネタがメキシコで祝賀イベントを開催",
+      "canonical_url": "https://artnewsjapan.com/article/89575",
+      "language": "ja",
+      "article_status": "collected",
+      "editorial_status": null,
+      "translation_priority": {
+        "priority": "P0",
+        "label": "紧急",
+        "importance": "high",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": true,
+        "archive": false,
+        "reasons": [
+          "重大影展／奖项相关信号，自动初判",
+          "来源发布时间在48小时内"
+        ],
+        "source_title": "建築家・石上純也が第1回「バラガン賞」を受賞。ボッテガ・ヴェネタがメキシコで祝賀イベントを開催",
         "model_route": "fast-direct",
         "exhibition": false,
         "exhibition_region": null,
@@ -402,7 +2690,7 @@
       "has_original_body": true
     }
   ],
-  "awaiting_AI_count": 2,
+  "awaiting_AI_count": 3,
   "without_original_body_count": 0,
   "limitations": [
     "关键词重要性为自动初判，不能替代编辑判断。",

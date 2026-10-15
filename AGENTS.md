@@ -60,3 +60,5 @@
 15. 用户明确分工：Claude负责前端设计与文章排版，Codex负责后端/API/自动更新/重要新闻覆盖；保护frontend主题与CultureUI v1接口，交接见docs/CLAUDE_UI_HANDOFF.md。重要新闻覆盖通过核心来源、多专栏逐源核对、故障/漏采/待译清单证明，不能宣称无遗漏。
 
 16. 用户授权与公开巴别塔仓库babel联动：原文一键导入阅读查词，原图/出处/公开部分与中文参考分开；同版本不覆盖生词/笔记，更新另存版本。Claude可改入口设计，保留CultureCore.babelReaderUrl、data-ui=babel-import和版本化JSON接口。联动不依赖Gemini密钥，不自动调用巴别塔AI。
+
+17. 2026-10-15用户要求以后先翻译头条：公共默认首页主头条、电影／艺术／摄影栏目首篇的全文排在翻译队列最前，已完成有效AI稿跳过；全部待译头条之后才按重要性／时效与旧稿份额交错。不是只优先译标题，也不放弃其他旧／新文章。不提高请求或费用上限；正文缺失、错误退避继续生效。默认公共首页以config/preferences.json为准，不能依赖某位读者本地偏好。CultureCore.frontpageRows与backend/frontpage.py保持选稿一致，调整选稿时须同时更新两端及tests/test_frontpage.py；纯视觉改动不受限制。

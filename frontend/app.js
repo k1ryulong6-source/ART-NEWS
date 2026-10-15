@@ -132,14 +132,8 @@
     const scope = { ...filters(), channel: 'all', kind: 'all', country: 'all', city: 'all', language: 'all', query: '' };
     const available = dataset.content.filter(row => C.matches(row, scope));
     const context = { ...dataset, reference_date: readingDate() };
-    const selected = C.selectToday(available, preferences, context);
-    const lead = [...selected].sort(C.priorityCompare).find(row => row.kind !== 'industry_buzz' && row.evidence_status !== 'unverified') || selected[0];
-    if (!lead) return heading('头版') + empty('暂无新闻', '');
-    // Each desk takes the daily selection first, then the next most important reports of its channel.
-    const pool = [...selected, ...available.filter(row => !selected.includes(row)).sort(C.priorityCompare)].filter(row => row.id !== lead.id && row.evidence_status !== 'unverified');
-    const seen = new Set([C.displayTitle(lead)]);
-    const take = (test, count) => pool.filter(test).filter(row => !seen.has(C.displayTitle(row)) && seen.add(C.displayTitle(row))).slice(0, count);
-    const rows = [lead, ...take(row => row.kind !== 'industry_buzz' && row.channel === 'film', 5), ...take(row => row.kind !== 'industry_buzz' && row.channel === 'art', 5), ...take(row => row.kind !== 'industry_buzz' && row.channel === 'photography', 5), ...take(row => row.kind === 'industry_buzz', 4)];
+    const rows = C.frontpageRows(available, preferences, context);
+    if (!rows.length) return heading('头版') + empty('暂无新闻', '');
     return heading('头版') + notice() + ui.frontpage(rows, listings(scope));
   }
   function explore() {

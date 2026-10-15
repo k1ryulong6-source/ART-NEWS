@@ -139,6 +139,17 @@
     const allowed = buzz.enabled && buzz.max_share > 0 ? Math.min(deferred.length, buzz.max_share === 1 ? limit : Math.floor(selected.length * buzz.max_share / (1 - buzz.max_share))) : 0;
     return [...selected.slice(0, limit - allowed), ...deferred.slice(0, allowed)].slice(0, limit);
   }
+  function frontpageRows(available, preferences, context) {
+    const selected = selectToday(available, preferences, context);
+    const lead = [...selected].sort(priorityCompare).find(row => row.kind !== 'industry_buzz' && row.evidence_status !== 'unverified') || selected[0];
+    if (!lead) return [];
+    // Each desk takes the daily selection first, then the next most important reports of its channel.
+    const pool = [...selected, ...available.filter(row => !selected.includes(row)).sort(priorityCompare)].filter(row => row.id !== lead.id && row.evidence_status !== 'unverified');
+    const seen = new Set([displayTitle(lead)]);
+    const take = (test, count) => pool.filter(test).filter(row => !seen.has(displayTitle(row)) && seen.add(displayTitle(row))).slice(0, count);
+    const rows = [lead, ...take(row => row.kind !== 'industry_buzz' && row.channel === 'film', 5), ...take(row => row.kind !== 'industry_buzz' && row.channel === 'art', 5), ...take(row => row.kind !== 'industry_buzz' && row.channel === 'photography', 5), ...take(row => row.kind === 'industry_buzz', 4)];
+    return rows;
+  }
   const eventInstant = event => event.event_type === 'call_deadline' ? event.deadline_at : event.start_at;
   const timeLabel = event => { const value = eventInstant(event); return value ? new Intl.DateTimeFormat('zh-CN', { timeZone: event.timezone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(value)) + ' · ' + event.timezone : dateLabel(event.start_date) + (event.time_status === 'conflict' ? ' · 时刻有冲突' : ''); };
   function eventState(event, reference, instant = new Date()) {
@@ -198,7 +209,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { frontpageRows, babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

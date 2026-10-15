@@ -7,7 +7,7 @@ from pathlib import Path
 from .storage import ROOT, now
 from .editorial import checked_result, publish_translation
 from .headlines import load_headlines
-from .priority import rank_snapshot, priority_key, policy
+from .priority import rank_snapshot, priority_key, policy, translation_batch
 
 PROVIDER = 'chatgpt-direct:context-review-v1'
 
@@ -99,13 +99,7 @@ def prepare_queue(snapshot, output=None):
                                  'title_original': row['title_original'], 'excerpt_original': row.get('excerpt_original'),
                                  'input_path': 'data/translation-input/' + row['id'] + '.json' if row.get('article_blocks_json') else None})
     settings = policy(); limit = settings['shortlist_limit']
-    selected = list(pending[:limit - settings['backlog_slots']]); seen = {r['id'] for r in selected}
-    backlog = sorted(pending, key=lambda r: (r.get('published_at') or '', r['id']))
-    backlog_ids = []
-    for row in backlog:
-        if row['id'] in seen: continue
-        selected.append(row); seen.add(row['id']); backlog_ids.append(row['id'])
-        if len(selected) >= limit: break
+    selected, backlog_ids = translation_batch(pending, limit, settings['backlog_slots'])
     queue = {'schema_version': 1, 'snapshot_at': snapshot.get('snapshot_at'),
              'mode': 'chatgpt-direct', 'pending': len(pending),
              'reviewed': sum(r.get('editorial_status') == 'reviewed' for r in snapshot['content']),
@@ -113,6 +107,8 @@ def prepare_queue(snapshot, output=None):
              'quality_mode': 'direct-ai', 'priority_policy_path': 'config/translation-priority.json',
              'pending_priority_counts': dict(Counter(r['translation_priority']['priority'] for r in pending)),
              'backlog_ids': backlog_ids,
+             'frontpage_priority_ids': [identifier for identifier, rank in sorted(priorities.items(), key=lambda item: item[1].get('headline_order', 999)) if 'headline_order' in rank],
+             'frontpage_waiting_ids': [row['id'] for row in pending if 'headline_order' in row['translation_priority']],
              'originals_without_body': sum(not r.get('article_blocks_json') for r in snapshot['content']),
              'instructions_path': 'docs/DAILY_TRANSLATION.md', 'glossary_path': 'config/translation.json',
              'pending_headlines': len(headline_pending), 'headlines_next': headline_pending[:120],

@@ -105,14 +105,41 @@ def rank_snapshot(snapshot, reference=None):
     events = {r['id']: r for r in snapshot.get('events', [])}; related = {}
     for link in snapshot.get('content_events', []):
         if link['event_id'] in events: related.setdefault(link['content_id'], []).append(events[link['event_id']])
-    return {row['id']: classify(row, related.get(row['id'], []), instant, rules)
-            for row in snapshot.get('content', []) if not row.get('is_demo')}
+    result = {row['id']: classify(row, related.get(row['id'], []), instant, rules)
+              for row in snapshot.get('content', []) if not row.get('is_demo')}
+    if rules.get('headline_first', True):
+        from .frontpage import headline_slots
+        for index, (identifier, slot) in enumerate(headline_slots(snapshot, result, instant)):
+            result[identifier]['headline_order'] = index
+            result[identifier]['headline_slot'] = slot
+            result[identifier]['reasons'].append('首页主头条，全文优先翻译' if slot == 'lead' else {'film': '电影', 'art': '艺术', 'photography': '摄影'}[slot] + '栏目头条，全文优先翻译')
+    return result
 
 
 def priority_key(row):
     rank = row.get('translation_priority', {})
     try: recency = -reference_time(row['published_at']).timestamp() if row.get('published_at') else 0
     except (ValueError,TypeError): recency = 0
-    return (int(rank.get('priority','P2')[1]), {'high':0,'medium':1,'normal':2}.get(rank.get('importance'),2),
+    return (rank.get('headline_order', 999), int(rank.get('priority','P2')[1]), {'high':0,'medium':1,'normal':2}.get(rank.get('importance'),2),
             (rank.get('due') or {}).get('days', 999),
             not rank.get('fresh',False), recency, row.get('id',''))
+
+
+def translation_batch(rows, limit, backlog_slots=8):
+    """Finish the visible headlines block before interleaving any old articles."""
+    rows = sorted(rows, key=priority_key)
+    heads = [r for r in rows if 'headline_order' in r.get('translation_priority', {})][:limit]
+    head_ids = {r['id'] for r in heads}
+    rest = [r for r in rows if r['id'] not in head_ids]
+    old_count = min(backlog_slots, limit // 4, max(0, limit - len(heads)))
+    urgent = rest[:max(0, limit - len(heads) - old_count)]
+    seen = head_ids | {r['id'] for r in urgent}
+    old = [r for r in sorted(rest, key=lambda r: (r.get('published_at') or '', r['id'])) if r['id'] not in seen][:old_count]
+    backlog_ids = [r['id'] for r in old]
+    selected = list(heads)
+    while urgent or old:
+        selected.extend(urgent[:4])
+        urgent = urgent[4:]
+        if old:
+            selected.append(old.pop(0))
+    return selected, backlog_ids

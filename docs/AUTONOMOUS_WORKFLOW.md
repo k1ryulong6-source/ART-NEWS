@@ -1,3 +1,5 @@
+> T054（2026-10-15）：Gemini、临时机翻和会话队列统一优先公共默认首页主头条及电影／艺术／摄影栏首篇全文，已完成或冷却中的文章按原规则跳过。头条块之后才交错其他重要／及时新闻和旧稿；不会只优先标题或加开额度。backend/priority.py产出headline_order/slot，translation_batch统一选批；frontend/core.js的frontpageRows与backend/frontpage.py由精确顺序测试约束。公共偏好来自config/preferences.json。
+
 # 后台自动采集、AI翻译与发布
 
 网站：https://mujianrest.work/

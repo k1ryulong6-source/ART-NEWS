@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 from .storage import ROOT, now
 from .editorial import checked_result, numbers, publish_translation, rules
 from .autonomous_translation import assemble, write_json, read_checkpoint
-from .priority import rank_snapshot, priority_key
+from .priority import rank_snapshot, translation_batch
 
 
 def configuration():
@@ -122,19 +122,7 @@ def selected_rows(rows, snapshot, limit):
     priorities = rank_snapshot(snapshot)
     for row in rows:
         row['translation_priority'] = priorities[row['id']]
-    rows.sort(key=priority_key)
-    old_count = min(8, limit // 4)
-    urgent = rows[:max(0, limit - old_count)]
-    ids = {row['id'] for row in urgent}
-    old = [row for row in sorted(rows, key=lambda row: (row.get('published_at') or '', row['id']))
-           if row['id'] not in ids][:old_count]
-    selected = []
-    while urgent or old:
-        selected.extend(urgent[:4])
-        urgent = urgent[4:]
-        if old:
-            selected.append(old.pop(0))
-    return selected
+    return translation_batch(rows, limit)[0]
 
 
 def next_quota_day():

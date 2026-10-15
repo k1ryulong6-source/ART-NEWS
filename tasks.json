@@ -1671,6 +1671,39 @@
       "evidence": [
         "删除.cover-front::after与cover-sheen keyframes；Playwright录屏逐帧确认2.5–5秒间扉页无光带，片头其余部分照常；26项JS测试、check_project与静态构建通过"
       ]
+    },
+    {
+      "id": "T054",
+      "title": "首页及栏目头条全文优先翻译",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T039"
+      ],
+      "scope": [
+        "backend/priority.py",
+        "backend/frontpage.py",
+        "backend/ai_translation.py",
+        "backend/autonomous_translation.py",
+        "backend/daily_translation.py",
+        "frontend/core.js",
+        "frontend/app.js",
+        "tests/",
+        "config/translation-priority.json",
+        "docs/"
+      ],
+      "acceptance": [
+        "首页主头条和电影/艺术/摄影栏首篇待译全文先处理，不能只有标题先译",
+        "Gemini、机翻兜底和会话队列顺序统一，头条块完成后才插入旧稿份额",
+        "保持原有页面选稿和美术设计；已译不重译，缺正文/失败退避保留",
+        "额度/计费上限不变；原文/收藏/稳定ID不改，验证与交接记录完整"
+      ],
+      "evidence": [
+        "94项Python和26项JavaScript检查通过；真实库存及构造样本的浏览器/后端首页ID顺序完全一致",
+        "静态构建、项目检查、严格资料审计通过，实际队列前四篇与公共首页主头条/三栏首篇一致；上线验证待补"
+      ]
     }
   ]
 }

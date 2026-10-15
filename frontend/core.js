@@ -140,14 +140,41 @@
     return [...selected.slice(0, limit - allowed), ...deferred.slice(0, allowed)].slice(0, limit);
   }
   function frontpageRows(available, preferences, context) {
-    const selected = selectToday(available, preferences, context);
-    const lead = [...selected].sort(priorityCompare).find(row => row.kind !== 'industry_buzz' && row.evidence_status !== 'unverified') || selected[0];
+    const cfg = preferences.frontpage || {}, leadHours = cfg.lead_hours ?? 72, fallbackHours = cfg.fallback_hours ?? 168;
+    const importance = cfg.importance_boost || {high:24,medium:8,normal:0}, urgency = cfg.priority_boost || {P0:12,P1:6,P2:0,P3:-12};
+    const instant = context?.mode === 'demo' && context.reference_date ? new Date(context.reference_date + 'T12:00:00Z') : new Date();
+    const known = [], undated = [];
+    for (const original of available) {
+      if ((original.is_demo && context?.mode !== 'demo') || original.evidence_status === 'unverified') continue;
+      const rank = priorityOf(original) || {}, published = Date.parse(original.published_at || '');
+      let age = null;
+      if (Number.isFinite(published)) {
+        const elapsed = (instant.getTime() - published) / 3600000;
+        if (elapsed < -2 || elapsed > fallbackHours) continue;
+        age = Math.max(0, elapsed);
+      } else if (!rank.due || !Number.isFinite(rank.due.days) || rank.due.days < 0 || rank.due.days > (cfg.undated_event_days ?? 2)) continue;
+      const score = (importance[rank.importance] || 0) + (urgency[rank.priority] || 0) - (age ?? fallbackHours) / (cfg.freshness_decay_hours ?? 2) - (rank.recommendation_penalty || 0);
+      const row = {...original, frontpage_score:score, frontpage_age_hours:age, frontpage_basis:age === null ? 'confirmed_upcoming_event' : 'published_at'};
+      (age === null ? undated : known).push(row);
+    }
+    const eligible = known.filter(r=>r.kind !== 'industry_buzz'), recent = eligible.filter(r=>r.frontpage_age_hours <= leadHours);
+    const leadPool = recent.length ? recent : eligible.length ? eligible : undated.filter(r=>r.kind !== 'industry_buzz');
+    const tailCompare = (a,b)=>(a.frontpage_age_hours ?? fallbackHours)-(b.frontpage_age_hours ?? fallbackHours) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+    const lead = [...leadPool].sort((a,b)=>b.frontpage_score-a.frontpage_score || tailCompare(a,b))[0];
     if (!lead) return [];
-    // Each desk takes the daily selection first, then the next most important reports of its channel.
-    const pool = [...selected, ...available.filter(row => !selected.includes(row)).sort(priorityCompare)].filter(row => row.id !== lead.id && row.evidence_status !== 'unverified');
-    const seen = new Set([displayTitle(lead)]);
-    const take = (test, count) => pool.filter(test).filter(row => !seen.has(displayTitle(row)) && seen.add(displayTitle(row))).slice(0, count);
-    const rows = [lead, ...take(row => row.kind !== 'industry_buzz' && row.channel === 'film', 5), ...take(row => row.kind !== 'industry_buzz' && row.channel === 'art', 5), ...take(row => row.kind !== 'industry_buzz' && row.channel === 'photography', 5), ...take(row => row.kind === 'industry_buzz', 4)];
+    const rows = [lead], seenIds = new Set([lead.id]), seenTitles = new Set([displayTitle(lead)]), counts = {[lead.source_id]:1};
+    for (const [channel,count] of [['film',5],['art',5],['photography',5],['industry_buzz',4]]) {
+      if (channel === 'industry_buzz' && preferences.industry_buzz?.enabled === false) continue;
+      const matches = r=>channel === 'industry_buzz' ? r.kind === 'industry_buzz' : r.kind !== 'industry_buzz' && r.channel === channel;
+      let candidates = known.filter(matches); if (!candidates.length) candidates = undated.filter(matches);
+      for (let i=0;i<count;i++) {
+        candidates = candidates.filter(r=>!seenIds.has(r.id) && !seenTitles.has(displayTitle(r)));
+        if (!candidates.length) break;
+        const adjusted = r=>r.frontpage_score-(counts[r.source_id]||0)*(cfg.source_repeat_penalty ?? 6);
+        const row = candidates.sort((a,b)=>adjusted(b)-adjusted(a) || tailCompare(a,b))[0];
+        rows.push(row); seenIds.add(row.id); seenTitles.add(displayTitle(row)); counts[row.source_id]=(counts[row.source_id]||0)+1;
+      }
+    }
     return rows;
   }
   const eventInstant = event => event.event_type === 'call_deadline' ? event.deadline_at : event.start_at;

@@ -15,6 +15,56 @@ REFERENCE = '2026-10-15T12:00:00+00:00'
 
 
 class FrontpagePriorityTests(unittest.TestCase):
+    def story(self, id, published, title='A cultural report', channel='film', **extra):
+        return {'id': id, 'source_id': id, 'channel': channel, 'language': 'en',
+                'kind': 'news', 'title_original': title, 'published_at': published,
+                'evidence_status': 'media_reported', **extra}
+
+    def pick(self, rows):
+        snapshot = {'content': rows, 'events': [], 'content_events': []}
+        ranks = rank_snapshot(snapshot, REFERENCE)
+        return frontpage_rows(snapshot, ranks, reference_time(REFERENCE))
+
+    def test_new_major_story_is_not_excluded_by_interest_candidate_limit(self):
+        interests = [self.story('photo-' + str(i), '2026-10-15T11:00:00Z', 'A new photobook ' + str(i), 'photography') for i in range(20)]
+        major = self.story('major', '2026-10-15T10:00:00Z', 'A major museum declares bankruptcy', 'art')
+        self.assertEqual(self.pick(interests + [major])[0]['id'], 'major')
+
+    def test_week_old_award_and_old_column_fallback_cannot_displace_new_reports(self):
+        old = self.story('old-award', '2026-10-08T11:00:00Z', 'PhotoBook Awards shortlist', 'photography')
+        archive = self.story('archive', '2026-09-24T00:00:00Z', 'A photobook exhibition', 'photography')
+        recent = self.story('recent', '2026-10-15T09:00:00Z', channel='photography')
+        rows = self.pick([old, archive, recent])
+        self.assertEqual([r['id'] for r in rows], ['recent'])
+
+    def test_importance_decays_and_age_expiry_is_deterministic_without_random_rotation(self):
+        aged = self.story('aged-major', '2026-10-12T13:00:00Z', 'PhotoBook Awards shortlist')
+        fresh = self.story('fresh', '2026-10-15T11:00:00Z')
+        self.assertEqual(self.pick([aged, fresh])[0]['id'], 'fresh')
+        self.assertEqual(self.pick([fresh, aged])[0]['id'], 'fresh')
+        fallback = self.story('fallback', '2026-10-11T12:00:00Z')
+        self.assertEqual(self.pick([fallback])[0]['id'], 'fallback')
+        self.assertEqual(self.pick([self.story('expired', '2026-10-08T11:59:59Z')]), [])
+
+    def test_fetch_date_unknown_publication_and_far_future_do_not_count_as_fresh_news(self):
+        unknown = self.story('unknown', None, fetched_at=REFERENCE, updated_at=REFERENCE)
+        invalid = self.story('invalid', 'unknown', fetched_at=REFERENCE)
+        future = self.story('future', '2026-10-16T12:00:00Z')
+        self.assertEqual(self.pick([unknown, invalid, future]), [])
+
+    def test_undated_event_is_only_fallback_and_never_uses_fetch_age(self):
+        unknown = self.story('unknown', None, fetched_at=REFERENCE)
+        dated = self.story('dated', '2026-10-15T10:00:00Z')
+        ranks = {'unknown': {'source_title': unknown['title_original'], 'priority': 'P0', 'importance': 'high', 'due': {'days': 1}},
+                 'dated': {'source_title': dated['title_original'], 'priority': 'P2', 'importance': 'normal'}}
+        snapshot = {'content': [unknown, dated], 'events': [], 'content_events': []}
+        rows = frontpage_rows(snapshot, ranks, reference_time(REFERENCE), headlines={})
+        self.assertEqual([r['id'] for r in rows], ['dated'])
+        snapshot['content'] = [unknown]
+        fallback = frontpage_rows(snapshot, ranks, reference_time(REFERENCE), headlines={})[0]
+        self.assertIsNone(fallback['frontpage_age_hours'])
+        self.assertEqual(fallback['frontpage_basis'], 'confirmed_upcoming_event')
+
     def fixture(self):
         rows = []
         for i in range(24):
@@ -34,7 +84,13 @@ class FrontpagePriorityTests(unittest.TestCase):
     @unittest.skipUnless(shutil.which('node'), 'Node is only needed for browser/backend parity testing')
     def test_public_frontpage_matches_browser_for_fixture_and_current_archive(self):
         preferences = json.loads((ROOT / 'config/preferences.json').read_text())
-        snapshots = [self.fixture(), json.loads((ROOT / 'data/live.json').read_text())]
+        edge = {'content': [self.story('offset', '2026-10-15T03:00:00-09:00'),
+                            self.story('same-time', '2026-10-15T12:00:00Z'),
+                            self.story('future', '2026-10-16T12:00:00Z'),
+                            self.story('old', '2026-10-08T11:59:59Z'),
+                            self.story('unknown', None), self.story('invalid', 'unknown')],
+                'events': [], 'content_events': []}
+        snapshots = [self.fixture(), edge, json.loads((ROOT / 'data/live.json').read_text())]
         node = r"""
 const fs=require('node:fs'), input=JSON.parse(fs.readFileSync(0,'utf8'));
 const RealDate=Date;

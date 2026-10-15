@@ -1,3 +1,5 @@
+> T061（2026-10-15）：修正头版选稿，视觉/文章排版不改。重要新闻直接参与；主头条优先72小时内，缺新最多回退7天，栏目也不从7天外旧库填充。重要性高24/中8，P0加12/P1加6/P3减12，每2小时减1分，非日本普通展览原惩罚保留；后续同源减6促进媒体平衡。未知发布时间仅在没有同栏近期报道且有明确2天内活动时后备，不用抓取/翻译时间伪造新鲜度。兴趣筛选留在原selectToday辅助功能，不再截断公共头条。无随机轮换，历史/日历全部保留。Python/JS选稿与API头条优先ID同步，待生产验收。
+
 > T060新增只读运行接口：/reports/operations.json、本地/api/operations、CULTURE_BOOTSTRAP.automation.operations；数据契约为增量，现有视觉不改。可折叠展示进度/失败/配额，但不得把机翻或历史会话计作本轮API、把Actions绿色当AI正常、把未知全球覆盖率当100%。报告包含快照/AI完成/健康检查的分别时间，未满24小时不外推日均。
 
 > T057单元接口就绪：正式名称「一种关注」，ID=a-kind-of-attention。读取/reports/attention-units/a-kind-of-attention.json（索引/reports/attention-units.json），或bootstrap.coverage.attention_units.units；每成员含推荐理由、关注范围/专长、来源独立权重、真实更新/故障/正文/AI数量、最近5篇报道及稳定ID。Claude自行设计放入页面，Codex未改视觉；按ID用CultureCore.readerRoute生成站内阅读，relative reader_path不得拼到reports目录下。细节见ATTENTION_UNITS.md。

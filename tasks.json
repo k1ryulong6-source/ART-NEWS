@@ -1957,8 +1957,8 @@
       "id": "T061",
       "title": "修正头版新鲜度、旧稿长期占位与栏目后备池时效",
       "milestone": "M6",
-      "status": "todo",
-      "owner": null,
+      "status": "doing",
+      "owner": "Codex（选稿逻辑与后端同步，不改版式）",
       "updated_at": "2026-10-15",
       "depends_on": [
         "T060"
@@ -1969,7 +1969,9 @@
         "config/preferences.json",
         "tests/test_frontpage.py",
         "tests/core.test.js",
-        "docs/"
+        "docs/",
+        "AGENTS.md",
+        "scripts/check_project.py"
       ],
       "acceptance": [
         "重要新消息可直接竞争头条，避免先被兴趣候选截断；新鲜度可解释",
@@ -1977,7 +1979,10 @@
         "有真实新消息才更新，不通过随机轮换掩盖采集故障；全部原文/历史/日历保留",
         "Python/JS选稿保持一致，并同步API头条优先翻译ID，不改Claude视觉"
       ],
-      "evidence": []
+      "evidence": [
+        "132Python+27JS、纯stdlib静态构建/项目检查通过。新增5项针对重要新稿不被兴趣截断、7天旧稿/栏目回灌退出、重要性随时间衰减/稳定无随机、抓取日期及未来日期不冒新鲜、未知日期仅明确活动后备；固定时刻真实库存＋构造/时区样本跨语言ID顺序逐一相同。",
+        "原主头条10月8日/摄影首篇9月24日均退出新头版；当前干选为Sandra Hüller奥斯卡/柏林采访、Gary Waddell讣告、Tammy Nguyen威尼斯双年展及年度野生动物摄影奖（均有真实近72h发布时间）。这是选稿测试，不代表这些新稿本轮已翻译。待发布/实际API接续验收。"
+      ]
     }
   ]
 }

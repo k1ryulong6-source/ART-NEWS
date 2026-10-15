@@ -1,7 +1,6 @@
 """Mirror CultureCore.frontpageRows for the public edition, without changing layout."""
 import json
-import math
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -19,106 +18,64 @@ def display_title(row, headlines):
     return translated or row.get('title_original') or '标题未取得'
 
 
-def current(row, related, instant, preferences):
-    today = instant.astimezone(ZoneInfo(preferences.get('reading_timezone') or 'UTC')).date()
-    try:
-        age = (today - date.fromisoformat((row.get('published_at') or '')[:10])).days
-        return -1 <= age <= preferences.get('recent_news_days', 30)
-    except ValueError:
-        pass
-    for event in related:
-        if event.get('date_precision') != 'day':
-            continue
-        exact = event.get('deadline_at') if event.get('event_type') == 'call_deadline' else event.get('start_at')
-        if exact:
-            try:
-                if datetime.fromisoformat(exact.replace('Z', '+00:00')) <= instant:
-                    continue
-            except (ValueError, TypeError):
-                pass
-        try:
-            local = instant.astimezone(ZoneInfo(event['timezone'])).date()
-            start = (date.fromisoformat(event['start_date']) - local).days
-            end = (date.fromisoformat(event.get('end_date') or event['start_date']) - local).days
-            if (0 <= start <= 120 if event.get('event_type') == 'call_deadline' else start <= 14 and end >= 0):
-                return True
-        except (KeyError, ValueError, TypeError):
-            pass
-    return False
-
-
 def frontpage_rows(snapshot, priorities, instant, preferences=None, headlines=None):
     preferences = preferences or json.loads((ROOT / 'config/preferences.json').read_text())
     if headlines is None:
         from .headlines import load_headlines
-        # Priority callers may provide minimal event metadata rather than display titles.
         headlines = load_headlines({**snapshot, 'events': [e for e in snapshot.get('events', []) if e.get('title_original')]})
-    available = [r for r in snapshot.get('content', []) if not r.get('is_demo')]
-    titles = {r['id']: display_title(r, headlines) for r in available}
-    events = {r['id']: r for r in snapshot.get('events', [])}
-    related = {}
-    for link in snapshot.get('content_events', []):
-        if link['event_id'] in events:
-            related.setdefault(link['content_id'], []).append(events[link['event_id']])
-    limit = preferences.get('daily_selection_limit') or 10
-    buzz = preferences.get('industry_buzz') or {'enabled': True, 'max_share': 0.1}
-    interests = preferences.get('interests', []) + preferences.get('followed_entities', [])
-    synonyms = {'电影': ['film', 'cinema', 'película'], '艺术': ['art', 'exhibition'],
-                '摄影': ['photograph', '写真'], '摄影集': ['photobook', '写真集'],
-                '电影访谈': ['interview'], '街头摄影': ['street photography']}
-    scored = []
-    for row in available:
-        if row.get('evidence_status') == 'unverified' or not buzz.get('enabled') and row.get('kind') == 'industry_buzz':
+    cfg = preferences.get('frontpage') or {}
+    lead_hours, fallback_hours = cfg.get('lead_hours', 72), cfg.get('fallback_hours', 168)
+    decay = cfg.get('freshness_decay_hours', 2)
+    importance = cfg.get('importance_boost', {'high': 24, 'medium': 8, 'normal': 0})
+    urgency = cfg.get('priority_boost', {'P0': 12, 'P1': 6, 'P2': 0, 'P3': -12})
+    known, undated = [], []
+    for original in snapshot.get('content', []):
+        if original.get('is_demo') or original.get('evidence_status') == 'unverified':
             continue
-        if not current(row, related.get(row['id'], []), instant, preferences):
-            continue
-        text = ' '.join([row.get('title_original') or '', titles[row['id']], row.get('summary_zh') or '']).lower()
-        score = sum(any(term.lower() in text for term in [x, *synonyms.get(x, [])]) for x in interests if x) * 4
-        if preferences.get('news_scope') == 'follow_city' and row.get('city') == preferences.get('default_city'):
-            score += 2
-        score -= priorities.get(row['id'], {}).get('recommendation_penalty', 0)
-        scored.append({**row, 'score': score})
-    scored.sort(key=lambda r: r.get('published_at') or '', reverse=True)
-    scored.sort(key=lambda r: -r['score'])
-    balanced, source_counts, channel_counts = [], {}, {}
-    while scored:
-        index = max(range(len(scored)), key=lambda i: scored[i]['score'] - source_counts.get(scored[i].get('source_id'), 0) * 6 - channel_counts.get(scored[i].get('channel'), 0) * 4)
-        row = scored.pop(index)
-        balanced.append(row)
-        source_counts[row.get('source_id')] = source_counts.get(row.get('source_id'), 0) + 1
-        channel_counts[row.get('channel')] = channel_counts.get(row.get('channel'), 0) + 1
-    selected, deferred = [], []
-    share = buzz.get('max_share', 0.1)
-    for row in balanced:
-        if row.get('kind') == 'industry_buzz':
-            if len(deferred) < math.floor(limit * share):
-                deferred.append(row)
-        elif len(selected) < limit:
-            selected.append(row)
-    allowed = min(len(deferred), limit if share == 1 else math.floor(len(selected) * share / (1 - share))) if buzz.get('enabled') and share > 0 else 0
-    selected = (selected[:limit - allowed] + deferred[:allowed])[:limit]
-    def ordered(rows):
-        rows = sorted(rows, key=lambda r: r.get('published_at') or '', reverse=True)
-        def key(row):
-            rank = priorities.get(row['id'], {})
-            return (int(rank.get('priority', 'P2')[1]), {'high': 0, 'medium': 1, 'normal': 2}.get(rank.get('importance'), 2), (rank.get('due') or {}).get('days', 999))
-        return sorted(rows, key=key)
-    lead = next((r for r in ordered(selected) if r.get('kind') != 'industry_buzz' and r.get('evidence_status') != 'unverified'), selected[0] if selected else None)
-    if not lead:
-        return []
-    # selectToday returns clones, so the browser's original-object pool includes all originals.
-    pool = [r for r in selected + ordered(available) if r['id'] != lead['id'] and r.get('evidence_status') != 'unverified']
-    seen, result = {titles[lead['id']]}, [lead]
-    for channel, count in [('film', 5), ('art', 5), ('photography', 5), ('industry_buzz', 4)]:
-        matching = []
-        for row in pool:
-            if not (row.get('kind') == 'industry_buzz' if channel == 'industry_buzz' else row.get('kind') != 'industry_buzz' and row.get('channel') == channel):
+        row = dict(original)
+        rank = priorities.get(row['id'], {})
+        age = None
+        try:
+            published = datetime.fromisoformat((row.get('published_at') or '').replace('Z', '+00:00'))
+            published = published.replace(tzinfo=ZoneInfo('UTC')) if published.tzinfo is None else published
+            elapsed = (instant - published).total_seconds() / 3600
+            if elapsed < -2 or elapsed > fallback_hours:
                 continue
-            title = titles[row['id']]
-            if title not in seen:
-                seen.add(title)
-                matching.append(row)
-        result.extend(matching[:count])
+            age = max(0, elapsed)
+        except (ValueError, TypeError):
+            due = rank.get('due') or {}
+            if not (0 <= due.get('days', 999) <= cfg.get('undated_event_days', 2)):
+                continue
+        score = importance.get(rank.get('importance'), 0) + urgency.get(rank.get('priority'), 0)
+        score -= (age if age is not None else fallback_hours) / decay
+        score -= rank.get('recommendation_penalty', 0)
+        row.update(frontpage_score=score, frontpage_age_hours=age,
+                   frontpage_basis='published_at' if age is not None else 'confirmed_upcoming_event')
+        (known if age is not None else undated).append(row)
+    eligible = [r for r in known if r.get('kind') != 'industry_buzz']
+    recent = [r for r in eligible if r['frontpage_age_hours'] <= lead_hours]
+    lead_pool = recent or eligible or [r for r in undated if r.get('kind') != 'industry_buzz']
+    if not lead_pool:
+        return []
+    order = lambda r: (-r['frontpage_score'], r['frontpage_age_hours'] if r['frontpage_age_hours'] is not None else fallback_hours, r['id'])
+    lead = min(lead_pool, key=order)
+    result, seen_ids = [lead], {lead['id']}
+    seen_titles = {display_title(lead, headlines)}
+    counts = {lead.get('source_id'): 1}
+    for channel, count in [('film', 5), ('art', 5), ('photography', 5), ('industry_buzz', 4)]:
+        if channel == 'industry_buzz' and not (preferences.get('industry_buzz') or {}).get('enabled', True):
+            continue
+        matches = lambda r: (r.get('kind') == 'industry_buzz' if channel == 'industry_buzz' else r.get('kind') != 'industry_buzz' and r.get('channel') == channel)
+        # Unknown publication dates never outrank a dated report in the desk.
+        candidates = [r for r in known if matches(r)] or [r for r in undated if matches(r)]
+        for _ in range(count):
+            candidates = [r for r in candidates if r['id'] not in seen_ids and display_title(r, headlines) not in seen_titles]
+            if not candidates:
+                break
+            row = min(candidates, key=lambda r: (-(r['frontpage_score'] - counts.get(r.get('source_id'), 0) * cfg.get('source_repeat_penalty', 6)), *order(r)[1:]))
+            seen_ids.add(row['id']); seen_titles.add(display_title(row, headlines))
+            counts[row.get('source_id')] = counts.get(row.get('source_id'), 0) + 1
+            result.append(row)
     return result
 
 

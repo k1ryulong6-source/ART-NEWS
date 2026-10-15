@@ -62,6 +62,9 @@ def check_config():
     require(prefs["daily_selection_limit"] > 0, "Invalid selection limit")
     require(not prefs["industry_buzz"]["include_unverified_in_today"], "Unverified gossip cannot enter today")
     ZoneInfo(prefs["reading_timezone"])
+    frontpage = prefs['frontpage']
+    require(0 < frontpage['lead_hours'] <= frontpage['fallback_hours'] <= 30 * 24, 'Invalid frontpage age windows')
+    require(frontpage['freshness_decay_hours'] > 0 and frontpage['source_repeat_penalty'] >= 0, 'Invalid frontpage decay/diversity penalty')
     sources = read_json("config/sources.json")["sources"]
     regional = read_json('config/editorial-regions.json')
     regions = {row['id'] for row in regional['world_regions']}

@@ -1648,6 +1648,29 @@
         "Playwright 390×844/375×667/430×932：扉页宽241/232/266px（61.8%），标题底558/454/615px高于版权日期747/579/830px；768与1440仍为半屏；均无横向溢出",
         "node --test tests/core.test.js tests/ui.test.js 26通过；check_project.py与build_static.py通过"
       ]
+    },
+    {
+      "id": "T053",
+      "title": "片头去掉光泽扫过",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T051"
+      ],
+      "scope": [
+        "frontend/theme.css",
+        "docs/UI_CUSTOMIZATION.md",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md"
+      ],
+      "acceptance": [
+        "片头结束时不再有白色光带斜向扫过扉页；其余片头与报头动画不变"
+      ],
+      "evidence": [
+        "删除.cover-front::after与cover-sheen keyframes；Playwright录屏逐帧确认2.5–5秒间扉页无光带，片头其余部分照常；26项JS测试、check_project与静态构建通过"
+      ]
     }
   ]
 }

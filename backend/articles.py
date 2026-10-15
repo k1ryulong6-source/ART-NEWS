@@ -83,6 +83,8 @@ def extract_article(payload, url, source):
                 if '@graph' in value: visit(value['@graph'])
         visit(data)
     # Extract rendered public markup only, not hidden subscription text in JSON-LD.
+    from .article_cleanup import remove_widgets
+    remove_widgets(soup, source)
     for node in soup.select(NOISE):
         if node.attrs is not None: node.decompose()
     for node in soup.select('[hidden], [aria-hidden="true"]') if source['source_type'] != 'official' else []:
@@ -106,6 +108,9 @@ def extract_article(payload, url, source):
                 if text: blocks.append({'type': 'paragraph', 'text': text})
 
         for node in root.find_all(['p', 'h2', 'h3', 'h4', 'li', 'blockquote', 'img']):
+            # Image captions are already included with their image block.
+            if node.name != 'img' and node.find_parent('figcaption'):
+                continue
             if node.name != 'img' and any(p.name in ('p', 'li', 'blockquote') for p in node.parents if p is not root):
                 continue
             if node.name == 'img':
@@ -215,10 +220,24 @@ def collect_articles(store, limit=40, getter=None, force=False):
             fields['article_status'] = row['article_status']
             fields['article_reason'] = 'cached_body_after_' + fields['article_reason']
         if fields.get('article_hash') and fields['article_hash'] != row.get('article_hash'):
+            from .article_cleanup import subset_indexes, remap_translations
+            indexes = subset_indexes(json.loads(row.get('article_blocks_json') or '[]'),
+                                     json.loads(fields['article_blocks_json']))
+            try:
+                retained = remap_translations(row, fields, indexes) if indexes is not None else {}
+            except (ValueError, TypeError, KeyError):
+                indexes, retained = None, {}
             for k in ARTICLE_FIELDS:
                 if k.startswith('article_translation_'): fields[k] = None
             from .editorial import EDITORIAL_FIELDS
             for k in EDITORIAL_FIELDS: fields[k] = None
+            if indexes is not None:
+                # Pure widget removal must not erase/retranslate a valid AI body.
+                for k in EDITORIAL_FIELDS:
+                    fields[k] = row.get(k)
+                for k in ARTICLE_FIELDS:
+                    if k.startswith('article_translation_'): fields[k] = row.get(k)
+                fields.update(retained)
         with store.connect() as db:
             db.execute('UPDATE content SET ' + ','.join(k+'=?' for k in fields) + ' WHERE id=?', [*fields.values(), row['id']])
         return row['source_id'], fields['article_status']

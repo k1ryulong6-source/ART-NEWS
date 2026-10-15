@@ -58,6 +58,7 @@ class GeminiTranslator:
                        '忠实保留作者语气、引文、否定、不确定性，不摘要、不添加事实。遵守专名表；'
                        '未知译名保留原名，作品编码、数字、时间、金额、URL及版权人不得丢失。'
                        '阿拉伯数字的字面形式原样保留，不改成中文数字、不换算单位、不改动数字内部的标点。'
+                       '每个单元的numeric_literals列出需要保留的原文数字；逐项原样保留在该单元译文中。'
                        '相邻单元可能是同一段的片段，应联系上下文翻译，但每个单元只对应自己的内容。'
                        '输出JSON对象：{"outputs":{"单元key":"中文译文",...}}，不要Markdown。')
         payload = {'systemInstruction': {'parts': [{'text': instruction}]},
@@ -116,6 +117,26 @@ def input_hash(row, provider, cfg):
     value = [provider, row['title_original'], row.get('excerpt_original'), row['article_hash'],
              cfg['source_characters_per_unit'], rules()]
     return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+
+def invalid_assembled_keys(row, translation, keys):
+    """Locate failed fields with the same program checks, never a model review."""
+    title = translation.get('title_zh')
+    if not isinstance(title, str) or not title.strip() or len(title) > 600 or not numbers(row['title_original']) <= numbers(title):
+        return keys['title']
+    excerpt = translation.get('excerpt_zh')
+    if not isinstance(excerpt, str) or len(excerpt) > 2000:
+        return keys['excerpt']
+    rejected = []
+    for i, source in enumerate(json.loads(row['article_blocks_json'])):
+        item = {**translation['blocks'][i], 'index': 0}
+        try:
+            checked_result({**row, 'article_blocks_json': json.dumps([source], ensure_ascii=False)},
+                           {**translation, 'blocks': [item]})
+        except ValueError:
+            field = 'caption' if source['type'] == 'image' else 'text'
+            rejected.extend(keys[f'block:{i}:{field}'])
+    return rejected
 
 
 def selected_rows(rows, snapshot, limit):
@@ -201,7 +222,9 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
         if path.stem in existing_AI:
             path.unlink()
     if ledger.get('retry_after', '') > now():
-        report.update(status='quota_wait', retry_after=ledger['retry_after'])
+        report.update(status=ledger.get('retry_status', 'retry_wait'), retry_after=ledger['retry_after'])
+        if ledger.get('retry_error'):
+            report['error'] = ledger['retry_error']
     else:
         rows = [row for row in snapshot['content'] if not row.get('is_demo') and row['language'] != 'zh'
                 and row.get('article_blocks_json') and row.get('editorial_status') not in ('reviewed', 'translated')]
@@ -227,7 +250,9 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                 report['resumed'].append(row['id'])
             document = {'language': row['language'], 'channel': row['channel'], 'rules': rules(),
                         'source_status': row['article_status'], 'source_url': row.get('article_source_url') or row['canonical_url'],
-                        'original_units': [{'key': key, 'text': text} for key, text in units]}
+                        'original_units': [{'key': key, 'text': text,
+                                            'numeric_literals': re.findall(r'\d+(?:,\d{3})*(?:\.\d+)?', text)}
+                                           for key, text in units]}
             exhausted = False
             try:
                 while True:
@@ -278,22 +303,32 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                             record_tokens(provider.last_usage)
                         raise
                     record_tokens(tokens)
+                    accepted, invalid = {}, []
                     for key, source in chunk:
                         translated = outputs[key]
                         if not isinstance(translated, str) or not translated.strip():
-                            raise ValueError('empty_ai_translation')
-                        if not numbers(source) <= numbers(translated):
-                            raise ValueError('ai_numbers_missing:' + key)
-                        if len(translated) > max(2000, len(source) * 5):
-                            raise ValueError('ai_translation_expansion')
-                        if source == translated and key.startswith('block:') and ':text:' in key and len(source) > 100 and not source.startswith('https://'):
-                            raise ValueError('ai_paragraph_not_translated')
-                    state['outputs'].update(outputs)
-                    state.pop('retry_after', None)
-                    state.pop('error', None)
+                            invalid.append(('empty_ai_translation', key))
+                        elif not numbers(source) <= numbers(translated):
+                            invalid.append(('ai_numbers_missing', key))
+                        elif len(translated) > max(2000, len(source) * 5):
+                            invalid.append(('ai_translation_expansion', key))
+                        elif source == translated and key.startswith('block:') and ':text:' in key and len(source) > 100 and not source.startswith('https://'):
+                            invalid.append(('ai_paragraph_not_translated', key))
+                        else:
+                            accepted[key] = translated
+                    # One bad unit must not discard other, already paid-for
+                    # valid units. A future request asks only for missing keys,
+                    # retaining the same complete original article context.
+                    state['outputs'].update(accepted)
+                    if not invalid:
+                        state.pop('retry_after', None)
+                        state.pop('error', None)
                     write_json(path, state)
-                    if checkpoint_sink:
+                    if checkpoint_sink and accepted:
                         checkpoint_sink()
+                    if invalid:
+                        reason, key = invalid[0]
+                        raise ValueError(reason + ':' + key)
                 if exhausted:
                     write_json(path, state)
                     break
@@ -301,7 +336,12 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                 try:
                     checked_result(row, translation)
                 except ValueError:
-                    state['outputs'] = {}  # Invalid assembled copy must not become a permanent retry loop.
+                    rejected = invalid_assembled_keys(row, translation, keys)
+                    if rejected:
+                        for key in rejected:
+                            state['outputs'].pop(key, None)
+                    else:
+                        state['outputs'] = {}  # Unexpected structural failure, never publish invalid copy.
                     raise
                 changed = publish_translation(store, row, translation, provider.name,
                     provider.actual_model or provider.model, None,
@@ -317,12 +357,14 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                 else:
                     report['status'] = 'quota_wait' if error.status == 429 else 'service_wait'
                     ledger['retry_after'] = (datetime.now(timezone.utc) + timedelta(seconds=max(error.retry_seconds, 3600))).isoformat()
+                ledger.update(retry_status=report['status'], retry_error=reason)
                 write_json(path, state)
                 write_json(ledger_path, ledger)
                 report.update(error=reason, retry_after=ledger['retry_after'])
                 break
             except (URLError, TimeoutError, ConnectionError) as error:
                 ledger['retry_after'] = (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
+                ledger.update(retry_status='service_wait', retry_error=type(error).__name__)
                 write_json(path, state)
                 write_json(ledger_path, ledger)
                 report.update(status='service_wait', error=type(error).__name__, retry_after=ledger['retry_after'])

@@ -893,7 +893,8 @@
         "T034接收最新自动采集后537条，44已译/49原生中文/442待译/2缺正文；没有新增模型翻译，保持doing。",
         "最新623资料/28源，44AI/49原生中文/528AI待译/2缺正文；机翻29不算AI完成。",
         "2026-10-15本轮起点：main a6d46ef，891资料/198活动/39启用来源；有效AI全文127（旧校译32+直接95），原生中文49，有正文待AI668（其中机翻227），正文缺失47。已核对23份pending_pages共668独立ID和当前next源hash/标题；本轮按头条先译，明确使用gpt-5.6-sol工作者，完成量及发布另记。",
-        "2026-10-15 本会话GPT-5.6批次1：17篇全文初译通过checked_result及临时SQLite import_packs模拟（17 imported/0 invalid/0 stale）；包含3篇当前待译头条、重大新闻、日本上映和旧稿份额。仅程序段落/数字/hash/来源校验，非二次模型校对；提交待真实导入和Pages验收。T028仍doing。"
+        "2026-10-15 本会话GPT-5.6批次1：17篇全文初译通过checked_result及临时SQLite import_packs模拟（17 imported/0 invalid/0 stale）；包含3篇当前待译头条、重大新闻、日本上映和旧稿份额。仅程序段落/数字/hash/来源校验，非二次模型校对；提交待真实导入和Pages验收。T028仍doing。",
+        "2026-10-15 批次2：4篇通过程序完整性及临时import_packs模拟（威尼斯双年展、街头霸王、旧稿It Gets Worse、摄影奖Student114块长文）。另2篇本地稿被后台Gemini先完成，保留Gemini并不导入重复稿；1篇数字检查未通过留待接续。6名GPT-5.6工作者实际触及usage limit，不升级模型、不再启动。前批17篇已由38674848357成功导入。尚未完成全量。"
       ]
     },
     {
@@ -1867,6 +1868,127 @@
     },
     {
       "id": "T059",
+      "title": "正文杂项清理与既有译文安全保留；仅后台免费API接续",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex（后端，禁用会话翻译工作者）",
+      "updated_at": "2026-10-15",
+      "depends_on": [],
+      "scope": [
+        "backend/articles.py",
+        "backend/article_cleanup.py",
+        "scripts/clean_article_bodies.py",
+        ".github/workflows/cleanup.yml",
+        ".github/workflows/autotranslate.yml",
+        "tests/test_articles.py",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md",
+        "tasks.json",
+        ".github/workflows/pages.yml",
+        "AGENTS.md",
+        "config/translation.json",
+        "docs/DAILY_TRANSLATION.md",
+        "docs/AUTONOMOUS_WORKFLOW.md"
+      ],
+      "acceptance": [
+        "按已验证DOM结构去除广告、订阅和相关文章模块，不按正文关键词删段",
+        "正文、引文、图片图注、作者和活动日期/规则保留；防误删测试通过",
+        "现存正文只接受可证明的纯删除子序列，匹配的已有译文同步映射并保留模型身份；不确定则保留原文并报告",
+        "停止ChatGPT会话翻译工作者，仅已配置Gemini免费API运行，不开收费",
+        "公开工作流与译文产量以真实运行核对"
+      ],
+      "evidence": [
+        "119Python+27JS测试及check_project/diff检查通过；新增防误删、官方外层form/活动规则、图注/引文保留、严格子序列、发布者改稿时仅投影完整DOM组件、多处相同块歧义不删、AI/机翻身份保留测试。",
+        "真实42篇干跑：42可安全清理/0失败/0延后，178块8946字符；保留9有效AI、14有效机翻并映射7匹配历史pack，不发送模型请求。待远端实际清理与发布验收。",
+        "旧每日会话翻译任务6ace6f72b3dc81919301888a638a327e已实际is_enabled=false；只运行GitHub免费API，不依赖ChatGPT额度。",
+        "远端cleanup38689796131执行成功但报告partial：实际清理28篇120块5407字符，14篇Artnet在GitHub网络HTTP403，未抹除缓存。Pages38689853843 success。",
+        "使用工作区普通公开请求补完这14篇（无模型请求、无认证/付费）：58块3539字符，合计42篇178块8946字符；全部内容仍895条，173篇AI身份不变，保留9AI/14机翻，无重复翻译。",
+        "清理后严格审计0错误；所有历史译稿全量import_packs模拟0新增/0invalid，匹配缓存保持不重导入。恢复原翻译规则配置避免仅会话禁令改变API断点指纹；会话禁令由暂停旧任务及AGENTS最新覆盖规则生效。",
+        "已准备cleanup完成触发API及实际免费API运行验收；T059暂doing，T028仍doing。",
+        "最终提交77bfaec已上线：Project checks38690039734、Pages38690039775/38690067708均success。生产42篇Babel JSON逐篇核对清理后source_hash/完整原文块数与已有中文模型/块数均一致；1440/390px首页头条排序、原文切换、巴别塔无脚本错误/横向溢出。",
+        "后台API38690039638由主链变更自动启动，2026-10-15 06:02UTC起实际处于Translate with contextual AI步骤；独立GitHub runner，未从会话生成译文，paid_activation=false、500/太平洋日上限保持。此批仍in_progress，不计作新发布产量。此前成功API38685372309真实完成11篇，累计Gemini108篇。",
+        "最新已发布快照2026-10-15T06:00:51Z：895资讯，173AI全文=141直接+32历史校译，49原生中文正文，663有正文待AI（其中207有效临时机翻），10正文缺失；总327机翻与AI有重叠。清理失败14已补完，来源采集AMP/BFI故障与欠账仍按原状态保留。"
+      ]
+    },
+    {
+      "id": "T060",
+      "title": "后台API有效段落保留、独立接续与真实运行报告",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex（只后端/API，不启动会话翻译工作者）",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T059"
+      ],
+      "scope": [
+        "backend/ai_translation.py",
+        "backend/operations.py",
+        "backend/app.py",
+        "scripts/build_static.py",
+        ".github/workflows/autotranslate.yml",
+        ".github/workflows/pages.yml",
+        "tests/test_ai_translation.py",
+        "tests/test_operations.py",
+        "docs/AUTONOMOUS_WORKFLOW.md",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md",
+        "tasks.json",
+        "docs/CLAUDE_UI_HANDOFF.md"
+      ],
+      "acceptance": [
+        "同一API返回中仅失败单元进入重试，程序通过单元立即保存；不减弱数字/段落检查、不作第二轮模型校对",
+        "按完整文章语境重试未完成单元，已有效AI不覆盖，日500免费请求/批40/480秒及15秒间隔保持",
+        "小时级备用调度在GitHub独立运行，遇限流/503尊重原退避，不开付费",
+        "公开只读运行报告分别呈现真实AI/机翻/旧会话/待译/缺正文、失败/等待、账本与覆盖缺口，24小时未满不能当日均",
+        "相关测试通过，远端发布/生产报告实际验证"
+      ],
+      "evidence": [
+        "起点：实际API38690039638成功发布7篇后503 service_wait至07:08UTC；5个数字检查失败，当前180AI/656待AI。窗口尚未满24小时。",
+        "126Python+27JS、check_project/diff通过；新增同请求数字坏段保留其他合格输出/等待后仅请求缺失key、组装坏字段定位、真实计数无重叠、服务等待不被绿色隐藏、太平洋配额与预留、首次补库与未满24h、缺失证据未知及API只读/不泄露凭据测试。",
+        "纯stdlib静态构建通过；实况生成180AI=115API+65其他AI，656待AI含212有效机翻、10缺正文；215/500请求、0预留、6请求token未知；200入库中149首次来源补库，51其他新增，观察约12.7h，不作日均。",
+        "所有测试使用fixture provider；本会话未调用真实翻译API、未开启会话翻译工作者。等待远端真实工作流及公开报告验收。",
+        "补充503退避状态持久化：等待后续运行保留service_wait及503原因，不能把服务故障报成免费日额度耗尽；原429仍quota_wait。新增回归后127Python全量通过。",
+        "已上线f0f0107：CI38695109390/Pages38695109367 success（首版a5c9fd2的CI38694943292/Pages38694943318亦success）。生产/reports/operations.json实测180AI=115API+65旧AI、656待AI、215/500请求；service_wait/验证失败与来源缺口为attention，绿色Actions没有覆盖警示。",
+        "公开报告确认hourly备用、paid_activation=false、chatgpt_translation_workers=false；观察约12.7h/full_24_hours_elapsed=false，首次补库单列。自动API38694943268已独立运行；旧503退避尚未到期时没有强行新推理，临时离线兜底按原策略继续。127Python+27JS及纯stdlib构建/项目检查通过。",
+        "用户询问头条久不变化：实际主头条10月8日、摄影栏9月24日，当前无轮换/驻留衰减，主头条先兴趣候选再比较重要性，栏目后备池取全部库存。已记录T061待修；本任务未改Claude视觉或头版选稿。"
+      ]
+    },
+    {
+      "id": "T061",
+      "title": "修正头版新鲜度、旧稿长期占位与栏目后备池时效",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex（选稿逻辑与后端同步，不改版式）",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T060"
+      ],
+      "scope": [
+        "backend/frontpage.py",
+        "frontend/core.js（只选稿逻辑，不改Claude视觉）",
+        "config/preferences.json",
+        "tests/test_frontpage.py",
+        "tests/core.test.js",
+        "docs/",
+        "AGENTS.md",
+        "scripts/check_project.py"
+      ],
+      "acceptance": [
+        "重要新消息可直接竞争头条，避免先被兴趣候选截断；新鲜度可解释",
+        "主头条和栏目首篇限制旧稿长期占位；未知日期不拿抓取时间伪装新消息",
+        "有真实新消息才更新，不通过随机轮换掩盖采集故障；全部原文/历史/日历保留",
+        "Python/JS选稿保持一致，并同步API头条优先翻译ID，不改Claude视觉"
+      ],
+      "evidence": [
+        "132Python+27JS、纯stdlib静态构建/项目检查通过。新增5项针对重要新稿不被兴趣截断、7天旧稿/栏目回灌退出、重要性随时间衰减/稳定无随机、抓取日期及未来日期不冒新鲜、未知日期仅明确活动后备；固定时刻真实库存＋构造/时区样本跨语言ID顺序逐一相同。",
+        "原主头条10月8日/摄影首篇9月24日均退出新头版；当前干选为Sandra Hüller奥斯卡/柏林采访、Gary Waddell讣告、Tammy Nguyen威尼斯双年展及年度野生动物摄影奖（均有真实近72h发布时间）。这是选稿测试，不代表这些新稿本轮已翻译。待发布/实际API接续验收。",
+        "已上线3e940d5；CI38696435261/Pages38696435200均success。生产1440/390px逐个验证主头条/电影/艺术/摄影ID与backend优先及全量队列一致；所有头版有发布时间条目均<=168h、主头条<=72h，原10月8日/9月24日头条已退出，布局无溢出/脚本错误。",
+        "4篇新头条已有Gemini3.5有效AI全文（34/12/15/47块，全部collected），逐篇公开Babel原文hash及中原文块数一致；只复用，不额外调用模型重译。生产中文默认/原文切换/Babel入口验证通过。",
+        "安全rebase自动采集新快照后重新生成派生队列，保留后台新增5条，库存900、待AI661、输入841；未提交旧data/live或覆盖后台译文。新头条frontpage_waiting_ids=[]，有效AI自动跳过；API38696435355 pending，前批38696221501 active，不把排队当完成。T028仍doing，保留完整旧稿/全部分页。"
+      ]
+    },
+    {
+      "id": "T062",
       "title": "资讯排序替换翻译优先级筛选",
       "milestone": "M6",
       "status": "doing",

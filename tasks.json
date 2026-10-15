@@ -1865,6 +1865,43 @@
         "移入资讯：导航为头版/资讯/日历/剪报；点“一種關注”标签→#attention、导航高亮资讯、5家媒体；再点电影→#explore电影列表；头版“全部›”→#attention；320–430九视图无溢出。",
         "用户要求去掉标题下说明文字后上线：单元页与头版专栏条不再显示description/选择说明；每家媒体的推荐理由与来源状态（收录/正文/AI数量、最近读取）保留。27JS＋全部Python通过，320–430九视图无溢出。"
       ]
+    },
+    {
+      "id": "T059",
+      "title": "正文杂项清理与既有译文安全保留；仅后台免费API接续",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex（后端，禁用会话翻译工作者）",
+      "updated_at": "2026-10-15",
+      "depends_on": [],
+      "scope": [
+        "backend/articles.py",
+        "backend/article_cleanup.py",
+        "scripts/clean_article_bodies.py",
+        ".github/workflows/cleanup.yml",
+        ".github/workflows/autotranslate.yml",
+        "tests/test_articles.py",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md",
+        "tasks.json",
+        ".github/workflows/pages.yml",
+        "AGENTS.md",
+        "config/translation.json",
+        "docs/DAILY_TRANSLATION.md",
+        "docs/AUTONOMOUS_WORKFLOW.md"
+      ],
+      "acceptance": [
+        "按已验证DOM结构去除广告、订阅和相关文章模块，不按正文关键词删段",
+        "正文、引文、图片图注、作者和活动日期/规则保留；防误删测试通过",
+        "现存正文只接受可证明的纯删除子序列，匹配的已有译文同步映射并保留模型身份；不确定则保留原文并报告",
+        "停止ChatGPT会话翻译工作者，仅已配置Gemini免费API运行，不开收费",
+        "公开工作流与译文产量以真实运行核对"
+      ],
+      "evidence": [
+        "119Python+27JS测试及check_project/diff检查通过；新增防误删、官方外层form/活动规则、图注/引文保留、严格子序列、发布者改稿时仅投影完整DOM组件、多处相同块歧义不删、AI/机翻身份保留测试。",
+        "真实42篇干跑：42可安全清理/0失败/0延后，178块8946字符；保留9有效AI、14有效机翻并映射7匹配历史pack，不发送模型请求。待远端实际清理与发布验收。",
+        "旧每日会话翻译任务6ace6f72b3dc81919301888a638a327e已实际is_enabled=false；只运行GitHub免费API，不依赖ChatGPT额度。"
+      ]
     }
   ]
 }

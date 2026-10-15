@@ -1,3 +1,5 @@
+> 2026-10-15用户最新覆盖：仅运行GitHub后台Gemini免费API，不启动任何会话翻译工作者；旧每日ChatGPT翻译任务已暂停。本文下方会话分工/5.6默认是历史，不再执行。有效既有译稿复用；API不足按后台断点/退避等待，不能自动付费或改用ChatGPT额度。详见AUTONOMOUS_WORKFLOW.md。
+
 > T054最新顺序（2026-10-15）：先完成公共首页主头条，再完成电影／艺术／摄影各栏首篇全文。队列frontpage_priority_ids是本期全部头条，frontpage_waiting_ids是其中仍有外文正文待译的ID；next将它们放最前，之后才交错重要／及时稿与旧稿。pending_headlines/headlines_next仍仅代表标题待译，不能与全文头条混淆。队列随下一次导出重新生成；读最新main，不沿用旧排序或旧head缓存，不提高费用／请求上限。
 
 > 2026-10-14最新：GitHub后台以语境AI API为主，免费离线机翻仅临时兜底。本文件是可选ChatGPT补充任务的pack约定，不再是自动更新前提；不自动开户/付费。真实API设置与状态见AUTONOMOUS_WORKFLOW.md，已有有效AI正文继续复用，不做第二轮校对。

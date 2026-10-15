@@ -503,6 +503,8 @@ footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
 /* 一种关注: an edited unit of regional media. On the front page a band of five, one latest
    story each; its own page sets each outlet as a profile beside its recent reports. */
 .attention-title{font-family:'Intermission Title',var(--serif)}
+.tab-attention{font-family:'Intermission Title',var(--serif);letter-spacing:.12em}
+.tab-attention.active{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:6px}
 .attention-band{margin-top:30px;padding-top:16px;border-top:3px solid var(--ink)}
 .attention-head{display:flex;align-items:baseline;gap:22px;padding-bottom:12px;border-bottom:var(--rule-ink)}
 .attention-head .desk-name{border:0;padding:0;flex:none}
@@ -517,9 +519,9 @@ footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
 .attention-story time{display:block;margin-bottom:2px}
 .attention-story .card-title{font-size:15px;font-weight:700;line-height:1.42;overflow-wrap:anywhere}
 .attention-story .card-title:not([lang^=zh]){font-size:16px;line-height:1.3}
-.attention-page{padding-top:24px}
+.attention-page{padding-top:6px}
 .attention-masthead{padding-bottom:20px;border-bottom:3px solid var(--ink)}
-.attention-masthead h1{font-size:58px;font-weight:300;letter-spacing:.32em;line-height:1.1;margin:0 0 14px}
+.attention-masthead h2{font-size:44px;font-weight:300;letter-spacing:.32em;line-height:1.1;margin:0 0 12px}
 .attention-masthead>p{max-width:34em;font-size:17px;line-height:1.8;margin:0}
 .attention-detail{margin-top:10px;font-family:var(--sans);font-size:12.5px;color:var(--muted)}
 .attention-detail summary{cursor:pointer;list-style:none}
@@ -537,7 +539,7 @@ footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
 .attention-stories .card-title{font-size:16px;font-weight:700;line-height:1.45;overflow-wrap:anywhere}
 .attention-stories .card-title:not([lang^=zh]){font-size:17px;line-height:1.3}
 @media(max-width:1100px){.attention-members{grid-template-columns:repeat(3,minmax(0,1fr))}.attention-members li:nth-child(n){padding:14px 16px 4px;border-left:var(--rule)}.attention-members li:nth-child(3n+1){padding-left:0;border-left:0}}
-@media(max-width:860px){.attention-member{grid-template-columns:1fr}.attention-reading{margin-top:14px}.attention-masthead h1{font-size:46px}}
+@media(max-width:860px){.attention-member{grid-template-columns:1fr}.attention-reading{margin-top:14px}.attention-masthead h2{font-size:38px}}
 @media(max-width:600px){
   #navigation{flex:0 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none;gap:14px}
   #navigation::-webkit-scrollbar{display:none}
@@ -549,7 +551,7 @@ footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
   .attention-members{grid-template-columns:1fr}
   .attention-members li:nth-child(n){display:grid;grid-template-columns:minmax(0,1fr);padding:12px 0;border-left:0;border-bottom:var(--rule)}
   .attention-source{font-size:19px;margin-bottom:6px}
-  .attention-masthead h1{font-size:36px;letter-spacing:.24em}
+  .attention-masthead h2{font-size:32px;letter-spacing:.24em}
   .attention-masthead>p{font-size:16px}
   .attention-name{font-size:30px}
 }

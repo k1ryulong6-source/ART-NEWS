@@ -1914,7 +1914,7 @@
       "id": "T060",
       "title": "后台API有效段落保留、独立接续与真实运行报告",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex（只后端/API，不启动会话翻译工作者）",
       "updated_at": "2026-10-15",
       "depends_on": [
@@ -1947,8 +1947,37 @@
         "126Python+27JS、check_project/diff通过；新增同请求数字坏段保留其他合格输出/等待后仅请求缺失key、组装坏字段定位、真实计数无重叠、服务等待不被绿色隐藏、太平洋配额与预留、首次补库与未满24h、缺失证据未知及API只读/不泄露凭据测试。",
         "纯stdlib静态构建通过；实况生成180AI=115API+65其他AI，656待AI含212有效机翻、10缺正文；215/500请求、0预留、6请求token未知；200入库中149首次来源补库，51其他新增，观察约12.7h，不作日均。",
         "所有测试使用fixture provider；本会话未调用真实翻译API、未开启会话翻译工作者。等待远端真实工作流及公开报告验收。",
-        "补充503退避状态持久化：等待后续运行保留service_wait及503原因，不能把服务故障报成免费日额度耗尽；原429仍quota_wait。新增回归后127Python全量通过。"
+        "补充503退避状态持久化：等待后续运行保留service_wait及503原因，不能把服务故障报成免费日额度耗尽；原429仍quota_wait。新增回归后127Python全量通过。",
+        "已上线f0f0107：CI38695109390/Pages38695109367 success（首版a5c9fd2的CI38694943292/Pages38694943318亦success）。生产/reports/operations.json实测180AI=115API+65旧AI、656待AI、215/500请求；service_wait/验证失败与来源缺口为attention，绿色Actions没有覆盖警示。",
+        "公开报告确认hourly备用、paid_activation=false、chatgpt_translation_workers=false；观察约12.7h/full_24_hours_elapsed=false，首次补库单列。自动API38694943268已独立运行；旧503退避尚未到期时没有强行新推理，临时离线兜底按原策略继续。127Python+27JS及纯stdlib构建/项目检查通过。",
+        "用户询问头条久不变化：实际主头条10月8日、摄影栏9月24日，当前无轮换/驻留衰减，主头条先兴趣候选再比较重要性，栏目后备池取全部库存。已记录T061待修；本任务未改Claude视觉或头版选稿。"
       ]
+    },
+    {
+      "id": "T061",
+      "title": "修正头版新鲜度、旧稿长期占位与栏目后备池时效",
+      "milestone": "M6",
+      "status": "todo",
+      "owner": null,
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T060"
+      ],
+      "scope": [
+        "backend/frontpage.py",
+        "frontend/core.js（只选稿逻辑，不改Claude视觉）",
+        "config/preferences.json",
+        "tests/test_frontpage.py",
+        "tests/core.test.js",
+        "docs/"
+      ],
+      "acceptance": [
+        "重要新消息可直接竞争头条，避免先被兴趣候选截断；新鲜度可解释",
+        "主头条和栏目首篇限制旧稿长期占位；未知日期不拿抓取时间伪装新消息",
+        "有真实新消息才更新，不通过随机轮换掩盖采集故障；全部原文/历史/日历保留",
+        "Python/JS选稿保持一致，并同步API头条优先翻译ID，不改Claude视觉"
+      ],
+      "evidence": []
     }
   ]
 }

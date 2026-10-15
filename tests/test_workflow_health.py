@@ -23,10 +23,24 @@ class WorkflowHealthTests(unittest.TestCase):
         self.assertEqual(report['status'], 'healthy')
         self.assertIsNone(issue)
 
-    def test_cancelled_without_active_or_subsequent_success_still_fails(self):
+    def test_cancelled_queue_entry_with_recent_success_is_a_warning(self):
         report, issue = self.check([self.row(conclusion='cancelled', created='2026-10-15T01:45:00Z'), self.row()])
+        self.assertEqual(report['status'], 'healthy')
+        self.assertEqual(report['queue_warning'], 'latest_entry_cancelled')
+        self.assertIsNone(issue)
+
+    def test_cancelled_entry_cannot_hide_real_failure_or_six_hour_outage(self):
+        cancelled = self.row(conclusion='cancelled', created='2026-10-15T01:45:00Z')
+        report, issue = self.check([cancelled, self.row(conclusion='failure')])
         self.assertEqual(report['status'], 'failed')
         self.assertEqual(issue, ':failed')
+        report, issue = self.check([cancelled])
+        self.assertEqual(report['status'], 'stale')
+        self.assertEqual(issue, ':no_recent_success')
+        old = self.row(created='2026-10-14T01:00:00Z', updated='2026-10-14T01:30:00Z')
+        report, issue = self.check([cancelled, old])
+        self.assertEqual(report['status'], 'stale')
+        self.assertEqual(issue, ':no_recent_success')
 
     def test_real_failure_and_no_recent_success_are_not_hidden(self):
         report, issue = self.check([self.row(conclusion='failure'), self.row(status='in_progress', conclusion=None)])

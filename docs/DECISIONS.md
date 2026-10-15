@@ -311,3 +311,5 @@ TAKE on Art的两条404链接在媒体公开WordPress接口有同一canonical li
 实测同一GitHub concurrency组只有一个pending槽，即使cancel-in-progress=false，后到任务仍会取消前一个pending。保留串行数据写入，定期运行证据审计并入采集（六小时去重）；取消的采集事件在独立忽略组跳过翻译，不再反过来挤掉下一次采集。不得以dispatch成功当真实运行成功。
 
 质量缓存同时绑定提取代码与来源规则签名，改规则不能沿用旧通过结果。巡检发现的真实差异优先进入既有10个正文复查名额；只对相同原文版本且晚于上次重抓的证据生效，不因同一报告无限重抓。新订阅促销导致公开部分变短时保留历史公开缓存及AI，不借重抓清理删正文。保留完整长图注；只保留原有页面/块总上限与partial标记。
+
+用户收到Check autonomous workflow health失败邮件：38702084988/38702105378/38702111896的失败步骤均为最后健康断言，collection最新是38702089430 cancelled，前次采集与Pages有近期success。修复为排队取消保留queue_warning，由最近有效运行及六小时无成功门槛判状态；不能用cancelled/skipped掩盖真正failure/timed_out/action_required，也不抹掉长期停更报警。

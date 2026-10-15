@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from backend.articles import allowed_url, fetch_page, extract_article
-from backend.article_cleanup import subset_indexes, remap_translations, cached_widget_indexes
+from backend.article_cleanup import subset_indexes, remap_translations, cached_widget_indexes, widget_deletions_only
 from backend.editorial import checked_result
 from backend.storage import ROOT, Store, now
 
@@ -52,7 +52,7 @@ def clean_saved_bodies(store, apply=False, limit=100, getter=None, pack_director
             if old == new:
                 return row, None, 'unchanged'
             indexes = subset_indexes(old, new)
-            if indexes is None:
+            if indexes is None or not widget_deletions_only(payload, resolved, source, old, indexes):
                 # Do not mix newly edited prose into an existing translation.
                 # Remove only complete widget runs proven against fetched DOM.
                 indexes = cached_widget_indexes(payload, resolved, source, old)

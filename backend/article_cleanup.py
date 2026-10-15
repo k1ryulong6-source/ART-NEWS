@@ -41,13 +41,7 @@ def remove_widgets(soup, source):
             node.decompose()
 
 
-def cached_widget_indexes(payload, url, source, original):
-    """Project exact current widget runs onto an older body, preserving its prose.
-
-    Used when the publisher also edited its actual story since the last fetch.
-    Only complete, structurally identified multi-block runs count as evidence;
-    ambiguous repeated runs are kept. No paragraph keyword classification.
-    """
+def widget_block_runs(payload, url, source):
     from bs4 import BeautifulSoup
     from .articles import extract_article
     soup = BeautifulSoup(payload, 'lxml')
@@ -62,8 +56,23 @@ def cached_widget_indexes(payload, url, source, original):
         extracted = extract_article(fragment, url, {**source, 'article_selectors': ['.article-body']})
         blocks = json.loads(extracted.get('article_blocks_json') or '[]')
         blocks = [b for b in blocks if b.get('text') != marker.strip()]
-        if len(blocks) >= 2:
-            runs.append(json.dumps(blocks, ensure_ascii=False, sort_keys=True))
+        if blocks: runs.append(blocks)
+    return runs
+
+
+def widget_deletions_only(payload, url, source, original, indexes):
+    """A shortened page is insufficient proof: every removed block needs DOM evidence."""
+    encode = lambda block: json.dumps(block, ensure_ascii=False, sort_keys=True)
+    available = Counter(encode(b) for run in widget_block_runs(payload, url, source) for b in run)
+    kept = set(indexes)
+    removed = Counter(encode(b) for i, b in enumerate(original) if i not in kept)
+    return bool(removed) and not (removed - available)
+
+
+def cached_widget_indexes(payload, url, source, original):
+    """Project complete widget runs only; ambiguous repeated runs are kept."""
+    runs = [json.dumps(run, ensure_ascii=False, sort_keys=True)
+            for run in widget_block_runs(payload, url, source) if len(run) >= 2]
     removed = set()
     for key, evidence_count in Counter(runs).items():
         run = json.loads(key)

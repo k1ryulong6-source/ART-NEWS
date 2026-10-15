@@ -2,6 +2,17 @@
 from datetime import datetime, timezone
 
 
+def collection_needs_requeue(cancelled, rows):
+    """Do not duplicate a replacement, retry an old event, or hide a real failure."""
+    if cancelled.get('conclusion') != 'cancelled' or not rows: return False
+    if any(r.get('status') in ('queued', 'pending', 'in_progress', 'waiting', 'requested') for r in rows): return False
+    cutoff = cancelled.get('created_at')
+    if not cutoff: return False
+    if any(r.get('created_at', '') > cutoff and r.get('conclusion') in ('success', 'failure', 'timed_out', 'action_required') for r in rows): return False
+    if any(r.get('conclusion') == 'success' and r.get('updated_at', '') >= cutoff for r in rows): return False
+    return True
+
+
 def stage_health(rows, instant=None):
     instant = instant or datetime.now(timezone.utc)
     fields = lambda row: {key: row.get(key) for key in ('id', 'event', 'status', 'conclusion', 'html_url', 'created_at', 'updated_at')}

@@ -1,9 +1,20 @@
 import unittest
 from datetime import datetime, timezone
-from backend.workflow_health import stage_health
+from backend.workflow_health import stage_health, collection_needs_requeue
 
 
 class WorkflowHealthTests(unittest.TestCase):
+    def test_displaced_collection_requeues_without_duplicate_or_old_failure_retry(self):
+        old = self.row(created='2026-10-15T00:00:00Z', updated='2026-10-15T00:30:00Z')
+        cancelled = self.row(conclusion='cancelled', created='2026-10-15T01:45:00Z')
+        self.assertTrue(collection_needs_requeue(cancelled, [cancelled, old]))
+        active = self.row(status='pending', conclusion=None, created='2026-10-15T01:50:00Z')
+        self.assertFalse(collection_needs_requeue(cancelled, [active, cancelled, old]))
+        for conclusion in ('success', 'failure'):
+            newer = {**active, 'status': 'completed', 'conclusion': conclusion}
+            self.assertFalse(collection_needs_requeue(cancelled, [newer, cancelled, old]))
+        self.assertFalse(collection_needs_requeue(cancelled, []))
+
     def row(self, status='completed', conclusion='success', created='2026-10-15T01:00:00Z', updated='2026-10-15T01:30:00Z'):
         return {'id': created, 'status': status, 'conclusion': conclusion, 'created_at': created, 'updated_at': updated}
 

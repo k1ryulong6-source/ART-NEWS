@@ -222,7 +222,9 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
         if path.stem in existing_AI:
             path.unlink()
     if ledger.get('retry_after', '') > now():
-        report.update(status='quota_wait', retry_after=ledger['retry_after'])
+        report.update(status=ledger.get('retry_status', 'retry_wait'), retry_after=ledger['retry_after'])
+        if ledger.get('retry_error'):
+            report['error'] = ledger['retry_error']
     else:
         rows = [row for row in snapshot['content'] if not row.get('is_demo') and row['language'] != 'zh'
                 and row.get('article_blocks_json') and row.get('editorial_status') not in ('reviewed', 'translated')]
@@ -355,12 +357,14 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                 else:
                     report['status'] = 'quota_wait' if error.status == 429 else 'service_wait'
                     ledger['retry_after'] = (datetime.now(timezone.utc) + timedelta(seconds=max(error.retry_seconds, 3600))).isoformat()
+                ledger.update(retry_status=report['status'], retry_error=reason)
                 write_json(path, state)
                 write_json(ledger_path, ledger)
                 report.update(error=reason, retry_after=ledger['retry_after'])
                 break
             except (URLError, TimeoutError, ConnectionError) as error:
                 ledger['retry_after'] = (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
+                ledger.update(retry_status='service_wait', retry_error=type(error).__name__)
                 write_json(path, state)
                 write_json(ledger_path, ledger)
                 report.update(status='service_wait', error=type(error).__name__, retry_after=ledger['retry_after'])

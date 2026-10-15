@@ -141,6 +141,16 @@ class AITranslationTests(unittest.TestCase):
         self.assertEqual(result['stale'], [self.row['id']])
         self.assertEqual(self.store.dataset('live')['content'][0]['editorial_title_zh'], '已有译文')
 
+    def test_503_retry_does_not_pretend_the_daily_quota_is_exhausted(self):
+        def unavailable(payload):
+            raise ServiceError(503)
+        first = self.run_ai_worker(GeminiTranslator('fixture', transport=unavailable))
+        self.assertEqual(first['status'], 'service_wait')
+        later = self.run_ai_worker(self.provider())
+        self.assertEqual(later['status'], 'service_wait')
+        self.assertEqual(later['error'], 'ai_http_503')
+        self.assertEqual(later['requests'], 0)
+
     def test_long_source_split_is_exact_and_all_source_context_is_supplied(self):
         row = {**self.row, 'article_blocks_json': json.dumps([{'type': 'paragraph', 'text': 'Long context 2026. ' * 1800}])}
         original, units, keys = source_units(row, 2500)

@@ -17,7 +17,7 @@ def operations_report(snapshot, evidence, instant=None):
                  and r.get('editorial_blocks_json') and r.get('editorial_title_zh')]
     api = [r for r in completed if str(r.get('editorial_provider') or '').startswith('contextual-api:')]
     warnings = []
-    if ai.get('status') in ('service_wait', 'quota_wait', 'daily_limit', 'configuration_error', 'failed'):
+    if ai.get('status') in ('service_wait', 'quota_wait', 'retry_wait', 'daily_limit', 'configuration_error', 'failed'):
         warnings.append('ai:' + ai['status'])
     if ai.get('failed'): warnings.append('ai:validation_failures')
     if machine.get('failed'): warnings.append('machine:validation_failures')

@@ -191,9 +191,8 @@ def collect_articles(store, limit=40, getter=None, force=False):
         row['translation_priority'] = priorities[row['id']]
     fresh.sort(key=priority_key)
     rechecks = [r for r in rows if r.get('article_blocks_json')]
-    old_slots = min(10, limit // 4)
-    selected = fresh[:max(0, limit - old_slots)]
-    rows = selected + (rechecks + fresh[len(selected):])[:max(0, limit - len(selected))]
+    from .editorial_regions import body_batch
+    rows = body_batch(fresh, rechecks, catalog, limit)
     result = {k: 0 for k in ('attempted', 'collected', 'partial', 'restricted', 'unavailable', 'no_body')}
     per_source = {}
     def collect(row):

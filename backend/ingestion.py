@@ -303,7 +303,8 @@ def run_ingestion(store, source_ids=None, fetcher=get_url):
             source["enabled"] = False
     store.register_sources(config["sources"])
     results = []
-    for source in config["sources"]:
+    from .editorial_regions import ordered_sources
+    for source in ordered_sources(config["sources"]):
         if not source.get("enabled") or source["access_status"] != "reviewed" or (source_ids and source["id"] not in source_ids):
             continue
         run_id = store.begin_run(source["id"])

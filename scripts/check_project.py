@@ -62,10 +62,18 @@ def check_config():
     require(not prefs["industry_buzz"]["include_unverified_in_today"], "Unverified gossip cannot enter today")
     ZoneInfo(prefs["reading_timezone"])
     sources = read_json("config/sources.json")["sources"]
+    regional = read_json('config/editorial-regions.json')
+    regions = {row['id'] for row in regional['world_regions']}
+    require(0 <= regional['collection']['discovery_share'] <= 1, 'Invalid discovery share')
+    require(0 <= regional['media_weights']['global_lane_share'] <= 1, 'Invalid global gateway share')
     require(len({source["id"] for source in sources}) == len(sources), "Duplicate source IDs")
     for source in sources:
         require(source["access_status"] in ("unverified", "reviewed"), "Invalid source status")
         if source["enabled"]:
+            focus = source.get('editorial_focus', {})
+            require(bool(focus.get('regions')) and set(focus['regions']) <= regions, 'Enabled source lacks valid regional focus')
+            require(focus.get('role') in ('core', 'global_core', 'discovery'), 'Invalid editorial source role')
+            require(all(type(focus.get('media_weight', {}).get(key)) is int and 0 <= focus['media_weight'][key] <= 100 for key in ('international', 'local_specialist', 'discovery')), 'Invalid independent media weights')
             require(source["access_status"] == "reviewed", "Enabled source is not reviewed")
             require(source["verified_at"] and source["access_method"], "Enabled source lacks verification")
             if source["access_method"] in ("rss", "api"):

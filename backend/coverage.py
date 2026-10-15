@@ -110,6 +110,7 @@ def audit_sources(snapshot, config, fetcher, previous=None):
 
 
 def coverage_report(snapshot, config, audit=None, benchmarks=None):
+    from .editorial_regions import regional_coverage
     rows = [r for r in snapshot.get('content', []) if not r.get('is_demo')]
     statuses = {s['id']: s for s in snapshot.get('source_status', [])}
     checks = {s['source_id']: s for s in (audit or {}).get('sources', [])}
@@ -142,6 +143,7 @@ def coverage_report(snapshot, config, audit=None, benchmarks=None):
             'event_regions': dict(Counter(r.get('country') for r in snapshot.get('events', []))),
             'sources': sources, 'source_audit_at': (audit or {}).get('checked_at'),
             'benchmarks': probes, 'global_completeness': 'unknown',
+            'editorial_regions': regional_coverage(snapshot, config, audit),
             'known_gaps': ['来源是有限名单，未覆盖全球全部媒体、片方、美术馆和摄影机构。',
                            '近期RSS会滚动，即使设置每2小时检查仍可能错过高频来源的条目；没有全站历史回补。',
                            '官方活动只覆盖配置页面，日本以外上映、拉美／中东／东南亚展览仍明显不足。',

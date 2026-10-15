@@ -38,7 +38,23 @@
       "notes": "2026-10-13 实际 HTTP 200，结构验证通过。只保存标题、必要摘录／结构化信息及原文链接，不镜像图片或全文。",
       "adapter": "eiga_releases",
       "publisher_country": "JP",
-      "coverage": "JP"
+      "coverage": "JP",
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "east_asia"
+        ],
+        "countries": [
+          "JP"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 77,
+          "local_specialist": 94,
+          "discovery": 74,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "tokyo-art-beat",
@@ -101,7 +117,24 @@
       "coverage": "global",
       "article_selectors": [
         ".post-inner"
-      ]
+      ],
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "east_asia",
+          "global"
+        ],
+        "countries": [
+          "JP"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 80,
+          "local_specialist": 94,
+          "discovery": 91,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "tokyo-photo-museum",
@@ -123,7 +156,23 @@
       "adapter": "top_exhibitions",
       "publisher_country": "JP",
       "coverage": "JP",
-      "city": "东京"
+      "city": "东京",
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "east_asia"
+        ],
+        "countries": [
+          "JP"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 81,
+          "local_specialist": 98,
+          "discovery": 83,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "film-stage",
@@ -146,7 +195,24 @@
       "coverage": "global",
       "article_selectors": [
         ".cb-entry-content"
-      ]
+      ],
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "north_america",
+          "global"
+        ],
+        "countries": [
+          "US"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 83,
+          "local_specialist": 88,
+          "discovery": 85,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "artnews",
@@ -169,7 +235,24 @@
       "coverage": "global",
       "article_selectors": [
         ".a-content"
-      ]
+      ],
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "north_america",
+          "global"
+        ],
+        "countries": [
+          "US"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 92,
+          "local_specialist": 90,
+          "discovery": 76,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "aperture",
@@ -189,7 +272,24 @@
       "verified_at": "2026-10-13",
       "notes": "实际 RSS 可读取；Aperture 的 XML 声明前空白需移除。保存必要摘要和原文链接，禁止镜像全文。",
       "publisher_country": "US",
-      "coverage": "global"
+      "coverage": "global",
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "north_america",
+          "global"
+        ],
+        "countries": [
+          "US"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 91,
+          "local_specialist": 94,
+          "discovery": 90,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "artforum-cn",
@@ -213,7 +313,24 @@
       "article_selectors": [
         ".toc-issue",
         ".toc-articles"
-      ]
+      ],
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "east_asia",
+          "global"
+        ],
+        "countries": [
+          "CN"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 86,
+          "local_specialist": 89,
+          "discovery": 80,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "variety-film",
@@ -236,7 +353,24 @@
       "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。",
       "article_selectors": [
         ".a-content"
-      ]
+      ],
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "north_america",
+          "global"
+        ],
+        "countries": [
+          "US"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 95,
+          "local_specialist": 90,
+          "discovery": 65,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "artnet",
@@ -256,7 +390,24 @@
       "access_method": "rss",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。"
+      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。",
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "north_america",
+          "global"
+        ],
+        "countries": [
+          "US"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 91,
+          "local_specialist": 87,
+          "discovery": 76,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "hyperallergic",
@@ -276,7 +427,24 @@
       "access_method": "rss",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。"
+      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。",
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "north_america",
+          "global"
+        ],
+        "countries": [
+          "US"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 86,
+          "local_specialist": 88,
+          "discovery": 88,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "bjp",
@@ -296,7 +464,24 @@
       "access_method": "rss",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。"
+      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。",
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "europe",
+          "global"
+        ],
+        "countries": [
+          "GB"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 88,
+          "local_specialist": 93,
+          "discovery": 88,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "loeil",
@@ -316,7 +501,24 @@
       "access_method": "rss",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。"
+      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。",
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "europe",
+          "global"
+        ],
+        "countries": [
+          "FR"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 83,
+          "local_specialist": 90,
+          "discovery": 88,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "cinefilos",
@@ -336,7 +538,24 @@
       "access_method": "rss",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。"
+      "notes": "实际 HTTP 200 且 RSS 有条目。只保存标题、短摘录和原文链接；媒体所在地不代表报道地区。",
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "latin_america_caribbean",
+          "global"
+        ],
+        "countries": [
+          "AR"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 65,
+          "local_specialist": 85,
+          "discovery": 83,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "tate-modern",
@@ -358,7 +577,23 @@
       "access_method": "public_page",
       "adapter": "tate_exhibitions",
       "verified_at": "2026-10-13",
-      "notes": "实际 HTTP 200；只采用展览卡片中的明确完整展期。Until 单独闭展日期不补造开幕日；会员免费不代表普通门票免费。"
+      "notes": "实际 HTTP 200；只采用展览卡片中的明确完整展期。Until 单独闭展日期不补造开幕日；会员免费不代表普通门票免费。",
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "europe"
+        ],
+        "countries": [
+          "GB"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 94,
+          "local_specialist": 98,
+          "discovery": 78,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "artafrica",
@@ -378,7 +613,28 @@
       "access_method": "rss",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "2026-10-13 实际 HTTP 200 且有有效 RSS 条目；只保存短元数据及原文链接。媒体发布地与标题提及地区分开；发布日期缺失保持未知。 About 页说明团队位于 Cape Town／Johannesburg；覆盖非洲与全球南方艺术，不限定南非。"
+      "notes": "2026-10-13 实际 HTTP 200 且有有效 RSS 条目；只保存短元数据及原文链接。媒体发布地与标题提及地区分开；发布日期缺失保持未知。 About 页说明团队位于 Cape Town／Johannesburg；覆盖非洲与全球南方艺术，不限定南非。",
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "sub_saharan_africa",
+          "global"
+        ],
+        "countries": [
+          "ZA",
+          "NG",
+          "GH",
+          "KE",
+          "SN"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 74,
+          "local_specialist": 92,
+          "discovery": 96,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "rapadura",
@@ -403,7 +659,24 @@
       "original_hosts": [
         "www.patreon.com",
         "patreon.com"
-      ]
+      ],
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "latin_america_caribbean",
+          "global"
+        ],
+        "countries": [
+          "BR"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 65,
+          "local_specialist": 88,
+          "discovery": 84,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "cinepremiere",
@@ -423,7 +696,24 @@
       "access_method": "rss",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "2026-10-13 实际 HTTP 200 且有有效 RSS 条目；只保存短元数据及原文链接。媒体发布地与标题提及地区分开；发布日期缺失保持未知。"
+      "notes": "2026-10-13 实际 HTTP 200 且有有效 RSS 条目；只保存短元数据及原文链接。媒体发布地与标题提及地区分开；发布日期缺失保持未知。",
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "latin_america_caribbean",
+          "global"
+        ],
+        "countries": [
+          "MX"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 72,
+          "local_specialist": 90,
+          "discovery": 83,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "troiscouleurs",
@@ -443,7 +733,24 @@
       "access_method": "rss",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "2026-10-13 实际 HTTP 200 且有有效 RSS 条目；只保存短元数据及原文链接。媒体发布地与标题提及地区分开；发布日期缺失保持未知。"
+      "notes": "2026-10-13 实际 HTTP 200 且有有效 RSS 条目；只保存短元数据及原文链接。媒体发布地与标题提及地区分开；发布日期缺失保持未知。",
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "europe",
+          "global"
+        ],
+        "countries": [
+          "FR"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 77,
+          "local_specialist": 89,
+          "discovery": 87,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "fisheye",
@@ -466,7 +773,24 @@
       "notes": "2026-10-13 实际 HTTP 200 且有有效 RSS 条目；只保存短元数据及原文链接。媒体发布地与标题提及地区分开；发布日期缺失保持未知。",
       "article_selectors": [
         ".single-post-content .text.gutenberg"
-      ]
+      ],
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "europe",
+          "global"
+        ],
+        "countries": [
+          "FR"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 80,
+          "local_specialist": 90,
+          "discovery": 88,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "asianmoviepulse",
@@ -486,7 +810,31 @@
       "access_method": "rss",
       "adapter": "rss",
       "verified_at": "2026-10-13",
-      "notes": "2026-10-13 实际 HTTP 200 且有有效 RSS 条目；只保存短元数据及原文链接。媒体发布地与标题提及地区分开；发布日期缺失保持未知。 内容重点为亚洲电影；未核实媒体总部，不按报道主题填写发布国。"
+      "notes": "2026-10-13 实际 HTTP 200 且有有效 RSS 条目；只保存短元数据及原文链接。媒体发布地与标题提及地区分开；发布日期缺失保持未知。 内容重点为亚洲电影；未核实媒体总部，不按报道主题填写发布国。",
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "east_asia",
+          "south_southeast_asia"
+        ],
+        "countries": [
+          "JP",
+          "KR",
+          "CN",
+          "IN",
+          "TH",
+          "PH",
+          "ID",
+          "VN"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 77,
+          "local_specialist": 91,
+          "discovery": 95,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "map-india",
@@ -510,7 +858,23 @@
       "venue": "Museum of Art & Photography",
       "timezone": "Asia/Kolkata",
       "verified_at": "2026-10-13",
-      "notes": "2026-10-13 实际 HTTP 200；仅展览卡片中的完整起止日期入日历，在线展、工作坊与展季总公告不作为单展。不从 Ongoing 或新闻发布日期补造开幕日。"
+      "notes": "2026-10-13 实际 HTTP 200；仅展览卡片中的完整起止日期入日历，在线展、工作坊与展季总公告不作为单展。不从 Ongoing 或新闻发布日期补造开幕日。",
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "south_southeast_asia"
+        ],
+        "countries": [
+          "IN"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 74,
+          "local_specialist": 97,
+          "discovery": 91,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "zeitz-mocaa",
@@ -534,7 +898,23 @@
       "venue": "Zeitz MOCAA",
       "timezone": "Africa/Johannesburg",
       "verified_at": "2026-10-13",
-      "notes": "2026-10-13 实际 HTTP 200；仅展览卡片中的完整起止日期入日历，在线展、工作坊与展季总公告不作为单展。不从 Ongoing 或新闻发布日期补造开幕日。"
+      "notes": "2026-10-13 实际 HTTP 200；仅展览卡片中的完整起止日期入日历，在线展、工作坊与展季总公告不作为单展。不从 Ongoing 或新闻发布日期补造开幕日。",
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "sub_saharan_africa"
+        ],
+        "countries": [
+          "ZA"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 82,
+          "local_specialist": 98,
+          "discovery": 94,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "diaphana",
@@ -556,7 +936,23 @@
       "access_method": "public_page",
       "adapter": "diaphana_releases",
       "verified_at": "2026-10-13",
-      "notes": "实际 HTTP 200，字段与原文核实；活动日期、时刻和费用保留限定条件，不镜像全文或图片。"
+      "notes": "实际 HTTP 200，字段与原文核实；活动日期、时刻和费用保留限定条件，不镜像全文或图片。",
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "europe"
+        ],
+        "countries": [
+          "FR"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 75,
+          "local_specialist": 96,
+          "discovery": 82,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "bfi-lff",
@@ -584,7 +980,24 @@
       "season_end": "2026-10-18",
       "article_selectors": [
         "#Film__page"
-      ]
+      ],
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "europe",
+          "global"
+        ],
+        "countries": [
+          "GB"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 93,
+          "local_specialist": 97,
+          "discovery": 87,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "wpo-awards",
@@ -628,7 +1041,21 @@
           "entry_label_zh": "青年组",
           "eligibility_note": "年龄与作品拍摄年份限制见官网完整规则。"
         }
-      ]
+      ],
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "global"
+        ],
+        "countries": [],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 91,
+          "local_specialist": 97,
+          "discovery": 89,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "mmca-seoul",
@@ -655,7 +1082,23 @@
       "article_selectors": [
         "#audioText",
         ".audioText"
-      ]
+      ],
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "east_asia"
+        ],
+        "countries": [
+          "KR"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 87,
+          "local_specialist": 98,
+          "discovery": 87,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "guardian-culture",
@@ -716,7 +1159,24 @@
       "article_selectors": [
         "[data-gu-name=\"body\"]"
       ],
-      "notes": "2026-10-14 三专栏实际HTTP200/RSS32、23、20项；全球电影、艺术与摄影报道，重合URL去重。公开正文保存本站，来源未提供的订阅内容不补造；发行地不推定事件地点。"
+      "notes": "2026-10-14 三专栏实际HTTP200/RSS32、23、20项；全球电影、艺术与摄影报道，重合URL去重。公开正文保存本站，来源未提供的订阅内容不补造；发行地不推定事件地点。",
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "europe",
+          "global"
+        ],
+        "countries": [
+          "GB"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 92,
+          "local_specialist": 85,
+          "discovery": 75,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
     },
     {
       "id": "deadline-film",
@@ -740,7 +1200,482 @@
         ".a-content",
         ".entry-content"
       ],
-      "notes": "2026-10-14 实际HTTP200/RSS12项，使用v/film专栏而非全部娱乐政治新闻；category/film端点当时空列表，未采用。电影节、奖项、电影发行与行业报道；公开正文保存本站，订阅部分不补造。"
+      "notes": "2026-10-14 实际HTTP200/RSS12项，使用v/film专栏而非全部娱乐政治新闻；category/film端点当时空列表，未采用。电影节、奖项、电影发行与行业报道；公开正文保存本站，订阅部分不补造。",
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "north_america",
+          "global"
+        ],
+        "countries": [
+          "US"
+        ],
+        "basis": "编辑设定的来源关注方向；不是逐篇地点或艺术家国籍判断",
+        "media_weight": {
+          "international": 95,
+          "local_specialist": 90,
+          "discovery": 65,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      }
+    },
+    {
+      "id": "art-it-jp",
+      "name": "ART iT · 日本語",
+      "homepage_url": "https://www.art-it.asia/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": "JP",
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "ja",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://www.art-it.asia/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".entry-content",
+        ".post-content"
+      ],
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "east_asia",
+          "global"
+        ],
+        "countries": [
+          "JP"
+        ],
+        "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+        "media_weight": {
+          "international": 85,
+          "local_specialist": 96,
+          "discovery": 92,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      },
+      "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。"
+    },
+    {
+      "id": "artnews-japan",
+      "name": "ARTnews JAPAN",
+      "homepage_url": "https://artnewsjapan.com/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": "JP",
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "ja",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://artnewsjapan.com/feed",
+      "verified_at": "2026-10-15",
+      "article_selectors": [],
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "east_asia",
+          "south_southeast_asia",
+          "global"
+        ],
+        "countries": [
+          "JP"
+        ],
+        "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+        "media_weight": {
+          "international": 85,
+          "local_specialist": 93,
+          "discovery": 87,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      },
+      "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。"
+    },
+    {
+      "id": "artasiapacific",
+      "name": "ArtAsiaPacific",
+      "homepage_url": "https://www.artasiapacific.com/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": "HK",
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://www.artasiapacific.com/rss/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [],
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "east_asia",
+          "south_southeast_asia",
+          "oceania"
+        ],
+        "countries": [
+          "JP",
+          "CN",
+          "HK",
+          "KR",
+          "TW",
+          "SG",
+          "TH",
+          "ID",
+          "IN",
+          "AU"
+        ],
+        "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+        "media_weight": {
+          "international": 86,
+          "local_specialist": 94,
+          "discovery": 95,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      },
+      "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。"
+    },
+    {
+      "id": "canvas",
+      "name": "Canvas",
+      "homepage_url": "https://canvasonline.com/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": "AE",
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://canvasonline.com/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".entry-content"
+      ],
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "middle_east_north_africa",
+          "global"
+        ],
+        "countries": [
+          "AE",
+          "QA",
+          "LB",
+          "PS",
+          "IR",
+          "EG",
+          "SA"
+        ],
+        "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+        "media_weight": {
+          "international": 79,
+          "local_specialist": 94,
+          "discovery": 94,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      },
+      "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。"
+    },
+    {
+      "id": "artishock",
+      "name": "Artishock",
+      "homepage_url": "https://artishockrevista.com/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": "CL",
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "es",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://artishockrevista.com/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".entry-content"
+      ],
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "latin_america_caribbean",
+          "global"
+        ],
+        "countries": [
+          "CL",
+          "AR",
+          "MX",
+          "CO",
+          "PE"
+        ],
+        "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+        "media_weight": {
+          "international": 76,
+          "local_specialist": 94,
+          "discovery": 96,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      },
+      "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。"
+    },
+    {
+      "id": "zum",
+      "name": "ZUM · Instituto Moreira Salles",
+      "homepage_url": "https://revistazum.com.br/",
+      "channels": [
+        "photography"
+      ],
+      "country": null,
+      "publisher_country": "BR",
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "pt",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://revistazum.com.br/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".entry-content"
+      ],
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "latin_america_caribbean",
+          "global"
+        ],
+        "countries": [
+          "BR"
+        ],
+        "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+        "media_weight": {
+          "international": 83,
+          "local_specialist": 96,
+          "discovery": 96,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      },
+      "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。"
+    },
+    {
+      "id": "blind",
+      "name": "Blind Magazine",
+      "homepage_url": "https://www.blind-magazine.com/",
+      "channels": [
+        "photography"
+      ],
+      "country": null,
+      "publisher_country": "FR",
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://www.blind-magazine.com/en/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".entry-content"
+      ],
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "global"
+        ],
+        "countries": [],
+        "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+        "media_weight": {
+          "international": 82,
+          "local_specialist": 91,
+          "discovery": 94,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      },
+      "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。"
+    },
+    {
+      "id": "artthrob",
+      "name": "ArtThrob",
+      "homepage_url": "https://artthrob.co.za/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": "ZA",
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://artthrob.co.za/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".entry-content"
+      ],
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "sub_saharan_africa",
+          "global"
+        ],
+        "countries": [
+          "ZA"
+        ],
+        "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+        "media_weight": {
+          "international": 74,
+          "local_specialist": 94,
+          "discovery": 96,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      },
+      "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。"
+    },
+    {
+      "id": "take-on-art",
+      "name": "TAKE on Art",
+      "homepage_url": "https://takeonartmagazine.com/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": "IN",
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://takeonartmagazine.com/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".entry-content"
+      ],
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "south_southeast_asia"
+        ],
+        "countries": [
+          "IN"
+        ],
+        "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+        "media_weight": {
+          "international": 73,
+          "local_specialist": 94,
+          "discovery": 96,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      },
+      "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。"
+    },
+    {
+      "id": "africanah",
+      "name": "Africanah.org",
+      "homepage_url": "https://africanah.org/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": "NL",
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://africanah.org/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".entry-content"
+      ],
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "sub_saharan_africa",
+          "global"
+        ],
+        "countries": [
+          "NG",
+          "ZA",
+          "GH",
+          "KE",
+          "ET"
+        ],
+        "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+        "media_weight": {
+          "international": 65,
+          "local_specialist": 87,
+          "discovery": 96,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      },
+      "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。"
+    },
+    {
+      "id": "lenscratch",
+      "name": "Lenscratch",
+      "homepage_url": "https://lenscratch.com/",
+      "channels": [
+        "photography"
+      ],
+      "country": null,
+      "publisher_country": "US",
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://lenscratch.com/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".entry-content"
+      ],
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "north_america",
+          "global"
+        ],
+        "countries": [
+          "US"
+        ],
+        "basis": "编辑关注范围；不由出版地推定逐篇地点/艺术家国籍",
+        "media_weight": {
+          "international": 76,
+          "local_specialist": 92,
+          "discovery": 96,
+          "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
+        }
+      },
+      "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。"
     }
   ],
   "notes": "全球电影、艺术、摄影为主，日本上映与展览保留专题；地区由报道线索或明确场馆资料决定，不能按媒体总部推断。覆盖仍有限，未验证来源保持停用。"

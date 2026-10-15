@@ -106,6 +106,15 @@ def create_app(db_path=None):
         rows = store.dataset(mode)["content"]
         return [r for r in rows if (not channel or r["channel"] == channel) and matches_region(r, country, city) and (not kind or r["kind"] == kind) and (not language or r["language"] == language) and (not q or q.lower() in " ".join(str(r.get(k) or "") for k in ("title_original", "title_zh", "summary_zh")).lower())]
 
+    @app.get('/api/editorial-regions')
+    @app.get('/reports/regional-coverage.json')
+    async def editorial_region_report():
+        from .editorial_regions import regional_coverage
+        config = json.loads((ROOT / 'config/sources.json').read_text())
+        path = ROOT / 'data/coverage-audit.json'
+        audit = json.loads(path.read_text()) if path.exists() else None
+        return regional_coverage(store.dataset('live'), config, audit)
+
     @app.get("/api/integrations/babel/{content_id}")
     @app.get("/integrations/babel/{content_id}.json")
     async def babel_article(content_id: str):

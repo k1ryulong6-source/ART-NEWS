@@ -41,6 +41,9 @@ def build():
     from backend.babel_export import export_articles, integrations
     output = ROOT / 'dist'
     output.mkdir(exist_ok=True)
+    if bundle.get('coverage', {}).get('editorial_regions'):
+        (output / 'reports').mkdir(exist_ok=True)
+        (output / 'reports/regional-coverage.json').write_text(json.dumps(bundle['coverage']['editorial_regions'], ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     bundle['integrations'] = integrations()
     site_url = bundle['integrations'].get('site_url')
     domain = bundle['integrations'].get('custom_domain')

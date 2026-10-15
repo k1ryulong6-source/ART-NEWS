@@ -1,3 +1,5 @@
+> T056新增只读后端契约：正式站/reports/regional-coverage.json（本地/api/editorial-regions亦可）提供领域地区等级、每源独立媒体权重、明确关注地区、国际渠道和优先国家缺口；同内容在bootstrap.coverage.editorial_regions。只需读取即可另做呈现，Codex未改视觉。权重是编辑初值，不是全球读者份额；来源总部不能当报道地点/艺术家国籍，source_focus只表示编辑分配。
+
 > T054后端契约（2026-10-15）：用户要求头条全文先译。原有选稿已原样提取至CultureCore.frontpageRows，backend/frontpage.py镜像默认公共首页主头条和电影／艺术／摄影首篇，供全部翻译队列排序；视觉/排版保持Claude实现。可自由改theme.css/ui.js视觉；若改变头条或栏目选稿，请同步两端并运行tests/test_frontpage.py的浏览器/后端精确ID顺序测试。主域已是https://mujianrest.work/，下方旧域保留跳转。
 
 # Claude 与其他AI的界面接力

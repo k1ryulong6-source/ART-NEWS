@@ -398,3 +398,7 @@ T062补充：已实测共享concurrency的pending取消问题，定期24h证据�
 后续真实告警38705126797来自翻译38702099095最终保存rebase冲突（acceptance.json、article-quality-report.json），不是前面的取消误判。修复push_public_update已做3个真实Git并发集成检查；失败可从runtime/public-update-evidence的accepted-public-snapshot.json恢复，必须先匹配最新原文hash/原标题，不覆盖新采集。已知派生报告重算，正文/译稿冲突不猜合并。采集和翻译后显式dispatch后续流程，取消重复workflow_run入口，辅助GITHUB_TOKEN仅新增actions:write；154 Python/27 JS、YAML和全部shell块语法检查通过。机翻临时兜底每轮4分钟，原逐单元断点与Gemini免费500/日保持。
 
 来源实际验收：38704941443 success，1161篇，13个新增来源本轮成功，Cineuropa被GitHub runner 403（仍保留与报告，不冒称14个全成功）；242条首次来源补库不是日均新闻。快照2026-10-15T08:23:32：182有效AI（其中直接150/历史已校32）、52原生中文正文、715有原文外文待AI、212缺正文（新补库等待正文预算，非丢失212篇旧正文）。2篇旧AI因公开正文更新/补全而失效进入队列，不重译原文hash仍匹配的有效稿。各项仍doing，待新保存流程真实通过及24h/积压/剩余来源/质量门槛。
+
+保存修复真实验收：38707445676 success；同轮日志先正常巡检20篇，再由冲突恢复重算limit0并成功push 98bdc4514dd9f417b1e655c7e8df0a1f4d375797（公开成果副本已归档）。Pages38708157032、健康38708175452/38708159967均success；线上快照08:46:51已更新。AI该批真实3请求、0全文完成、1篇结构/中文检查失败，随后503退避至09:42:28 UTC，不能把工作流通过说API已清积压。
+
+已确认失败保存批次38702099095:1的AI步骤JSON报告requests=0（08:06:39 service_wait），但40次预留未推送释放；证据data/ai-translation-repairs/38702099095-1.json。reserve脚本在串行写锁内仅回收有明确零请求报告、精确day/allocated/remaining匹配的已核实预留；实际请求/tokens/unknown计数与未知崩溃预留保持，非清零配额。156 Python通过，待下一次后台admission确认释放记录。

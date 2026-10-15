@@ -320,3 +320,5 @@ TAKE on Art的两条404链接在媒体公开WordPress接口有同一canonical li
 发现真实保存失败38702099095：已完成离线处理，但保存提交rebase时与人工发布的acceptance/quality两个派生报告冲突，健康告警translation:failed正确。新增push_public_update：先存不含私有状态的公开成果副本，仅自动重算允许的派生报告/队列；质量证据冲突撤销该次通过并存两份证据待重查，data/live/译稿冲突保持可见失败且不自动覆盖。正常fetch/rebase/push有限重试、不强推；失败artifact保留公开成果副本。三个真实临时Git仓库集成测试分别覆盖报告冲突保住新译文与前端、正文冲突不覆盖新采集、相矛盾质量证据必须重查。
 
 自动补排的采集38704941443已成功并保存ded9997，但未观察到后续翻译/Pages的workflow_run触发；采集保存后改显式workflow_dispatch发布/翻译/健康检查，翻译保存后显式发布/健康检查，移除对应重复事件入口，避免依赖深层回调。只授予本仓库GITHUB_TOKEN所需actions:write，不改变密钥/付费/Gemini500上限。离线兜底900→240秒，断点/有效译稿指纹不变，尽早释放写锁给主API和采集；原文仍可直接读。
+
+同一保存失败还留下40次未使用预留。实际Actions步骤08:06:39报告requests=0已提取完整JSON证据；只凭任务失败不能退款，新增明确零生成请求证明的逐ID回收。严格匹配reservation_id/day/allocated/remaining，计数幂等；不减少任何实际requests/tokens/unknown，也不释放无证明的崩溃预留。将在已有数据串行锁的reserve步骤执行，不改变500/日上限。

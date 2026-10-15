@@ -1,34 +1,34 @@
 {
   "schema_version": 1,
   "as_of": "2026-10-15",
-  "snapshot_at": "2026-10-15T16:36:16.590017+00:00",
+  "snapshot_at": "2026-10-15T16:38:11.497991+00:00",
   "counts": {
-    "content": 1231,
-    "events": 206,
+    "content": 1297,
+    "events": 207,
     "enabled_sources": 55,
     "old_publications_over_30_days": 264,
-    "missing_publication_date": 165,
-    "unknown_story_place": 962,
-    "source_images": 899,
-    "original_excerpts": 1096,
-    "machine_translated_titles": 661,
-    "machine_translated_excerpts": 532,
+    "missing_publication_date": 178,
+    "unknown_story_place": 1006,
+    "source_images": 963,
+    "original_excerpts": 1144,
+    "machine_translated_titles": 658,
+    "machine_translated_excerpts": 529,
     "original_pages_without_blocking_header": 213,
     "original_pages_blocked_by_publisher": 204,
-    "original_pages_unavailable_or_unchecked": 814,
-    "collected_article_bodies": 1123,
-    "partial_article_bodies": 84,
-    "article_bodies_not_obtained": 24,
-    "machine_translated_article_bodies": 405,
+    "original_pages_unavailable_or_unchecked": 880,
+    "collected_article_bodies": 1163,
+    "partial_article_bodies": 93,
+    "article_bodies_not_obtained": 41,
+    "machine_translated_article_bodies": 401,
     "ai_reviewed_article_translations": 31,
-    "ai_direct_article_translations": 391,
-    "ai_completed_article_translations": 422
+    "ai_direct_article_translations": 387,
+    "ai_completed_article_translations": 418
   },
   "languages": {
-    "en": 838,
-    "it": 16,
+    "en": 863,
+    "it": 18,
+    "ja": 157,
     "de": 47,
-    "ja": 118,
     "zh": 71,
     "nl": 11,
     "pt": 64,
@@ -40,44 +40,46 @@
     "IN": 3,
     "KR": 4,
     "FR": 6,
-    "JP": 39,
+    "JP": 40,
     "GB": 144,
     "GLOBAL": 4
   },
   "event_types": {
     "exhibition": 26,
-    "cinema_release": 25,
+    "cinema_release": 26,
     "festival_screening": 136,
     "streaming_release": 15,
     "call_deadline": 4
   },
   "channels": {
-    "film": 611,
-    "art": 389,
+    "film": 629,
+    "art": 437,
     "photography": 231
   },
   "source_content_counts": {
-    "indiewire": 16,
-    "hyperallergic": 38,
-    "guardian-culture": 107,
+    "indiewire": 19,
+    "exibart": 18,
+    "deadline-film": 43,
+    "artnews": 45,
+    "guardian-culture": 118,
+    "artnet": 23,
+    "hyperallergic": 39,
+    "artexhibition": 20,
     "screendaily": 15,
     "variety-film": 83,
-    "artnews": 41,
-    "deadline-film": 38,
-    "exibart": 16,
     "monopol": 18,
     "canvas": 15,
     "film-stage": 21,
     "lenscratch": 2,
     "artnews-japan": 14,
     "artasiapacific": 19,
+    "tokyo-art-beat": 18,
     "artreview": 22,
     "filmcritics-hk": 11,
     "ima": 53,
     "art-it-jp": 12,
     "mistermotley": 11,
     "loeil": 27,
-    "artnet": 22,
     "zum": 17,
     "bjp": 11,
     "filmaholic": 10,
@@ -100,27 +102,30 @@
     "take-on-art": 9,
     "africanah": 10,
     "matca": 12,
-    "eiga-com": 34,
-    "bfi-lff": 95,
-    "diaphana": 6,
-    "mmca-seoul": 4,
-    "wpo-awards": 4,
-    "tokyo-photo-museum": 5,
-    "tate-modern": 8,
+    "eiga-com": 35,
+    "zeitz-mocaa": 6,
     "map-india": 3,
-    "zeitz-mocaa": 6
+    "tate-modern": 8,
+    "tokyo-photo-museum": 5,
+    "diaphana": 6,
+    "bfi-lff": 95,
+    "wpo-awards": 4,
+    "mmca-seoul": 4
   },
   "failed_sources": [
+    "variety-film",
     "asianmoviepulse",
     "bfi-lff",
-    "mmca-seoul",
     "cineuropa"
   ],
   "article_source_counts": {
     "eiga-com": {
-      "collected": 34
+      "collected": 35
     },
-    "tokyo-art-beat": {},
+    "tokyo-art-beat": {
+      "collected": 8,
+      "pending": 10
+    },
     "ima": {
       "collected": 53
     },
@@ -131,7 +136,7 @@
       "collected": 21
     },
     "artnews": {
-      "partial": 41
+      "partial": 45
     },
     "aperture": {
       "collected": 10
@@ -144,12 +149,12 @@
       "collected": 83
     },
     "artnet": {
-      "restricted": 1,
+      "restricted": 2,
       "partial": 2,
       "collected": 19
     },
     "hyperallergic": {
-      "collected": 38
+      "collected": 39
     },
     "bjp": {
       "collected": 11
@@ -200,10 +205,11 @@
       "collected": 4
     },
     "guardian-culture": {
-      "collected": 107
+      "collected": 116,
+      "pending": 2
     },
     "deadline-film": {
-      "partial": 37,
+      "partial": 42,
       "collected": 1
     },
     "art-it-jp": {
@@ -245,7 +251,7 @@
       "partial": 3
     },
     "exibart": {
-      "collected": 16
+      "collected": 18
     },
     "matca": {
       "collected": 12
@@ -254,8 +260,8 @@
       "collected": 15
     },
     "filmcomment": {
-      "collected": 78,
-      "pending": 22
+      "collected": 86,
+      "pending": 14
     },
     "artomity": {
       "collected": 10
@@ -277,17 +283,18 @@
       "collected": 11
     },
     "indiewire": {
-      "collected": 16
+      "collected": 19
     },
     "fotointern": {
       "collected": 8
     },
-    "artexhibition": {}
+    "artexhibition": {
+      "collected": 8,
+      "pending": 12
+    }
   },
   "enabled_sources_without_content": [
-    "tokyo-art-beat",
-    "cineuropa",
-    "artexhibition"
+    "cineuropa"
   ],
   "errors": [],
   "warnings": [

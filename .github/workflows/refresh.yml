@@ -37,13 +37,15 @@ jobs:
       - run: python scripts/prepare_translation_queue.py
       - run: python scripts/audit_coverage.py
       - run: python scripts/audit_important_news.py
+      - run: python scripts/audit_article_quality.py --limit 20
+      - run: python scripts/update_acceptance.py
       - run: python scripts/build_static.py
       - name: Save public news and article snapshot
         run: |
           git config user.name 'Culture Desk updater'
           git config user.email 'updater@users.noreply.github.com'
           git restore frontend/data.js
-          git add data/live.json data/quality.json data/collection-metrics.json data/coverage-audit.json data/important-news-audit.json data/translation-queue.json data/translation-queue data/translation-input
+          git add data/live.json data/quality.json data/collection-metrics.json data/coverage-audit.json data/important-news-audit.json data/translation-queue.json data/translation-queue data/translation-input data/article-quality data/article-quality-report.json data/acceptance.json
           if ! git diff --cached --quiet; then
             git commit -m 'Refresh verified cultural news snapshot'
             git pull --rebase origin main

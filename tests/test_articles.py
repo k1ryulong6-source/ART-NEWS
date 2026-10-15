@@ -3,13 +3,29 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.error import HTTPError
-from backend.articles import extract_article, collect_articles, allowed_url
+from backend.articles import extract_article, collect_articles, allowed_url, fetch_article
 from backend.article_translation import translate_articles
 from backend.storage import Store
 from backend.ingestion import content_record
 
 
 class ArticleTests(unittest.TestCase):
+    def test_verified_public_api_requires_exact_link_published_unprotected_post(self):
+        source = {'homepage_url': 'https://example.org', 'public_wordpress_rest': True}
+        url = 'https://example.org/blog/exact/'
+        def missing(*args): raise HTTPError(url, 404, 'not found', {}, None)
+        wrong = {'id': 1, 'link': 'https://example.org/blog/other/', 'status': 'publish',
+                 'content': {'protected': False, 'rendered': '<p>Wrong article</p>'}}
+        correct = {**wrong, 'id': 2, 'link': url, 'content': {'protected': False, 'rendered': '<p>Public original</p>'}}
+        html, resolved = fetch_article(url, source, missing, lambda *a: [wrong, correct])
+        self.assertIn('Public original', html)
+        self.assertNotIn('Wrong article', html)
+        self.assertEqual(resolved, 'https://example.org/wp-json/wp/v2/posts/2')
+        correct['content']['protected'] = True
+        with self.assertRaisesRegex(ValueError, 'matching_public_unprotected'):
+            fetch_article(url, source, missing, lambda *a: [correct])
+        with self.assertRaises(HTTPError): fetch_article(url, {**source, 'public_wordpress_rest': False}, missing)
+
     def setUp(self):
         self.tmp = TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)

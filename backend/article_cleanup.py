@@ -5,7 +5,7 @@ from collections import Counter
 # Exact component names, not substring selectors such as [class*=related] or
 # paragraph keyword filters: a report may itself discuss newsletters or ads.
 WIDGETS = ('.condensed-newsletter-signup,.theme-newsletter-signup,'
-           '.newsletter-signup,.newsletter-form,.article-related-links,'
+           '.newsletter-signup,.newsletter-form,.nova-js-newsletter-capture,.article-related-links,'
            '.related-stories,.related-content,.jp-relatedposts,.yarpp-related,'
            '.post-navigation,.entry-footer,.cookie-banner,.cookie-notice,'
            '.ad-slot,.advertising,.subscription-prompt,'
@@ -15,6 +15,10 @@ WIDGETS = ('.condensed-newsletter-signup,.theme-newsletter-signup,'
 
 def widget_nodes(soup, source):
     nodes = list(soup.select(WIDGETS))
+    if source.get('id') == 'monopol':
+        nodes.extend(soup.select('#block-monopol-plus-paywall-curtain'))
+    if source.get('id') == 'mistermotley':
+        nodes.extend(soup.select('.article-footer'))
     # Lenscratch's recommendation rail has no semantic widget class. Verify
     # both the heading container and adjacent card-list structure before removal.
     if source.get('id') == 'lenscratch':

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-10-15T07:51:24.168214+00:00",
+  "snapshot_at": "2026-10-15T07:14:16.341318+00:00",
+  "snapshot_key": "0c8f5eb69192062e60212c7eb7f94e4915445ac52e2e988fcf6dc9bdce41068c",
+  "all_ready": false,
+  "gates": {
+    "unattended_24h": {
+      "passed": false,
+      "open_reasons": [
+        "24_hour_window_not_finished",
+        "actual_run_reports_not_fully_verified",
+        "actual_checkpoint_resume_not_verified",
+        "current_public_snapshot_not_verified"
+      ]
+    },
+    "article_quality": {
+      "passed": false,
+      "open_reasons": [
+        "not_all_current_bodies_passed_public_markup_checks",
+        "quality_evidence_not_for_current_snapshot",
+        "cached_body_or_missing_body_issues"
+      ]
+    },
+    "full_text_translation": {
+      "passed": false,
+      "open_reasons": [
+        "foreign_full_text_backlog_remains",
+        "original_bodies_missing"
+      ]
+    },
+    "coverage_gaps": {
+      "passed": false,
+      "open_reasons": [
+        "core_source_failures",
+        "enabled_source_collection_not_verified",
+        "priority_country_field_gaps",
+        "attention_source_not_current:matca"
+      ]
+    }
+  },
+  "scope": "point_in_time_acceptance_of_configured_sources_and_collected_public_text",
+  "limitations": [
+    "Not a claim of worldwide completeness or access to subscription-only text.",
+    "Program structure/source checks are not semantic or human translation review."
+  ],
+  "counts": {
+    "total": 900,
+    "completed": 180,
+    "api_completed": 115,
+    "pending": 661,
+    "without_body": 10
+  },
+  "quality": {
+    "remote_verified": 11,
+    "remote_unchecked": 870,
+    "complete": false
+  },
+  "trial": {
+    "complete": false,
+    "completed_runs": 0,
+    "requests": 0,
+    "resumed_articles": 0,
+    "validation_failures": 0,
+    "service_aborted_runs": 0
+  }
+}

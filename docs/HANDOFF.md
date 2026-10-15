@@ -380,3 +380,11 @@ T039公开完成：ART-NEWS b994269，CI38554022279（85Python+26JS）和Pages38
 - 头版：在電影/藝術/攝影三栏之后、放映與展期之前插入专栏条（`ui.attentionBand`）：标题、单元描述、每家媒体的关注地区（红）、媒体名（衬线）与最新一篇（日期＋标题）。示例模式不显示。`CultureCore.frontpageRows`选稿未改。
 - 单元页（`ui.attentionPage`）：只有大号细明体标题（用户要求去掉标题下的说明文字，头版专栏条同样不显示描述；selection_basis/scope_note仍在接口与ATTENTION_UNITS.md）；每家媒体一行：左为地区、名称、推荐理由、专长·语种、最近发布（读取失败时红字说明）与官网；右为最近5篇（标题按站内中文/原文规则，经readerRoute进入阅读）；“来源状态”折叠显示最近成功读取、收录/正文/AI全文数与列表核对。
 - 用户要求栏目名显示为正体字「一種關注」（`ui.unitName`；数据与配置中的正式名称、ID不变）。标题细明体子集加入“一種關注”；导航用的黑体子集只含简体常用字，另建2字Noto Sans TC子集`intermission-sans-tc-v1.woff2`（種關，2.7KB，OFL随附，`scripts/build_title_font.py --source-sans-tc`），加入`--serif/--sans`字体栈；本地API白名单加两项文件名。
+
+## T062 接续：四项验收仍 doing（2026-10-15）
+
+用户最新要求「全部做完再叫我」。后台依旧只用已配置Gemini免费API；禁止会话翻译/第二轮校对/开启付费。新增 scripts/audit_article_quality.py（原文hash/中文结构及逐源公开段落、图注，保存data/article-quality/断点）、scripts/audit_autonomous_trial.py（真实Actions小型状态artifact，首次完整24h结束前不通过）、scripts/update_acceptance.py（四门槛及快照签名，data/acceptance.json）。前两项不是语义校译。质量检查不自动把来源改写视作污染删除；保留缓存及问题，后续正常正文重抓接续。
+
+新增14个来源；实际工作区RSS+公开正文样本见data/source-expansion-evidence.json。来源总数与实际runner读取结果要分开核对；有未知出版国不补猜。Fotointern按类别过滤，Matca低频发现、不冒充每日更新。Artforum旧文公开页面当前只有署名/空正文，仍列缺正文，不从隐藏数据补造。
+
+现有24h观察截至2026-10-15 18:07:54 UTC才满24h。当前工作区下载Actions artifact被网络Forbidden，报告保留unverified，不把本地下载失败说API翻译失败；新六小时Actions审计将从GitHub runner核对。待译/缺正文/核心来源故障/地区矩阵缺口仍未全部解决，T028/T062不能done。原提醒6acfba93ea708191be758da0a02f1e76已改仅四项all_ready且证据匹配后通知；旧每日会话翻译6ace6f72b3dc81919301888a638a327e保持暂停。不得把条件通知已配置说成工作完成。

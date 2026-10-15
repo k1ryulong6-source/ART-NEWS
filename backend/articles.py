@@ -5,7 +5,7 @@ import re
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from urllib.error import HTTPError
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urlencode
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 from bs4 import BeautifulSoup
 from trafilatura import extract
@@ -54,12 +54,48 @@ def clean_text(value):
     return re.sub(r'\s+', ' ', value).strip()
 
 
+def fetch_public_json(url, source):
+    class VerifiedRedirect(HTTPRedirectHandler):
+        def redirect_request(self, req, fp, code, msg, headers, newurl):
+            if not allowed_url(newurl, source): raise ValueError('unverified_redirect')
+            return super().redirect_request(req, fp, code, msg, headers, newurl)
+    request = Request(url, headers={'User-Agent': 'CultureDesk/0.8 public article reader', 'Accept': 'application/json'})
+    with build_opener(VerifiedRedirect()).open(request, timeout=15) as response:
+        payload = response.read(6_000_001)
+        if len(payload) > 6_000_000: raise ValueError('response_too_large')
+        if response.headers.get_content_type() != 'application/json': raise ValueError('not_json')
+        return json.loads(payload)
+
+
+def fetch_article(url, source, getter=None, json_getter=None):
+    """Only an explicitly verified publisher API can recover a missing permalink."""
+    try:
+        return (getter or fetch_page)(url, source)
+    except HTTPError as error:
+        if error.code != 404 or not source.get('public_wordpress_rest'): raise
+    origin = urlsplit(source['homepage_url'])
+    endpoint = origin.scheme + '://' + origin.netloc + '/wp-json/wp/v2/posts'
+    slug = urlsplit(url).path.rstrip('/').split('/')[-1]
+    records = (json_getter or fetch_public_json)(endpoint + '?' + urlencode({'slug': slug, 'per_page': 10}), source)
+    if not isinstance(records, list): raise ValueError('public_api_not_post_list')
+    for post in records:
+        if not isinstance(post, dict) or post.get('link', '').rstrip('/') != url.rstrip('/'): continue
+        body = post.get('content') or {}
+        if post.get('status') != 'publish' or body.get('protected') is not False: continue
+        if not isinstance(post.get('id'), int) or not isinstance(body.get('rendered'), str): continue
+        return '<div class="entry-content">' + body['rendered'] + '</div>', endpoint + '/' + str(post['id'])
+    raise ValueError('matching_public_unprotected_post_not_found')
+
+
 def extract_article(payload, url, source):
     soup = BeautifulSoup(payload, 'lxml')
     author = None
     node = soup.find('meta', attrs={'name': 'author'})
     if node:
         author = node.get('content', '').strip()[:500] or None
+    if source.get('id') == 'mistermotley':
+        byline = soup.select_one('.single-article--active .article-footer a[href*="/authors/"]')
+        if byline: author = clean_text(byline.get_text())[:500] or author
     paywall = False
     for script in soup.select('script[type="application/ld+json"]'):
         try:
@@ -205,11 +241,13 @@ def collect_articles(store, limit=40, getter=None, force=False):
         url = allowed_url(row.get('original_page_url') or row['canonical_url'], source)
         try:
             if not url: raise ValueError('unverified_source_url')
-            payload, resolved = (getter or fetch_page)(url, source)
+            payload, resolved = fetch_article(url, source, getter=getter)
             if not allowed_url(resolved, source): raise ValueError('unverified_redirect')
             fields = extract_article(payload, resolved, source)
             if fields.get('article_blocks_json'):
                 fields.update(article_source_url=resolved, article_fetched_at=stamp)
+                if '/wp-json/wp/v2/posts/' in resolved:
+                    fields['article_reason'] = 'public_publisher_api_after_permalink_404'
         except HTTPError as exc:
             fields = {'article_status': 'restricted' if exc.code in (401, 403, 402) else 'unavailable', 'article_reason': 'http_' + str(exc.code)}
         except Exception as exc:

@@ -12,6 +12,17 @@ from scripts.clean_article_bodies import clean_saved_bodies
 
 
 class CleanupTests(unittest.TestCase):
+    def test_new_publishers_remove_promotions_but_preserve_prose_and_author(self):
+        body = 'The artist discusses subscriptions as a cultural subject. ' * 4
+        html = '<div class="article__content"><p>' + body + '</p><div id="block-monopol-plus-paywall-curtain"><p>Subscription sales offer</p></div></div>'
+        result = extract_article(html, 'https://example.org/story', {'id': 'monopol', 'name': 'Monopol', 'source_type': 'media', 'article_selectors': ['.article__content']})
+        self.assertIn(body.strip(), result['article_text'])
+        self.assertNotIn('Subscription sales offer', result['article_text'])
+        html = '<article class="single-article--active"><p>' + body + '</p><section class="article-footer"><p>Donation and newsletter</p><a href="/authors/person/">Public Author</a></section></article>'
+        result = extract_article(html, 'https://example.org/story', {'id': 'mistermotley', 'name': 'Mister Motley', 'source_type': 'media', 'article_selectors': ['article.single-article--active']})
+        self.assertNotIn('Donation and newsletter', result['article_text'])
+        self.assertEqual(result['article_author'], 'Public Author')
+
     def setUp(self):
         self.source = {'id': 'artnews', 'name': 'ARTnews', 'homepage_url': 'https://www.artnews.com',
                        'source_type': 'media', 'language': 'en', 'channels': ['art'],

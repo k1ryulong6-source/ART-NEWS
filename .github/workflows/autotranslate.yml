@@ -94,12 +94,15 @@ jobs:
           python scripts/audit_data.py --output data/quality.json --strict
           python scripts/prepare_translation_queue.py
           python scripts/audit_important_news.py
+          python scripts/audit_article_quality.py --limit 20
+          python scripts/update_acceptance.py
           python scripts/build_static.py
           git restore frontend/data.js
           git config user.name 'Intermission automatic translator'
           git config user.email 'updater@users.noreply.github.com'
           git add data/live.json data/quality.json data/important-news-audit.json data/translation-queue.json data/translation-queue data/translation-input data/auto-translation-progress data/auto-translation-status.json data/ai-translation-progress data/ai-translation-status.json
           if [ -f data/ai-translation-ledger.json ]; then git add data/ai-translation-ledger.json; fi
+          git add data/article-quality data/article-quality-report.json data/acceptance.json
           if ! git diff --cached --quiet; then
             git commit -m 'Save automatic AI translations and temporary machine fallback progress'
             git pull --rebase origin main

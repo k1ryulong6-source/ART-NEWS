@@ -69,3 +69,5 @@ T039联动入口：文章页「巴别塔阅读」一键导入原文供查词，�
 按用户“报纸样式、不要AI味、不要多余说明和按钮”重排：去掉原创示意图、优先级徽标、口语提示和引导按钮；简讯/头条/焦点/更多报道四区，外文原文衬线、中文黑体。细节见HANDOFF T040与UI_CUSTOMIZATION v4。
 
 T049域名迁移：主站mujianrest.work，状态和设置见CUSTOM_DOMAIN.md。保留相对静态资源、#reader/ID和culture-desk-v1；不要把旧项目路径/域名写回返回链接。巴别塔仍在原/babel/，API新旧地址兼容；自动数据和主题设计保持。
+
+T066必须保留：CultureCore.frontpageRows严格限制外文主头条/各栏首篇为headlineReady，服务端传输字段headline_ready是当前原文/AI全文的程序检查结果。CultureCore.headlineReady已导出；不要把机翻/中文标题当全文通过，不用selectToday替代头条硬门槛。候选headline_order供后台翻译优先，正式头条用frontpage_headline_order，两个池不同；普通短讯/全部资料原文继续开放。此次只改core选稿及后端，没有改theme/ui版式。

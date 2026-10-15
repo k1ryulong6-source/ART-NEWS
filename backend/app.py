@@ -99,6 +99,9 @@ def create_app(db_path=None):
     async def dataset(mode: Literal["demo", "live"] = "live"):
         result = store.dataset(mode)
         result["source_status"] = store.source_status()
+        from .frontpage import headline_ready
+        for row in result['content']:
+            row['headline_ready'] = headline_ready(row)
         return result
 
     @app.get("/api/content")

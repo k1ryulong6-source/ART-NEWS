@@ -109,6 +109,8 @@ def prepare_queue(snapshot, output=None):
              'backlog_ids': backlog_ids,
              'frontpage_priority_ids': [identifier for identifier, rank in sorted(priorities.items(), key=lambda item: item[1].get('headline_order', 999)) if 'headline_order' in rank],
              'frontpage_waiting_ids': [row['id'] for row in pending if 'headline_order' in row['translation_priority']],
+             'headline_policy': 'ai_full_text_before_display; native_chinese_body_exempt',
+             'frontpage_display_ids': [identifier for identifier, rank in sorted(priorities.items(), key=lambda item: item[1].get('frontpage_headline_order', 999)) if 'frontpage_headline_order' in rank],
              'originals_without_body': sum(not r.get('article_blocks_json') for r in snapshot['content']),
              'instructions_path': 'docs/DAILY_TRANSLATION.md', 'glossary_path': 'config/translation.json',
              'pending_headlines': len(headline_pending), 'headlines_next': headline_pending[:120],

@@ -431,3 +431,10 @@ T063用户追加授权：第二密钥已配置，要求本次重置前充分使�
 T063接续优化：本授权日continue_recommended为真时优先下一批语境AI，跳过离线模型缓存/依赖/4分钟推理并真实记录auto状态ai_priority（0机翻，不能算失败或新产量）；AI等待/额度用尽/普通日仍按原机翻兜底，缩短串行写锁占用。
 
 T063已实际验收并done：173 Python+27 JS、CI38756879911/38758137779/38758390323通过。实际双路38756880105成功，主23请求8篇、次23请求10篇，合计18篇/46请求；21篇未过数字/原文程序检查，合格段落与断点保留，不当完成。Pages38758803546成功，公开15:15:46快照227 Gemini，主233/500、次23/500、合计256/1000与主次账本一致，最新预留另记。自动接续38758815824在15:16:08由workflow_dispatch创建并进入AI步骤，不靠本会话继续在线。新增AI优先短路离线缓存/依赖/CPU步骤已发布3ac6f92。初步350–450估计按实际首轮修正到300–400篇（从双路启动到重置含首18），服务/质量失败可能减少；不是当天清空或确保用尽Google额度的承诺。T028/T062仍doing，下一步正文与数字检查实际失败改善/覆盖缺口；不要重新部署密钥/清主计数/恢复会话翻译。
+
+
+## T066 · 外文头条先译后上版 · 2026-10-15
+
+主头条和电影/艺术/摄影栏首篇要求headline_ready：已保存公开原文hash匹配且AI全文通过段落/数字程序检查；标题单译/机翻/缺正文不通过。原生中文有正文直接可用。backend/frontpage.py与frontend/core.js选稿镜像同步，只门槛和选稿、不改theme/ui版式；普通短讯/全量资料仍可原文/机翻。headline_slots默认正式头条，candidates=True是独立候选池，用于rank_snapshot的headline_order优先排队，避免循环；正式展示另记frontpage_headline_order/slot。queue新增frontpage_display_ids与headline_policy，旧frontpage_priority_ids/waiting_ids保留为候选语义。
+
+API头条候选失败30分钟接续，首次由普通冷却提升时提前一次并保留合格单元，不绕过项目429/503退避、不改原500/项目日上限或二次校译。browser_snapshot和/api/dataset提供headline_ready，CultureCore.headlineReady为Claude接口。178 Python（含Python/JS同时间真实档案匹配、先候选后上版、三栏首篇/下方普通稿、数字/段落/hash拒绝与原生中文、30分钟及旧断点迁移）+28 JS、静态构建/项目检查通过。发布/线上实际验收待补；T028/T062仍doing。

@@ -109,10 +109,13 @@ def rank_snapshot(snapshot, reference=None):
               for row in snapshot.get('content', []) if not row.get('is_demo')}
     if rules.get('headline_first', True):
         from .frontpage import headline_slots
-        for index, (identifier, slot) in enumerate(headline_slots(snapshot, result, instant)):
+        for index, (identifier, slot) in enumerate(headline_slots(snapshot, result, instant, candidates=True)):
             result[identifier]['headline_order'] = index
             result[identifier]['headline_slot'] = slot
-            result[identifier]['reasons'].append('首页主头条，全文优先翻译' if slot == 'lead' else {'film': '电影', 'art': '艺术', 'photography': '摄影'}[slot] + '栏目头条，全文优先翻译')
+            result[identifier]['reasons'].append('主头条候选，先完成AI全文再上版' if slot == 'lead' else {'film': '电影', 'art': '艺术', 'photography': '摄影'}[slot] + '栏目头条候选，先完成AI全文再上版')
+        for index, (identifier, slot) in enumerate(headline_slots(snapshot, result, instant)):
+            result[identifier]['frontpage_headline_order'] = index
+            result[identifier]['frontpage_headline_slot'] = slot
     return result
 
 

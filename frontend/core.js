@@ -18,6 +18,23 @@
   const safeUrl = value => { try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } };
   const originalPageUrl = row => safeImageUrl(row.original_page_url || row.canonical_url);
   const editorialReady = row => ['reviewed','translated'].includes(row.editorial_status) && Boolean(row.editorial_blocks_json && row.editorial_title_zh);
+  const headlineReady = row => {
+    if (typeof row.headline_ready === 'boolean') return row.headline_ready;
+    // Current builds provide the flag after paragraph, numeric/source checks.
+    // Older cached datasets still need a complete AI body, never a title alone.
+    try {
+      const original = JSON.parse(row.article_blocks_json || '[]');
+      if (!Array.isArray(original) || !original.length) return false;
+      if (row.language === 'zh') return original.some(b=>b?.type !== 'image' && typeof b?.text === 'string' && b.text.trim());
+      if (!editorialReady(row)) return false;
+      const translated = JSON.parse(row.editorial_blocks_json);
+      return Array.isArray(translated) && translated.length === original.length && original.every((b,i)=> {
+        const field=b.type === 'image' ? 'caption' : 'text', text=translated[i]?.[field];
+        return typeof text === 'string' && (!b[field] || text.trim()) &&
+          !(b.type !== 'image' && b.type !== 'heading' && b[field]?.length > 100 && text === b[field]);
+      });
+    } catch { return false; }
+  };
   const machineReady = row => row.machine_translation_ready !== false && String(row.article_translation_provider || '').startsWith('offline-m2m100:') && row.translation_status === 'machine' && Boolean(row.article_translation_hash && row.article_translation_json && row.translated_title_zh);
   const priorityOf = row => { const value = root.CULTURE_BOOTSTRAP?.priorities?.[row.id]; return value?.source_title === row.title_original ? value : null; };
   const priorityRank = row => Number(priorityOf(row)?.priority?.slice(1) || 2);
@@ -157,8 +174,8 @@
       const row = {...original, frontpage_score:score, frontpage_age_hours:age, frontpage_basis:age === null ? 'confirmed_upcoming_event' : 'published_at'};
       (age === null ? undated : known).push(row);
     }
-    const eligible = known.filter(r=>r.kind !== 'industry_buzz'), recent = eligible.filter(r=>r.frontpage_age_hours <= leadHours);
-    const leadPool = recent.length ? recent : eligible.length ? eligible : undated.filter(r=>r.kind !== 'industry_buzz');
+    const eligible = known.filter(r=>r.kind !== 'industry_buzz' && headlineReady(r)), recent = eligible.filter(r=>r.frontpage_age_hours <= leadHours);
+    const leadPool = recent.length ? recent : eligible.length ? eligible : undated.filter(r=>r.kind !== 'industry_buzz' && headlineReady(r));
     const tailCompare = (a,b)=>(a.frontpage_age_hours ?? fallbackHours)-(b.frontpage_age_hours ?? fallbackHours) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
     const lead = [...leadPool].sort((a,b)=>b.frontpage_score-a.frontpage_score || tailCompare(a,b))[0];
     if (!lead) return [];
@@ -169,9 +186,10 @@
       let candidates = known.filter(matches); if (!candidates.length) candidates = undated.filter(matches);
       for (let i=0;i<count;i++) {
         candidates = candidates.filter(r=>!seenIds.has(r.id) && !seenTitles.has(displayTitle(r)));
-        if (!candidates.length) break;
+        const choices=i === 0 && channel !== 'industry_buzz' ? candidates.filter(headlineReady) : candidates;
+        if (!choices.length) break;
         const adjusted = r=>r.frontpage_score-(counts[r.source_id]||0)*(cfg.source_repeat_penalty ?? 6);
-        const row = candidates.sort((a,b)=>adjusted(b)-adjusted(a) || tailCompare(a,b))[0];
+        const row = choices.sort((a,b)=>adjusted(b)-adjusted(a) || tailCompare(a,b))[0];
         rows.push(row); seenIds.add(row.id); seenTitles.add(displayTitle(row)); counts[row.source_id]=(counts[row.source_id]||0)+1;
       }
     }
@@ -236,7 +254,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { frontpageRows, babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { frontpageRows, babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, headlineReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

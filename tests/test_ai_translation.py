@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
+from datetime import datetime, timedelta, timezone
 from tests import test_autonomous_translation as fixtures
 from backend.ai_translation import GeminiTranslator, ServiceError, configuration, run_ai, source_units, reserve_requests
 
@@ -122,6 +123,32 @@ class AITranslationTests(unittest.TestCase):
         state = json.loads(path.read_text())
         self.assertEqual(set(state['outputs']), {'title:0', 'excerpt:0'})
 
+    def test_headline_validation_retry_is_30_minutes_and_adopts_old_cooldown_once(self):
+        with self.store.connect() as db:
+            db.execute('UPDATE content SET published_at=? WHERE id=?',
+                       (datetime.now(timezone.utc).isoformat(), self.row['id']))
+        def bad(payload):
+            doc = json.loads(payload['contents'][0]['parts'][0]['text'])
+            outputs = {u['key']: '译文：' + u['text'] for u in doc['original_units'] if u['key'] in doc['requested_keys']}
+            outputs['block:0:text:0'] = '缺失数字的译文'
+            return {'candidates': [{'finishReason': 'STOP', 'content': {'parts': [{'text': json.dumps({'outputs': outputs})}]}}]}
+        result = self.run_ai_worker(GeminiTranslator('fixture', transport=bad))
+        self.assertEqual(len(result['failed']), 1)
+        path = self.root / 'ai-progress' / (self.row['id'] + '.json')
+        state = json.loads(path.read_text())
+        minutes = (datetime.fromisoformat(state['retry_after']) - datetime.now(timezone.utc)).total_seconds() / 60
+        self.assertTrue(29 <= minutes <= 31)
+        self.assertEqual(state['retry_policy'], 'headline')
+        self.assertEqual(self.run_ai_worker(self.provider())['requests'], 0)
+        # A pre-policy 6h cooldown on a newly promoted headline is adopted once.
+        state.pop('retry_policy')
+        state['retry_after'] = (datetime.now(timezone.utc) + timedelta(hours=6)).isoformat()
+        path.write_text(json.dumps(state))
+        requested = []
+        resumed = self.run_ai_worker(self.provider(lambda doc: requested.extend(doc['requested_keys'])))
+        self.assertEqual(requested, ['block:0:text:0'])
+        self.assertEqual(resumed['translated'], [self.row['id']])
+
     def test_429_stops_all_articles_and_persists_global_retry(self):
         def limited(payload):
             raise ServiceError(429, 7200)
@@ -177,6 +204,8 @@ class AITranslationTests(unittest.TestCase):
             self.run_ai_worker(self.provider())
         with self.assertRaises(ValueError):
             self.run_ai_worker(self.provider(), paid_activation=True)
+        with self.assertRaises(ValueError):
+            self.run_ai_worker(self.provider(), headline_retry_minutes=0)
 
     def test_crashed_runner_reservation_is_not_forgotten_and_unused_normal_slots_release(self):
         path = self.root / 'ledger.json'

@@ -183,6 +183,8 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
             return read_checkpoint(path)
     if cfg['account_mode'] != 'free-project-only' or cfg.get('paid_activation') is not False:
         raise ValueError('paid_mode_not_authorized_or_implemented')
+    if type(cfg.get('headline_retry_minutes', 30)) is not int or cfg.get('headline_retry_minutes', 30) <= 0:
+        raise ValueError('invalid_headline_retry_limit')
     if any(type(cfg.get(field)) is not int or cfg[field] <= 0 for field in
            ('requests_per_day', 'requests_per_run', 'seconds_per_run', 'source_characters_per_chunk',
             'source_characters_per_unit', 'max_output_tokens')):
@@ -235,6 +237,7 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
         if ledger.get('retry_error'):
             report['error'] = ledger['retry_error']
     else:
+        priorities = rank_snapshot(snapshot)
         rows = [row for row in snapshot['content'] if not row.get('is_demo') and row['language'] != 'zh'
                 and row.get('article_blocks_json') and row.get('editorial_status') not in ('reviewed', 'translated')
                 and (eligible_ids is None or row['id'] in eligible_ids)]
@@ -242,6 +245,15 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
         eligible = []
         for row in rows:
             state = read_state(directory / (row['id'] + '.json'))
+            row['translation_priority'] = priorities.get(row['id'], {})
+            # Adopt the headline policy once for a newly promoted candidate.
+            # Keep all accepted units; never clear project-wide service backoff.
+            if (state.get('input_hash') == input_hash(row, provider.name, cfg)
+                    and 'headline_order' in row['translation_priority']
+                    and state.get('retry_after', '') > now() and state.get('retry_policy') != 'headline'):
+                state.pop('retry_after', None)
+                state['retry_policy'] = 'headline'
+                persist(directory / (row['id'] + '.json'), state)
             if state.get('input_hash') == input_hash(row, provider.name, cfg) and state.get('retry_after', '') > now():
                 report['deferred'].append(row['id'])
             else:
@@ -383,7 +395,11 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                 break
             except Exception as error:
                 state['error'] = str(error)[:120] if isinstance(error, ValueError) else type(error).__name__
-                state['retry_after'] = (datetime.now(timezone.utc) + timedelta(hours=cfg['article_retry_hours'])).isoformat()
+                is_headline = 'headline_order' in row.get('translation_priority', {})
+                delay = (timedelta(minutes=cfg.get('headline_retry_minutes', 30)) if is_headline
+                         else timedelta(hours=cfg['article_retry_hours']))
+                state['retry_policy'] = 'headline' if is_headline else 'regular'
+                state['retry_after'] = (datetime.now(timezone.utc) + delay).isoformat()
                 persist(path, state)
                 report['failed'].append({'id': row['id'], 'reason': state['error']})
         report['pending_after'] = len(rows) - len(report['translated'])

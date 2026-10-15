@@ -2133,6 +2133,46 @@
         "continuation实际自动dispatch38758815824（15:16:08 workflow_dispatch）并进入AI步骤，无人工再启动；当日连跑、采集让路/零请求防循环/过期恢复/AI优先暂缓机翻均已发布。只本配额日授权使用可用免费额度，不保证Google错误时耗尽。",
         "实测估算修正：从双接口启用时剩余790请求，首批46请求完成18；首批结束剩744请求。按首批/累计有效率预计本次到重置新增约300–400篇（含首批18），不是完成保证；当前AI数字/源检查失败率仍需后续改进，不能用长文单一归因。"
       ]
+    },
+    {
+      "id": "T066",
+      "title": "头条外文先AI全文后上版，候选翻译优先与前后端同步",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex（选稿/队列与前端逻辑镜像，不改版式）",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T061"
+      ],
+      "scope": [
+        "backend/frontpage.py",
+        "backend/priority.py",
+        "backend/presentation.py",
+        "backend/app.py",
+        "backend/daily_translation.py",
+        "frontend/core.js",
+        "tests/test_frontpage.py",
+        "tests/core.test.js",
+        "docs/",
+        "AGENTS.md",
+        "tasks.json",
+        "backend/ai_translation.py",
+        "config/ai-translation.json",
+        "tests/test_ai_translation.py"
+      ],
+      "acceptance": [
+        "主头条及电影/艺术/摄影栏目首篇外文须有程序有效AI全文，标题单译/机翻/缺正文/待译不得上头条；原生中文有正文直接可用",
+        "未译头条候选独立于上版门槛，排在其他译稿与旧稿份额前，不形成已译筛选循环",
+        "原文/全量资讯/原生中文及下方普通报道保留，日期/重要性/日本展览偏好与旧稿配额保持",
+        "Python与JS同时间同候选精确ID一致，硬门槛不能被个人偏好关闭，不做第二轮模型校对",
+        "验证后安全发布，核对公开首页主头条/三栏全文状态与候选队列；已有有效稿复用不重复翻译"
+      ],
+      "evidence": [
+        "178 Python+28 JS、静态构建/项目检查通过；真实档案与固定边界样本Python/JS首篇ID精确相同。",
+        "测试覆盖未译候选优先而正式头条不得展示、AI完成才上版、三栏首篇AI/下方普通原文保留、标题单译/机翻/漏块/数字/hash错误拒绝、原生中文正文例外、30分钟及旧冷却迁移。",
+        "当前本地真实档案366 AI全部通过就地程序检查；可见4头条均translated，原未译主头条候选live-3dc48ee1ae3c5f83b233af8c仍排队最前，不因门槛丢失；未调用会话翻译/二次模型校对。",
+        "仅选稿逻辑和队列，未修改Claude视觉/原文/已有有效稿或后台请求计数。发布及线上验收待补。"
+      ]
     }
   ]
 }

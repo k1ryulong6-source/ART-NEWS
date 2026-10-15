@@ -7,6 +7,31 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def headline_ready(row):
+    """A readable Chinese original or program-valid AI translation of every block."""
+    from .editorial import checked_result
+    import hashlib
+    try:
+        original = json.loads(row.get('article_blocks_json') or '[]')
+        if not isinstance(original, list) or not original:
+            return False
+        if row.get('article_hash') and hashlib.sha256(row['article_blocks_json'].encode()).hexdigest() != row['article_hash']:
+            return False
+        if row.get('language') == 'zh':
+            return any(b.get('type') != 'image' and str(b.get('text') or '').strip() for b in original)
+        if row.get('editorial_status') not in ('reviewed', 'translated') or not row.get('editorial_title_zh'):
+            return False
+        translated = json.loads(row.get('editorial_blocks_json') or '[]')
+        if not isinstance(translated, list):
+            return False
+        checked_result(row, {'title_zh': row['editorial_title_zh'],
+            'excerpt_zh': row.get('editorial_excerpt_zh') or '', 'notes': [],
+            'blocks': [{**b, 'index': i} for i, b in enumerate(translated)]})
+        return True
+    except (ValueError, TypeError, KeyError, AttributeError):
+        return False
+
+
 def display_title(row, headlines):
     if row.get('editorial_status') in ('reviewed', 'translated') and row.get('editorial_blocks_json') and row.get('editorial_title_zh'):
         return row['editorial_title_zh']
@@ -18,7 +43,7 @@ def display_title(row, headlines):
     return translated or row.get('title_original') or '标题未取得'
 
 
-def frontpage_rows(snapshot, priorities, instant, preferences=None, headlines=None):
+def frontpage_rows(snapshot, priorities, instant, preferences=None, headlines=None, *, candidates=False):
     preferences = preferences or json.loads((ROOT / 'config/preferences.json').read_text())
     if headlines is None:
         from .headlines import load_headlines
@@ -52,9 +77,10 @@ def frontpage_rows(snapshot, priorities, instant, preferences=None, headlines=No
         row.update(frontpage_score=score, frontpage_age_hours=age,
                    frontpage_basis='published_at' if age is not None else 'confirmed_upcoming_event')
         (known if age is not None else undated).append(row)
-    eligible = [r for r in known if r.get('kind') != 'industry_buzz']
+    ready = lambda r: candidates or headline_ready(r)
+    eligible = [r for r in known if r.get('kind') != 'industry_buzz' and ready(r)]
     recent = [r for r in eligible if r['frontpage_age_hours'] <= lead_hours]
-    lead_pool = recent or eligible or [r for r in undated if r.get('kind') != 'industry_buzz']
+    lead_pool = recent or eligible or [r for r in undated if r.get('kind') != 'industry_buzz' and ready(r)]
     if not lead_pool:
         return []
     order = lambda r: (-r['frontpage_score'], r['frontpage_age_hours'] if r['frontpage_age_hours'] is not None else fallback_hours, r['id'])
@@ -67,20 +93,23 @@ def frontpage_rows(snapshot, priorities, instant, preferences=None, headlines=No
             continue
         matches = lambda r: (r.get('kind') == 'industry_buzz' if channel == 'industry_buzz' else r.get('kind') != 'industry_buzz' and r.get('channel') == channel)
         # Unknown publication dates never outrank a dated report in the desk.
-        candidates = [r for r in known if matches(r)] or [r for r in undated if matches(r)]
-        for _ in range(count):
-            candidates = [r for r in candidates if r['id'] not in seen_ids and display_title(r, headlines) not in seen_titles]
-            if not candidates:
+        pool = [r for r in known if matches(r)] or [r for r in undated if matches(r)]
+        for index in range(count):
+            pool = [r for r in pool if r['id'] not in seen_ids and display_title(r, headlines) not in seen_titles]
+            # Only the desk's first (headline) story needs this extra gate.
+            # Do not hide untranslated briefs beneath an eligible headline.
+            choices = [r for r in pool if ready(r)] if index == 0 and channel != 'industry_buzz' else pool
+            if not choices:
                 break
-            row = min(candidates, key=lambda r: (-(r['frontpage_score'] - counts.get(r.get('source_id'), 0) * cfg.get('source_repeat_penalty', 6)), *order(r)[1:]))
+            row = min(choices, key=lambda r: (-(r['frontpage_score'] - counts.get(r.get('source_id'), 0) * cfg.get('source_repeat_penalty', 6)), *order(r)[1:]))
             seen_ids.add(row['id']); seen_titles.add(display_title(row, headlines))
             counts[row.get('source_id')] = counts.get(row.get('source_id'), 0) + 1
             result.append(row)
     return result
 
 
-def headline_slots(snapshot, priorities, instant):
-    rows = frontpage_rows(snapshot, priorities, instant)
+def headline_slots(snapshot, priorities, instant, *, candidates=False):
+    rows = frontpage_rows(snapshot, priorities, instant, candidates=candidates)
     if not rows:
         return []
     result = [(rows[0]['id'], 'lead')]

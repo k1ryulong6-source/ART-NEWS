@@ -8,7 +8,7 @@ import httpx
 from backend.app import create_app
 from backend.editorial_regions import (policy, country_tier, source_tier, media_weight,
                                       international_gateway, ordered_sources,
-                                      body_batch, regional_coverage, _regional_pick)
+                                      body_batch, regional_coverage, _regional_pick, row_focus)
 from backend.ingestion import content_record
 
 
@@ -127,3 +127,15 @@ class EditorialRegionTests(unittest.TestCase):
                     self.assertEqual(first.json()['global_completeness'], 'unknown')
                     self.assertTrue(first.json()['international_gateway_source_ids'])
             asyncio.run(check())
+
+    def test_international_media_subject_region_overrides_headquarters_without_inventing_artist_nationality(self):
+        source = self.source('international', 'US', 'north_america', 'global_core', international=95)
+        source['publisher_country'] = 'US'
+        row = self.rows(source, 1)[0]
+        row.update(country='JP', geography_status='mentioned')
+        self.assertEqual(row_focus(row, source, policy()), ('east_asia', 1, 'reported_geography'))
+        row.update(country='GH', geography_status='mentioned')
+        self.assertEqual(row_focus(row, source, policy()), ('sub_saharan_africa', 2, 'reported_geography'))
+        row.update(country=None, geography_status='unknown')
+        self.assertEqual(row_focus(row, source, policy()), ('global', 1, 'source_assignment_only'))
+        self.assertIsNone(row['country'])

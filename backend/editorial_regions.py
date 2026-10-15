@@ -49,16 +49,37 @@ def international_gateway(source, rules):
     return source.get('editorial_focus', {}).get('role') == 'global_core' or media_weight(source, 'global') >= rules['media_weights']['international_gateway_threshold']
 
 
+def row_focus(row, source, rules):
+    """Use documented subject geography when known; never publisher country."""
+    try:
+        places = json.loads(row.get('locations_json') or '[]')
+    except (ValueError, TypeError):
+        places = []
+    countries = {p.get('country') for p in places if isinstance(p, dict) and p.get('country')}
+    if row.get('country'):
+        countries.add(row['country'])
+    countries.discard('GLOBAL')
+    field = row.get('channel') or (source.get('channels') or ['art'])[0]
+    if countries:
+        country = min(sorted(countries), key=lambda code: country_tier(code, field, rules))
+        area = next((region['id'] for region in rules['world_regions'] if country in region['countries']), 'global')
+        return area, country_tier(country, field, rules), 'reported_geography'
+    focus = source.get('editorial_focus', {})
+    area = 'global' if focus.get('role') == 'global_core' else (focus.get('regions') or ['global'])[0]
+    return area, source_tier(source, field, rules), 'source_assignment_only'
+
+
 def _regional_pick(rows, count, catalog, rules, lane='regional'):
     """Region attention first, then independent media weights within each region."""
     if count <= 0:
         return []
-    areas = {}
+    areas, area_tiers = {}, {}
     for row in rows:
-        focus = catalog.get(row['source_id'], {}).get('editorial_focus', {})
-        area = 'global' if lane == 'global' or focus.get('role') == 'global_core' else (focus.get('regions') or ['global'])[0]
+        area, tier, _ = row_focus(row, catalog.get(row['source_id'], {}), rules)
+        if lane == 'global':
+            area = 'global'
         areas.setdefault(area, {}).setdefault(row['source_id'], []).append(row)
-    area_tiers = {area: min(source_tier(catalog.get(sid, {}), rules=rules) for sid in groups) for area, groups in areas.items()}
+        area_tiers[area] = min(area_tiers.get(area, 3), tier)
     ordered = sorted(areas, key=lambda area: area_tiers[area])
     # Tier 1 receives three turns, tier 2 two, discovery one; every desk gets a turn.
     turns = ordered + [area for area in ordered if area_tiers[area] <= 2] + [area for area in ordered if area_tiers[area] == 1]
@@ -92,7 +113,7 @@ def body_batch(fresh, rechecks, catalog, limit, rules=None):
     rules = rules or policy()
     def ordering(row):
         key = priority_key(row)
-        tier = source_tier(catalog.get(row['source_id'], {}), row.get('channel'), rules)
+        _, tier, _ = row_focus(row, catalog.get(row['source_id'], {}), rules)
         return key[:5] + (tier,) + key[5:]
     fresh = sorted(fresh, key=ordering)
     heads = [r for r in fresh if 'headline_order' in r.get('translation_priority', {})][:limit]

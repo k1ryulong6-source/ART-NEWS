@@ -9,6 +9,7 @@ on:
       - 'data/live.json'
       - 'data/headlines/**'
       - 'data/coverage-*.json'
+      - 'data/acceptance.json'
       - 'backend/headlines.py'
       - 'backend/coverage.py'
       - 'backend/operations.py'
@@ -23,7 +24,7 @@ on:
       - 'scripts/build_static.py'
       - '.github/workflows/pages.yml'
   workflow_run:
-    workflows: ['Refresh cultural news', 'Publish daily AI translations', 'Automatic full-text translation', 'Verify Gemini full-text translation', 'Clean saved article bodies']
+    workflows: ['Publish daily AI translations', 'Verify Gemini full-text translation', 'Clean saved article bodies', 'Audit autonomous acceptance']
     types: [completed]
 permissions:
   contents: read

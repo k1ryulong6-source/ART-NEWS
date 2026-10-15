@@ -32,7 +32,7 @@ def translation_progress(snapshot):
 
 
 def reconcile_rss(snapshot, source, payload):
-    from .ingestion import rss_records, GEAR, GEAR_MULTILINGUAL
+    from .ingestion import rss_records, GEAR, GEAR_MULTILINGUAL, source_filtered
     records, _, _ = rss_records(source, payload)
     stored = {r['id'] for r in snapshot.get('content', [])}
     accepted = {r['id']: r for r in records}
@@ -47,7 +47,7 @@ def reconcile_rss(snapshot, source, payload):
         labels = title or ''
         labels += ' ' + ' '.join(node.text or '' for node in item.findall('category'))
         if GEAR.search(labels) or GEAR_MULTILINGUAL.search(labels): reason = 'equipment_review'
-        elif source.get('exclude_title_regex') and re.search(source['exclude_title_regex'], title or '', re.I): reason = 'source_config_filter'
+        elif source_filtered(source, title or '', [node.text or '' for node in item.findall('category')]): reason = 'source_config_filter'
         if reason: excluded.append({'title_original': title, 'reason': reason})
     timestamps = sorted(r['published_at'] for r in records if r.get('published_at'))
     return {'scope': 'observed_rss_only', 'status': 'checked', 'observed': len(observed),

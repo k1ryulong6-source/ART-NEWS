@@ -1,10 +1,10 @@
 name: Automatic full-text translation
 on:
   workflow_run:
-    workflows: ['Refresh cultural news', 'Clean saved article bodies']
+    workflows: ['Clean saved article bodies']
     types: [completed]
   schedule:
-    - cron: '45 * * * *'
+    - cron: '5,35 * * * *'
   workflow_dispatch:
   push:
     branches: [main]
@@ -27,12 +27,13 @@ on:
       - 'scripts/run_auto_translation.py'
 permissions:
   contents: write
-  actions: read
+  actions: write
 concurrency:
-  group: cultural-news-data-write
+  group: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'cancelled' && format('ignored-cancelled-collection-{0}', github.run_id) || 'cultural-news-data-write' }}
   cancel-in-progress: false
 jobs:
   translate:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled'
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -83,6 +84,7 @@ jobs:
         id: translation
         run: python scripts/run_auto_translation.py
       - name: Save accepted work and checkpoints even after a worker error
+        id: save
         if: always() && steps.restore.outcome == 'success'
         env:
           WORKER_OUTCOME: ${{ steps.translation.outcome }}
@@ -94,17 +96,26 @@ jobs:
           python scripts/audit_data.py --output data/quality.json --strict
           python scripts/prepare_translation_queue.py
           python scripts/audit_important_news.py
+          python scripts/audit_article_quality.py --limit 20
+          python scripts/update_acceptance.py
           python scripts/build_static.py
           git restore frontend/data.js
           git config user.name 'Intermission automatic translator'
           git config user.email 'updater@users.noreply.github.com'
           git add data/live.json data/quality.json data/important-news-audit.json data/translation-queue.json data/translation-queue data/translation-input data/auto-translation-progress data/auto-translation-status.json data/ai-translation-progress data/ai-translation-status.json
           if [ -f data/ai-translation-ledger.json ]; then git add data/ai-translation-ledger.json; fi
+          git add data/article-quality data/article-quality-report.json data/acceptance.json
           if ! git diff --cached --quiet; then
             git commit -m 'Save automatic AI translations and temporary machine fallback progress'
-            git pull --rebase origin main
-            git push origin HEAD:main
+            python scripts/push_public_update.py
           fi
+      - name: Publish accepted data and refresh actual health
+        if: always() && steps.save.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run pages.yml --ref main --repo "$GITHUB_REPOSITORY"
+          gh workflow run automation-health.yml --ref main --repo "$GITHUB_REPOSITORY"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -115,4 +126,5 @@ jobs:
             data/ai-translation-progress/
             data/ai-translation-status.json
             data/ai-translation-ledger.json
+            runtime/public-update-evidence/
           retention-days: 7

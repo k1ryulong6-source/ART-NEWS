@@ -68,6 +68,13 @@ def content_record(source, title, url, excerpt="", published=None, summary=None)
     return {"excerpt_original": short_excerpt(excerpt) or None, "excerpt_origin": "rss" if excerpt else None, "id": stable_id(url), "source_id": source["id"], "canonical_url": url, "title_original": title.strip(), "title_zh": None, "summary_zh": summary, "raw_excerpt": excerpt[:1200], "body_hash": hashlib.sha256((title + excerpt + (summary or "")).encode()).hexdigest(), "channel": source["channels"][0], "kind": "industry_buzz" if BUZZ.search(title) else "news", "country": next(iter(countries)) if len(countries) == 1 else None, "city": next(iter(cities)) if len(cities) == 1 else None, "geography_status": "confirmed" if fixed else "mentioned" if locations else "unknown", "locations_json": json.dumps(locations, ensure_ascii=False), "language": source["language"], "evidence_status": "official_confirmed" if source["source_type"] == "official" else "media_reported", "published_at": published, "fetched_at": stamp, "updated_at": stamp, "summary_status": "ready" if summary else "pending", "summary_provider": "structured-fields" if summary else None, "summary_model": None, "summary_generated_at": stamp if summary else None, "is_demo": 0}
 
 
+def source_filtered(source, title, categories):
+    allowed = source.get('include_categories')
+    if allowed and not {c.casefold() for c in categories}.intersection(c.casefold() for c in allowed):
+        return True
+    return bool(source.get('exclude_title_regex') and re.search(source['exclude_title_regex'], title, re.I))
+
+
 def rss_records(source, payload):
     root = ET.fromstring(payload.lstrip(b"\xef\xbb\xbf \t\r\n"))
     items = root.findall(".//item")
@@ -82,7 +89,7 @@ def rss_records(source, payload):
         categories = " ".join(x.text or "" for x in item.findall("category"))
         if GEAR.search(title + " " + categories) or GEAR_MULTILINGUAL.search(title + " " + categories):
             continue
-        if source.get("exclude_title_regex") and re.search(source["exclude_title_regex"], title, re.I):
+        if source_filtered(source, title, [x.text or '' for x in item.findall('category')]):
             continue
         published = None
         try:

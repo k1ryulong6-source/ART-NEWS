@@ -311,6 +311,9 @@
       "publisher_country": "CN",
       "coverage": "global",
       "article_selectors": [
+        ".blog-article__content",
+        ".news-detail__content",
+        ".review__content",
         ".toc-issue",
         ".toc-articles"
       ],
@@ -593,7 +596,10 @@
           "discovery": 78,
           "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
         }
-      }
+      },
+      "article_selectors": [
+        ".content__body-text"
+      ]
     },
     {
       "id": "artafrica",
@@ -676,7 +682,10 @@
           "discovery": 84,
           "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
         }
-      }
+      },
+      "article_selectors": [
+        "div.article"
+      ]
     },
     {
       "id": "cinepremiere",
@@ -914,7 +923,10 @@
           "discovery": 94,
           "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
         }
-      }
+      },
+      "article_selectors": [
+        ".et_pb_post_content"
+      ]
     },
     {
       "id": "diaphana",
@@ -1456,6 +1468,7 @@
       "feed_url": "https://revistazum.com.br/feed/",
       "verified_at": "2026-10-15",
       "article_selectors": [
+        "article.post .content",
         ".entry-content"
       ],
       "editorial_focus": {
@@ -1496,6 +1509,7 @@
       "feed_url": "https://www.blind-magazine.com/en/feed/",
       "verified_at": "2026-10-15",
       "article_selectors": [
+        ".elementor-widget-theme-post-content",
         ".entry-content"
       ],
       "editorial_focus": {
@@ -1591,7 +1605,8 @@
           "basis": "T056人工编辑初始值；不是全球流量份额或客观质量结论，复核时可调整。"
         }
       },
-      "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。"
+      "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。",
+      "public_wordpress_rest": true
     },
     {
       "id": "africanah",
@@ -1676,6 +1691,565 @@
         }
       },
       "notes": "T056已实际GET验证RSS item、日期和链接。抓取公开正文并保留出处、图片来源及公开部分状态；近期RSS不等于全站历史，首次导入计为补库。"
+    },
+    {
+      "id": "cineuropa",
+      "name": "Cineuropa",
+      "homepage_url": "https://cineuropa.org/",
+      "channels": [
+        "film"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://cineuropa.org/en/rss/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".box-text-article"
+      ],
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "europe",
+          "global"
+        ],
+        "countries": [
+          "BE",
+          "FR",
+          "DE",
+          "IT",
+          "ES"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 92,
+          "local_specialist": 93,
+          "discovery": 75,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。"
+    },
+    {
+      "id": "monopol",
+      "name": "Monopol",
+      "homepage_url": "https://www.monopol-magazin.de/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "de",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://www.monopol-magazin.de/rss.xml",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".article__content"
+      ],
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "europe",
+          "global"
+        ],
+        "countries": [
+          "DE"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 74,
+          "local_specialist": 93,
+          "discovery": 75,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。"
+    },
+    {
+      "id": "exibart",
+      "name": "Exibart",
+      "homepage_url": "https://www.exibart.com/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "it",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://www.exibart.com/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".exibart-article-content"
+      ],
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "europe"
+        ],
+        "countries": [
+          "IT"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 74,
+          "local_specialist": 93,
+          "discovery": 75,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。"
+    },
+    {
+      "id": "matca",
+      "name": "Matca",
+      "homepage_url": "https://matca.vn/",
+      "channels": [
+        "photography"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://matca.vn/en/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".entry-content"
+      ],
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "south_southeast_asia"
+        ],
+        "countries": [
+          "VN"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 74,
+          "local_specialist": 93,
+          "discovery": 95,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。 越南摄影低频发现来源，最新RSS为2026-02-04；不冒称即时新闻源。"
+    },
+    {
+      "id": "screendaily",
+      "name": "Screen Daily",
+      "homepage_url": "https://www.screendaily.com/",
+      "channels": [
+        "film"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://www.screendaily.com/45202.rss",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".storytext"
+      ],
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "global"
+        ],
+        "countries": [
+          "GB"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 92,
+          "local_specialist": 93,
+          "discovery": 75,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。"
+    },
+    {
+      "id": "filmcomment",
+      "name": "Film Comment",
+      "homepage_url": "https://www.filmcomment.com/",
+      "channels": [
+        "film"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://www.filmcomment.com/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        "article.rte"
+      ],
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "global"
+        ],
+        "countries": [
+          "US"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 92,
+          "local_specialist": 93,
+          "discovery": 75,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。"
+    },
+    {
+      "id": "artomity",
+      "name": "Artomity",
+      "homepage_url": "https://artomity.art/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://artomity.art/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".entry-content"
+      ],
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "east_asia"
+        ],
+        "countries": [
+          "HK"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 74,
+          "local_specialist": 93,
+          "discovery": 95,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。"
+    },
+    {
+      "id": "filmdienst",
+      "name": "Filmdienst",
+      "homepage_url": "https://www.filmdienst.de/",
+      "channels": [
+        "film"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "de",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://www.filmdienst.de/rss/magazin",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".article-text"
+      ],
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "europe"
+        ],
+        "countries": [
+          "DE"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 74,
+          "local_specialist": 93,
+          "discovery": 75,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。"
+    },
+    {
+      "id": "artreview",
+      "name": "ArtReview",
+      "homepage_url": "https://artreview.com/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://artreview.com/rss.xml",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        "article[class*=\"article__ArticleContent-\"]"
+      ],
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "global"
+        ],
+        "countries": [
+          "GB"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 92,
+          "local_specialist": 93,
+          "discovery": 75,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。"
+    },
+    {
+      "id": "filmcritics-hk",
+      "name": "香港電影評論學會",
+      "homepage_url": "https://www.filmcritics.org.hk/",
+      "channels": [
+        "film"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "zh",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://www.filmcritics.org.hk/rss.xml",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        "div.article-main"
+      ],
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "east_asia"
+        ],
+        "countries": [
+          "HK"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 74,
+          "local_specialist": 93,
+          "discovery": 75,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。"
+    },
+    {
+      "id": "filmaholic",
+      "name": "釀電影",
+      "homepage_url": "https://filmaholic.tw/",
+      "channels": [
+        "film"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "zh",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://filmaholic.tw/rss/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        ".article-container"
+      ],
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "east_asia"
+        ],
+        "countries": [
+          "TW"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 74,
+          "local_specialist": 93,
+          "discovery": 75,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。"
+    },
+    {
+      "id": "mistermotley",
+      "name": "Mister Motley",
+      "homepage_url": "https://www.mistermotley.nl/",
+      "channels": [
+        "art"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "nl",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://www.mistermotley.nl/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        "article.single-article--active"
+      ],
+      "editorial_focus": {
+        "role": "discovery",
+        "regions": [
+          "europe"
+        ],
+        "countries": [
+          "NL"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 74,
+          "local_specialist": 93,
+          "discovery": 95,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。"
+    },
+    {
+      "id": "indiewire",
+      "name": "IndieWire",
+      "homepage_url": "https://www.indiewire.com/",
+      "channels": [
+        "film"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "en",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://www.indiewire.com/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        "[class*=\"_gutenbergContent_\"]"
+      ],
+      "editorial_focus": {
+        "role": "global_core",
+        "regions": [
+          "global"
+        ],
+        "countries": [
+          "US"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 92,
+          "local_specialist": 93,
+          "discovery": 75,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。"
+    },
+    {
+      "id": "fotointern",
+      "name": "Fotointern",
+      "homepage_url": "https://www.fotointern.ch/",
+      "channels": [
+        "photography"
+      ],
+      "country": null,
+      "publisher_country": null,
+      "coverage": "editorial_focus_only; individual report geography remains evidence-based",
+      "language": "de",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "rss",
+      "adapter": "rss",
+      "feed_url": "https://www.fotointern.ch/feed/",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        "article.post .entry"
+      ],
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "europe"
+        ],
+        "countries": [
+          "CH"
+        ],
+        "basis": "T062明确编辑关注范围，不由媒体总部/语种推定单篇地点或作者国籍；跨国媒体仍保留global渠道。",
+        "media_weight": {
+          "international": 74,
+          "local_specialist": 93,
+          "discovery": 75,
+          "basis": "人工编辑初始值，非全球流量份额/客观质量排名。"
+        }
+      },
+      "notes": "T062实际GET验证RSS、近期日期/链接及公开正文样本；首次导入算补库，非每日产量。不取得隐藏/订阅部分。出版国家未完成独立资料核对保留未知。 仅文化/书籍/人物/重要展览与摄影奖，器材分类及设备展不收录。",
+      "include_categories": [
+        "Kultur",
+        "Bücher",
+        "Top Stories",
+        "Verschiedenes"
+      ],
+      "exclude_title_regex": "Imaging World|photokina"
     }
   ],
   "notes": "全球电影、艺术、摄影为主，日本上映与展览保留专题；地区由报道线索或明确场馆资料决定，不能按媒体总部推断。覆盖仍有限，未验证来源保持停用。"

@@ -101,7 +101,7 @@ class AttentionUnitTests(unittest.TestCase):
                     direct = await client.get('/reports/attention-units/a-kind-of-attention.json')
                     self.assertEqual(direct.json(), response.json()['units'][0])
                     self.assertEqual(direct.json()['name'], '一种关注')
-                    self.assertEqual(direct.json()['source_count'], 5)
+                    self.assertEqual(direct.json()['source_count'], 6)
                     self.assertEqual(direct.json()['article_count'], 0)
                     self.assertEqual((await client.get('/api/attention-units/missing')).status_code, 404)
             asyncio.run(check())

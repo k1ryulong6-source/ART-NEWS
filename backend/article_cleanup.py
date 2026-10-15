@@ -5,8 +5,8 @@ from collections import Counter
 # Exact component names, not substring selectors such as [class*=related] or
 # paragraph keyword filters: a report may itself discuss newsletters or ads.
 WIDGETS = ('.condensed-newsletter-signup,.theme-newsletter-signup,'
-           '.newsletter-signup,.newsletter-form,.article-related-links,'
-           '.related-stories,.related-content,.jp-relatedposts,.yarpp-related,'
+           '.newsletter-signup,.newsletter-form,.nova-js-newsletter-capture,.article-related-links,'
+           '.related-stories,.related-content,.jp-relatedposts,.yarpp-related,.rp4wp-related-posts,'
            '.post-navigation,.entry-footer,.cookie-banner,.cookie-notice,'
            '.ad-slot,.advertising,.subscription-prompt,'
            '[role="navigation"],[role="search"],'
@@ -15,6 +15,12 @@ WIDGETS = ('.condensed-newsletter-signup,.theme-newsletter-signup,'
 
 def widget_nodes(soup, source):
     nodes = list(soup.select(WIDGETS))
+    if source.get('id') == 'monopol':
+        nodes.extend(soup.select('#block-monopol-plus-paywall-curtain'))
+    if source.get('id') == 'mistermotley':
+        nodes.extend(soup.select('.article-footer'))
+    if source.get('id') == 'rapadura':
+        nodes.extend(soup.select('.meta-share,.meta-tags'))
     # Lenscratch's recommendation rail has no semantic widget class. Verify
     # both the heading container and adjacent card-list structure before removal.
     if source.get('id') == 'lenscratch':
@@ -35,13 +41,7 @@ def remove_widgets(soup, source):
             node.decompose()
 
 
-def cached_widget_indexes(payload, url, source, original):
-    """Project exact current widget runs onto an older body, preserving its prose.
-
-    Used when the publisher also edited its actual story since the last fetch.
-    Only complete, structurally identified multi-block runs count as evidence;
-    ambiguous repeated runs are kept. No paragraph keyword classification.
-    """
+def widget_block_runs(payload, url, source):
     from bs4 import BeautifulSoup
     from .articles import extract_article
     soup = BeautifulSoup(payload, 'lxml')
@@ -56,8 +56,23 @@ def cached_widget_indexes(payload, url, source, original):
         extracted = extract_article(fragment, url, {**source, 'article_selectors': ['.article-body']})
         blocks = json.loads(extracted.get('article_blocks_json') or '[]')
         blocks = [b for b in blocks if b.get('text') != marker.strip()]
-        if len(blocks) >= 2:
-            runs.append(json.dumps(blocks, ensure_ascii=False, sort_keys=True))
+        if blocks: runs.append(blocks)
+    return runs
+
+
+def widget_deletions_only(payload, url, source, original, indexes):
+    """A shortened page is insufficient proof: every removed block needs DOM evidence."""
+    encode = lambda block: json.dumps(block, ensure_ascii=False, sort_keys=True)
+    available = Counter(encode(b) for run in widget_block_runs(payload, url, source) for b in run)
+    kept = set(indexes)
+    removed = Counter(encode(b) for i, b in enumerate(original) if i not in kept)
+    return bool(removed) and not (removed - available)
+
+
+def cached_widget_indexes(payload, url, source, original):
+    """Project complete widget runs only; ambiguous repeated runs are kept."""
+    runs = [json.dumps(run, ensure_ascii=False, sort_keys=True)
+            for run in widget_block_runs(payload, url, source) if len(run) >= 2]
     removed = set()
     for key, evidence_count in Counter(runs).items():
         run = json.loads(key)

@@ -381,11 +381,40 @@ T039公开完成：ART-NEWS b994269，CI38554022279（85Python+26JS）和Pages38
 - 单元页（`ui.attentionPage`）：只有大号细明体标题（用户要求去掉标题下的说明文字，头版专栏条同样不显示描述；selection_basis/scope_note仍在接口与ATTENTION_UNITS.md）；每家媒体一行：左为地区、名称、推荐理由、专长·语种、最近发布（读取失败时红字说明）与官网；右为最近5篇（标题按站内中文/原文规则，经readerRoute进入阅读）；“来源状态”折叠显示最近成功读取、收录/正文/AI全文数与列表核对。
 - 用户要求栏目名显示为正体字「一種關注」（`ui.unitName`；数据与配置中的正式名称、ID不变）。标题细明体子集加入“一種關注”；导航用的黑体子集只含简体常用字，另建2字Noto Sans TC子集`intermission-sans-tc-v1.woff2`（種關，2.7KB，OFL随附，`scripts/build_title_font.py --source-sans-tc`），加入`--serif/--sans`字体栈；本地API白名单加两项文件名。
 
-## T062 · 资讯排序（Claude）· 2026-10-15
+## T062 接续：四项验收仍 doing（2026-10-15）
+
+用户最新要求「全部做完再叫我」。后台依旧只用已配置Gemini免费API；禁止会话翻译/第二轮校对/开启付费。新增 scripts/audit_article_quality.py（原文hash/中文结构及逐源公开段落、图注，保存data/article-quality/断点）、scripts/audit_autonomous_trial.py（真实Actions小型状态artifact，首次完整24h结束前不通过）、scripts/update_acceptance.py（四门槛及快照签名，data/acceptance.json）。前两项不是语义校译。质量检查不自动把来源改写视作污染删除；保留缓存及问题，后续正常正文重抓接续。
+
+新增14个来源（53启用=44 RSS+9官方页面）；实际工作区RSS+公开正文样本见data/source-expansion-evidence.json。来源总数与实际runner读取结果要分开核对；有未知出版国不补猜。Fotointern按类别过滤，Matca低频发现、不冒充每日更新。Artforum旧文公开页面当前只有署名/空正文，仍列缺正文，不从隐藏数据补造。
+
+现有24h观察截至2026-10-15 18:07:54 UTC才满24h。当前工作区下载Actions artifact被网络Forbidden，报告保留unverified，不把本地下载失败说API翻译失败；新采集流程每六小时审计将从GitHub runner核对。待译/缺正文/核心来源故障/地区矩阵缺口仍未全部解决，T028/T062不能done。原提醒6acfba93ea708191be758da0a02f1e76已改仅四项all_ready且证据匹配后通知；旧每日会话翻译6ace6f72b3dc81919301888a638a327e保持暂停。不得把条件通知已配置说成工作完成。
+
+T062补充：已实测共享concurrency的pending取消问题，定期24h证据核对移到采集内（6h去重），独立acceptance工作流改仅手动。取消采集不再占用数据组触发翻译。质量证据匹配原文hash/原标题及提取代码+来源规则版本；发现漏段/图注或公开内容变化时，在既有正文复查名额中优先安排一次重抓，不增加API配额。新订阅墙变短不得删除过去公开取得的正文或译文；长公开图注不再静默截1000字。148 Python+27 JS及工作流YAML/项目检查通过。线上c862643的900篇/899正文与运行报告hash已核对；后续修复与真实新增来源runner采集仍待验收。
+
+健康邮件已核实并修复：c4b955e后38703530927、38703522699及38704272234实际success；告警来自pending采集被取消后错误判failed，网站Pages38703455394成功。原文9篇线上Babel的hash/全部blocks逐一匹配，线上acceptance明确false。继续补collection-recovery用于防止延迟API定时任务挤掉采集后永久丢这一轮；保留真实失败/6h停更告警，未全项验收不得done。
+
+真实补排验收：只取消未执行的pending采集38704887311，后台collection-recovery 38704925032实际success，在没有手工第二次dispatch的情况下自动创建38704941443并已in_progress。取消事件的翻译38704924718自动skipped，不占写锁、不发API请求。当前需等待采集实际结束后核对14个新来源/新正文/发布，不把补排成功当采集完成。旧本地artifact下载0成功时不缓存六小时“已验证”；下一采集会重试真实运行证据，断点文章数去重、另存续译事件次数。
+
+后续真实告警38705126797来自翻译38702099095最终保存rebase冲突（acceptance.json、article-quality-report.json），不是前面的取消误判。修复push_public_update已做3个真实Git并发集成检查；失败可从runtime/public-update-evidence的accepted-public-snapshot.json恢复，必须先匹配最新原文hash/原标题，不覆盖新采集。已知派生报告重算，正文/译稿冲突不猜合并。采集和翻译后显式dispatch后续流程，取消重复workflow_run入口，辅助GITHUB_TOKEN仅新增actions:write；154 Python/27 JS、YAML和全部shell块语法检查通过。机翻临时兜底每轮4分钟，原逐单元断点与Gemini免费500/日保持。
+
+来源实际验收：38704941443 success，1161篇，13个新增来源本轮成功，Cineuropa被GitHub runner 403（仍保留与报告，不冒称14个全成功）；242条首次来源补库不是日均新闻。快照2026-10-15T08:23:32：182有效AI（其中直接150/历史已校32）、52原生中文正文、715有原文外文待AI、212缺正文（新补库等待正文预算，非丢失212篇旧正文）。2篇旧AI因公开正文更新/补全而失效进入队列，不重译原文hash仍匹配的有效稿。各项仍doing，待新保存流程真实通过及24h/积压/剩余来源/质量门槛。
+
+保存修复真实验收：38707445676 success；同轮日志先正常巡检20篇，再由冲突恢复重算limit0并成功push 98bdc4514dd9f417b1e655c7e8df0a1f4d375797（公开成果副本已归档）。Pages38708157032、健康38708175452/38708159967均success；线上快照08:46:51已更新。AI该批真实3请求、0全文完成、1篇结构/中文检查失败，随后503退避至09:42:28 UTC，不能把工作流通过说API已清积压。
+
+已确认失败保存批次38702099095:1的AI步骤JSON报告requests=0（08:06:39 service_wait），但40次预留未推送释放；证据data/ai-translation-repairs/38702099095-1.json。reserve脚本在串行写锁内仅回收有明确零请求报告、精确day/allocated/remaining匹配的已核实预留；实际请求/tokens/unknown计数与未知崩溃预留保持，非清零配额。156 Python通过，待下一次后台admission确认释放记录。
+
+额度回收生产验收：38702099095:1在main账本已closed、remaining=0、actual_requests=0且有原Actions证据URL；请求13、input37061、output12483、unknown2保持原值。当前reserved40属于新的在途批次，不能当旧预留未释放。新显式主链也已连续执行：采集38707917530/38708565322 success，翻译38708476746/38709356774 success，健康38709960072 success；38709563132仍运行。API最近仍503退避（非清积压），24h观察未到，T028/T062继续doing。
+
+
+T062产能与调度接续（2026-10-15）：用户连续反馈机翻1篇、RPD222长时间不动、北京时间一天将结束。实际38742150307 Gemini21请求完成13篇，机翻240秒129单元完成1篇、3数字/1截断失败；14:18的38750152832已在API步骤。公开13:35快照229有效AI（Gemini167）、859有原文待AI/50缺正文，仓库账本146/500；Google账号面板222不是仓库账本同义值，不猜差额来源。当前Pacific day截止北京时间次日15:00（夏令时），不是今晚零点。备用调度改每半小时UTC05/35分，保持每批40/480秒、间隔15秒、500/太平洋日与服务退避，未改付费。离线修复相邻数字片段合并和M单位保护，原文/有效译文/断点hash不变；真失败仍留原文，不保证修复现存全部4篇。测试与线上验收随后补证，T062/T028保持doing。
+
+产能优化提交4ad4043已推送；160 Python、check_project及远端CI38751325540通过（含27 JS/静态构建/严格数据审计）。Pages38751325677与API38750152832仍在进行，新代码API38751325760排队，不取消旧批；未把配置上线算新译文。旧文章/源采集与原有请求账本均未改写。
+
+## T064 · 资讯排序（Claude）· 2026-10-15
 
 用户要求去掉筛选里的“优先级”，换成排序。资讯数量右侧`#sort-order`：推荐（默认，`C.priorityCompare`，即原重要性＋时效）、最新、最早（按published_at，缺日期排最后）、重要（priorityOf().importance高→低，再按最新）。`state.sort`仅存当前会话。数据里没有浏览/分享等读者信号，故不做“热门”；若以后后端提供真实热度或多来源报道数，可在app.js的`sorters`里加一项。翻译优先级只影响后台队列与“推荐”顺序，不再作为读者筛选项。
 
-## T063 · 前端排查修复（Claude，doing，未上线）· 2026-10-15
+## T065 · 前端排查修复（Claude，doing，未上线）· 2026-10-15
 
 已修：①检索卡顿——explore/calendar/bookmarks对每条记录重算filters()（含活动×链接扫描），改为每次渲染算一次，未停用来源时跳过扫描；②时区——`displayZone()`：读者未自设时区时用浏览器时区显示报头日期、日历“今天”、更新时间与收录页时间，选稿仍用公共默认readingDate()；③日历格改为当天“放映/开展/闭展/截止”计数，去掉图例；④document.title随页面/文章；⑤og:*与twitter卡片、apple-touch-icon（scripts/share-card.html渲染og-image.png）。
 待办：data.js 13MB（gzip 3.6MB），正文类字段占约8MB，建议与Codex协作改为首屏只发索引、阅读时按ID加载正文（已有dist/integrations/babel/<id>.json可参考），并保证全文检索不退化。

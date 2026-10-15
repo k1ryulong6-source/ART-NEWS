@@ -46,6 +46,9 @@ def build():
     if bundle.get('automation', {}).get('operations'):
         (output / 'reports').mkdir(exist_ok=True)
         (output / 'reports/operations.json').write_text(json.dumps(bundle['automation']['operations'], ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        for filename in ('acceptance.json', 'article-quality-report.json', 'autonomous-trial-report.json'):
+            path = ROOT / 'data' / filename
+            if path.exists(): shutil.copy2(path, output / 'reports' / filename)
     if bundle.get('coverage', {}).get('editorial_regions'):
         (output / 'reports').mkdir(exist_ok=True)
         (output / 'reports/regional-coverage.json').write_text(json.dumps(bundle['coverage']['editorial_regions'], ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

@@ -3,6 +3,7 @@ import hashlib
 import json
 import re
 import time
+from contextlib import nullcontext
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -172,8 +173,14 @@ def reserve_requests(path, reservation_id, cfg=None):
     return reservations[reservation_id]
 
 
-def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reservation_id=None, checkpoint_sink=None, clock=time.monotonic, sleep=time.sleep):
+def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reservation_id=None, checkpoint_sink=None, eligible_ids=None, io_lock=None, clock=time.monotonic, sleep=time.sleep):
     cfg = cfg or configuration()
+    def persist(path, value):
+        with io_lock if io_lock is not None else nullcontext():
+            write_json(path, value)
+    def read_state(path):
+        with io_lock if io_lock is not None else nullcontext():
+            return read_checkpoint(path)
     if cfg['account_mode'] != 'free-project-only' or cfg.get('paid_activation') is not False:
         raise ValueError('paid_mode_not_authorized_or_implemented')
     if any(type(cfg.get(field)) is not int or cfg[field] <= 0 for field in
@@ -187,7 +194,8 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
     report = {'status': 'completed', 'provider': provider.name, 'model': provider.model,
               'account_mode': cfg['account_mode'], 'started_at': now(), 'translated': [], 'failed': [],
               'deferred': [], 'resumed': [], 'stale': [], 'requests': 0, 'input_tokens': 0, 'output_tokens': 0}
-    ledger = json.loads(ledger_path.read_text()) if ledger_path.exists() else {'schema_version': 1, 'days': {}}
+    with io_lock if io_lock is not None else nullcontext():
+        ledger = json.loads(ledger_path.read_text()) if ledger_path.exists() else {'schema_version': 1, 'days': {}}
     if not isinstance(ledger, dict) or not isinstance(ledger.get('days'), dict):
         # Fail closed: a damaged ledger must not reset a quota and spend again.
         raise ValueError('invalid_ai_quota_ledger')
@@ -210,7 +218,7 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
         report['output_tokens'] += (output_count or 0) + thoughts
         if input_count is not None and output_count is not None:
             usage['unknown_usage_requests'] -= 1
-        write_json(ledger_path, ledger)
+        persist(ledger_path, ledger)
     reservation = ledger.get('reservations', {}).get(reservation_id) if reservation_id else None
     if reservation_id and (not reservation or reservation.get('status') != 'reserved'):
         raise ValueError('missing_ai_request_reservation')
@@ -219,19 +227,21 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
     snapshot = store.dataset('live')
     existing_AI = {row['id'] for row in snapshot['content'] if row.get('editorial_status') in ('reviewed', 'translated')}
     for path in directory.glob('*.json'):
-        if path.stem in existing_AI:
-            path.unlink()
+        if path.stem in existing_AI and (eligible_ids is None or path.stem in eligible_ids):
+            with io_lock if io_lock is not None else nullcontext():
+                path.unlink(missing_ok=True)
     if ledger.get('retry_after', '') > now():
         report.update(status=ledger.get('retry_status', 'retry_wait'), retry_after=ledger['retry_after'])
         if ledger.get('retry_error'):
             report['error'] = ledger['retry_error']
     else:
         rows = [row for row in snapshot['content'] if not row.get('is_demo') and row['language'] != 'zh'
-                and row.get('article_blocks_json') and row.get('editorial_status') not in ('reviewed', 'translated')]
+                and row.get('article_blocks_json') and row.get('editorial_status') not in ('reviewed', 'translated')
+                and (eligible_ids is None or row['id'] in eligible_ids)]
         report['pending_before'] = len(rows)
         eligible = []
         for row in rows:
-            state = read_checkpoint(directory / (row['id'] + '.json'))
+            state = read_state(directory / (row['id'] + '.json'))
             if state.get('input_hash') == input_hash(row, provider.name, cfg) and state.get('retry_after', '') > now():
                 report['deferred'].append(row['id'])
             else:
@@ -241,7 +251,7 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                 raise ValueError('invalid_content_id')
             path = directory / (row['id'] + '.json')
             fingerprint = input_hash(row, provider.name, cfg)
-            state = read_checkpoint(path)
+            state = read_state(path)
             if state.get('input_hash') != fingerprint:
                 state = {'schema_version': 1, 'id': row['id'], 'input_hash': fingerprint,
                          'source_hash': row['article_hash'], 'provider': provider.name, 'outputs': {}}
@@ -295,7 +305,7 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                         reservation['remaining'] -= 1
                         usage['reserved_requests'] -= 1
                     report['requests'] += 1
-                    write_json(ledger_path, ledger)
+                    persist(ledger_path, ledger)
                     try:
                         outputs, tokens = provider.translate(document, [key for key, _ in chunk])
                     except Exception:
@@ -323,14 +333,14 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                     if not invalid:
                         state.pop('retry_after', None)
                         state.pop('error', None)
-                    write_json(path, state)
+                    persist(path, state)
                     if checkpoint_sink and accepted:
                         checkpoint_sink()
                     if invalid:
                         reason, key = invalid[0]
                         raise ValueError(reason + ':' + key)
                 if exhausted:
-                    write_json(path, state)
+                    persist(path, state)
                     break
                 translation = assemble(original, keys, state['outputs'])
                 try:
@@ -343,12 +353,14 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                     else:
                         state['outputs'] = {}  # Unexpected structural failure, never publish invalid copy.
                     raise
-                changed = publish_translation(store, row, translation, provider.name,
-                    provider.actual_model or provider.model, None,
-                    {'status': 'not_requested', 'approved': False, 'issues': []}, fingerprint, protect_existing=True)
+                with io_lock if io_lock is not None else nullcontext():
+                    changed = publish_translation(store, row, translation, provider.name,
+                        provider.actual_model or provider.model, None,
+                        {'status': 'not_requested', 'approved': False, 'issues': []}, fingerprint, protect_existing=True)
                 report['translated' if changed else 'stale'].append(row['id'])
                 if not reservation:
-                    path.unlink(missing_ok=True)
+                    with io_lock if io_lock is not None else nullcontext():
+                        path.unlink(missing_ok=True)
             except ServiceError as error:
                 reason = str(error)
                 if error.status in (400, 401, 403, 404):
@@ -358,21 +370,21 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                     report['status'] = 'quota_wait' if error.status == 429 else 'service_wait'
                     ledger['retry_after'] = (datetime.now(timezone.utc) + timedelta(seconds=max(error.retry_seconds, 3600))).isoformat()
                 ledger.update(retry_status=report['status'], retry_error=reason)
-                write_json(path, state)
-                write_json(ledger_path, ledger)
+                persist(path, state)
+                persist(ledger_path, ledger)
                 report.update(error=reason, retry_after=ledger['retry_after'])
                 break
             except (URLError, TimeoutError, ConnectionError) as error:
                 ledger['retry_after'] = (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
                 ledger.update(retry_status='service_wait', retry_error=type(error).__name__)
-                write_json(path, state)
-                write_json(ledger_path, ledger)
+                persist(path, state)
+                persist(ledger_path, ledger)
                 report.update(status='service_wait', error=type(error).__name__, retry_after=ledger['retry_after'])
                 break
             except Exception as error:
                 state['error'] = str(error)[:120] if isinstance(error, ValueError) else type(error).__name__
                 state['retry_after'] = (datetime.now(timezone.utc) + timedelta(hours=cfg['article_retry_hours'])).isoformat()
-                write_json(path, state)
+                persist(path, state)
                 report['failed'].append({'id': row['id'], 'reason': state['error']})
         report['pending_after'] = len(rows) - len(report['translated'])
     if report['failed'] and report['status'] == 'completed':
@@ -381,7 +393,7 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
         original_day = ledger['days'][reservation['day']]
         original_day['reserved_requests'] -= reservation['remaining']
         reservation.update(actual_requests=reservation['allocated'] - reservation['remaining'], remaining=0, status='closed')
-        write_json(ledger_path, ledger)
+        persist(ledger_path, ledger)
     report.update(finished_at=now(), seconds=round(clock() - start, 2),
                   requests_today=usage['requests'], daily_request_limit=cfg['requests_per_day'],
                   unknown_usage_requests_today=usage.get('unknown_usage_requests', 0))

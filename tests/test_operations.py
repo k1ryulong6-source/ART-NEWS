@@ -67,6 +67,28 @@ class OperationsTests(unittest.TestCase):
         self.assertFalse(window['full_24_hours_elapsed'])
         self.assertEqual((window['collected_since_baseline_snapshot'], window['first_source_backfills'], window['other_new_records']), (15, 7, 8))
 
+    def test_two_project_usage_is_separate_and_legacy_fields_stay_primary(self):
+        self.evidence['ai']['projects'] = [
+            {'id': 'primary', 'configured': True, 'status': 'service_wait', 'requests': 1, 'translated': []},
+            {'id': 'secondary', 'configured': True, 'status': 'completed', 'requests': 2, 'translated': ['a', 'b']}]
+        self.evidence['ledger_secondary'] = {'days': {'2026-10-14': {'requests': 70, 'reserved_requests': 10,
+            'input_tokens': 500, 'output_tokens': 100, 'unknown_usage_requests': 1}}}
+        report = operations_report(self.snapshot, self.evidence, self.instant)
+        self.assertEqual(report['quota']['requests'], 100)
+        self.assertEqual(report['quota']['legacy_fields_project'], 'primary')
+        self.assertEqual(report['quota']['combined']['requests'], 170)
+        self.assertEqual(report['quota']['combined']['daily_limit'], 1000)
+        self.assertEqual(report['api']['projects'][1]['last_run_completed'], 2)
+        self.assertIn('ai:primary:service_wait', report['warnings'])
+
+    def test_missing_configured_secondary_ledger_is_unknown_and_unconfigured_not_added(self):
+        report = operations_report(self.snapshot, self.evidence, self.instant)
+        self.assertEqual(report['quota']['combined']['daily_limit'], 500)
+        self.evidence['ai']['projects'] = [{'id': 'secondary', 'configured': True, 'status': 'failed'}]
+        report = operations_report(self.snapshot, self.evidence, self.instant)
+        self.assertIsNone(report['quota']['combined']['requests'])
+        self.assertIn('quota:secondary_ledger_unavailable', report['warnings'])
+
     def test_missing_or_malformed_evidence_is_unknown_never_zero_cost(self):
         with TemporaryDirectory() as td:
             root = Path(td); (root / 'data').mkdir()

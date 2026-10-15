@@ -1,3 +1,5 @@
+> T063双接口（2026-10-15）：支持两个独立Gemini项目并行。原密钥GEMINI_API_KEY保留；第二个密钥在仓库Actions Secrets新增GEMINI_API_KEY_SECONDARY。同项目多密钥不增加额度，代码只能拦截完全相同的密钥。每路保护500/太平洋日、40请求/480秒/15秒间隔，未配第二路仍单路运行，未授权付费。
+
 > T062调度优化（2026-10-15）：备用API改每半小时UTC05/35分；采集后触发保持。每批40请求/480秒、15秒间隔、免费500/太平洋日及503/429退避不变，GitHub定时可能延迟。离线4分钟兜底与API分开统计，不能把机翻完成1篇当作全链产量。
 
 > T060（2026-10-15）：API按单元程序检查并保存合格结果；同次返回有坏段时，合格段不会丢失，失败段按原退避接续（完整文章语境不变），整篇组装检查也尽量只退回失败字段，不增加模型校对。新增numeric_literals提示保留字面数字，检查标准不放宽。备用Actions改每小时UTC45分，免费500/太平洋日、批40/480秒及15秒间隔不变；503/429的全局等待仍生效。
@@ -70,3 +72,14 @@ collection-metrics从声明的启用时间开始统计实际新增，按source r
 用户已配置有效key。2.5 Flash-Lite实际404不再向新用户开放，按提供方建议改3.5 Flash-Lite官方Free Tier，MINIMAL thinking；保持paid_activation=false，不增加100/太平洋日、40请求/480秒每批上限。旧配置错误产生的退避仅明确修复一次，全部历史请求/tokens/未知usage和预留记录保持。
 
 验证38612425164：1篇完整全文成功（4102原文字符），1篇格式失败留待译；两次请求已知2301输入/1577输出tokens，历史3次失败usage缺失。已补严格动态JSON schema及失败输出usage记账，91Python+26JS通过。Pages38612903303和1440/390真实线上中文全文/原文切换/模型身份/巴别塔原文与中文参考通过；自动批38612766700已独立运行，接受单元按分钟推送。首次成功后完整24小时复盘再决定付费预算，不把首篇或任务已启动当作全量已译。
+
+## 双项目自动调度与配置
+
+1. 原GEMINI_API_KEY不改。到 https://github.com/k1ryulong6-source/ART-NEWS/settings/secrets/actions/new 新建Name=GEMINI_API_KEY_SECONDARY，Secret填写另一个独立项目的Gemini密钥；不要放聊天/代码/前端，保持免费项目。
+2. 部署本代码后，下一次autotranslate.yml会自动识别；也可在Actions → Automatic full-text translation → Run workflow启动。无需每天操作。
+3. 两个线程按同一全量优先队列交错分配互斥ID；头条/重大/时效与旧稿份额保持。每路最多40请求/480秒并行执行，不能保证篇数翻倍。一路503/429/日额度不足，另一路继续；下一批健康接口可接续等待接口未完成的文章。文章检查失败保留原退避，不换接口无限重试。
+4. 主账本data/ai-translation-ledger.json原样保留；第二路data/ai-translation-ledger-secondary.json单独计数/预留/退避，均在推理前提交。API调用不持Git锁，写断点/数据库及分钟级Git保存共用短锁；已有效稿不重复，原文变更保护保持。
+5. data/ai-translation-status.json是合计报告，projects分别记录primary/secondary实际请求与完成量；data/ai-translation-projects保存每路最后实际结果。/reports/operations.json的api.projects、quota.projects、quota.combined为Claude可用接口；旧quota顶层字段仍只指primary，legacy_fields_project明确说明，不能把它当两路总量。未配置第二路不加总它的500额度；未知用量不会当零。
+6. 当前key是否真正属于独立项目、实际免费额度多少需在各自AI Studio核实；配置存在与真实生成成功分开。程序不开户/付费/开计费，按服务端429继续退避。
+
+T063用户追加授权：第二密钥已配置，要求本次重置前充分使用免费额度翻译。config.ai-translation.drain_until_quota_day=2026-10-15，实际配额日匹配、有待译且本批真正消耗请求并触及批次限时、该路日额度仍剩时才自动dispatch下一批；有采集等待则让路，由采集接续翻译。503/429仍退避，零请求/全量完成/日上限不循环；配额日过后自动恢复半小时常规计划，不永久提前耗光后续每日额度。实际生成、剩余量和预计篇数需由远端成功证据核实，不保证Google服务异常时耗尽。

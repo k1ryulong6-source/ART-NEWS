@@ -2090,6 +2090,44 @@
         "后续：data.js首屏体积（3.6MB gzip）需与Codex协作拆分正文。",
         "用户确认“上线”，经PR #17合并发布。"
       ]
+    },
+    {
+      "id": "T063",
+      "title": "Gemini双项目并行翻译、独立额度及故障隔离",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex（后台API，无会话翻译）",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T061"
+      ],
+      "scope": [
+        "backend/ai_translation.py",
+        "backend/ai_pool.py",
+        "backend/operations.py",
+        "scripts/run_ai_translation.py",
+        "scripts/reserve_ai_quota.py",
+        ".github/workflows/autotranslate.yml",
+        "config/ai-translation.json",
+        "tests/",
+        "docs/",
+        "AGENTS.md",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "两个独立项目各500/太平洋日、40请求/480秒及15秒间隔，免费模式；旧主账本/断点不清零",
+        "同一批并行处理互斥文章，复用相同源hash/模型已有断点；保护有效AI和最新原文",
+        "单路429/503或无配置不阻塞另一路，重复密钥拒绝当作独立额度",
+        "主次请求/token/预留/退避/真实产量分别可查，缺密钥不冒称已调用第二路",
+        "针对并行去重、限额、故障、断点与旧账本回归，安全发布；无第二密钥则明确尚未实测双路推理"
+      ],
+      "evidence": [
+        "已实现两线程互斥ID/独立持久预留与退避、共享同源同模型断点；原主账本未改，第二key缺失/相同key不冒充额外配额。",
+        "主503/429与主日额度满时另一接口继续，损坏账本仅隔离本路，合格段跨账号接续不重复；并发短锁保护文件/Git与恢复证据。",
+        "170 Python+27 JS及项目检查/YAML/双secret绑定/shell语法通过；另新增429隔离和并发检查点测试通过，完整最终回归/发布实际结果待补。",
+        "用户已拿到第二密钥，已给GEMINI_API_KEY_SECONDARY配置步骤。GitHub Secrets列表403，不推断是否已配；真实两路调用/产量待远端核验。",
+        "用户已配置第二密钥并授权本配额日连续翻译至额度用尽；增加仅2026-10-15太平洋日有效的有用工作接续、有采集让路、零请求/退避/每日限额防空转与过日自动失效，纯程序回归通过，待远端执行。"
+      ]
     }
   ]
 }

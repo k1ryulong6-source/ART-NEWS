@@ -79,13 +79,16 @@ for run in runs:
         errors.append({'run_id': id, 'reason': type(error).__name__})
 translated = sum(len(r['ai'].get('translated') or []) for r in reports)
 failures = sum(len(r['ai'].get('failed') or []) for r in reports)
+for item in reports:
+    if 'requests' in item['ai'] and type(item['ai']['requests']) is not int:
+        errors.append({'run_id': item['run_id'], 'reason': 'request_count_unknown'})
 hours = (datetime.now(timezone.utc) - start).total_seconds() / 3600
 report = {'schema_version': 1, 'checked_at': now(), 'started_at': start.isoformat(),
           'window_end': end.isoformat(),
           'scope': 'completed_attempted_workers_excluding_cancelled_skipped_neutral; verification_and_inflight_usage_are_separate',
           'elapsed_hours': round(hours, 2), 'full_24_hours_elapsed': hours >= 24,
           'completed_runs': len(reports), 'expected_runs': len(expected), 'unverified_runs': errors,
-          'requests': sum(r['ai'].get('requests', 0) for r in reports),
+          'requests': sum(r['ai']['requests'] for r in reports if type(r['ai'].get('requests')) is int),
           'translated_article_events': translated, 'validation_failures': failures,
           'article_validation_failure_fraction': round(failures / (translated + failures), 4) if translated + failures else None,
           'resumed_articles': len({id for r in reports for id in (r['ai'].get('resumed') or [])}),

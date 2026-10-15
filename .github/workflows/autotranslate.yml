@@ -20,6 +20,7 @@ on:
       - 'backend/editorial_regions.py'
       - 'backend/attention_units.py'
       - 'backend/ai_translation.py'
+      - 'backend/ai_pool.py'
       - 'scripts/run_ai_translation.py'
       - 'scripts/reserve_ai_quota.py'
       - 'backend/offline_model.py'
@@ -55,22 +56,24 @@ jobs:
       - name: Commit request reservation before inference
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY_SECONDARY: ${{ secrets.GEMINI_API_KEY_SECONDARY }}
         run: |
           python scripts/reserve_ai_quota.py
-          if [ -f data/ai-translation-ledger.json ]; then
-            git config user.name 'Intermission automatic translator'
-            git config user.email 'updater@users.noreply.github.com'
-            git add data/ai-translation-ledger.json
-            if ! git diff --cached --quiet; then
-              git commit -m 'Reserve bounded AI requests before background inference'
-              git pull --rebase origin main
-              git push origin HEAD:main
-            fi
+          git config user.name 'Intermission automatic translator'
+          git config user.email 'updater@users.noreply.github.com'
+          for path in data/ai-translation-ledger.json data/ai-translation-ledger-secondary.json; do
+            if [ -f "$path" ]; then git add "$path"; fi
+          done
+          if ! git diff --cached --quiet; then
+            git commit -m 'Reserve bounded AI requests before background inference'
+            git pull --rebase origin main
+            git push origin HEAD:main
           fi
       - name: Translate with contextual AI when the free-project key is configured
         id: ai
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY_SECONDARY: ${{ secrets.GEMINI_API_KEY_SECONDARY }}
         run: python scripts/run_ai_translation.py
       - uses: actions/cache@v4
         if: success() || failure()
@@ -104,6 +107,8 @@ jobs:
           git config user.email 'updater@users.noreply.github.com'
           git add data/live.json data/quality.json data/important-news-audit.json data/translation-queue.json data/translation-queue data/translation-input data/auto-translation-progress data/auto-translation-status.json data/ai-translation-progress data/ai-translation-status.json
           if [ -f data/ai-translation-ledger.json ]; then git add data/ai-translation-ledger.json; fi
+          if [ -f data/ai-translation-ledger-secondary.json ]; then git add data/ai-translation-ledger-secondary.json; fi
+          if [ -d data/ai-translation-projects ]; then git add data/ai-translation-projects; fi
           git add data/article-quality data/article-quality-report.json data/acceptance.json
           if ! git diff --cached --quiet; then
             git commit -m 'Save automatic AI translations and temporary machine fallback progress'
@@ -116,6 +121,14 @@ jobs:
         run: |
           gh workflow run pages.yml --ref main --repo "$GITHUB_REPOSITORY"
           gh workflow run automation-health.yml --ref main --repo "$GITHUB_REPOSITORY"
+          if jq -e '.continue_recommended == true' data/ai-translation-status.json >/dev/null; then
+            # Let a waiting collection run first; it will dispatch translation.
+            pending_collections=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/refresh.yml/runs?branch=main&per_page=20" \
+              --jq '[.workflow_runs[] | select(.status == "queued" or .status == "pending" or .status == "waiting" or .status == "in_progress")] | length')
+            if [ "$pending_collections" -eq 0 ]; then
+              gh workflow run autotranslate.yml --ref main --repo "$GITHUB_REPOSITORY"
+            fi
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -126,5 +139,7 @@ jobs:
             data/ai-translation-progress/
             data/ai-translation-status.json
             data/ai-translation-ledger.json
+            data/ai-translation-ledger-secondary.json
+            data/ai-translation-projects/
             runtime/public-update-evidence/
           retention-days: 7

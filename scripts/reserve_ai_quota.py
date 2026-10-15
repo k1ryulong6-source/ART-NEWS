@@ -5,13 +5,6 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from backend.storage import ROOT
-from backend.ai_translation import reserve_requests
-from backend.quota_repair import apply_verified_repairs
+from backend.ai_pool import reserve_pool
 
-if os.getenv('GEMINI_API_KEY'):
-    reservation_id = os.environ['AI_RUN_RESERVATION']
-    released = apply_verified_repairs(ROOT / 'data/ai-translation-ledger.json', ROOT / 'data/ai-translation-repairs')
-    result = reserve_requests(ROOT / 'data/ai-translation-ledger.json', reservation_id)
-    print(json.dumps({'reservation': reservation_id, 'verified_unused_released': released, **result}))
-else:
-    print('No AI key: no requests reserved or made.')
+print(json.dumps(reserve_pool(os.environ['AI_RUN_RESERVATION'])))

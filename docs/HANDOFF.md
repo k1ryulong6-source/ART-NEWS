@@ -418,3 +418,12 @@ T062产能与调度接续（2026-10-15）：用户连续反馈机翻1篇、RPD22
 
 已修：①检索卡顿——explore/calendar/bookmarks对每条记录重算filters()（含活动×链接扫描），改为每次渲染算一次，未停用来源时跳过扫描；②时区——`displayZone()`：读者未自设时区时用浏览器时区显示报头日期、日历“今天”、更新时间与收录页时间，选稿仍用公共默认readingDate()；③日历格改为当天“放映/开展/闭展/截止”计数，去掉图例；④document.title随页面/文章；⑤og:*与twitter卡片、apple-touch-icon（scripts/share-card.html渲染og-image.png）。
 待办：data.js 13MB（gzip 3.6MB），正文类字段占约8MB，建议与Codex协作改为首屏只发索引、阅读时按ID加载正文（已有dist/integrations/babel/<id>.json可参考），并保证全文检索不退化。
+
+
+## T063 · 双接口后端接续 · 2026-10-15
+
+用户授权增加独立项目的第二Gemini并询问配置；已告知Actions Secret名字GEMINI_API_KEY_SECONDARY，原GEMINI_API_KEY保留。当前连接读取仓库Secrets列表403，不能代配置、读取或断言存在，必须以真实自动任务projects结果核验。新增backend/ai_pool.py，两线程互斥ID、各自500/太平洋日/40请求/480秒/15秒、短IO/Git锁、共享有效hash断点；主账本历史不改，secondary另文件；单路429/503/额度满/损坏不阻塞健康接口。全文检查/时效/旧稿/免费/原文回退均保持。
+
+报告：data/ai-translation-status.json合计+projects、data/ai-translation-projects逐路；operations.api.projects与quota.projects/combined为Claude接口，旧quota顶层只primary，未配路不计入合并保护额度。工作流给预留与推理两步注入两个Secret，保存/分钟检查点/artifact包含第二账本及逐路证据。不要提交密钥/清零原账本/凭代码声称第二路已实测。T063发布与真实运行验收待补；T028/T062继续doing。
+
+T063用户追加授权：第二密钥已配置，要求本次重置前充分使用免费额度翻译。config.ai-translation.drain_until_quota_day=2026-10-15，实际配额日匹配、有待译且本批真正消耗请求并触及批次限时、该路日额度仍剩时才自动dispatch下一批；有采集等待则让路，由采集接续翻译。503/429仍退避，零请求/全量完成/日上限不循环；配额日过后自动恢复半小时常规计划，不永久提前耗光后续每日额度。实际生成、剩余量和预计篇数需由远端成功证据核实，不保证Google服务异常时耗尽。

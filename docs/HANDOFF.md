@@ -443,8 +443,10 @@ T066已验收并done：提交0526b85，CI38767577931与Pages38767577934均succes
 
 ## T067 · 两个用户常用日本艺术来源 · 2026-10-15
 
-正在接入artexhibition（美術展ナビ）与复用tokyo-art-beat。已核实两站最新页200；无可用已验证RSS，配置public_page，不虚报RSS数。57候选/55启用=44 RSS+11公开网页。backend/japanese_art.py提供列表与TAB匿名当前页分页适配，backend/articles.py补表格和精确发布时间，storage保留已有出版时刻。Claude前端/其他来源/已有译稿/账本未改。
+已完成接入artexhibition（美術展ナビ）与复用tokyo-art-beat。两站最新页200；未找到可用已验证RSS，配置public_page，不虚报RSS数。57候选/55启用=44 RSS+11公开网页。backend/japanese_art.py提供列表与TAB匿名当前页分页适配，backend/articles.py补表格和精确发布时间，storage保留已有出版时刻。Claude前端/其他来源/已有译稿/账本未改。
 
-本地首轮列表20+18=38条、38篇均取得正文；初版33 collected/5 partial，后续针对Index非分页及公开活动/推荐卡节点修正，最终实测与远端发布证据待下文补。TAB真实6页样本已读到最后总结，主图/图注及多页图片保留。原文先可读，Gemini后台队列后续译，不因新增来源启动GPT会话翻译。新正文共用原60篇采集预算和头条/旧稿份额，不增加API费用。
+本地独立验证：20+18=38条，38 collected/0 partial/0失败；38条真实出版时刻均齐全，美術展ナビ134/TAB227正文图片。189 Python+28 JS/项目检查/strict audit/build/diff检查通过。TAB真实6页样本4627字14图片含结尾；匿名浏览器/page6的15个可见段落/图注、MOMAT/page2的3个均在保存原文中（missing=[]）。首次入库不是每天新增/全站历史全量。
 
-T067最终本地实测：20+18=38条，38 collected/0 partial/0失败，38条真实出版时刻均齐全（美術展ナビ134、TAB227正文图片）。189 Python+28 JS/项目检查/strict audit/build/diff检查通过。分页案例4627字14图片；初期5个partial由Index章节误判和活动/推荐卡节点缺适配引起，已修复并回归。生产验收待补，不把本地采集算上线，也不把原文算AI翻译。
+代码ecdb45c已推送；Project checks38769981014、Refresh38769994594、Pages38770771630均success。真实GitHub采集2026-10-15 16:38:11快照：两站last_run均success，分别新增20/18条；60篇全局正文预算下各取得8篇，共16篇线上公开正文，其余22篇待采集（不是采集失败）。新增38篇当时AI=0，采集自动接续后台Gemini38770774545，不把原文当已译。网页data.js实读200包含20/18记录与各8正文，生产Chromium逐站直接#reader/ID打开，默认原文可读/图片显示，不需手动切换。
+
+原文先可读、Gemini后台逐批译，不启动GPT会话翻译。新正文共用原60篇预算和头条/旧稿份额，保持每2小时采集/原后台翻译接续，不增加费用或自动付费。T067接入验收done；全文积压T028、全天无人值守证据T062仍doing，不能借来源接入完成宣称全平台已清空/全球无遗漏。规则/公开路径详见docs/SOURCES.md末节。

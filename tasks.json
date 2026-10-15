@@ -2179,7 +2179,7 @@
       "id": "T067",
       "title": "接入用户指定美術展ナビ与Tokyo Art Beat公开新闻",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex（来源/API/正文提取）",
       "updated_at": "2026-10-15",
       "depends_on": [],
@@ -2201,7 +2201,12 @@
         "最终本地真实两站列表20+18=38条，38/38取得公开正文（collected），0 partial/失败；38/38精确发布时间齐全，美術展ナビ134/TAB227正文图片，保持原文图注。首次入库不是每日新增统计。",
         "189 Python+28 JS、项目检查、严格数据核验、静态构建和git diff --check通过；新增11项来源/分页/访问限制/表格/去重/时间回归。",
         "TAB匿名Chromium公开/page2逐段可见；实际6页长文4627字/14图片含结尾；只取选中页，未渲染all-page数组或订阅内容。",
-        "远端采集/Pages生产验收待核对；没有将本地结果当作已上线或已AI翻译。"
+        "远端采集/Pages生产验收待核对；没有将本地结果当作已上线或已AI翻译。",
+        "ecdb45c已推送，远端Project checks38769981014 success；Refresh38769994594已自动获得写锁并执行backend.jobs，Pages等待前批部署。生产采集/上线仍待核对。",
+        "新增匿名Chromium对照：TOKAS长文/page6的15个可见段落/图注、MOMAT/page2的3个均在保存原文中（missing=[]），未漏公开段落。",
+        "生产Refresh38769994594 success：2026-10-15 16:38:11快照美術展ナビ20条/TAB18条，二者last_run均success，各inserted20/18；全局正文预算下各取得8篇，共16篇公开正文，其余22篇待采集，不把本地38全文当线上产量。新增38篇当时AI=0，已由采集自动接续后台Gemini38770774545，不冒称已译完。",
+        "Pages38770771630 success；https://mujianrest.work/data.js实际200且16:38:11快照包含两站20/18条及各8正文。生产Chromium逐站直接#reader/ID打开，保存原文均直接可读、图片显示，未要求手动切换。",
+        "57候选/55启用=44RSS+11公开网页；每2小时现有采集/后台API/头条AI硬门槛保持，Claude前端未改；全文积压T028/无人值守全量验收T062仍doing。"
       ]
     }
   ]

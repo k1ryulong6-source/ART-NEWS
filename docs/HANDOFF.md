@@ -394,3 +394,7 @@ T062补充：已实测共享concurrency的pending取消问题，定期24h证据�
 健康邮件已核实并修复：c4b955e后38703530927、38703522699及38704272234实际success；告警来自pending采集被取消后错误判failed，网站Pages38703455394成功。原文9篇线上Babel的hash/全部blocks逐一匹配，线上acceptance明确false。继续补collection-recovery用于防止延迟API定时任务挤掉采集后永久丢这一轮；保留真实失败/6h停更告警，未全项验收不得done。
 
 真实补排验收：只取消未执行的pending采集38704887311，后台collection-recovery 38704925032实际success，在没有手工第二次dispatch的情况下自动创建38704941443并已in_progress。取消事件的翻译38704924718自动skipped，不占写锁、不发API请求。当前需等待采集实际结束后核对14个新来源/新正文/发布，不把补排成功当采集完成。旧本地artifact下载0成功时不缓存六小时“已验证”；下一采集会重试真实运行证据，断点文章数去重、另存续译事件次数。
+
+后续真实告警38705126797来自翻译38702099095最终保存rebase冲突（acceptance.json、article-quality-report.json），不是前面的取消误判。修复push_public_update已做3个真实Git并发集成检查；失败可从runtime/public-update-evidence的accepted-public-snapshot.json恢复，必须先匹配最新原文hash/原标题，不覆盖新采集。已知派生报告重算，正文/译稿冲突不猜合并。采集和翻译后显式dispatch后续流程，取消重复workflow_run入口，辅助GITHUB_TOKEN仅新增actions:write；154 Python/27 JS、YAML和全部shell块语法检查通过。机翻临时兜底每轮4分钟，原逐单元断点与Gemini免费500/日保持。
+
+来源实际验收：38704941443 success，1161篇，13个新增来源本轮成功，Cineuropa被GitHub runner 403（仍保留与报告，不冒称14个全成功）；242条首次来源补库不是日均新闻。快照2026-10-15T08:23:32：182有效AI（其中直接150/历史已校32）、52原生中文正文、715有原文外文待AI、212缺正文（新补库等待正文预算，非丢失212篇旧正文）。2篇旧AI因公开正文更新/补全而失效进入队列，不重译原文hash仍匹配的有效稿。各项仍doing，待新保存流程真实通过及24h/积压/剩余来源/质量门槛。

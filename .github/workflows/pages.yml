@@ -24,7 +24,7 @@ on:
       - 'scripts/build_static.py'
       - '.github/workflows/pages.yml'
   workflow_run:
-    workflows: ['Refresh cultural news', 'Publish daily AI translations', 'Automatic full-text translation', 'Verify Gemini full-text translation', 'Clean saved article bodies', 'Audit autonomous acceptance']
+    workflows: ['Publish daily AI translations', 'Verify Gemini full-text translation', 'Clean saved article bodies', 'Audit autonomous acceptance']
     types: [completed]
 permissions:
   contents: read

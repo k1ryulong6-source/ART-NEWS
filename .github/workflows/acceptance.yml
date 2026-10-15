@@ -32,6 +32,13 @@ jobs:
           git add data/article-quality data/article-quality-report.json data/autonomous-trial-report.json data/trial-runs data/acceptance.json
           if ! git diff --cached --quiet; then
             git commit -m 'Save structural quality and autonomous acceptance evidence'
-            git pull --rebase origin main
-            git push origin HEAD:main
+            python scripts/push_public_update.py
           fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: autonomous-audit-evidence
+          path: |
+            data/autonomous-trial-report.json
+            runtime/public-update-evidence/
+          retention-days: 7

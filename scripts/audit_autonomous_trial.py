@@ -53,7 +53,7 @@ expected = []
 deadline = time.monotonic() + 300
 for run in runs:
     created = datetime.fromisoformat(run['created_at'].replace('Z', '+00:00'))
-    if not start <= created <= end or run.get('conclusion') == 'cancelled':
+    if not start <= created <= end or run.get('conclusion') in ('cancelled', 'skipped', 'neutral'):
         continue
     id = str(run['id'])
     if not id.isdigit(): continue
@@ -82,7 +82,7 @@ failures = sum(len(r['ai'].get('failed') or []) for r in reports)
 hours = (datetime.now(timezone.utc) - start).total_seconds() / 3600
 report = {'schema_version': 1, 'checked_at': now(), 'started_at': start.isoformat(),
           'window_end': end.isoformat(),
-          'scope': 'completed_non_cancelled_automatic_runs; verification_and_inflight_usage_are_separate',
+          'scope': 'completed_attempted_workers_excluding_cancelled_skipped_neutral; verification_and_inflight_usage_are_separate',
           'elapsed_hours': round(hours, 2), 'full_24_hours_elapsed': hours >= 24,
           'completed_runs': len(reports), 'expected_runs': len(expected), 'unverified_runs': errors,
           'requests': sum(r['ai'].get('requests', 0) for r in reports),

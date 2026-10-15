@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
-  actions: read
+  actions: write
 concurrency:
   group: cultural-news-data-write
   cancel-in-progress: false
@@ -53,10 +53,19 @@ jobs:
           git add data/autonomous-trial-report.json data/trial-runs
           if ! git diff --cached --quiet; then
             git commit -m 'Refresh verified cultural news snapshot'
-            git pull --rebase origin main
-            git push origin HEAD:main
+            python scripts/push_public_update.py
           fi
+      - name: Publish collection and continue translation explicitly
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run pages.yml --ref main --repo "$GITHUB_REPOSITORY"
+          gh workflow run autotranslate.yml --ref main --repo "$GITHUB_REPOSITORY"
+          gh workflow run automation-health.yml --ref main --repo "$GITHUB_REPOSITORY"
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: culture-desk-current
-          path: dist/
+          path: |
+            dist/
+            runtime/public-update-evidence/

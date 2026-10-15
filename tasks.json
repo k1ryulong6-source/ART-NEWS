@@ -2174,6 +2174,35 @@
         "仅选稿逻辑和队列，未修改Claude视觉/原文/已有有效稿或后台请求计数。发布及线上验收待补。",
         "0526b85已上线：Project checks38767577931/Pages38767577934均success。生产Chromium1440/390实际DOM主头条与三栏首篇共4个ID与同刻Python精确一致，全部translated且headline_ready=true；未译候选仍headline_order=0，普通报道/原文未删。"
       ]
+    },
+    {
+      "id": "T067",
+      "title": "接入用户指定美術展ナビ与Tokyo Art Beat公开新闻",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex（来源/API/正文提取）",
+      "updated_at": "2026-10-15",
+      "depends_on": [],
+      "scope": [
+        "backend/",
+        "config/sources.json",
+        "tests/",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "核实真实RSS或公开页面，不启用失效RSS",
+        "最新文章真实标题/时间/图片，去重并过滤器材，不补造展期",
+        "只抓公开可见正文并保留图注，不绕过订阅或带入推荐杂项",
+        "测试、安全推送、实际采集并核对线上来源"
+      ],
+      "evidence": [
+        "两站首页/最新文章公开页面200；美術展ナビ/feed及TAB旧RSS404，正核实公开网页结构。",
+        "最终本地真实两站列表20+18=38条，38/38取得公开正文（collected），0 partial/失败；38/38精确发布时间齐全，美術展ナビ134/TAB227正文图片，保持原文图注。首次入库不是每日新增统计。",
+        "189 Python+28 JS、项目检查、严格数据核验、静态构建和git diff --check通过；新增11项来源/分页/访问限制/表格/去重/时间回归。",
+        "TAB匿名Chromium公开/page2逐段可见；实际6页长文4627字/14图片含结尾；只取选中页，未渲染all-page数组或订阅内容。",
+        "远端采集/Pages生产验收待核对；没有将本地结果当作已上线或已AI翻译。"
+      ]
     }
   ]
 }

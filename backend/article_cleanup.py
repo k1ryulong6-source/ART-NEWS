@@ -15,6 +15,8 @@ WIDGETS = ('.condensed-newsletter-signup,.theme-newsletter-signup,'
 
 def widget_nodes(soup, source):
     nodes = list(soup.select(WIDGETS))
+    if source.get('id') == 'artexhibition':
+        nodes.extend(soup.select('article.main-content > .main-content-header,article.main-content > .main-content-footer,article.main-content > .main-content-title,article.main-content > .article-time,.iframely-embed'))
     if source.get('id') == 'monopol':
         nodes.extend(soup.select('#block-monopol-plus-paywall-curtain'))
     if source.get('id') == 'mistermotley':
@@ -36,6 +38,21 @@ def widget_nodes(soup, source):
 
 
 def remove_widgets(soup, source):
+    if source.get('id') == 'artexhibition':
+        # This publisher appends a recommendation inside the event-info p.
+        # Trim only its exact tail marker when followed by a verified own-site
+        # embedded article card; preserve the event details before the marker.
+        for card in soup.select('.news-detail > .iframely-embed'):
+            link = card.select_one('a[data-iframely-url][href^="https://artexhibition.jp/topics/"]')
+            paragraph = card.find_previous_sibling()
+            if not link or not paragraph or paragraph.name != 'p':
+                continue
+            marker = next((n for n in paragraph.find_all(string=True)
+                           if str(n).strip() == '＜あわせて読みたい＞'), None)
+            if marker is not None and marker.parent is paragraph:
+                for following in list(marker.next_siblings):
+                    following.extract()
+                marker.extract()
     for node in widget_nodes(soup, source):
         if node.attrs is not None:
             node.decompose()

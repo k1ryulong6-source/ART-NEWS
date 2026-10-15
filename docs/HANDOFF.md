@@ -440,3 +440,11 @@ T063已实际验收并done：173 Python+27 JS、CI38756879911/38758137779/387583
 API头条候选失败30分钟接续，首次由普通冷却提升时提前一次并保留合格单元，不绕过项目429/503退避、不改原500/项目日上限或二次校译。browser_snapshot和/api/dataset提供headline_ready，CultureCore.headlineReady为Claude接口。178 Python（含Python/JS同时间真实档案匹配、先候选后上版、三栏首篇/下方普通稿、数字/段落/hash拒绝与原生中文、30分钟及旧断点迁移）+28 JS、静态构建/项目检查通过。发布/线上实际验收待补；T028/T062仍doing。
 
 T066已验收并done：提交0526b85，CI38767577931与Pages38767577934均success。系统Chromium1440/390实际DOM主头条/电影/艺术/摄影4位均translated/headline_ready=true，和同刻Python选稿ID逐项一致。原未译主候选live-3dc48ee1ae3c5f83b233af8c仍headline_order=0，没有因上版门槛退出优先队列。178 Python+28 JS/静态构建已通过；未新增翻译/审校会话，T028/T062待全量验收。后台正在运行既有批次，后续批次采用候选优先和30分钟检查重试，Google全局退避/各项目500保护不变。
+
+## T067 · 两个用户常用日本艺术来源 · 2026-10-15
+
+正在接入artexhibition（美術展ナビ）与复用tokyo-art-beat。已核实两站最新页200；无可用已验证RSS，配置public_page，不虚报RSS数。57候选/55启用=44 RSS+11公开网页。backend/japanese_art.py提供列表与TAB匿名当前页分页适配，backend/articles.py补表格和精确发布时间，storage保留已有出版时刻。Claude前端/其他来源/已有译稿/账本未改。
+
+本地首轮列表20+18=38条、38篇均取得正文；初版33 collected/5 partial，后续针对Index非分页及公开活动/推荐卡节点修正，最终实测与远端发布证据待下文补。TAB真实6页样本已读到最后总结，主图/图注及多页图片保留。原文先可读，Gemini后台队列后续译，不因新增来源启动GPT会话翻译。新正文共用原60篇采集预算和头条/旧稿份额，不增加API费用。
+
+T067最终本地实测：20+18=38条，38 collected/0 partial/0失败，38条真实出版时刻均齐全（美術展ナビ134、TAB227正文图片）。189 Python+28 JS/项目检查/strict audit/build/diff检查通过。分页案例4627字14图片；初期5个partial由Index章节误判和活动/推荐卡节点缺适配引起，已修复并回归。生产验收待补，不把本地采集算上线，也不把原文算AI翻译。

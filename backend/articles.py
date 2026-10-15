@@ -70,7 +70,11 @@ def fetch_public_json(url, source):
 def fetch_article(url, source, getter=None, json_getter=None):
     """Only an explicitly verified publisher API can recover a missing permalink."""
     try:
-        return (getter or fetch_page)(url, source)
+        payload, resolved = (getter or fetch_page)(url, source)
+        if source.get('adapter') == 'tokyo_art_beat_news':
+            from .japanese_art import tab_article_pages
+            payload = tab_article_pages(payload, resolved, source, getter or fetch_page)
+        return payload, resolved
     except HTTPError as error:
         if error.code != 404 or not source.get('public_wordpress_rest'): raise
     origin = urlsplit(source['homepage_url'])
@@ -89,6 +93,7 @@ def fetch_article(url, source, getter=None, json_getter=None):
 
 def extract_article(payload, url, source):
     soup = BeautifulSoup(payload, 'lxml')
+    pagination_incomplete = bool(soup.select_one('[data-public-pagination-incomplete="true"]'))
     author = None
     node = soup.find('meta', attrs={'name': 'author'})
     if node:
@@ -146,11 +151,11 @@ def extract_article(payload, url, source):
                 text = clean_text(line)
                 if text: blocks.append({'type': 'paragraph', 'text': text})
 
-        for node in root.find_all(['p', 'h2', 'h3', 'h4', 'li', 'blockquote', 'img']):
+        for node in root.find_all(['p', 'h2', 'h3', 'h4', 'li', 'blockquote', 'img', 'td', 'th']):
             # Image captions are already included with their image block.
             if node.name != 'img' and node.find_parent('figcaption'):
                 continue
-            if node.name != 'img' and any(p.name in ('p', 'li', 'blockquote') for p in node.parents if p is not root):
+            if node.name != 'img' and any(p.name in ('p', 'li', 'blockquote', 'td', 'th') for p in node.parents if p is not root):
                 continue
             if node.name == 'img':
                 src = node.get('data-src') or node.get('data-lazy-src') or node.get('src')
@@ -200,8 +205,8 @@ def extract_article(payload, url, source):
     if len(text) < 100:
         return {'article_status': 'restricted' if paywall or challenge else 'no_body',
                 'article_reason': 'subscription_required' if paywall else 'access_challenge' if challenge else 'body_not_found'}
-    reason = 'public_visible_body' if paywall else 'public_body_extracted'
-    status = 'partial' if paywall else 'collected'
+    reason = 'public_visible_body' if paywall else 'public_pagination_incomplete' if pagination_incomplete else 'public_body_extracted'
+    status = 'partial' if paywall or pagination_incomplete else 'collected'
     if len(text) > 200_000 or len(blocks) > 2000:
         blocks = blocks[:2000]
         kept, length = [], 0
@@ -212,10 +217,17 @@ def extract_article(payload, url, source):
         blocks = kept
         text = '\n\n'.join(b['text'] for b in blocks if b.get('text'))
         status, reason = 'partial', 'size_limit'
-    return {'article_blocks_json': json.dumps(blocks, ensure_ascii=False), 'article_text': text,
+    fields = {'article_blocks_json': json.dumps(blocks, ensure_ascii=False), 'article_text': text,
             'article_status': status, 'article_reason': reason, 'article_author': author,
             'article_extractor': extractor,
             'article_hash': hashlib.sha256(json.dumps(blocks, ensure_ascii=False).encode()).hexdigest()}
+    if source.get('adapter') == 'artexhibition_news':
+        from .japanese_art import published_instant
+        meta = soup.find('meta', property='article:published_time')
+        published = published_instant(meta.get('content')) if meta else None
+        if published:
+            fields['published_at'] = published
+    return fields
 
 
 def needs_quality_repair(row, directory=None):

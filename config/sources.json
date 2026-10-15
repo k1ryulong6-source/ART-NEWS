@@ -67,14 +67,34 @@
       "country": "JP",
       "language": "ja",
       "source_type": "media",
-      "enabled": false,
-      "access_status": "unverified",
-      "access_method": null,
-      "feed_url": null,
-      "verified_at": null,
-      "notes": "候选：展览发现；不假定具有开放 API。",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "public_page",
+      "feed_url": "https://www.tokyoartbeat.com/articles/condId/latest",
+      "verified_at": "2026-10-15",
+      "notes": "T067用户指定来源；最新新闻公开页200，读取ArticleSearch公开列表元数据。旧RSS /list/feed/last_added.ja.xml已404，不冒称RSS。逐页取得匿名可见Page nation正文，仅读取所请求页paginated_content，不读取all-page/隐藏订阅正文；失败标公开部分。每2小时随现有采集更新，进入后台Gemini翻译。",
       "publisher_country": "JP",
-      "coverage": "JP"
+      "coverage": "JP",
+      "adapter": "tokyo_art_beat_news",
+      "article_selectors": [
+        ".culture-tab-body"
+      ],
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "east_asia"
+        ],
+        "countries": [
+          "JP"
+        ],
+        "basis": "T067用户指定常用日本艺术媒体；仅编辑关注范围，不用于推定单篇地点/艺术家国籍。",
+        "media_weight": {
+          "international": 82,
+          "local_specialist": 96,
+          "discovery": 88,
+          "basis": "人工编辑初始值，非全球流量或艺术价值排名。"
+        }
+      }
     },
     {
       "id": "bijutsutecho",
@@ -2250,6 +2270,46 @@
         "Verschiedenes"
       ],
       "exclude_title_regex": "Imaging World|photokina"
+    },
+    {
+      "id": "artexhibition",
+      "name": "美術展ナビ",
+      "homepage_url": "https://artexhibition.jp/",
+      "channels": [
+        "art",
+        "photography"
+      ],
+      "country": "JP",
+      "publisher_country": "JP",
+      "coverage": "JP; editorial focus only, article geography evidence-based",
+      "language": "ja",
+      "source_type": "media",
+      "enabled": true,
+      "access_status": "reviewed",
+      "access_method": "public_page",
+      "feed_url": "https://artexhibition.jp/topics/",
+      "adapter": "artexhibition_news",
+      "verified_at": "2026-10-15",
+      "article_selectors": [
+        "article.main-content"
+      ],
+      "editorial_focus": {
+        "role": "core",
+        "regions": [
+          "east_asia"
+        ],
+        "countries": [
+          "JP"
+        ],
+        "basis": "T067用户指定常用日本艺术媒体；仅编辑关注范围，不用于推定单篇地点/艺术家国籍。",
+        "media_weight": {
+          "international": 77,
+          "local_specialist": 96,
+          "discovery": 82,
+          "basis": "人工编辑初始值，非全球流量或艺术价值排名。"
+        }
+      },
+      "notes": "T067用户指定来源；新着記事公开列表/正文200，/feed/404且?feed=rss2返回HTML，使用真实公开网页采集而非虚构RSS。只从正文meta article:published_time取得精确发布时间，列表日历日不补造时刻；未抓正文时日期保持未知。保留图片/图注/活动信息，结构化移除分享推荐；不猜展期。每2小时随现有采集更新并进入后台Gemini队列。"
     }
   ],
   "notes": "全球电影、艺术、摄影为主，日本上映与展览保留专题；地区由报道线索或明确场馆资料决定，不能按媒体总部推断。覆盖仍有限，未验证来源保持停用。"

@@ -300,9 +300,11 @@ ADAPTERS = {"rss": rss_records, "eiga_releases": eiga_records, "top_exhibitions"
 
 def run_ingestion(store, source_ids=None, fetcher=get_url):
     from .programmes import diaphana_records, bfi_records, wpo_records, mmca_records
+    from .japanese_art import artexhibition_records, tokyo_art_beat_records
     from datetime import datetime, timedelta
     from zoneinfo import ZoneInfo
-    extra_adapters = {"diaphana_releases": diaphana_records, "bfi_programme": bfi_records, "wpo_calls": wpo_records, "mmca_exhibitions": mmca_records}
+    extra_adapters = {"diaphana_releases": diaphana_records, "bfi_programme": bfi_records, "wpo_calls": wpo_records, "mmca_exhibitions": mmca_records,
+                      "artexhibition_news": artexhibition_records, "tokyo_art_beat_news": tokyo_art_beat_records}
     config = json.loads((ROOT / "config/sources.json").read_text())
     disabled = store.preferences().get("disabled_sources", [])
     for source in config["sources"]:

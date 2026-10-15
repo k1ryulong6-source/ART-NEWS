@@ -384,3 +384,8 @@ T039公开完成：ART-NEWS b994269，CI38554022279（85Python+26JS）和Pages38
 ## T062 · 资讯排序（Claude）· 2026-10-15
 
 用户要求去掉筛选里的“优先级”，换成排序。资讯数量右侧`#sort-order`：推荐（默认，`C.priorityCompare`，即原重要性＋时效）、最新、最早（按published_at，缺日期排最后）、重要（priorityOf().importance高→低，再按最新）。`state.sort`仅存当前会话。数据里没有浏览/分享等读者信号，故不做“热门”；若以后后端提供真实热度或多来源报道数，可在app.js的`sorters`里加一项。翻译优先级只影响后台队列与“推荐”顺序，不再作为读者筛选项。
+
+## T063 · 前端排查修复（Claude，doing，未上线）· 2026-10-15
+
+已修：①检索卡顿——explore/calendar/bookmarks对每条记录重算filters()（含活动×链接扫描），改为每次渲染算一次，未停用来源时跳过扫描；②时区——`displayZone()`：读者未自设时区时用浏览器时区显示报头日期、日历“今天”、更新时间与收录页时间，选稿仍用公共默认readingDate()；③日历格改为当天“放映/开展/闭展/截止”计数，去掉图例；④document.title随页面/文章；⑤og:*与twitter卡片、apple-touch-icon（scripts/share-card.html渲染og-image.png）。
+待办：data.js 13MB（gzip 3.6MB），正文类字段占约8MB，建议与Codex协作改为首屏只发索引、阅读时按ID加载正文（已有dist/integrations/babel/<id>.json可参考），并保证全文检索不退化。

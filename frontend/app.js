@@ -71,7 +71,8 @@
   function sourceName(row) { return dataset.sources.find(s => s.id === row.source_id)?.name || '来源待确认'; }
   function filters() {
     const disabled = state.view === 'bookmarks' ? [] : preferences.disabled_sources || [];
-    const disabledEventIds = dataset.events.filter(event => { const links = dataset.content_events.filter(link => link.event_id === event.id); return links.length && links.every(link => disabled.includes(dataset.content.find(row => row.id === link.content_id)?.source_id)); }).map(event => event.id);
+    // Only needed when a reader has switched sources off; the scan is O(events × links), so skip it otherwise.
+    const disabledEventIds = !disabled.length ? [] : (() => { const sourceOf = new Map(dataset.content.map(row => [row.id, row.source_id])); return dataset.events.filter(event => { const links = dataset.content_events.filter(link => link.event_id === event.id); return links.length && links.every(link => disabled.includes(sourceOf.get(link.content_id))); }).map(event => event.id); })();
     return { channel: state.channel, kind: state.kind, country: state.country, city: state.city, language: state.language, query: state.query, buzz: preferences.industry_buzz.enabled, disabledSources: disabled, disabledEventIds, priority: 'all', reviewedOnly: state.view === 'explore' && state.editorialOnly };
   }
   function findBookmark(type, id) { return bookmarks.find(b => b[type === 'content' ? 'content_id' : 'event_id'] === id); }
@@ -79,13 +80,13 @@
     const labels = { today: '头版', explore: '资讯', calendar: '日历', bookmarks: '剪报' };
     const current = state.view === 'attention' ? 'explore' : state.view;
     $('navigation').innerHTML = Object.entries(labels).map(([key, label]) => `<button class="nav-button ${current === key ? 'active' : ''}" data-view="${key}" ${current === key ? 'aria-current="page"' : ''}>${label}${key === 'bookmarks' && bookmarks.length ? `<span class="nav-count">${bookmarks.length}</span>` : ''}</button>`).join('');
-    const [y, m, d] = readingDate().split('-').map(Number);
+    const [y, m, d] = displayDate().split('-').map(Number);
     $('edition-date').innerHTML = `<b class="edition-day">${d}</b><span>${y}年${m}月</span><span>星期${'日一二三四五六'[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]}</span>`;
     $('edition-date').setAttribute('aria-label', `${y}年${m}月${d}日`);
     $('film-edge-print').textContent = Array.from({ length: 24 }, (_, i) => (i % 6 ? '' : '幕間休息　') + `▸ ${d + i}　${d + i}A`).join('　　');
-    $('edition-date').dateTime = readingDate();
+    $('edition-date').dateTime = displayDate();
     const last = sourceStatus.map(source => source.last_success_at).filter(Boolean).sort().at(-1);
-    $('edition-updated').textContent = state.mode === 'demo' ? '示例版 · 内容虚构' : last ? '更新 ' + new Intl.DateTimeFormat('zh-CN', { timeZone: preferences.reading_timezone, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(last)) : '';
+    $('edition-updated').textContent = state.mode === 'demo' ? '示例版 · 内容虚构' : last ? '更新 ' + new Intl.DateTimeFormat('zh-CN', { timeZone: displayZone(), month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(last)) : '';
     document.querySelector('.refresh-control').hidden = !server;
     const unread = notifications.filter(row => !row.read).length;
     $('inbox-button').hidden = !server || !unread; $('inbox-button').textContent = `提醒 ${unread}`;
@@ -105,6 +106,11 @@
     return `<button class="${inline ? 'save-inline' : 'save-button'} ${saved ? 'saved' : ''}" data-save-type="${type}" data-save-id="${e(id)}" aria-label="${saved ? '移出剪报' : '加入剪报'}" aria-pressed="${Boolean(saved)}">${inline ? (saved ? '★ 已剪报' : '☆ 剪报') : saved ? '★' : '☆'}</button>`;
   }
   const readingDate = () => state.mode === 'demo' ? dataset.reference_date : C.localDate(preferences.reading_timezone);
+  // Dates and times shown to a reader follow their own clock unless they chose a zone in 阅读设置.
+  // Story selection keeps readingDate(), the public default shared with the backend queue.
+  const browserZone = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch { return 'UTC'; } })();
+  const displayZone = () => preferences.reading_timezone && preferences.reading_timezone !== boot.preferences.reading_timezone ? preferences.reading_timezone : browserZone;
+  const displayDate = () => state.mode === 'demo' ? dataset.reference_date : C.localDate(displayZone());
   function publicationLabel(row) { const day = row.published_at?.slice(0, 10); const age = C.daysBetween(day, readingDate()); return age === null ? '发布日期未提供' : (age > (preferences.recent_news_days || 30) ? '旧资料 · ' : '') + C.dateLabel(day); }
   function priorityBadge(row) { const p = C.priorityOf(row); return p ? `<span class="priority-tag priority-${e(p.priority)}" title="${e(p.reasons.join('；'))}">${e(p.label)}${p.time_sensitive ? ' · 有时效' : ''}</span>` : ''; }
   const ui = window.CultureUI.create({ C, artwork, saveButton, findBookmark, sourceName, publicationLabel, priorityBadge });
@@ -143,7 +149,7 @@
   function attentionPage() {
     const unit = attentionUnit();
     if (!unit) return empty('一種關注暂未开放', '');
-    const stamp = value => value ? new Intl.DateTimeFormat('zh-CN', { timeZone: preferences.reading_timezone, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(value)) : '未记录';
+    const stamp = value => value ? new Intl.DateTimeFormat('zh-CN', { timeZone: displayZone(), month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(value)) : '未记录';
     return heading('资讯') + `<div class="filters">${filterBar().match(/<div class="tabs"[^]*?<\/div>/)[0]}</div>` + ui.attentionPage(unit, contentById, stamp);
   }
   // 资讯 ordering. 推荐 is the paper's own order (importance and timeliness); there is no
@@ -154,28 +160,40 @@
   const importanceRank = row => ({ high: 0, medium: 1 })[C.priorityOf(row)?.importance] ?? 2;
   const sorters = { recommended: C.priorityCompare, newest: byTime(-1), oldest: byTime(1), important: (a, b) => importanceRank(a) - importanceRank(b) || byTime(-1)(a, b) };
   function explore() {
-    const rows = dataset.content.filter(row => C.matches(row, filters())).sort(sorters[state.sort] || C.priorityCompare);
+    const scope = filters(), rows = dataset.content.filter(row => C.matches(row, scope)).sort(sorters[state.sort] || C.priorityCompare);
     const size = 18, pages = Math.max(1, Math.ceil(rows.length / size));
     state.listPage = Math.min(pages, Math.max(1, state.listPage));
     const pageRows = rows.slice((state.listPage - 1) * size, state.listPage * size);
     return heading(state.query ? `检索：${state.query}` : state.editorialOnly ? 'AI译文' : '资讯') + notice() + filterBar() + `<div class="filter-summary"><span>共 ${rows.length} 篇</span><label class="sort-control">排序 <select id="sort-order" aria-label="排序">${Object.entries(sortLabels).map(([key, label]) => `<option value="${key}" ${state.sort === key ? 'selected' : ''}>${label}</option>`).join('')}</select></label></div>` + (rows.length ? `<div class="card-grid">${pageRows.map(row => card(row)).join('')}</div>${ui.pagination(rows.length,state.listPage,size)}` : empty('没有符合条件的报道', '', '<button class="text-link" data-action="reset-filters">清除筛选</button>'));
   }
+  // A day cell names what happens on that day — screenings, openings, closings, deadlines — rather
+  // than repeating every exhibition that is merely running; the day list still shows all of them.
+  function dayMarks(rows, day) {
+    const count = test => rows.filter(row => row.date_precision === 'day' && test(row)).length;
+    const screening = ['cinema_release', 'festival_screening', 'streaming_release'];
+    return [['film', '放映', count(row => screening.includes(row.event_type) && row.start_date === day)],
+      ['art', '开展', count(row => row.event_type === 'exhibition' && row.start_date === day)],
+      ['art', '闭展', count(row => row.event_type === 'exhibition' && row.end_date === day && row.end_date !== row.start_date)],
+      ['photography', '截止', count(row => row.event_type === 'call_deadline' && row.start_date === day)]]
+      .filter(([, , n]) => n).map(([tone, label, n]) => `<span class="calendar-dot ${tone}">${label} ${n}</span>`).join('');
+  }
   function calendar() {
     const [year, month] = state.month.split('-').map(Number), first = new Date(Date.UTC(year, month - 1, 1)).getUTCDay(), count = new Date(Date.UTC(year, month, 0)).getUTCDate();
-    const rows = dataset.events.filter(row => C.matches(row, filters()));
+    const scope = filters(), rows = dataset.events.filter(row => C.matches(row, scope));
     const activeOn = day => rows.filter(row => row.date_precision === 'day' && row.start_date <= day && (row.end_date || row.start_date) >= day);
     const days = Array.from({ length: first }, () => '<div class="calendar-day blank" aria-hidden="true"></div>');
     for (let n = 1; n <= count; n++) {
       const day = `${state.month}-${String(n).padStart(2, '0')}`, active = activeOn(day);
-      days.push(`<button class="calendar-day ${day === readingDate() ? 'reference' : ''} ${day === state.selectedDate ? 'selected' : ''}" data-date="${day}" aria-label="${day}，${active.length} 项活动" aria-pressed="${day === state.selectedDate}"><span>${n}</span>${active.slice(0, 2).map(row => `<span class="calendar-dot ${row.channel}">${C.eventTypes[row.event_type]}</span>`).join('')}${active.length > 2 ? `<span class="calendar-dot">＋${active.length - 2}</span>` : ''}</button>`);
+      days.push(`<button class="calendar-day ${day === displayDate() ? 'reference' : ''} ${day === state.selectedDate ? 'selected' : ''}" data-date="${day}" aria-label="${day}，${active.length} 项活动" aria-pressed="${day === state.selectedDate}"><span>${n}</span>${dayMarks(rows, day)}</button>`);
     }
     while (days.length % 7) days.push('<div class="calendar-day blank" aria-hidden="true"></div>');
     const visible = state.selectedDate ? activeOn(state.selectedDate) : rows.filter(row => row.start_date?.slice(0, 7) === state.month || row.end_date?.slice(0, 7) === state.month || (row.date_precision === 'day' && row.start_date < state.month + '-01' && row.end_date >= state.month + '-01'));
-    return heading('上映与展期') + notice() + filterBar() + `<div class="calendar-layout"><div><div class="calendar-panel"><div class="calendar-toolbar"><h2>${year} 年 ${month} 月</h2><div class="month-controls"><button data-month="-1" aria-label="上个月">←</button><button data-action="reference-month">参考月</button><button data-month="1" aria-label="下个月">→</button></div></div><div class="week-row">${['日', '一', '二', '三', '四', '五', '六'].map(day => `<div>${day}</div>`).join('')}</div><div class="calendar-days">${days.join('')}</div><div class="calendar-legend"><span><i></i>电影</span><span><i class="art"></i>艺术</span><span><i class="photography"></i>摄影</span></div></div><section class="event-list"><div class="section-title"><h2>${state.selectedDate ? C.dateLabel(state.selectedDate) : '本月活动'}<span class="count-label">${visible.length} 项</span></h2>${state.selectedDate ? '<button class="text-link" data-action="clear-date">显示全月</button>' : ''}</div>${visible.map(row => eventRow(row)).join('') || '<p class="compact-note">该日期范围内没有符合条件的活动。</p>'}</section></div>${agenda()}</div><details class="explanation"><summary>日期说明</summary><p>仅公布月份的活动列在清单，不填入具体日期；展览日期范围不代表每天开放，请查看休馆说明。</p></details>`;
+    return heading('上映与展期') + notice() + filterBar() + `<div class="calendar-layout"><div><div class="calendar-panel"><div class="calendar-toolbar"><h2>${year} 年 ${month} 月</h2><div class="month-controls"><button data-month="-1" aria-label="上个月">←</button><button data-action="reference-month">参考月</button><button data-month="1" aria-label="下个月">→</button></div></div><div class="week-row">${['日', '一', '二', '三', '四', '五', '六'].map(day => `<div>${day}</div>`).join('')}</div><div class="calendar-days">${days.join('')}</div></div><section class="event-list"><div class="section-title"><h2>${state.selectedDate ? C.dateLabel(state.selectedDate) : '本月活动'}<span class="count-label">${visible.length} 项</span></h2>${state.selectedDate ? '<button class="text-link" data-action="clear-date">显示全月</button>' : ''}</div>${visible.map(row => eventRow(row)).join('') || '<p class="compact-note">该日期范围内没有符合条件的活动。</p>'}</section></div>${agenda()}</div><details class="explanation"><summary>日期说明</summary><p>仅公布月份的活动列在清单，不填入具体日期；展览日期范围不代表每天开放，请查看休馆说明。</p></details>`;
   }
   function bookmarkPage() {
     const saved = bookmarks.filter(row => state.bookmarkStatus === 'all' || row.status === state.bookmarkStatus);
-    const records = saved.map(row => ({ bookmark: row, record: (row.content_id ? dataset.content : dataset.events).find(x => x.id === (row.content_id || row.event_id)) })).filter(item => item.record && C.matches(item.record, filters()));
+    const scope = filters();
+    const records = saved.map(row => ({ bookmark: row, record: (row.content_id ? dataset.content : dataset.events).find(x => x.id === (row.content_id || row.event_id)) })).filter(item => item.record && C.matches(item.record, scope));
     const contents = records.filter(item => item.bookmark.content_id), events = records.filter(item => item.bookmark.event_id);
     return heading('剪报') + notice() + filterBar() + `<div class="tabs" style="margin-bottom:23px">${[['all', '全部状态'], ...Object.entries(C.statusNames)].map(([key, label]) => `<button class="tab ${state.bookmarkStatus === key ? 'active' : ''}" data-status="${key}">${label}</button>`).join('')}</div>` + (records.length ? `<div class="card-grid">${contents.map(item => card(item.record, true)).join('')}</div>${events.length ? `<section class="event-list"><div class="section-title"><h2>收藏的活动</h2></div>${events.map(item => eventRow(item.record) + `<select class="bookmark-status" data-bookmark-status="${e(item.bookmark.id)}" aria-label="活动收藏状态">${Object.entries(C.statusNames).map(([k, v]) => `<option value="${k}" ${item.bookmark.status === k ? 'selected' : ''}>${v}</option>`).join('')}</select>`).join('')}</section>` : ''}` : empty('剪报为空', '报道下方的 ☆ 可加入剪报。'));
   }
@@ -199,7 +217,7 @@
     if (!report) return empty('覆盖记录尚未生成', '刷新公开资料后再查看。');
     const p = report.progress, checks = report.sources.map(s => s.list_audit).filter(Boolean);
     const missing = checks.reduce((sum, check) => sum + (check.missing?.length || 0), 0);
-    const stamp = value => value ? new Intl.DateTimeFormat('zh-CN', { timeZone: preferences.reading_timezone, dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)) : '未记录';
+    const stamp = value => value ? new Intl.DateTimeFormat('zh-CN', { timeZone: displayZone(), dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)) : '未记录';
     return heading('收录与译文') + automationPanel(stamp) +
       `<section class="settings-panel"><h2>翻译进度</h2><details class="explanation"><summary>处理规则</summary><p>翻译按重要性和时效性排序：紧急、优先、普通、资料；每批保留旧稿份额。分级是自动初判，不代表消息已核实或艺术价值判断。非日本普通展览稍后处理，日本与重大展览按原规则；地点不明不按语种推断。</p><p>现存稿与新增稿均需全文翻译，精选只决定阅读排序。中文标题不计入正文完成数；订阅稿只翻译已取得的公开部分。</p></details><div class="coverage-stats">${[['保存的资料',p.total],['AI全文译文',p.completed],['自动机翻正文',p.machine_completed || 0],['全文尚无中文',p.without_chinese_body ?? p.pending],['原生中文正文',p.native_chinese],['等待AI精译',p.pending],['尚未取得正文',p.without_body],['待译原文字符',(p.pending_characters/10000).toFixed(1)+'万']].map(([label,value])=>`<div><strong>${value}</strong><span>${label}</span></div>`).join('')}</div><p class="compact-note">直接AI翻译 ${p.direct_translated} 篇；此前已校译 ${p.reviewed} 篇。已翻译正文中 ${p.completed_partial} 篇只取得公开部分。自动机翻与AI译文分别计数；自动机翻不算AI精译。未取得正文继续保留并重试。资料快照：${e(stamp(report.snapshot_at))}。</p></section>` +
       `<section class="settings-panel"><h2>全球是否收齐？目前无法证明</h2><p>${report.sources.length} 个来源是有限名单。来源读取成功只说明某次页面可读；RSS通常只有近期条目，官方首页也可能只列精选。</p><ul>${report.known_gaps.map(note=>`<li>${e(note)}</li>`).join('')}</ul><p>最近列表核对：${e(stamp(report.source_audit_at))}。已检查 ${checks.filter(c=>c.status==='checked').length} 个RSS；尚有 ${missing} 条该次列表条目未入库。${checks.filter(c=>c.status==='failed').length} 个核对失败，不能按“无遗漏”计算。官方页面全站完整性未独立验证。</p><p class="compact-note">“当次列表已入库”只适用于这一份RSS及其时间范围；不显示没有可靠分母的全球覆盖率。</p><p>各频道资料：${Object.entries(report.channels).map(([key,count])=>`${e(C.channels[key]||key)} ${count}`).join(' · ')}。</p><p>已收录活动地区：${Object.entries(report.event_regions).map(([key,count])=>`${e(C.countryLabels[key]||key)} ${count}`).join(' · ')}。没有列出的地区，当前活动日历覆盖为空。</p></section>` +
@@ -248,6 +266,11 @@
     if (advanced) state.advancedOpen = advanced.open;
     document.body.dataset.page = state.view;
     nav(); $('edition-note').textContent = state.mode === 'demo' ? '所有示例均为虚构。' : '原文与 AI 译文分开标注；配图注明来源。'; $('main').innerHTML = ({ today, explore, calendar, bookmarks: bookmarkPage, settings, coverage: coveragePage, attention: attentionPage, reader: readerPage }[state.view] || today)();
+    // Tab titles name the page (and the story when reading), so history, bookmarks and shared tabs differ.
+    const pageTitles = { explore: '资讯', attention: '一種關注', calendar: '上映与展期', bookmarks: '剪报', settings: '阅读设置', coverage: '收录与译文' };
+    const story = state.view === 'reader' && dataset.content.find(item => item.id === state.readerId);
+    const pageTitle = story ? (state.readerTab === 'original' ? story.title_original : C.displayTitle(story)) : pageTitles[state.view];
+    document.title = pageTitle ? `${pageTitle} · 幕间休息` : '幕间休息';
     const hash = state.view === 'reader' ? C.readerRoute(state.readerId) : '#' + state.view;
     if (location.hash !== hash) history.replaceState(null, '', hash);
   }

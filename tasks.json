@@ -2010,6 +2010,38 @@
       "evidence": [
         "27JS＋全部Python通过；Chromium：选项推荐/最新/最早/重要，筛选中无priority-filter；最新首条2026.10.15、最早首条2001.11.02；第3页切换后回到第1页；搜索保持排序；320–430九视图无溢出、无脚本错误。"
       ]
+    },
+    {
+      "id": "T063",
+      "title": "前端排查修复：检索卡顿、时区显示、日历格、标签页标题、分享卡片",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Claude",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T062"
+      ],
+      "scope": [
+        "frontend/app.js",
+        "frontend/index.html",
+        "frontend/og-image.png",
+        "frontend/apple-touch-icon.png",
+        "scripts/share-card.html",
+        "scripts/build_static.py（复制两张图）",
+        "backend/app.py（仅白名单两张图）",
+        "docs/"
+      ],
+      "acceptance": [
+        "检索每键渲染不再逐条重算筛选",
+        "日期/更新时间按读者时区显示，选稿仍用公共默认",
+        "日历格只标当天放映/开展/闭展/截止",
+        "标签页标题随页面与文章变化",
+        "分享卡片og:image与iPhone主屏图标"
+      ],
+      "evidence": [
+        "检索一次渲染约450ms→25–30ms（输入8字约5秒→0.5秒）；Asia/Shanghai下页脚更新时间15:02（原显示UTC 07:02）；日历10/15点开仍列55项；标题“资讯 · 幕间休息”、文章标题随中文/原文切换；og-image/apple-touch-icon本地200；27JS＋全部Python通过；全页面1440/390无脚本错误、无溢出、无坏图。",
+        "尚未：用户确认后合并上线；data.js首屏体积（3.6MB gzip）需与Codex协作拆分正文。"
+      ]
     }
   ]
 }

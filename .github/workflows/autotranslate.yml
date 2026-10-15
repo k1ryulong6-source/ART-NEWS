@@ -4,7 +4,7 @@ on:
     workflows: ['Refresh cultural news', 'Clean saved article bodies']
     types: [completed]
   schedule:
-    - cron: '45 */4 * * *'
+    - cron: '45 * * * *'
   workflow_dispatch:
   push:
     branches: [main]

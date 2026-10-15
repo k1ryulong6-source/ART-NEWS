@@ -1909,6 +1909,45 @@
         "后台API38690039638由主链变更自动启动，2026-10-15 06:02UTC起实际处于Translate with contextual AI步骤；独立GitHub runner，未从会话生成译文，paid_activation=false、500/太平洋日上限保持。此批仍in_progress，不计作新发布产量。此前成功API38685372309真实完成11篇，累计Gemini108篇。",
         "最新已发布快照2026-10-15T06:00:51Z：895资讯，173AI全文=141直接+32历史校译，49原生中文正文，663有正文待AI（其中207有效临时机翻），10正文缺失；总327机翻与AI有重叠。清理失败14已补完，来源采集AMP/BFI故障与欠账仍按原状态保留。"
       ]
+    },
+    {
+      "id": "T060",
+      "title": "后台API有效段落保留、独立接续与真实运行报告",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex（只后端/API，不启动会话翻译工作者）",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T059"
+      ],
+      "scope": [
+        "backend/ai_translation.py",
+        "backend/operations.py",
+        "backend/app.py",
+        "scripts/build_static.py",
+        ".github/workflows/autotranslate.yml",
+        ".github/workflows/pages.yml",
+        "tests/test_ai_translation.py",
+        "tests/test_operations.py",
+        "docs/AUTONOMOUS_WORKFLOW.md",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md",
+        "tasks.json",
+        "docs/CLAUDE_UI_HANDOFF.md"
+      ],
+      "acceptance": [
+        "同一API返回中仅失败单元进入重试，程序通过单元立即保存；不减弱数字/段落检查、不作第二轮模型校对",
+        "按完整文章语境重试未完成单元，已有效AI不覆盖，日500免费请求/批40/480秒及15秒间隔保持",
+        "小时级备用调度在GitHub独立运行，遇限流/503尊重原退避，不开付费",
+        "公开只读运行报告分别呈现真实AI/机翻/旧会话/待译/缺正文、失败/等待、账本与覆盖缺口，24小时未满不能当日均",
+        "相关测试通过，远端发布/生产报告实际验证"
+      ],
+      "evidence": [
+        "起点：实际API38690039638成功发布7篇后503 service_wait至07:08UTC；5个数字检查失败，当前180AI/656待AI。窗口尚未满24小时。",
+        "126Python+27JS、check_project/diff通过；新增同请求数字坏段保留其他合格输出/等待后仅请求缺失key、组装坏字段定位、真实计数无重叠、服务等待不被绿色隐藏、太平洋配额与预留、首次补库与未满24h、缺失证据未知及API只读/不泄露凭据测试。",
+        "纯stdlib静态构建通过；实况生成180AI=115API+65其他AI，656待AI含212有效机翻、10缺正文；215/500请求、0预留、6请求token未知；200入库中149首次来源补库，51其他新增，观察约12.7h，不作日均。",
+        "所有测试使用fixture provider；本会话未调用真实翻译API、未开启会话翻译工作者。等待远端真实工作流及公开报告验收。"
+      ]
     }
   ]
 }

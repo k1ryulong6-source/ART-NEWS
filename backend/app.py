@@ -106,6 +106,12 @@ def create_app(db_path=None):
         rows = store.dataset(mode)["content"]
         return [r for r in rows if (not channel or r["channel"] == channel) and matches_region(r, country, city) and (not kind or r["kind"] == kind) and (not language or r["language"] == language) and (not q or q.lower() in " ".join(str(r.get(k) or "") for k in ("title_original", "title_zh", "summary_zh")).lower())]
 
+    @app.get('/api/operations')
+    @app.get('/reports/operations.json')
+    async def operations():
+        from .operations import load_operations
+        return load_operations(store.dataset('live'))
+
     @app.get('/api/editorial-regions')
     @app.get('/reports/regional-coverage.json')
     async def editorial_region_report():

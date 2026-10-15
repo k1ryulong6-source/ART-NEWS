@@ -85,6 +85,43 @@ class AITranslationTests(unittest.TestCase):
         self.assertEqual(calls, [])
         self.assertEqual(report['requests_today'], 1)
 
+    def test_one_failed_numeric_unit_does_not_discard_other_paid_outputs(self):
+        requested = []
+        def broken(payload):
+            doc = json.loads(payload['contents'][0]['parts'][0]['text'])
+            requested.extend(doc['requested_keys'])
+            self.assertTrue(all('numeric_literals' in unit for unit in doc['original_units']))
+            outputs = {u['key']: '译文：' + u['text'] for u in doc['original_units'] if u['key'] in doc['requested_keys']}
+            outputs['block:0:text:0'] = '故意省略原文数字的无效输出。'
+            return {'usageMetadata': {'promptTokenCount': 300, 'candidatesTokenCount': 100},
+                    'candidates': [{'finishReason': 'STOP', 'content': {'parts': [{'text': json.dumps({'outputs': outputs})}]}}]}
+        report = self.run_ai_worker(GeminiTranslator('fixture', transport=broken))
+        self.assertEqual(len(report['failed']), 1)
+        self.assertEqual(report['input_tokens'], 300)
+        path = self.root / 'ai-progress' / (self.row['id'] + '.json')
+        state = json.loads(path.read_text())
+        self.assertEqual(set(state['outputs']), {'title:0', 'excerpt:0'})
+        self.assertIsNone(self.store.dataset('live')['content'][0]['editorial_status'])
+        # Simulate the next scheduled run after the existing per-article cooldown.
+        state['retry_after'] = '2000-01-01T00:00:00+00:00'; path.write_text(json.dumps(state))
+        called = []
+        resumed = self.run_ai_worker(self.provider(lambda doc: called.extend(doc['requested_keys'])))
+        self.assertEqual(called, ['block:0:text:0'])
+        self.assertEqual(resumed['translated'], [self.row['id']])
+        self.assertEqual(resumed['requests_today'], 2)
+
+    def test_assembled_failure_only_removes_keys_of_the_failed_field(self):
+        def broken(payload):
+            doc = json.loads(payload['contents'][0]['parts'][0]['text'])
+            outputs = {u['key']: '译文：' + u['text'] for u in doc['original_units'] if u['key'] in doc['requested_keys']}
+            outputs['block:0:text:0'] = 'Changed English copy includes 2026 and 600, but no Chinese characters.'
+            return {'candidates': [{'finishReason': 'STOP', 'content': {'parts': [{'text': json.dumps({'outputs': outputs})}]}}]}
+        result = self.run_ai_worker(GeminiTranslator('fixture', transport=broken))
+        self.assertEqual(result['translated'], [])
+        path = self.root / 'ai-progress' / (self.row['id'] + '.json')
+        state = json.loads(path.read_text())
+        self.assertEqual(set(state['outputs']), {'title:0', 'excerpt:0'})
+
     def test_429_stops_all_articles_and_persists_global_retry(self):
         def limited(payload):
             raise ServiceError(429, 7200)

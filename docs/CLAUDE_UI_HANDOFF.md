@@ -1,3 +1,5 @@
+> T060新增只读运行接口：/reports/operations.json、本地/api/operations、CULTURE_BOOTSTRAP.automation.operations；数据契约为增量，现有视觉不改。可折叠展示进度/失败/配额，但不得把机翻或历史会话计作本轮API、把Actions绿色当AI正常、把未知全球覆盖率当100%。报告包含快照/AI完成/健康检查的分别时间，未满24小时不外推日均。
+
 > T057单元接口就绪：正式名称「一种关注」，ID=a-kind-of-attention。读取/reports/attention-units/a-kind-of-attention.json（索引/reports/attention-units.json），或bootstrap.coverage.attention_units.units；每成员含推荐理由、关注范围/专长、来源独立权重、真实更新/故障/正文/AI数量、最近5篇报道及稳定ID。Claude自行设计放入页面，Codex未改视觉；按ID用CultureCore.readerRoute生成站内阅读，relative reader_path不得拼到reports目录下。细节见ATTENTION_UNITS.md。
 
 > T056新增只读后端契约：正式站/reports/regional-coverage.json（本地/api/editorial-regions亦可）提供领域地区等级、每源独立媒体权重、明确关注地区、国际渠道和优先国家缺口；同内容在bootstrap.coverage.editorial_regions。只需读取即可另做呈现，Codex未改视觉。权重是编辑初值，不是全球读者份额；来源总部不能当报道地点/艺术家国籍，source_focus只表示编辑分配。

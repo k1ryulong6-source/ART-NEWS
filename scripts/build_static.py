@@ -37,10 +37,15 @@ def build():
         bundle['automation'] = {'translation': optional_data('auto-translation-status.json'),
                                 'ai': optional_data('ai-translation-status.json'),
                                 'health': optional_data('automation-health.json')}
+        from backend.operations import load_operations
+        bundle['automation']['operations'] = load_operations(bundle['live'])
     # Compute all reporting from the full archive, then compact transport only.
     from backend.babel_export import export_articles, integrations
     output = ROOT / 'dist'
     output.mkdir(exist_ok=True)
+    if bundle.get('automation', {}).get('operations'):
+        (output / 'reports').mkdir(exist_ok=True)
+        (output / 'reports/operations.json').write_text(json.dumps(bundle['automation']['operations'], ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     if bundle.get('coverage', {}).get('editorial_regions'):
         (output / 'reports').mkdir(exist_ok=True)
         (output / 'reports/regional-coverage.json').write_text(json.dumps(bundle['coverage']['editorial_regions'], ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

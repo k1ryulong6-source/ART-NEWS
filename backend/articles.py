@@ -96,6 +96,9 @@ def extract_article(payload, url, source):
     if source.get('id') == 'mistermotley':
         byline = soup.select_one('.single-article--active .article-footer a[href*="/authors/"]')
         if byline: author = clean_text(byline.get_text())[:500] or author
+    if source.get('id') == 'rapadura':
+        byline = soup.select_one('.meta-author-name strong')
+        if byline: author = clean_text(byline.get_text())[:500] or author
     paywall = False
     for script in soup.select('script[type="application/ld+json"]'):
         try:
@@ -156,8 +159,8 @@ def extract_article(payload, url, source):
                     continue
                 figure = node.find_parent('figure')
                 caption = figure.find('figcaption') if figure else None
-                blocks.append({'type': 'image', 'url': image, 'alt': node.get('alt', '')[:500],
-                               'caption': caption.get_text(' ', strip=True)[:1000] if caption else '', 'credit': source['name']})
+                blocks.append({'type': 'image', 'url': image, 'alt': node.get('alt', ''),
+                               'caption': caption.get_text(' ', strip=True) if caption else '', 'credit': source['name']})
             else:
                 text = clean_text(node.get_text(' ', strip=True))
                 if text:
@@ -215,6 +218,16 @@ def extract_article(payload, url, source):
             'article_hash': hashlib.sha256(json.dumps(blocks, ensure_ascii=False).encode()).hexdigest()}
 
 
+def needs_quality_repair(row, directory=None):
+    directory = directory or ROOT / 'data/article-quality'
+    try:
+        state = json.loads((directory / (row['id'] + '.json')).read_text())
+    except (OSError, ValueError): return False
+    return (state.get('status') == 'issues' and state.get('source_hash') == row.get('article_hash')
+            and state.get('checked_at', '') > (row.get('article_checked_at') or '')
+            and any(i == 'source_content_changed_since_collection' or i.startswith(('public_paragraphs_not_extracted:', 'public_image_caption_not_extracted')) for i in state.get('issues', [])))
+
+
 def collect_articles(store, limit=40, getter=None, force=False):
     catalog = {s['id']: s for s in json.loads((ROOT / 'config/sources.json').read_text())['sources'] if s['enabled']}
     stamp = now()
@@ -223,7 +236,8 @@ def collect_articles(store, limit=40, getter=None, force=False):
     with store.connect() as db:
         rows = [dict(r) for r in db.execute('SELECT * FROM content WHERE is_demo=0 ORDER BY article_checked_at ASC,published_at DESC') if r['source_id'] in catalog]
     if not force:
-        rows = [r for r in rows if not r['article_checked_at'] or r['article_checked_at'] < (refresh_cutoff if r['article_status'] in ('collected', 'partial') else cutoff)]
+        for row in rows: row['_quality_recheck'] = needs_quality_repair(row)
+        rows = [r for r in rows if r['_quality_recheck'] or not r['article_checked_at'] or r['article_checked_at'] < (refresh_cutoff if r['article_status'] in ('collected', 'partial') else cutoff)]
     from .priority import rank_snapshot, priority_key
     priorities = rank_snapshot(store.dataset('live'))
     # A large backlog of stale body rechecks must not delay a new major headline.
@@ -232,6 +246,7 @@ def collect_articles(store, limit=40, getter=None, force=False):
         row['translation_priority'] = priorities[row['id']]
     fresh.sort(key=priority_key)
     rechecks = [r for r in rows if r.get('article_blocks_json')]
+    rechecks.sort(key=lambda row: (not row.get('_quality_recheck'), row.get('article_checked_at') or ''))
     from .editorial_regions import body_batch
     rows = body_batch(fresh, rechecks, catalog, limit)
     result = {k: 0 for k in ('attempted', 'collected', 'partial', 'restricted', 'unavailable', 'no_body')}
@@ -252,6 +267,11 @@ def collect_articles(store, limit=40, getter=None, force=False):
             fields = {'article_status': 'restricted' if exc.code in (401, 403, 402) else 'unavailable', 'article_reason': 'http_' + str(exc.code)}
         except Exception as exc:
             fields = {'article_status': 'unavailable', 'article_reason': str(exc) if isinstance(exc, ValueError) else 'network_unavailable'}
+        if (row.get('article_blocks_json') and fields.get('article_blocks_json') and fields.get('article_status') == 'partial'
+                and fields.get('article_reason') == 'public_visible_body'
+                and len(fields.get('article_text') or '') < len(row.get('article_text') or '')):
+            # A new subscription curtain must not erase formerly public prose/AI.
+            fields = {'article_status': row['article_status'], 'article_reason': 'public_access_reduced'}
         fields['article_checked_at'] = stamp
         if row.get('article_blocks_json') and not fields.get('article_blocks_json'):
             # A temporary failure cannot erase a saved body or its translation.

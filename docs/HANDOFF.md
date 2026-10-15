@@ -385,6 +385,8 @@ T039公开完成：ART-NEWS b994269，CI38554022279（85Python+26JS）和Pages38
 
 用户最新要求「全部做完再叫我」。后台依旧只用已配置Gemini免费API；禁止会话翻译/第二轮校对/开启付费。新增 scripts/audit_article_quality.py（原文hash/中文结构及逐源公开段落、图注，保存data/article-quality/断点）、scripts/audit_autonomous_trial.py（真实Actions小型状态artifact，首次完整24h结束前不通过）、scripts/update_acceptance.py（四门槛及快照签名，data/acceptance.json）。前两项不是语义校译。质量检查不自动把来源改写视作污染删除；保留缓存及问题，后续正常正文重抓接续。
 
-新增14个来源；实际工作区RSS+公开正文样本见data/source-expansion-evidence.json。来源总数与实际runner读取结果要分开核对；有未知出版国不补猜。Fotointern按类别过滤，Matca低频发现、不冒充每日更新。Artforum旧文公开页面当前只有署名/空正文，仍列缺正文，不从隐藏数据补造。
+新增14个来源（53启用=44 RSS+9官方页面）；实际工作区RSS+公开正文样本见data/source-expansion-evidence.json。来源总数与实际runner读取结果要分开核对；有未知出版国不补猜。Fotointern按类别过滤，Matca低频发现、不冒充每日更新。Artforum旧文公开页面当前只有署名/空正文，仍列缺正文，不从隐藏数据补造。
 
-现有24h观察截至2026-10-15 18:07:54 UTC才满24h。当前工作区下载Actions artifact被网络Forbidden，报告保留unverified，不把本地下载失败说API翻译失败；新六小时Actions审计将从GitHub runner核对。待译/缺正文/核心来源故障/地区矩阵缺口仍未全部解决，T028/T062不能done。原提醒6acfba93ea708191be758da0a02f1e76已改仅四项all_ready且证据匹配后通知；旧每日会话翻译6ace6f72b3dc81919301888a638a327e保持暂停。不得把条件通知已配置说成工作完成。
+现有24h观察截至2026-10-15 18:07:54 UTC才满24h。当前工作区下载Actions artifact被网络Forbidden，报告保留unverified，不把本地下载失败说API翻译失败；新采集流程每六小时审计将从GitHub runner核对。待译/缺正文/核心来源故障/地区矩阵缺口仍未全部解决，T028/T062不能done。原提醒6acfba93ea708191be758da0a02f1e76已改仅四项all_ready且证据匹配后通知；旧每日会话翻译6ace6f72b3dc81919301888a638a327e保持暂停。不得把条件通知已配置说成工作完成。
+
+T062补充：已实测共享concurrency的pending取消问题，定期24h证据核对移到采集内（6h去重），独立acceptance工作流改仅手动。取消采集不再占用数据组触发翻译。质量证据匹配原文hash/原标题及提取代码+来源规则版本；发现漏段/图注或公开内容变化时，在既有正文复查名额中优先安排一次重抓，不增加API配额。新订阅墙变短不得删除过去公开取得的正文或译文；长公开图注不再静默截1000字。148 Python+27 JS及工作流YAML/项目检查通过。线上c862643的900篇/899正文与运行报告hash已核对；后续修复与真实新增来源runner采集仍待验收。

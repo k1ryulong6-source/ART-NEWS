@@ -51,3 +51,12 @@ class QualityAuditTests(unittest.TestCase):
         self.assertFalse(result['complete'])
         self.assertEqual(result['remote_unresolved'][0]['status'], 'unavailable')
         self.assertEqual(self.row, original)
+
+    def test_changed_source_rules_invalidate_an_old_pass(self):
+        snapshot = {'content': [self.row]}
+        with TemporaryDirectory() as directory:
+            audit_quality(snapshot, {'sources': [self.source]}, directory, getter=lambda u, s: (self.html, u))
+            source = {**self.source, 'article_selectors': ['.new-publisher-layout']}
+            result = audit_quality(snapshot, {'sources': [source]}, directory, limit=0)
+        self.assertFalse(result['complete'])
+        self.assertEqual(result['remote_unchecked'], 1)

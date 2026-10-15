@@ -14,6 +14,14 @@ from .reading import public_url
 from .storage import ROOT, now
 from .acceptance import snapshot_key
 
+EXTRACTOR_CODE_HASH = hashlib.sha256(b''.join((Path(__file__).parent / name).read_bytes()
+    for name in ('quality_audit.py', 'articles.py', 'article_cleanup.py'))).hexdigest()
+
+
+def rules_key(source):
+    return hashlib.sha256(json.dumps([EXTRACTOR_CODE_HASH, source.get('article_selectors'),
+        source.get('id'), source.get('source_type'), source.get('public_wordpress_rest')], sort_keys=True).encode()).hexdigest()
+
 
 def inspect_cached(row):
     issues = []
@@ -93,7 +101,8 @@ def audit_quality(snapshot, catalog, directory, limit=20, getter=None):
         path = directory / (row['id'] + '.json')
         try: state = json.loads(path.read_text())
         except (OSError, ValueError): state = {}
-        if state.get('source_hash') != row['article_hash'] or state.get('source_title') != row['title_original']:
+        if (state.get('source_hash') != row['article_hash'] or state.get('source_title') != row['title_original']
+                or state.get('rules_key') != rules_key(sources[row['source_id']])):
             state = {}
         states[row['id']] = state
         if state.get('next_check_at', '') <= stamp:
@@ -112,7 +121,8 @@ def audit_quality(snapshot, catalog, directory, limit=20, getter=None):
 
     def verify(row):
         state = {'schema_version': 1, 'id': row['id'], 'source_id': row['source_id'],
-                 'source_hash': row['article_hash'], 'source_title': row['title_original'], 'checked_at': stamp}
+                 'source_hash': row['article_hash'], 'source_title': row['title_original'], 'checked_at': stamp,
+                 'rules_key': rules_key(sources[row['source_id']])}
         try:
             source = sources[row['source_id']]
             url = allowed_url(row.get('original_page_url') or row['canonical_url'], source)

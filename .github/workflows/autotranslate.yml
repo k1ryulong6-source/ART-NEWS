@@ -29,10 +29,11 @@ permissions:
   contents: write
   actions: read
 concurrency:
-  group: cultural-news-data-write
+  group: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'cancelled' && format('ignored-cancelled-collection-{0}', github.run_id) || 'cultural-news-data-write' }}
   cancel-in-progress: false
 jobs:
   translate:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled'
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:

@@ -20,6 +20,14 @@ if target.exists():
     if previous.get('complete') and previous.get('started_at') == start.isoformat():
         print('First full-day artifact audit already verified; retained without new network/model calls.')
         raise SystemExit(0)
+    if '--if-due' in sys.argv and previous.get('started_at') == start.isoformat():
+        try:
+            checked = datetime.fromisoformat(previous['checked_at'])
+            if (datetime.now(timezone.utc) - checked).total_seconds() < 6 * 3600:
+                (ROOT / 'data/trial-runs').mkdir(exist_ok=True)
+                print('Trial artifact audit not due; no new network/model calls.')
+                raise SystemExit(0)
+        except (ValueError, KeyError, TypeError): pass
 directory = ROOT / 'data/trial-runs'; directory.mkdir(exist_ok=True)
 env = dict(os.environ)
 if env.get('GITHUB_TOKEN'): env['GH_TOKEN'] = env['GITHUB_TOKEN']

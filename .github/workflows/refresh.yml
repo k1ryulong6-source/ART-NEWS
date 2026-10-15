@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  actions: read
 concurrency:
   group: cultural-news-data-write
   cancel-in-progress: false
@@ -37,6 +38,9 @@ jobs:
       - run: python scripts/prepare_translation_queue.py
       - run: python scripts/audit_coverage.py
       - run: python scripts/audit_important_news.py
+      - run: python scripts/audit_autonomous_trial.py --if-due
+        env:
+          GH_TOKEN: ${{ github.token }}
       - run: python scripts/audit_article_quality.py --limit 20
       - run: python scripts/update_acceptance.py
       - run: python scripts/build_static.py
@@ -46,6 +50,7 @@ jobs:
           git config user.email 'updater@users.noreply.github.com'
           git restore frontend/data.js
           git add data/live.json data/quality.json data/collection-metrics.json data/coverage-audit.json data/important-news-audit.json data/translation-queue.json data/translation-queue data/translation-input data/article-quality data/article-quality-report.json data/acceptance.json
+          git add data/autonomous-trial-report.json data/trial-runs
           if ! git diff --cached --quiet; then
             git commit -m 'Refresh verified cultural news snapshot'
             git pull --rebase origin main

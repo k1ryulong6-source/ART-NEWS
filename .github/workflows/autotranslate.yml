@@ -74,18 +74,35 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_API_KEY_SECONDARY: ${{ secrets.GEMINI_API_KEY_SECONDARY }}
-        run: python scripts/run_ai_translation.py
+        run: |
+          python scripts/run_ai_translation.py
+          if jq -e '.continue_recommended == true' data/ai-translation-status.json >/dev/null; then
+            echo 'continue_ai=true' >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/cache@v4
-        if: success() || failure()
+        if: (success() || failure()) && steps.ai.outputs.continue_ai != 'true'
         with:
           path: runtime/models/m2m100-int8
           key: offline-m2m100-int8-18e406c615ef2991-v1
       - run: pip install -r requirements-translation.txt
-        if: success() || failure()
+        if: (success() || failure()) && steps.ai.outputs.continue_ai != 'true'
       - name: Temporary offline machine translation fallback
         if: success() || failure()
         id: translation
-        run: python scripts/run_auto_translation.py
+        env:
+          CONTINUE_AI: ${{ steps.ai.outputs.continue_ai }}
+        run: |
+          if [ "$CONTINUE_AI" = 'true' ]; then
+            python - <<'PY'
+          from backend.autonomous_translation import write_json
+          from backend.storage import ROOT, now
+          write_json(ROOT / 'data/auto-translation-status.json', {
+              'status': 'ai_priority', 'finished_at': now(), 'translated': [], 'failed': [],
+              'reason': 'Useful contextual AI work continues; temporary offline fallback deferred.'})
+          PY
+          else
+            python scripts/run_auto_translation.py
+          fi
       - name: Save accepted work and checkpoints even after a worker error
         id: save
         if: always() && steps.restore.outcome == 'success'

@@ -2032,6 +2032,64 @@
         "用户反馈离线单批1篇及AI Studio RPD222停留：已核实38742150307同批Gemini21请求13篇，离线240秒129单元1篇、3数字/1截断失败；38750152832实际正在API步骤。继续修复数字字面量连接与缩短半小时备用空档，实际发布待验收；不改500日上限或开启付费。",
         "4ad4043已推送：160 Python及项目检查通过，远端CI38751325540 success（含27 JS/严格审计/静态构建）。半小时UTC05/35备用已入main，既有API38750152832继续执行，未中断；数字片段分隔/M单位保护有4项无模型回归。Pages与本轮API仍待实际结束，未将代码配置当新增翻译产量。"
       ]
+    },
+    {
+      "id": "T064",
+      "title": "资讯排序替换翻译优先级筛选",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T058"
+      ],
+      "scope": [
+        "frontend/app.js",
+        "frontend/theme.css",
+        "docs/"
+      ],
+      "acceptance": [
+        "筛选里去掉“翻译优先级”选项",
+        "资讯数量旁提供排序：推荐（默认，原重要性与时效顺序）／最新／最早／重要；无读者数据，不提供冒称的“热门”",
+        "切换排序回到第1页，搜索与筛选保持当前排序，缺发布日期的排在最后"
+      ],
+      "evidence": [
+        "27JS＋全部Python通过；Chromium：选项推荐/最新/最早/重要，筛选中无priority-filter；最新首条2026.10.15、最早首条2001.11.02；第3页切换后回到第1页；搜索保持排序；320–430九视图无溢出、无脚本错误。",
+        "用户确认“上线”，经PR #17合并发布。"
+      ]
+    },
+    {
+      "id": "T065",
+      "title": "前端排查修复：检索卡顿、时区显示、日历格、标签页标题、分享卡片",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T064"
+      ],
+      "scope": [
+        "frontend/app.js",
+        "frontend/index.html",
+        "frontend/og-image.png",
+        "frontend/apple-touch-icon.png",
+        "scripts/share-card.html",
+        "scripts/build_static.py（复制两张图）",
+        "backend/app.py（仅白名单两张图）",
+        "docs/"
+      ],
+      "acceptance": [
+        "检索每键渲染不再逐条重算筛选",
+        "日期/更新时间按读者时区显示，选稿仍用公共默认",
+        "日历格只标当天放映/开展/闭展/截止",
+        "标签页标题随页面与文章变化",
+        "分享卡片og:image与iPhone主屏图标"
+      ],
+      "evidence": [
+        "检索一次渲染约450ms→25–30ms（输入8字约5秒→0.5秒）；Asia/Shanghai下页脚更新时间15:02（原显示UTC 07:02）；日历10/15点开仍列55项；标题“资讯 · 幕间休息”、文章标题随中文/原文切换；og-image/apple-touch-icon本地200；27JS＋全部Python通过；全页面1440/390无脚本错误、无溢出、无坏图。",
+        "后续：data.js首屏体积（3.6MB gzip）需与Codex协作拆分正文。",
+        "用户确认“上线”，经PR #17合并发布。"
+      ]
     }
   ]
 }

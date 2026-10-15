@@ -79,7 +79,7 @@ def build():
     (ROOT / "frontend/data.js").write_text(text, encoding="utf-8")
     output = ROOT / "dist"
     output.mkdir(exist_ok=True)
-    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "data.js", "core.js", "ui.js", "app.js"):
+    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "data.js", "core.js", "ui.js", "app.js"):
         shutil.copy2(ROOT / "frontend" / name, output / name)
     if (output / 'fonts').exists():
         shutil.rmtree(output / 'fonts')

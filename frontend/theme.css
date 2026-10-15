@@ -96,7 +96,9 @@ body[data-page=today] .page-heading{position:absolute;width:1px;height:1px;overf
 .filter-selects select{font-size:12px;padding:4px 6px;background:transparent}
 .filter-selects [aria-pressed=true]{font-weight:700}
 .toggle-label{display:inline-flex;align-items:center;gap:6px;font-size:12px;cursor:pointer}
-.filter-summary{font-family:var(--sans);font-size:12px;color:var(--muted);margin:-12px 0 4px}
+.filter-summary{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-family:var(--sans);font-size:12px;color:var(--muted);margin:-12px 0 4px}
+.sort-control{display:inline-flex;align-items:baseline;gap:6px;color:var(--muted)}
+.sort-control select{border:0;border-bottom:1px solid var(--ink);background:transparent;padding:1px 2px;font-family:var(--sans);font-size:12.5px;color:var(--ink);cursor:pointer}
 
 /* Common story parts */
 .meta{display:flex;flex-wrap:wrap;gap:0 10px;font-family:var(--sans);font-size:12px;line-height:1.5;color:var(--muted);margin-bottom:5px}

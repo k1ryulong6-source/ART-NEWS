@@ -18,10 +18,9 @@
   },
   "quality_mode": "direct-ai",
   "review_policy": "用户最新要求：不进行第二轮模型校对，只做程序结构/数字/来源一致性检查，新稿明确标AI翻译。",
-  "session_worker_model": null,
-  "session_model_fallback": "API配额/错误退避并保存断点，等待后台下轮；不改用会话模型，不自动付费。",
-  "session_model_policy": "2026-10-15用户最新明确：仅运行已配置GitHub后台免费API，不启动ChatGPT会话模型或翻译工作者；覆盖此前默认5.6的旧指令。历史译稿真实模型不变。",
+  "session_worker_model": "gpt-5.6-sol",
+  "session_model_fallback": "会话5.6不可用则保留待译；GitHub后台以已配置的免费或经用户授权的低价AI API为主，不自动升级或开收费。",
+  "session_model_policy": "选择能完成忠实全文翻译、费用有可靠依据且性价比最合适的可用会话模型。当前按用户费用反馈默认gpt-5.6-sol，不把Luna默认当便宜模型。",
   "autonomous_baseline": "免费离线M2M100仅临时兜底，AI API按完整文章语境直译为主，无第二轮校对；现有AI稿不覆盖。",
-  "autonomous_ai": "已实际接通Gemini 3.5 Flash-Lite免费项目；按config/ai-translation.json上限独立运行，不依赖ChatGPT额度。",
-  "session_workers_enabled": false
+  "autonomous_ai": "Gemini 2.5 Flash-Lite免费项目优先，GitHub Secrets一次性设置；配额/错误自动退避，按重要性和旧稿份额接续。未配置密钥不冒称AI API已实际运行。"
 }

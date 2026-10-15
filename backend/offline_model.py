@@ -98,7 +98,7 @@ class OfflineTranslator:
         # MT sometimes drops numeric artwork/film titles in parentheses.
         # Translate surrounding prose while retaining literal numeric phrases
         # and URLs, rather than publishing a missing date, price or work code.
-        literal = re.compile(r'\([^()\n]{0,160}\d[^()\n]{0,160}\)|https?://[^\s]+|[$€£¥]?\d+(?:[,:./]\d+)*(?:\s*(?:million\b|billion\b|thousand\b|万|亿))?', re.I)
+        literal = re.compile(r'\([^()\n]{0,160}\d[^()\n]{0,160}\)|https?://[^\s]+|[$€£¥]?\d+(?:[,:./]\d+)*(?:\s*(?:million\b|billion\b|thousand\b|M\b|万|亿))?', re.I)
         output, offset = [], 0
         for match in literal.finditer(text):
             prose = text[offset:match.start()]
@@ -109,4 +109,6 @@ class OfflineTranslator:
         prose = text[offset:]
         if prose.strip():
             output.append(self.translate_plain(prose, language))
-        return ''.join(output) if output else result
+        # Adjacent literals such as the artwork title "66 76 26" must not
+        # become "667626" after stripping/translation of the spaces between.
+        return ' '.join(output) if output else result

@@ -4,7 +4,7 @@ on:
     workflows: ['Clean saved article bodies']
     types: [completed]
   schedule:
-    - cron: '45 * * * *'
+    - cron: '5,35 * * * *'
   workflow_dispatch:
   push:
     branches: [main]

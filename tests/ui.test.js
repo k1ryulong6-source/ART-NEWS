@@ -41,3 +41,10 @@ test('pending stories preview the saved original safely without claiming transla
   const translated={...pending,editorial_status:'translated',editorial_title_zh:'中文标题',editorial_blocks_json:JSON.stringify([{type:'paragraph',text:'中文全文'}])};
   assert.match(ui.feature(translated),/中文全文/);assert.ok(!ui.feature(translated).includes('Original &lt;body&gt;'));
 });
+
+test('一种关注 links each report through the stable reader route and escapes source copy',()=>{
+  const unit={id:'a-kind-of-attention',name:'一种关注',description:'<b>地区</b>',members:[{source_id:'s1',name:'<i>Media</i>',focus_label:'拉美',why:'理由',source_language:'es',homepage_url:'https://example.org/',recent_items:[{id:'live-1',title:'<script>标题</script>',title_original:'Título',published_at:'2026-10-13T00:00:00Z',original_language:'es',reader_path:'#reader/live-1'}]}]};
+  const band=ui.attentionBand(unit,()=>null), page=ui.attentionPage(unit,()=>null,()=> '10/15');
+  for(const html of [band,page]){assert.ok(html.includes('href="#reader/live-1"'));assert.ok(!html.includes('<script>'));assert.ok(!html.includes('<i>Media'));assert.ok(html.includes('一种关注'));}
+  assert.equal(ui.attentionBand({members:[]},()=>null),'');
+});

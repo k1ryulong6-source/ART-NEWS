@@ -76,7 +76,7 @@
   }
   function findBookmark(type, id) { return bookmarks.find(b => b[type === 'content' ? 'content_id' : 'event_id'] === id); }
   function nav() {
-    const labels = { today: '头版', explore: '资讯', calendar: '日历', bookmarks: '剪报' };
+    const labels = { today: '头版', explore: '资讯', calendar: '日历', bookmarks: '剪报', ...(attentionUnit() ? { attention: '一种关注' } : {}) };
     $('navigation').innerHTML = Object.entries(labels).map(([key, label]) => `<button class="nav-button ${state.view === key ? 'active' : ''}" data-view="${key}" ${state.view === key ? 'aria-current="page"' : ''}>${label}${key === 'bookmarks' && bookmarks.length ? `<span class="nav-count">${bookmarks.length}</span>` : ''}</button>`).join('');
     const [y, m, d] = readingDate().split('-').map(Number);
     $('edition-date').innerHTML = `<b class="edition-day">${d}</b><span>${y}年${m}月</span><span>星期${'日一二三四五六'[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]}</span>`;
@@ -134,7 +134,15 @@
     const context = { ...dataset, reference_date: readingDate() };
     const rows = C.frontpageRows(available, preferences, context);
     if (!rows.length) return heading('头版') + empty('暂无新闻', '');
-    return heading('头版') + notice() + ui.frontpage(rows, listings(scope));
+    return heading('头版') + notice() + ui.frontpage(rows, listings(scope), state.mode === 'demo' ? '' : ui.attentionBand(attentionUnit(), contentById));
+  }
+  const attentionUnit = () => boot.coverage?.attention_units?.units?.find(unit => unit.id === 'a-kind-of-attention' && unit.enabled !== false) || null;
+  const contentById = id => dataset.content.find(row => row.id === id) || boot.live?.content?.find(row => row.id === id) || null;
+  function attentionPage() {
+    const unit = attentionUnit();
+    if (!unit) return empty('一种关注暂未开放', '');
+    const stamp = value => value ? new Intl.DateTimeFormat('zh-CN', { timeZone: preferences.reading_timezone, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(value)) : '未记录';
+    return ui.attentionPage(unit, contentById, stamp);
   }
   function explore() {
     const rows = dataset.content.filter(row => C.matches(row, filters())).sort(C.priorityCompare);
@@ -230,7 +238,7 @@
     const advanced = $('advanced-filters');
     if (advanced) state.advancedOpen = advanced.open;
     document.body.dataset.page = state.view;
-    nav(); $('edition-note').textContent = state.mode === 'demo' ? '所有示例均为虚构。' : '原文与 AI 译文分开标注；配图注明来源。'; $('main').innerHTML = ({ today, explore, calendar, bookmarks: bookmarkPage, settings, coverage: coveragePage, reader: readerPage }[state.view] || today)();
+    nav(); $('edition-note').textContent = state.mode === 'demo' ? '所有示例均为虚构。' : '原文与 AI 译文分开标注；配图注明来源。'; $('main').innerHTML = ({ today, explore, calendar, bookmarks: bookmarkPage, settings, coverage: coveragePage, attention: attentionPage, reader: readerPage }[state.view] || today)();
     const hash = state.view === 'reader' ? C.readerRoute(state.readerId) : '#' + state.view;
     if (location.hash !== hash) history.replaceState(null, '', hash);
   }

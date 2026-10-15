@@ -50,16 +50,38 @@
     }
     // Front page: the lead across the page, then one desk per channel (the desk names the
     // channel, so stories carry no channel tag), then listings and industry notes.
-    function frontpage(rows, listings = '') {
+    function frontpage(rows, listings = '', band = '') {
       if (!rows.length) return '';
       const [lead, ...rest] = rows;
       const buzz = rest.filter(row => row.kind === 'industry_buzz'), news = rest.filter(row => row.kind !== 'industry_buzz');
       const desks = [['film', '電影'], ['art', '藝術'], ['photography', '攝影']].map(([key, name], index) => [name, news.filter(row => row.channel === key || (index === 1 && !['film', 'art', 'photography'].includes(row.channel)))]);
       const desk = ([name, items]) => `<section class="desk"><h2 class="desk-name">${name}</h2>${items.map((row, i) => card(row, false, { channel: false, art: i === 0 ? undefined : false, compact: i > 0 })).join('') || '<p class="compact-note">今日暂无。</p>'}</section>`;
       const notes = buzz.length ? `<aside class="industry-notes"><h2 class="desk-name">圈內</h2>${buzz.map(row => card(row, false, { channel: false, art: false, compact: true })).join('')}</aside>` : '';
-      return `<div class="broadsheet" data-ui="frontpage"><section class="lead-column">${feature(lead)}</section><div class="desks">${desks.map(desk).join('')}</div></div>${listings || notes ? `<div class="frontpage-foot${notes ? '' : ' single'}">${listings}${notes}</div>` : ''}`;
+      return `<div class="broadsheet" data-ui="frontpage"><section class="lead-column">${feature(lead)}</section><div class="desks">${desks.map(desk).join('')}</div></div>${band}${listings || notes ? `<div class="frontpage-foot${notes ? '' : ' single'}">${listings}${notes}</div>` : ''}`;
     }
-    return { heading, meta, card, brief, feature, pagination, frontpage };
+    // 一种关注 — an edited unit of regional media. `lookup(id)` returns the stored report, if any,
+    // so titles follow the same Chinese/original rules as everywhere else.
+    const shortDate = value => value ? `${Number(value.slice(5, 7))}.${value.slice(8, 10)}` : '';
+    function attentionStory(item, lookup) {
+      const row = lookup(item.id), title = row ? C.displayTitle(row) : item.title || item.title_original;
+      const lang = row ? titleLang(row) : title === item.title_original && item.original_language !== 'zh' ? e(item.original_language || zh) : zh;
+      return `<time datetime="${e(item.published_at || '')}">${e(shortDate(item.published_at))}</time><a class="card-title" href="${e(C.readerRoute(item.id))}" lang="${lang}">${e(title)}</a>`;
+    }
+    function attentionBand(unit, lookup) {
+      const members = (unit?.members || []).filter(member => member.source_enabled !== false && member.recent_items?.length);
+      if (!members.length) return '';
+      return `<section class="attention-band" data-ui="attention"><div class="attention-head"><h2 class="desk-name attention-title"><a href="#attention">${e(unit.name)}</a></h2><p>${e(unit.description || '')}</p><a class="text-link" href="#attention">全部 ›</a></div><ol class="attention-members">${members.map(member => `<li><span class="attention-region">${e(member.focus_label)}</span><span class="attention-source" lang="${e(member.source_language || zh)}">${e(member.name)}</span><p class="attention-story">${attentionStory(member.recent_items[0], lookup)}</p></li>`).join('')}</ol></section>`;
+    }
+    function attentionPage(unit, lookup, stamp) {
+      if (!unit) return '';
+      const member = item => {
+        const failed = item.collection_status && item.collection_status !== 'success';
+        const tags = [...(item.specialties || []), C.languageLabels[item.source_language]].filter(Boolean);
+        return `<article class="attention-member" id="attention-${e(item.source_id)}"><div class="attention-profile"><p class="attention-region">${e(item.focus_label)}</p><h2 class="attention-name" lang="${e(item.source_language || zh)}">${e(item.name)}</h2><p class="attention-why">${e(item.why)}</p><p class="attention-tags">${tags.map(e).join(' · ')}</p><p class="attention-state">${item.latest_publication_at ? `最近发布 ${e(shortDate(item.latest_publication_at))}` : '暂无发布日期'}${failed ? ' · <b>上次读取失败，以下为此前保存的报道</b>' : ''}${C.safeUrl(item.homepage_url) ? ` · <a class="text-link" href="${e(C.safeUrl(item.homepage_url))}" target="_blank" rel="noopener noreferrer">官网 ↗</a>` : ''}</p></div><div class="attention-reading"><ol class="attention-stories">${(item.recent_items || []).map(story => `<li>${attentionStory(story, lookup)}</li>`).join('') || '<li class="compact-note">暂无报道。</li>'}</ol><details class="attention-detail"><summary>来源状态</summary><p>最近成功读取 ${e(stamp(item.last_successful_fetch_at))} · 收录 ${item.article_count ?? 0} 篇 · 已存正文 ${item.with_body_count ?? 0} 篇 · AI全文 ${item.ai_translated_count ?? 0} 篇${item.list_audit_status === 'checked' ? ' · 列表已核对' : ''}</p></details></div></article>`;
+      };
+      return `<article class="attention-page" data-ui="attention-page"><header class="attention-masthead"><h1 class="attention-title">${e(unit.name)}</h1><p>${e(unit.description || '')}</p><details class="attention-detail"><summary>选择说明</summary><p>${e(unit.selection_basis || '')}</p>${unit.scope_note ? `<p>${e(unit.scope_note)}</p>` : ''}<p>${unit.enabled_source_count ?? unit.source_count ?? 0} 家媒体 · 收录 ${unit.article_count ?? 0} 篇 · 已存正文 ${unit.with_body_count ?? 0} 篇 · AI全文 ${unit.ai_translated_count ?? 0} 篇</p></details></header>${(unit.members || []).map(member).join('')}</article>`;
+    }
+    return { heading, meta, card, brief, feature, pagination, frontpage, attentionBand, attentionPage };
   }
   const api = { version: 1, create };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

@@ -236,7 +236,7 @@ def create_app(db_path=None):
     # A bounded asset allowlist keeps the small local edition independent of
     # background file-worker threads and never exposes project/runtime files.
     assets = {"index.html", "styles.css", "theme.css", "favicon.svg", "data.js", "core.js", "ui.js", "app.js"}
-    assets.update({'fonts/intermission-masthead-v1.woff2', 'fonts/intermission-sans-v1.woff2', 'fonts/intermission-title-v1.woff2', 'fonts/notoseriftc-OFL.txt',
+    assets.update({'fonts/intermission-masthead-v1.woff2', 'fonts/intermission-sans-v1.woff2', 'fonts/intermission-title-v1.woff2', 'fonts/notoseriftc-OFL.txt', 'fonts/intermission-title-sc-v1.woff2', 'fonts/notoserifsc-OFL.txt',
                    'fonts/intermission-news-v1.woff2', 'fonts/mashanzheng-OFL.txt',
                    'fonts/notosanssc-OFL.txt', 'fonts/newsreader-OFL.txt'})
 

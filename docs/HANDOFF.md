@@ -358,3 +358,11 @@ T039公开完成：ART-NEWS b994269，CI38554022279（85Python+26JS）和Pages38
 ## T053 · 片头去掉光泽扫过（Claude · 2026-10-15）
 
 用户不要片头结尾斜扫的白色光带，已删除`.cover-front::after`与`cover-sheen`；灯闪、颗粒、四字闪入、日点亮、红晕、翻页红光与报头走片不变。
+
+## T058 · 「一种关注」前端（Claude）· 2026-10-15
+
+读取`boot.coverage.attention_units`中id=a-kind-of-attention的启用单元（Codex T057接口）。
+- 导航第5项「一种关注」，路由`#attention`（core.parseRoute已加入）。窄屏导航可横向滑动。
+- 头版：在電影/藝術/攝影三栏之后、放映與展期之前插入专栏条（`ui.attentionBand`）：标题、单元描述、每家媒体的关注地区（红）、媒体名（衬线）与最新一篇（日期＋标题）。示例模式不显示。`CultureCore.frontpageRows`选稿未改。
+- 单元页（`ui.attentionPage`）：大号细明体标题＋描述，“选择说明”折叠（selection_basis/scope_note/单元数量）；每家媒体一行：左为地区、名称、推荐理由、专长·语种、最近发布（读取失败时红字说明）与官网；右为最近5篇（标题按站内中文/原文规则，经readerRoute进入阅读）；“来源状态”折叠显示最近成功读取、收录/正文/AI全文数与列表核对。
+- 名称用简体“一种关注”：Noto Serif TC缺“关”，另建4字Noto Serif SC子集`intermission-title-sc-v1.woff2`（2.5KB，OFL随附，`scripts/build_title_font.py --source-sc`），本地API白名单加两项文件名。

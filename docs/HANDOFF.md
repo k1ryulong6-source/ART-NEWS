@@ -438,3 +438,5 @@ T063已实际验收并done：173 Python+27 JS、CI38756879911/38758137779/387583
 主头条和电影/艺术/摄影栏首篇要求headline_ready：已保存公开原文hash匹配且AI全文通过段落/数字程序检查；标题单译/机翻/缺正文不通过。原生中文有正文直接可用。backend/frontpage.py与frontend/core.js选稿镜像同步，只门槛和选稿、不改theme/ui版式；普通短讯/全量资料仍可原文/机翻。headline_slots默认正式头条，candidates=True是独立候选池，用于rank_snapshot的headline_order优先排队，避免循环；正式展示另记frontpage_headline_order/slot。queue新增frontpage_display_ids与headline_policy，旧frontpage_priority_ids/waiting_ids保留为候选语义。
 
 API头条候选失败30分钟接续，首次由普通冷却提升时提前一次并保留合格单元，不绕过项目429/503退避、不改原500/项目日上限或二次校译。browser_snapshot和/api/dataset提供headline_ready，CultureCore.headlineReady为Claude接口。178 Python（含Python/JS同时间真实档案匹配、先候选后上版、三栏首篇/下方普通稿、数字/段落/hash拒绝与原生中文、30分钟及旧断点迁移）+28 JS、静态构建/项目检查通过。发布/线上实际验收待补；T028/T062仍doing。
+
+T066已验收并done：提交0526b85，CI38767577931与Pages38767577934均success。系统Chromium1440/390实际DOM主头条/电影/艺术/摄影4位均translated/headline_ready=true，和同刻Python选稿ID逐项一致。原未译主候选live-3dc48ee1ae3c5f83b233af8c仍headline_order=0，没有因上版门槛退出优先队列。178 Python+28 JS/静态构建已通过；未新增翻译/审校会话，T028/T062待全量验收。后台正在运行既有批次，后续批次采用候选优先和30分钟检查重试，Google全局退避/各项目500保护不变。

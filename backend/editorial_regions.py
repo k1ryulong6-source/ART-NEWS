@@ -127,9 +127,25 @@ def body_batch(fresh, rechecks, catalog, limit, rules=None):
         if row['id'] not in seen and (rank.get('importance') == 'high' or rank.get('priority') == 'P0'):
             selected.append(row)
             seen.add(row['id'])
+    # Named source units use a protected slice inside the existing discovery budget.
+    from .attention_units import reserved_units
+    units = reserved_units(catalog)
+    if sum(u['share'] for u in units) > rules['collection']['discovery_share']:
+        raise ValueError('attention_units_exceed_discovery_budget')
+    unit_ids = set().union(*(u['source_ids'] for u in units)) if units else set()
+    for unit in units:
+        done = sum(r['source_id'] in unit['source_ids'] for r in selected)
+        slots = min(budget - len(selected), max(0, math.ceil(budget * unit['share']) - done))
+        candidates = [r for r in fresh if r['id'] not in seen and r['source_id'] in unit['source_ids']]
+        picks = _regional_pick(candidates, slots, catalog, rules, 'discovery')
+        selected.extend(picks)
+        seen.update(r['id'] for r in picks)
     discovery = [r for r in fresh if r['id'] not in seen and catalog.get(r['source_id'], {}).get('editorial_focus', {}).get('role') == 'discovery']
-    count = min(budget - len(selected), math.ceil(budget * rules['collection']['discovery_share']))
-    rotated = _regional_pick(discovery, count, catalog, rules, 'discovery')
+    discovery_done = sum(r['source_id'] in unit_ids or catalog.get(r['source_id'], {}).get('editorial_focus', {}).get('role') == 'discovery' for r in selected)
+    count = min(budget - len(selected), max(0, math.ceil(budget * rules['collection']['discovery_share']) - discovery_done))
+    rotated = _regional_pick([r for r in discovery if r['source_id'] not in unit_ids], count, catalog, rules, 'discovery')
+    if len(rotated) < count:
+        rotated.extend(_regional_pick([r for r in discovery if r['source_id'] in unit_ids], count - len(rotated), catalog, rules, 'discovery'))
     selected.extend(rotated)
     seen.update(r['id'] for r in rotated)
     # International media have their own lane, independent of the host country's tier.

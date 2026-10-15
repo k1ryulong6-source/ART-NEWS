@@ -115,6 +115,24 @@ def create_app(db_path=None):
         audit = json.loads(path.read_text()) if path.exists() else None
         return regional_coverage(store.dataset('live'), config, audit)
 
+    @app.get('/api/attention-units')
+    @app.get('/reports/attention-units.json')
+    async def attention_units():
+        from .attention_units import attention_report
+        config = json.loads((ROOT / 'config/sources.json').read_text())
+        path = ROOT / 'data/coverage-audit.json'
+        audit = json.loads(path.read_text()) if path.exists() else None
+        return attention_report(store.dataset('live'), config, audit)
+
+    @app.get('/api/attention-units/{unit_id}')
+    @app.get('/reports/attention-units/{unit_id}.json')
+    async def attention_unit(unit_id: str):
+        report = await attention_units()
+        unit = next((u for u in report['units'] if u['id'] == unit_id), None)
+        if not unit:
+            raise HTTPException(404, '关注单元不存在')
+        return unit
+
     @app.get("/api/integrations/babel/{content_id}")
     @app.get("/integrations/babel/{content_id}.json")
     async def babel_article(content_id: str):

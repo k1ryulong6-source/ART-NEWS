@@ -2,6 +2,7 @@
 """Check the handoff bundle, config, demo records and executable SQL contract."""
 
 import json
+import re
 import sqlite3
 import sys
 from datetime import date, datetime
@@ -67,6 +68,16 @@ def check_config():
     require(0 <= regional['collection']['discovery_share'] <= 1, 'Invalid discovery share')
     require(0 <= regional['media_weights']['global_lane_share'] <= 1, 'Invalid global gateway share')
     require(len({source["id"] for source in sources}) == len(sources), "Duplicate source IDs")
+    units = read_json('config/attention-units.json')['units']
+    require(len({u['id'] for u in units}) == len(units), 'Duplicate attention unit IDs')
+    require(sum(u['body_share_of_new_slots'] for u in units if u.get('enabled')) <= regional['collection']['discovery_share'], 'Attention units exceed the discovery budget')
+    for unit in units:
+        require(bool(re.fullmatch(r'[a-z][a-z0-9-]{1,63}', unit['id'])), 'Invalid attention unit ID')
+        require(bool(unit.get('name')), 'Attention unit lacks name')
+        require(0 <= unit['body_share_of_new_slots'] <= 1, 'Invalid attention unit share')
+        members = unit['members']
+        require(len({m['source_id'] for m in members}) == len(members), 'Duplicate attention unit sources')
+        require(all(m['source_id'] in {s['id'] for s in sources} and m.get('why') and m.get('focus_label') for m in members), 'Attention unit source or selection reason missing')
     for source in sources:
         require(source["access_status"] in ("unverified", "reviewed"), "Invalid source status")
         if source["enabled"]:

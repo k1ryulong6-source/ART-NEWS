@@ -44,6 +44,16 @@ def build():
     if bundle.get('coverage', {}).get('editorial_regions'):
         (output / 'reports').mkdir(exist_ok=True)
         (output / 'reports/regional-coverage.json').write_text(json.dumps(bundle['coverage']['editorial_regions'], ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    if bundle.get('coverage', {}).get('attention_units'):
+        report = bundle['coverage']['attention_units']
+        (output / 'reports/attention-units').mkdir(parents=True, exist_ok=True)
+        (output / 'reports/attention-units.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        for unit in report['units']:
+            (output / 'reports/attention-units' / (unit['id'] + '.json')).write_text(json.dumps(unit, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        expected = {u['id'] + '.json' for u in report['units']}
+        for path in (output / 'reports/attention-units').glob('*.json'):
+            if path.name not in expected:
+                path.unlink()
     bundle['integrations'] = integrations()
     site_url = bundle['integrations'].get('site_url')
     domain = bundle['integrations'].get('custom_domain')

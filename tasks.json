@@ -1787,6 +1787,43 @@
         "生产39源报告/14个一级国家-领域专门来源缺口验证通过；1440/390px新库存头条ID与后台一致，无溢出/脚本错误；新ARTnews JAPAN正文阅读及巴别塔入口实测通过",
         "监测38667920369与后续实际报告issues=[]；采集完成自动触发AI38668063512，实际407de60检查点已产生，继续运行，500请求/太平洋日免费上限及不付费保持"
       ]
+    },
+    {
+      "id": "T057",
+      "title": "设立「一种关注」地区宝藏媒体关注单元",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T056"
+      ],
+      "scope": [
+        "config/attention-units.json",
+        "backend/attention_units.py",
+        "backend/editorial_regions.py",
+        "backend/coverage.py",
+        "backend/app.py",
+        "scripts/build_static.py",
+        "scripts/check_project.py",
+        "tests/",
+        "docs/",
+        "AGENTS.md",
+        ".github/workflows/"
+      ],
+      "acceptance": [
+        "正式名称固定为一种关注，首批为人工精选的地区艺术/摄影媒体，记录推荐理由与关注范围而非国家艺术价值排行",
+        "复用已验证RSS与稳定来源ID，真实呈现更新/库存/正文/翻译状态，不因被关注而假称已全文完成",
+        "在现有发现预算内保留独立正文采集份额，头条/重大新闻先行、候选不足名额回流，不增加500免费请求上限",
+        "提供公开JSON与本地只读API、Claude展示契约及可维护来源配置，保存品牌/前端设计/来源独立权重",
+        "验证、推送和公开发布成功，记录接力证据"
+      ],
+      "evidence": [
+        "113项Python+26项JavaScript通过；项目检查、纯stdlib构建及diff检查通过",
+        "6项关注单元行为/API测试：独立名额在发现预算内、头条/重大消息优先、空缺回流、暂停成员不占份额、故障/缓存/时间区分、正式名称/API一致及不存在404/非法路径拒绝",
+        "以真实库存干选60正文名额有16个单元来源，未发模型或网络请求；构建的单元含5现有媒体、68资料、37正文，来源最近采集均真实success",
+        "配置及展示契约已记录，不修改Claude前端设计，发布验收待补"
+      ]
     }
   ]
 }

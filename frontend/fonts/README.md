@@ -30,3 +30,5 @@ mashanzheng-OFL.txt、notosanssc-OFL.txt、newsreader-OFL.txt、notoseriftc-OFL.
 用户否定宋体后，当前正文与新闻标题已改黑体；旧宋体字库已移除。报头不再用书法字：现为`scripts/build_wordmark.py`从本目录Noto Sans SC（900字重）轮廓绘制的内联SVG字标，favicon取同一“间”字，适用Noto Sans SC的OFL。Ma Shan Zheng文件暂留（本地API白名单与测试仍列出），页面不再加载。
 
 用户要求标题用“王家卫那种比较瘦的繁体”后（T043），字标改由`scripts/build_wordmark.py`从`intermission-title-v1.woff2`（`scripts/build_title_font.py --source NotoSerifTC[wght].ttf`生成）绘制；此前的黑体字标停用。favicon为红底细明体“間”。
+
+「一種關注」（T058）：标题细明体子集加入一種關注；导航黑体另用2字Noto Sans TC子集 intermission-sans-tc-v1.woff2（種、關），许可 notosanstc-OFL.txt。

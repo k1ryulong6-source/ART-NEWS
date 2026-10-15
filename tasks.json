@@ -1829,6 +1829,41 @@
         "公开索引与单元JSON一致，名称精确为一种关注；5来源真实success、68篇资料/37正文/3有效AI全文，推荐理由/RSS/更新时间/预算字段核对通过",
         "生产1440/390px回归头条排序、原文切换、巴别塔入口，无脚本错误/横向溢出；新单元为后端数据与保护名额，Claude展示接口已交接"
       ]
+    },
+    {
+      "id": "T058",
+      "title": "「一种关注」前端：头版专栏条与单元页",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T057"
+      ],
+      "scope": [
+        "frontend/ui.js",
+        "frontend/app.js",
+        "frontend/core.js（路由attention）",
+        "frontend/theme.css",
+        "frontend/fonts/intermission-sans-tc-v1.woff2",
+        "scripts/build_title_font.py",
+        "backend/app.py（仅字体白名单）",
+        "tests/ui.test.js",
+        "docs/"
+      ],
+      "acceptance": [
+        "按用户要求作为「资讯」页频道行的“一種關注”标签（#attention，导航高亮资讯），正体字显示，数据正式名称一种关注不变",
+        "头版在三栏之后加专栏条：每家媒体的关注地区、名称与最新一篇",
+        "单元页：每家媒体左侧地区/名称/推荐理由/专长与语种/最近发布与故障，右侧最近5篇；来源状态与选择说明折叠；收录/正文/AI数量真实展示",
+        "阅读路径由稳定ID经CultureCore.readerRoute生成；frontpageRows选稿不变"
+      ],
+      "evidence": [
+        "27JS（新增一种关注转义与路由测试）＋全部Python（含头版前后端一致）通过；check_project无失败。",
+        "1440/390截图；320–430九视图（含#attention）无溢出；#attention深链接不弹扉页、导航高亮、报道进入阅读并返回、头版“全部›”到单元页；扉页专项通过（新增Intermission Title SC字体loaded）。",
+        "改正体：导航“一種關注”实测由Intermission Sans＋Intermission Sans TC各2字形渲染，标题4字均为Intermission Title；27JS＋全部Python通过；1440/390截图。",
+        "移入资讯：导航为头版/资讯/日历/剪报；点“一種關注”标签→#attention、导航高亮资讯、5家媒体；再点电影→#explore电影列表；头版“全部›”→#attention；320–430九视图无溢出。",
+        "用户要求去掉标题下说明文字后上线：单元页与头版专栏条不再显示description/选择说明；每家媒体的推荐理由与来源状态（收录/正文/AI数量、最近读取）保留。27JS＋全部Python通过，320–430九视图无溢出。"
+      ]
     }
   ]
 }

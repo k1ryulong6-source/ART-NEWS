@@ -506,9 +506,8 @@ footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
 .tab-attention{font-family:'Intermission Title',var(--serif);letter-spacing:.12em}
 .tab-attention.active{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:6px}
 .attention-band{margin-top:30px;padding-top:16px;border-top:3px solid var(--ink)}
-.attention-head{display:flex;align-items:baseline;gap:22px;padding-bottom:12px;border-bottom:var(--rule-ink)}
+.attention-head{display:flex;align-items:baseline;justify-content:space-between;gap:22px;padding-bottom:12px;border-bottom:var(--rule-ink)}
 .attention-head .desk-name{border:0;padding:0;flex:none}
-.attention-head p{flex:1;margin:0;font-size:13.5px;color:var(--muted)}
 .attention-members{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
 .attention-members li{min-width:0;padding:14px 18px 4px;border-left:var(--rule)}
 .attention-members li:first-child{padding-left:0;border-left:0}
@@ -520,9 +519,8 @@ footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
 .attention-story .card-title{font-size:15px;font-weight:700;line-height:1.42;overflow-wrap:anywhere}
 .attention-story .card-title:not([lang^=zh]){font-size:16px;line-height:1.3}
 .attention-page{padding-top:6px}
-.attention-masthead{padding-bottom:20px;border-bottom:3px solid var(--ink)}
-.attention-masthead h2{font-size:44px;font-weight:300;letter-spacing:.32em;line-height:1.1;margin:0 0 12px}
-.attention-masthead>p{max-width:34em;font-size:17px;line-height:1.8;margin:0}
+.attention-masthead{padding-bottom:16px;border-bottom:3px solid var(--ink)}
+.attention-masthead h2{font-size:44px;font-weight:300;letter-spacing:.32em;line-height:1.1;margin:0}
 .attention-detail{margin-top:10px;font-family:var(--sans);font-size:12.5px;color:var(--muted)}
 .attention-detail summary{cursor:pointer;list-style:none}
 .attention-detail summary::-webkit-details-marker{display:none}
@@ -546,13 +544,11 @@ footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
   .nav-button{flex:none}
   .topbar{flex:1 0 4.5em}
   .attention-head{flex-wrap:wrap;gap:6px 14px}
-  .attention-head p{flex-basis:100%;order:3}
   .attention-head .text-link{margin-left:auto}
   .attention-members{grid-template-columns:1fr}
   .attention-members li:nth-child(n){display:grid;grid-template-columns:minmax(0,1fr);padding:12px 0;border-left:0;border-bottom:var(--rule)}
   .attention-source{font-size:19px;margin-bottom:6px}
   .attention-masthead h2{font-size:32px;letter-spacing:.24em}
-  .attention-masthead>p{font-size:16px}
   .attention-name{font-size:30px}
 }
 

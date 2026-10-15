@@ -364,5 +364,5 @@ T039公开完成：ART-NEWS b994269，CI38554022279（85Python+26JS）和Pages38
 读取`boot.coverage.attention_units`中id=a-kind-of-attention的启用单元（Codex T057接口）。
 - 按用户要求放在「资讯」里：资讯页频道行末尾的“一種關注”标签（`data-view="attention"`，细明体，选中时红色下划线），路由`#attention`（core.parseRoute已加入）；该页顶部导航高亮“资讯”，点其他频道回到资讯列表。不单独占导航项。
 - 头版：在電影/藝術/攝影三栏之后、放映與展期之前插入专栏条（`ui.attentionBand`）：标题、单元描述、每家媒体的关注地区（红）、媒体名（衬线）与最新一篇（日期＋标题）。示例模式不显示。`CultureCore.frontpageRows`选稿未改。
-- 单元页（`ui.attentionPage`）：大号细明体标题＋描述，“选择说明”折叠（selection_basis/scope_note/单元数量）；每家媒体一行：左为地区、名称、推荐理由、专长·语种、最近发布（读取失败时红字说明）与官网；右为最近5篇（标题按站内中文/原文规则，经readerRoute进入阅读）；“来源状态”折叠显示最近成功读取、收录/正文/AI全文数与列表核对。
+- 单元页（`ui.attentionPage`）：只有大号细明体标题（用户要求去掉标题下的说明文字，头版专栏条同样不显示描述；selection_basis/scope_note仍在接口与ATTENTION_UNITS.md）；每家媒体一行：左为地区、名称、推荐理由、专长·语种、最近发布（读取失败时红字说明）与官网；右为最近5篇（标题按站内中文/原文规则，经readerRoute进入阅读）；“来源状态”折叠显示最近成功读取、收录/正文/AI全文数与列表核对。
 - 用户要求栏目名显示为正体字「一種關注」（`ui.unitName`；数据与配置中的正式名称、ID不变）。标题细明体子集加入“一種關注”；导航用的黑体子集只含简体常用字，另建2字Noto Sans TC子集`intermission-sans-tc-v1.woff2`（種關，2.7KB，OFL随附，`scripts/build_title_font.py --source-sans-tc`），加入`--serif/--sans`字体栈；本地API白名单加两项文件名。

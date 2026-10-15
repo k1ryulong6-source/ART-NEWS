@@ -23,7 +23,7 @@ if target.exists():
     if '--if-due' in sys.argv and previous.get('started_at') == start.isoformat():
         try:
             checked = datetime.fromisoformat(previous['checked_at'])
-            if (datetime.now(timezone.utc) - checked).total_seconds() < 6 * 3600:
+            if previous.get('completed_runs', 0) > 0 and (datetime.now(timezone.utc) - checked).total_seconds() < 6 * 3600:
                 (ROOT / 'data/trial-runs').mkdir(exist_ok=True)
                 print('Trial artifact audit not due; no new network/model calls.')
                 raise SystemExit(0)
@@ -88,7 +88,8 @@ report = {'schema_version': 1, 'checked_at': now(), 'started_at': start.isoforma
           'requests': sum(r['ai'].get('requests', 0) for r in reports),
           'translated_article_events': translated, 'validation_failures': failures,
           'article_validation_failure_fraction': round(failures / (translated + failures), 4) if translated + failures else None,
-          'resumed_articles': sum(len(r['ai'].get('resumed') or []) for r in reports),
+          'resumed_articles': len({id for r in reports for id in (r['ai'].get('resumed') or [])}),
+          'resumed_article_events': sum(len(r['ai'].get('resumed') or []) for r in reports),
           'service_aborted_runs': sum(r['ai'].get('status') in ('service_wait', 'quota_wait', 'configuration_error', 'failed') for r in reports),
           'complete': hours >= 24 and bool(reports) and not errors,
           'limitations': ['Not a request-level failure rate or an account billing statement.',

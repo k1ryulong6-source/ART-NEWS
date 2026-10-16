@@ -1,3 +1,5 @@
+> T079草稿（2026-10-17，Claude前端）：显示时间统一按上海时间。`app.js`的`displayZone()`默认由浏览器时区改为`siteZone='Asia/Shanghai'`，读者在阅读设置选了别的时区仍覆盖；开场页日期（index.html）也取上海日期。设置页时区下拉默认选中当前实际时区并加入Asia/Shanghai。选稿日期`readingDate()`、config/preferences.json（仍为UTC）和后端不动。取代T065里“未自设时区时跟浏览器时区”的做法（用户选择“跟随读者”则关闭本PR）。
+
 > T075待合并（2026-10-16，Claude前端）：文章阅读页排版优化，只改theme.css与app.js的阅读部分。正文单栏行长改为--reader-measure（700px），--article-size改18px；中文正文取消两端对齐（含长英文名的行会被拉开字距）；日文原文改用日文字体栈；自动机翻正文在显示时把半角,.;:?!改为中文标点并去掉⁇（仅展示，存储不变）；桌面端中文/原文切换条吸顶，切换后按段落序号停在同一段；标题行显示约读时长。数据、选稿、收藏和接口均未改。
 
 > T074进行中（2026-10-16，Claude接手后台）：新增DeepSeek翻译提供方（backend/deepseek_translation.py）。设置GitHub Secret DEEPSEEK_API_KEY后自动翻译默认走DeepSeek（deepseek-flash，关闭thinking），Actions变量AI_TRANSLATION_PROVIDER=gemini切回Gemini，DEEPSEEK_MODEL改模型。独立账本data/ai-translation-ledger-deepseek.json，300请求/太平洋日；402余额不足暂停6小时。235项测试通过，尚无真实DeepSeek调用证据，见D074。

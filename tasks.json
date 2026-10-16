@@ -2498,6 +2498,32 @@
       "evidence": [
         "235 Python测试与28 JS测试通过，scripts/check_project.py通过；本地dist在1440/768/390px检查4篇（AI译文、机翻、英文原文、日文原文）切换后段落一致、无横向溢出；草稿PR待用户确认后合并"
       ]
+    },
+    {
+      "id": "T079",
+      "title": "报头日期、更新时间和开场页日期统一按上海时间",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Claude（前端）",
+      "updated_at": "2026-10-17",
+      "depends_on": [
+        "T065"
+      ],
+      "scope": [
+        "frontend/app.js",
+        "frontend/index.html",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "未在设置里改过时区的读者，报头日期、更新时间、收录页时间、日历今天和开场页日期都按Asia/Shanghai，不随浏览器时区变",
+        "读者在阅读设置里选了其他时区仍可覆盖",
+        "设置页时区下拉默认选中当前实际使用的时区",
+        "选稿用的公共日期readingDate和后端配置不动"
+      ],
+      "evidence": [
+        "本地dist在Asia/Shanghai、America/Los_Angeles、Europe/London三种浏览器时区下，开场页日期、报头日期“17日 星期六”、更新“10/17 02:51”、收录页“2026/10/17 02:52”一致；JS 23项测试和check_project通过。草稿PR待用户确认；若用户选择“跟随读者时区”则关闭"
+      ]
     }
   ]
 }

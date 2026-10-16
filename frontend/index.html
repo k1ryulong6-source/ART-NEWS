@@ -62,9 +62,11 @@
     var route = location.hash.replace(/^#/, '');
     if (seen || (route && route !== 'today' && route !== 'main')) { cover.remove(); return; }
     root.classList.add('cover-open');
-    var now = new Date(), digits = '〇一二三四五六七八九';
+    var now = new Date(), digits = '〇一二三四五六七八九', day = { year: now.getFullYear(), month: now.getMonth() + 1, date: now.getDate() };
+    // Edition dates are Shanghai dates; fall back to the device clock where Intl cannot do zones.
+    try { new Intl.DateTimeFormat('en', { timeZone: 'Asia/Shanghai', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(now).forEach(function (part) { if (part.type === 'year') day.year = +part.value; if (part.type === 'month') day.month = +part.value; if (part.type === 'day') day.date = +part.value; }); } catch (error) {}
     var number = function (n) { return n < 10 ? digits[n] : (n >= 20 ? digits[Math.floor(n / 10)] : '') + '十' + (n % 10 ? digits[n % 10] : ''); };
-    document.getElementById('cover-date').textContent = String(now.getFullYear()).replace(/\d/g, function (d) { return digits[d]; }) + '年' + number(now.getMonth() + 1) + '月' + number(now.getDate()) + '日';
+    document.getElementById('cover-date').textContent = String(day.year).replace(/\d/g, function (d) { return digits[d]; }) + '年' + number(day.month) + '月' + number(day.date) + '日';
     var leaf = cover.querySelector('.cover-leaf'), done = false;
     function turn() {
       if (done) return; done = true;

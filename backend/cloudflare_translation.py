@@ -258,7 +258,7 @@ def release_requests(path, identity):
         write_json(path, ledger)
 
 
-def run_cloudflare(store, identity, *, root=ROOT, environ=None, probe=False, retry_validation=False, transport=None, worker_options=None):
+def run_cloudflare(store, identity, *, root=ROOT, environ=None, probe=False, retry_validation=False, sample_id=None, transport=None, worker_options=None):
     import os
     from .ai_translation import run_ai, selected_rows
     from .storage import now
@@ -294,8 +294,11 @@ def run_cloudflare(store, identity, *, root=ROOT, environ=None, probe=False, ret
             # The probe proves a whole copy within two calls. Production keeps
             # normal headline/importance/backlog order and never drops long rows.
             ordered = selected_rows(pending, snapshot, len(pending)) if pending else []
+            if sample_id and not re.fullmatch(r'live-[a-f0-9]{24}', sample_id):
+                raise ValueError('invalid_cloudflare_probe_sample_id')
             chosen = next((r for r in ordered if len(r.get('article_text') or '') <= 1800
-                           and len(json.loads(r['article_blocks_json'])) <= 50), None)
+                           and len(json.loads(r['article_blocks_json'])) <= 50
+                           and (not sample_id or r['id'] == sample_id)), None)
             eligible = {chosen['id']} if chosen else set()
             status['probe_selected_id'] = chosen['id'] if chosen else None
             if chosen and retry_validation:

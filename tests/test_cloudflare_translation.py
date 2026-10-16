@@ -170,3 +170,26 @@ class CloudflareTests(unittest.TestCase):
         state=json.loads(checkpoint.read_text());state['source_hash']='outdated';write_json(checkpoint,state)
         other=Store(self.root/'other.db');other.restore_public_snapshot(path)
         self.assertEqual(restore_completed(other,self.root)['restored'],[])
+
+    def test_explicit_validation_retry_keeps_accepted_units(self):
+        def copied(payload):
+            r=self.transport(payload)
+            outputs=json.loads(r['result']['choices'][0]['message']['content'])['outputs']
+            outputs['block:0:text:0']=json.loads(self.row['article_blocks_json'])[0]['text']
+            r['result']['choices'][0]['message']['content']=json.dumps({'outputs':outputs})
+            return r
+        first=self.run_worker(transport=copied)
+        self.assertEqual(first['status'],'partial_failure')
+        write_json(self.root/'data/cloudflare-verification-report.json',first)
+        seen=[]
+        def good(payload):
+            doc=json.loads(payload['messages'][1]['content'].removesuffix('\n/no_think'))
+            seen.extend(doc['requested_keys'])
+            return self.transport(payload)
+        with patch('backend.cloudflare_translation.configuration',return_value=self.cfg()):
+            reserve_cloudflare('retry-unit',root=self.root,environ=self.env(),probe=True)
+            report=run_cloudflare(self.store,'retry-unit',root=self.root,environ=self.env(),probe=True,
+                                  retry_validation=True,transport=good,worker_options={'sleep':lambda _:None})
+        self.assertEqual(report['translated'],[self.row['id']])
+        self.assertEqual(seen,['block:0:text:0'])
+        self.assertEqual(report['validation_retry_id'],self.row['id'])

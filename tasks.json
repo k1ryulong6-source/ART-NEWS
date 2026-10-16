@@ -2359,7 +2359,7 @@
       "id": "T072",
       "title": "Cloudflare免费千问备用API：接入、独立额度保护和真实试译发布",
       "milestone": "M6",
-      "status": "blocked",
+      "status": "doing",
       "owner": "Codex（后台/API，无会话翻译工作者）",
       "updated_at": "2026-10-16",
       "depends_on": [
@@ -2392,7 +2392,8 @@
         "222 Python全套检查通过；隔离探针完整断点能在后续串行数据任务中无API恢复，hash/全部单元/数字检查后才导入，不导出旧snapshot覆盖新采集。",
         "bf72c0a/e2d1854/93e1851已推送，首CI38918088695 success。早期共享锁探针两次被采集恢复挤掉，均未实际运行；改为cloudflare-free-api-verification独立组，只提交自身账本/断点/探针报告，正常import_snapshot在串行数据任务恢复。",
         "真实探针38918783949及38919032806均结束并保存证据；最新2026-10-16 23:50:48 JST credential_checks：api_token_present=true、account_id_present=false、account_id_format_valid=false。0生成请求/0篇译稿，没有Neurons消耗记录；不能宣称API已接通或把GHA绿色当成功。",
-        "已兼容官方CLOUDFLARE_AUTH_TOKEN别名及非敏感Account ID的仓库变量；仍缺Account ID，等待用户在同仓库Secrets添加CLOUDFLARE_ACCOUNT_ID。verified_enabled保持false，不自动放开未实测备用，不变更Gemini费用/配额。"
+        "已兼容官方CLOUDFLARE_AUTH_TOKEN别名及非敏感Account ID的仓库变量；仍缺Account ID，等待用户在同仓库Secrets添加CLOUDFLARE_ACCOUNT_ID。verified_enabled保持false，不自动放开未实测备用，不变更Gemini费用/配额。",
+        "用户已补Account ID；真实38919574072已configured=true，1请求/2007输入+791输出token、估算33.3881 Neurons，0 unknown/0预留。主正文被原样返回触发ai_paragraph_not_translated，保留19个合格单元、未发布整篇；正在显式单次重试唯一未译单元，非第二轮模型校对。"
       ]
     }
   ]

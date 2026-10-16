@@ -6,6 +6,10 @@ on:
         description: One diagnostic retry of untranslated units; keep all accepted work
         type: boolean
         default: false
+      sample_id:
+        description: Optional known pending article ID for a bounded language probe
+        type: string
+        default: ''
 permissions:
   contents: write
   actions: write
@@ -51,6 +55,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFLARE_AUTH_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
           CF_RETRY_VALIDATION: ${{ inputs.retry_validation }}
+          CF_PROBE_SAMPLE_ID: ${{ inputs.sample_id }}
         run: python scripts/run_cloudflare_translation.py --probe
       - name: Save actual accepted work and checkpoints
         if: always() && steps.restore.outcome == 'success'

@@ -20,7 +20,8 @@ else:
     try:
         report = run_cloudflare(Store(os.getenv('CULTURE_DESK_DB', ROOT / 'runtime/culture-desk.db')),
                                 identity, probe=args.probe,
-                                retry_validation=os.getenv('CF_RETRY_VALIDATION') == 'true')
+                                retry_validation=os.getenv('CF_RETRY_VALIDATION') == 'true',
+                                sample_id=os.getenv('CF_PROBE_SAMPLE_ID') or None)
     except Exception as error:
         report = {'status': 'failed', 'error': type(error).__name__, 'finished_at': now(),
                   'translated': [], 'requests': None}

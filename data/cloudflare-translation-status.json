@@ -2,16 +2,69 @@
   "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
   "model": "@cf/qwen/qwen3-30b-a3b-fp8",
   "configured": true,
-  "requests": 0,
-  "translated": [],
-  "failed": [],
+  "requests": 8,
+  "translated": [
+    "live-c61443f7d79124b9b9faaffa"
+  ],
+  "failed": [
+    {
+      "id": "live-b195fd03fcc926008af29226",
+      "reason": "ai_numbers_missing:block:8:text:0"
+    },
+    {
+      "id": "live-990ab7debd4efe4c42994d11",
+      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
+    },
+    {
+      "id": "live-80873b0d831a13d97ee39db0",
+      "reason": "ai_numbers_missing:block:8:text:0"
+    },
+    {
+      "id": "live-8183b707fddf5be7d8e4b969",
+      "reason": "ai_numbers_missing:block:8:text:0"
+    },
+    {
+      "id": "live-7a0d2423394f31512cfcfd21",
+      "reason": "ai_unit_coverage_mismatch"
+    }
+  ],
   "credential_checks": {
     "api_token_present": true,
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-16T15:12:00.773306+00:00",
+  "started_at": "2026-10-16T15:23:11.024496+00:00",
   "verification_run": false,
-  "status": "awaiting_reservation",
-  "finished_at": "2026-10-16T15:12:00.773439+00:00"
+  "status": "daily_limit",
+  "account_mode": "free-project-only",
+  "deferred": [
+    "live-363d3b735faef18a83eefd8b"
+  ],
+  "resumed": [],
+  "stale": [],
+  "input_tokens": 32624,
+  "output_tokens": 7316,
+  "service_retry_policy": "bounded-exponential-v1",
+  "inline_service_retries": 0,
+  "service_failures": [],
+  "pending_before": 771,
+  "retry_after": "2026-10-17T00:15:00+00:00",
+  "pending_after": 770,
+  "finished_at": "2026-10-16T15:24:43.893519+00:00",
+  "seconds": 92.86,
+  "requests_today": 11,
+  "daily_request_limit": 500,
+  "unknown_usage_requests_today": 0,
+  "neurons": {
+    "day": "2026-10-16",
+    "timezone": "UTC",
+    "daily_free_protection": 10000,
+    "estimated_neurons": 441.69565,
+    "unknown_neurons_upper_bound": 0.0,
+    "reserved_neurons": 0.0,
+    "requests": 11,
+    "input_tokens": 37820,
+    "output_tokens": 8754,
+    "scope": "repository_estimate_not_account_billing_or_other_apps"
+  }
 }

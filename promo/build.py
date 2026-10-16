@@ -1,11 +1,9 @@
-"""Build the 幕間休息 promo film page ("幕間新聞片", a cinema newsreel).
+"""Build the 幕間休息 promo film page ("明日新聞台", an atompunk television advert).
 
 promo/src/promo.html is the source. This script fills in:
 
   {{WORDMARK:cls}} the site's wordmark outline (frontend/index.html), split per character
   {{DOTS}}        land dots for the opening globe, from Natural Earth 110m (world-atlas)
-  {{TICKER:chan}} the wire ticker: recent AI-translated headlines per channel, data/live.json
-  {{CLOCK_TICKS}} hour marks for the "next issue" clock
   {{FONT_*}}      subsets of the site's OFL faces, cut to the characters the film uses
   {{SCORE}}       the score (promo/score.mp3, made by promo/score.py)
 
@@ -15,7 +13,11 @@ copy with the fonts embedded.
 Usage:
   python promo/build.py [--land land-110m.json]
                         [--serif-source NotoSerifTC[wght].ttf] [--sans-source NotoSansSC[wght].ttf]
+                        [--retro-source ZCOOLQingKeHuangYou-Regular.ttf] [--righteous Righteous-Regular.ttf]
                         [--inline out.html]
+
+ZCOOL QingKe HuangYou (google/fonts ofl/zcoolqingkehuangyou, OFL, no reserved name) is
+subset; Righteous (ofl/righteous, OFL with reserved font name) is copied unmodified.
 
 land-110m.json: https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-110m.json (ISC; Natural
 Earth data, public domain); without it the committed promo/land-dots.json is reused.
@@ -117,33 +119,6 @@ def land_dots(path: Path) -> list:
     return dots
 
 
-# ── Wire ticker ────────────────────────────────────────────────────────────────
-def ticker(channel: str, count: int = 12) -> str:
-    """Recent headlines that have the site's AI full-text translation, newest first."""
-    data = json.loads((ROOT / "data" / "live.json").read_text(encoding="utf-8"))
-    rows = [r for r in data["content"]
-            if r.get("channel") == channel and not r.get("is_demo") and r.get("editorial_title_zh")
-            and r.get("editorial_status") in ("translated", "reviewed") and r.get("published_at")]
-    rows.sort(key=lambda r: r["published_at"], reverse=True)
-    titles, seen = [], set()
-    for row in rows:
-        title = row["editorial_title_zh"].strip()
-        if title not in seen and len(title) <= 40:
-            seen.add(title)
-            titles.append(html.escape(title))
-        if len(titles) == count:
-            break
-    return "<span>◆</span>".join(titles)
-
-
-def clock_ticks() -> str:
-    marks = []
-    for hour in range(12):
-        angle = hour * 30
-        marks.append(f'<line class="tick" x1="0" y1="-128" x2="0" y2="{-112 if hour % 3 == 0 else -120}" transform="rotate({angle})"/>')
-    return "".join(marks)
-
-
 # ── Fonts ──────────────────────────────────────────────────────────────────────
 def used_text(page: str) -> str:
     text = re.sub(r"<style.*?</style>", " ", page, flags=re.S)
@@ -181,6 +156,8 @@ def main() -> None:
     parser.add_argument("--land", type=Path, help="world-atlas land-110m.json")
     parser.add_argument("--serif-source", type=Path, help="upstream NotoSerifTC[wght].ttf")
     parser.add_argument("--sans-source", type=Path, help="upstream NotoSansSC[wght].ttf")
+    parser.add_argument("--retro-source", type=Path, help="upstream ZCOOLQingKeHuangYou-Regular.ttf")
+    parser.add_argument("--righteous", type=Path, help="upstream Righteous-Regular.ttf (copied unmodified)")
     parser.add_argument("--inline", type=Path, help="also write a single-file copy with embedded fonts")
     args = parser.parse_args()
 
@@ -190,8 +167,7 @@ def main() -> None:
 
     page = (PROMO / "src" / "promo.html").read_text(encoding="utf-8")
     page = re.sub(r"\{\{WORDMARK:([\w-]+)\}\}", lambda m: wordmark_svg(m.group(1)), page)
-    page = re.sub(r"\{\{TICKER:(\w+)\}\}", lambda m: ticker(m.group(1)), page)
-    page = page.replace("{{CLOCK_TICKS}}", clock_ticks()).replace("{{DOTS}}", dots)
+    page = page.replace("{{DOTS}}", dots)
 
     text = used_text(page.replace(dots, ""))
     FONTS.mkdir(exist_ok=True)
@@ -199,11 +175,17 @@ def main() -> None:
         "FONT_TITLE": FONTS / "promo-title.woff2",
         "FONT_SANS": FONTS / "promo-sans.woff2",
         "FONT_NEWS": FONTS / "promo-news.woff2",
+        "FONT_RETRO": FONTS / "promo-retro.woff2",
+        "FONT_RIGHTEOUS": FONTS / "Righteous-Regular.ttf",
     }
     if args.serif_source:
         subset(args.serif_source, fonts["FONT_TITLE"], text)
     if args.sans_source:
         subset(args.sans_source, fonts["FONT_SANS"], text)
+    if args.retro_source:
+        subset(args.retro_source, fonts["FONT_RETRO"], text)
+    if args.righteous:
+        fonts["FONT_RIGHTEOUS"].write_bytes(args.righteous.read_bytes())
     subset(SITE_FONTS / "intermission-news-v1.woff2", fonts["FONT_NEWS"], text)
     latin = "".join(c for c in text if ord(c) < 0x2000)
     print(f"{fonts['FONT_SANS'].name}: not covered {not_covered(fonts['FONT_SANS'], text) or 'none'}")
@@ -222,7 +204,8 @@ def main() -> None:
         inline = page.replace("{{SCORE}}", "data:audio/mpeg;base64," + base64.b64encode(score.read_bytes()).decode("ascii"))
         for key, path in fonts.items():
             data = base64.b64encode(path.read_bytes()).decode("ascii")
-            inline = inline.replace("{{%s}}" % key, f"data:font/woff2;base64,{data}")
+            mime = "font/ttf" if path.suffix == ".ttf" else "font/woff2"
+            inline = inline.replace("{{%s}}" % key, f"data:{mime};base64,{data}")
         args.inline.write_text(inline, encoding="utf-8")
         print(f"wrote {args.inline} ({args.inline.stat().st_size:,} bytes)")
 

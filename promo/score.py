@@ -1,11 +1,12 @@
-"""Synthesise the score for the 幕間休息 promo film 「幕間新聞片」 (a cinema newsreel).
+"""Synthesise the score for the 幕間休息 promo film 「明日新聞台」 (an atompunk
+television advert).
 
-Everything is generated here — no samples, no third-party recordings: an intermission
-piano waltz, then the newsreel: snare and timpani rolls, a brass fanfare on the title,
-a march under each section (film in B♭, photography in C, art in D, rising), soft
-flash-bulb pops, a stamp, a final cadence on 「完」, a music-box clock and a closing
-chord. The master is band-limited like an old optical soundtrack. Cue times are the
-film's timeline seconds (src/promo.html).
+Everything is generated here — no samples, no third-party recordings — as 1950s
+space-age lounge music: vibraphone, a theremin-like lead with glides, walking bass,
+brushed drums and bright brass stabs, a weightless "space" passage for 一種關注, and a
+short jingle on the atom and wordmark. Effects: the television switching on and off,
+the zoom into the screen, the rocket. Cue times are the film's timeline seconds
+(src/promo.html).
 
   python promo/score.py promo/score.wav        (needs numpy and scipy)
 """
@@ -19,9 +20,9 @@ import numpy as np
 from scipy import signal
 
 SR = 48000
-LENGTH = 46.0
+LENGTH = 46.5
 N = int(SR * LENGTH)
-rng = np.random.default_rng(1016)
+rng = np.random.default_rng(1957)
 
 
 def hz(note: str) -> float:
@@ -161,134 +162,171 @@ def pop() -> np.ndarray:
     return fade(low + fizz, .004, .1) * .6
 
 
-# ── Score ──────────────────────────────────────────────────────────────────────
-TRIADS = {"Bb": ["Bb", "D", "F"], "C": ["C", "E", "G"], "D": ["D", "F#", "A"], "Eb": ["Eb", "G", "Bb"],
-          "F": ["F", "A", "C"], "G": ["G", "B", "D"], "A": ["A", "C#", "E"]}
-CADENCE = {"Bb": ("Bb", "Eb", "F"), "C": ("C", "F", "G"), "D": ("D", "G", "A")}
+# ── Lounge instruments ────────────────────────────────────────────────────────
+def vibes(freq: float, length: float = 2.4, level: float = 1.0) -> np.ndarray:
+    n = int(length * SR)
+    t = np.arange(n) / SR
+    trem = 1 - .32 * (.5 + .5 * np.sin(2 * np.pi * 5.6 * t))
+    tone = np.sin(2 * np.pi * freq * t) * np.exp(-t / 1.6) + .22 * np.sin(2 * np.pi * freq * 4 * t) * np.exp(-t / .25)
+    return fade(tone * trem, .003, .3) * level * .22
 
 
-def voicing(root: str, octave: int = 4) -> list:
-    return [tone + str(octave) for tone in TRIADS[root]]
-
-
-def march(bus, start: float, end: float, key: str, intensity: float = 1.0) -> None:
-    """Newsreel march at 120 bpm: I – IV – V – I in two-second bars; tuba on 1 and 3,
-    snare on 2 and 4, brass chords on the off-beats."""
-    bars = [CADENCE[key][0], CADENCE[key][1], CADENCE[key][2], CADENCE[key][0]]
-    beat, t, b = .5, start, 0
-    while t < end - .05:
-        root = bars[(b // 4) % 4]
-        tones = TRIADS[root]
-        if b % 2 == 0:
-            place(bus, t, tuba(hz((tones[0] if b % 4 == 0 else tones[2]) + "2")), gain=.85 * intensity, pan=-.1)
+def theremin(bus, start: float, notes: list, gain: float = .5, pan: float = -.15) -> None:
+    """A continuous sine voice gliding between (beats, note) pairs, with vibrato."""
+    beat = 60 / 128
+    total = sum(b for b, _ in notes) * beat
+    n = int(total * SR)
+    t = np.arange(n) / SR
+    freq = np.zeros(n)
+    gate = np.zeros(n)
+    pos = 0
+    for beats, note in notes:
+        m = int(beats * beat * SR)
+        if note:
+            freq[pos:pos + m] = hz(note)
+            gate[pos:pos + m] = 1
         else:
-            place(bus, t, snare(.7), gain=.7 * intensity, pan=.15)
-        place(bus, t + beat / 2, chord(voicing(root, 4), .16, .7), gain=.55 * intensity, pan=.2)
-        if intensity > 1.05:
-            place(bus, t + beat / 2, snare(.35), gain=.4, pan=.15)
-        t += beat
+            freq[pos:pos + m] = freq[pos - 1] if pos else 440
+        pos += m
+    freq = butter(freq, 9)                       # portamento: glide between pitches
+    gate = butter(gate, 14)
+    vib = 1 + .011 * np.sin(2 * np.pi * 6.2 * t) * np.minimum(1, t / .4)
+    phase = 2 * np.pi * np.cumsum(freq * vib) / SR
+    voice = (np.sin(phase) + .12 * np.sin(2 * phase)) * np.clip(gate, 0, 1)
+    place(bus, start, fade(voice, .05, .3) * .2, gain=gain, pan=pan)
+
+
+def bass(freq: float, length: float = .45) -> np.ndarray:
+    n = int(length * SR)
+    t = np.arange(n) / SR
+    tone = np.sin(2 * np.pi * freq * t) + .45 * np.sin(4 * np.pi * freq * t) + .18 * np.sin(6 * np.pi * freq * t)
+    return butter(fade(tone * np.exp(-t / .32), .006, .08), 900) * .5
+
+
+def brush(level: float = 1.0) -> np.ndarray:
+    n = int(.32 * SR)
+    t = np.arange(n) / SR
+    env = np.minimum(1, t / .03) * np.exp(-t / .12)
+    return butter(rng.normal(0, 1, n), [1200, 7000], "band") * env * level * .22
+
+
+def ride(level: float = 1.0) -> np.ndarray:
+    n = int(.5 * SR)
+    t = np.arange(n) / SR
+    env = np.minimum(1, t / .012) * np.exp(-t / .22)          # soft attack: a shimmer, not a click
+    shimmer = butter(rng.normal(0, 1, n), [4000, 9000], "band") + .2 * np.sin(2 * np.pi * 6200 * t)
+    return shimmer * env * level * .035
+
+
+def sweep(length: float, f0: float, f1: float) -> np.ndarray:
+    n = int(length * SR)
+    t = np.arange(n) / SR
+    f = f0 * (f1 / f0) ** (t / length)
+    return fade(np.sin(2 * np.pi * np.cumsum(f) / SR), .02, .08) * .25
+
+
+# ── Score ──────────────────────────────────────────────────────────────────────
+BEAT = 60 / 128
+CHORDS = {"Fmaj7": ["F3", "A3", "C4", "E4"], "Dm7": ["D3", "F3", "A3", "C4"], "Gm7": ["G3", "Bb3", "D4", "F4"],
+          "C7": ["C3", "E3", "G3", "Bb3"], "Bbmaj7": ["Bb2", "D3", "F3", "A3"], "F69": ["F3", "A3", "D4", "G4", "C5"]}
+WALK = {"Fmaj7": ["F2", "A2", "C3", "E3"], "Dm7": ["D2", "F2", "A2", "C3"], "Gm7": ["G2", "Bb2", "D3", "E3"],
+        "C7": ["C3", "Bb2", "G2", "E2"]}
+LOOP = ["Fmaj7", "Dm7", "Gm7", "C7"]
+
+
+def groove(bus, start: float, end: float, level: float = 1.0, drums: bool = True) -> None:
+    """Swing lounge: walking bass on every beat, brushes on 2 and 4, ride in swung
+    eighths, vibraphone comping on 1 and the 'and' of 2."""
+    t, b = start, 0
+    while t < end - .05:
+        name = LOOP[(b // 4) % 4]
+        place(bus, t, bass(hz(WALK[name][b % 4])), gain=.9 * level, pan=-.05)
+        if drums:
+            if b % 2 == 1:
+                place(bus, t, brush(1.0), gain=.9 * level, pan=.2)
+            place(bus, t, ride(.8), gain=level, pan=.35)
+            place(bus, t + BEAT * 2 / 3, ride(.5), gain=level, pan=.35)
+        if b % 4 in (0, 1):
+            when = t if b % 4 == 0 else t + BEAT * 2 / 3
+            for note in CHORDS[name]:
+                place(bus, when, vibes(hz(note[:-1] + str(int(note[-1]) + 1)), 1.4, .55), gain=.7 * level, pan=.25)
+        t += BEAT
         b += 1
+
+
+def stab(bus, t0: float, notes: list, length: float = .3, gain: float = .8) -> None:
+    place(bus, t0, chord(notes, length, 1.0), gain=gain)
 
 
 def music() -> np.ndarray:
     bus = np.zeros((2, N))
 
-    # 0 · Intermission: a quiet piano waltz in B♭ (3/4) while the slide is up.
-    waltz = [("Bb2", "D4", "F4"), ("F2", "C4", "Eb4"), ("Bb2", "D4", "F4"), ("Eb2", "Eb4", "G4")]
-    for bar, (bass, a, b) in enumerate(waltz):
-        t0 = .35 + bar * .9
-        place(bus, t0, piano(hz(bass), .5, 2.0), pan=-.2)
-        for off, vel in ((.3, .4), (.6, .35)):
-            place(bus, t0 + off, piano(hz(a), vel, 1.5), pan=.1)
-            place(bus, t0 + off, piano(hz(b), vel, 1.5), pan=.2)
-    bus *= envelope([0, 3.2, 4.1, 46], [.5, .5, 0, 0])
+    # 1 · Television on: a theremin swoops up as the test card appears; a vibes chord.
+    theremin(bus, .9, [(1.2, "C4"), (1.4, "F5"), (1.2, "E5"), (.8, None)], gain=.5)
+    for note in CHORDS["F69"]:
+        place(bus, 1.05, vibes(hz(note[:-1] + str(int(note[-1]) + 1)), 3.0), gain=.8, pan=.2)
+    stab(bus, 2.2, ["F4", "A4", "C5", "F5"], .35, .7)
+    stab(bus, 2.45, ["F4", "A4", "C5", "F5"], .6, .7)
 
-    # 1 · Opening titles: drum roll → fanfare on the title slam.
-    roll(bus, 4.2, 5.55, snare, 22, (.08, .9), .1)
-    roll(bus, 4.6, 5.55, lambda v: timpani(hz("F2"), v, .5), 12, (.1, .7), -.2)
-    place(bus, 5.6, cymbal(3.2, 1.0))
-    place(bus, 5.6, timpani(hz("Bb1"), 1.0, 2.0))
-    fanfare = [(5.6, ["Bb3", "D4", "F4", "Bb4"], .55), (6.15, ["Bb3", "D4", "F4", "Bb4"], .18), (6.35, ["Bb3", "D4", "F4", "Bb4"], .18),
-               (6.55, ["C4", "Eb4", "F4", "A4"], .4), (7.0, ["D4", "F4", "Bb4", "D5"], .9), (7.95, ["Eb4", "G4", "Bb4", "Eb5"], .45),
-               (8.45, ["F4", "A4", "C5", "F5"], .45), (8.95, ["D4", "F4", "Bb4", "D5"], .55)]
-    for t0, notes, length in fanfare:
-        place(bus, t0, chord(notes, length, 1.0), gain=.9)
-        place(bus, t0, tuba(hz(notes[0][:-1] + "2"), min(length, .5)), gain=.5)
-    roll(bus, 8.95, 9.5, lambda v: timpani(hz("Bb1"), v, .4), 14, (.4, .9))
+    # 2–4 · The groove, with a theremin tune over it.
+    groove(bus, 5.3, 31.0, 1.0)
+    tune_a = [(1, "C5"), (1, "A4"), (1, "F4"), (1, "A4"), (2, "C5"), (2, "D5"), (1, "C5"), (1, "Bb4"), (1, "A4"), (1, "G4"), (4, "A4"), (2, None)]
+    tune_b = [(1, "F5"), (1, "E5"), (1, "D5"), (1, "C5"), (2, "D5"), (2, "Bb4"), (1, "A4"), (1, "G4"), (1, "F4"), (1, "E4"), (4, "F4"), (2, None)]
+    for t0, tune in ((5.8, tune_a), (13.3, tune_b), (20.8, tune_a), (24.6, tune_b)):
+        theremin(bus, t0, tune, gain=.55)
+    for t0 in (12.05, 19.05):                                    # scene changes
+        stab(bus, t0, ["C4", "E4", "G4", "Bb4"], .25, .75)
+        stab(bus, t0 + BEAT * 2 / 3, ["F4", "A4", "C5", "F5"], .55, .8)
+        place(bus, t0, cymbal(1.8, .5))
+    for t0 in (22.6, 26.6):                                      # the monorail moves on
+        stab(bus, t0, ["Bb3", "D4", "F4", "A4"], .4, .45)
 
-    # Section hits and marches: 電影 (B♭), 攝影 (C), 藝術 (D) — each a step higher.
-    for t0, key, low in ((10.0, "Bb", "Bb1"), (18.5, "C", "C2"), (26.5, "D", "D2")):
-        place(bus, t0, cymbal(2.4, .8))
-        place(bus, t0, timpani(hz(low), 1.0))
-        place(bus, t0, chord(voicing(key, 4) + [key + "5"], .7, 1.0), gain=.8)
-    march(bus, 10.85, 18.4, "Bb", .85)
-    march(bus, 19.3, 26.4, "C", .9)
-    march(bus, 27.3, 34.7, "D", .95)
-    place(bus, 12.0, timpani(hz("F2"), .8))                       # the newspaper lands
+    # 5 · 一種關注: weightless — drums and bass drop, the theremin floats, stars chime.
+    theremin(bus, 31.6, [(3, "C5"), (2, "F5"), (3, "E5"), (2, "C5"), (4, "D5")], gain=.6)
+    for j, note in enumerate(["F5", "A5", "C6", "E6", "G6", "A6"]):
+        place(bus, 33.7 + .3 * j, celesta(hz(note), 1.6), gain=1.1, pan=-.5 + .2 * j)
+    for note in CHORDS["Bbmaj7"]:
+        place(bus, 31.1, vibes(hz(note[:-1] + str(int(note[-1]) + 1)), 3.2, .7), gain=.7, pan=.2)
+    for note in CHORDS["Gm7"]:
+        place(bus, 34.1, vibes(hz(note[:-1] + str(int(note[-1]) + 1)), 3.2, .7), gain=.7, pan=.2)
 
-    # A short brass line over each march, one phrase per section.
-    for t0, notes in ((14.0, ["F4", "Bb4", "D5", "C5", "Bb4"]), (20.0, ["G4", "C5", "E5", "D5", "C5"]),
-                      (28.0, ["A4", "D5", "F#5", "E5", "D5"])):
-        for j, n in enumerate(notes):
-            place(bus, t0 + j * .5, brass(hz(n), .45 if j < len(notes) - 1 else 1.2, .9), gain=.7, pan=-.25)
-
-    # 5 · Recap: the march builds.
-    march(bus, 34.8, 38.4, "D", 1.15)
-    roll(bus, 37.6, 38.5, snare, 22, (.2, 1.0), .1)
-    place(bus, 38.35, chord(["A3", "C#4", "E4", "G4"], .45, 1.0), gain=.9)
-
-    # 6 · 完: the final cadence.
-    place(bus, 38.85, cymbal(3.5, 1.1))
-    place(bus, 38.85, timpani(hz("D2"), 1.1, 2.2))
-    place(bus, 38.85, chord(["D3", "A3", "D4", "F#4", "A4", "D5"], 1.6, 1.0), gain=1.0)
-    roll(bus, 39.2, 40.25, lambda v: timpani(hz("D2"), v, .4), 14, (.9, .3))
-
-    # Next issue: a music box ticking through two hours.
-    box = ["D6", "A5", "F#5", "A5"]
-    for j, t0 in enumerate(np.arange(40.8, 42.5, .25)):
-        place(bus, t0, celesta(hz(box[j % 4])), pan=.3 if j % 2 else -.3)
-
-    # Wordmark: a warm closing chord.
-    for n in ("D3", "A3", "F#4", "A4"):
-        place(bus, 42.8, brass(hz(n), 3.0, .55), gain=.35)
-    place(bus, 42.8, piano(hz("D4"), .55, 3.5))
-    place(bus, 43.3, celesta(hz("D6"), 2.5), gain=1.2)
+    # 6 · The atom and the wordmark: the jingle, then the groove's last bars.
+    jingle = [(37.7, "C5"), (38.0, "A4"), (38.3, "F4"), (38.6, "C5"), (38.9, "F5")]
+    for t0, note in jingle:
+        place(bus, t0, brass(hz(note), .26 if note != "F5" else 1.1, 1.0), gain=.8)
+        place(bus, t0, vibes(hz(note), 1.2), gain=.8)
+    place(bus, 38.9, cymbal(2.2, .6))
+    groove(bus, 40.1, 44.6, .8)
+    stab(bus, 44.6, ["F3", "A3", "D4", "G4", "C5"], 1.2, .6)
+    for note in CHORDS["F69"]:
+        place(bus, 44.6, vibes(hz(note[:-1] + str(int(note[-1]) + 1)), 2.0), gain=.8, pan=.2)
     return bus
 
 
 def effects() -> np.ndarray:
     bus = np.zeros((2, N))
-    t = np.arange(N) / SR
-    # Projector running under everything, as a soft whirr.
-    whirr = butter(rng.normal(0, 1, N), [300, 1300], "band") * (0.75 + 0.25 * np.sin(2 * np.pi * 24 * t))
-    place(bus, 0, whirr * envelope([0, .3, 1.0, 45, 46], [0, 0, 1, 1, 0]), gain=.018)
-    # The newspaper spins in; section wipes; iris closes.
-    place(bus, 10.85, whoosh(1.15, True), gain=.35)
-    for t0 in (9.98, 18.48, 26.48):
-        place(bus, t0, whoosh(.3, True), gain=.2)
-    for t0 in (9.45, 29.6, 40.3):
-        place(bus, t0, whoosh(.45, False), gain=.15)
-    # Flash bulbs.
-    for t0 in (19.3, 21.85, 24.2):
-        place(bus, t0, pop(), gain=.5, pan=rng.uniform(-.3, .3))
-    # The 一種關注 stamp.
-    place(bus, 33.35, timpani(hz("G2"), .5, .5), gain=.6)
+    place(bus, .1, timpani(hz("G2"), .25, .3), gain=.6)                # the switch
+    place(bus, .45, sweep(.7, 180, 1400), gain=.35)                     # tube warm-up
+    place(bus, 4.55, whoosh(.8, True), gain=.4)                         # zoom into the screen
+    place(bus, 31.2, whoosh(2.6, False), gain=.3, pan=.3)               # the rocket
+    for t0 in (32.8, 33.4, 34.0):                                       # the view widens
+        place(bus, t0, sweep(1.2, 300, 600) * .5, gain=.25)
+    place(bus, 45.3, sweep(.55, 2200, 120), gain=.45)                   # television off
     return bus
 
 
 def master(bus: np.ndarray) -> np.ndarray:
-    hall_len = int(2.2 * SR)
-    t = np.arange(hall_len) / SR
-    ir = np.stack([rng.normal(0, 1, hall_len), rng.normal(0, 1, hall_len)]) * np.exp(-6.9 * t / 2.2)
-    ir = butter(ir, 4500)
+    room = int(1.6 * SR)
+    t = np.arange(room) / SR
+    ir = np.stack([rng.normal(0, 1, room), rng.normal(0, 1, room)]) * np.exp(-6.9 * t / 1.6)
+    ir = butter(ir, 6000)
     ir /= np.sqrt((ir ** 2).sum(axis=1, keepdims=True))
     wet = np.stack([signal.fftconvolve(bus[c], ir[c])[:N] for c in range(2)])
-    mix = bus * .78 + wet * .4
-    mix = butter(mix, [85, 8000], "band")                   # old optical soundtrack
-    mix += butter(rng.normal(0, 1, (2, N)), [2000, 7000], "band") * .0025 * envelope([0, .3, 45.3, 46], [0, 1, 1, 0])
-    mix *= envelope([0, .2, 45.2, 46], [0, 1, 1, 0])
+    mix = bus * .8 + wet * .35
+    mix = butter(mix, [55, 11000], "band")                    # warm, slightly vintage
+    mix *= envelope([0, .05, 45.95, 46.3], [0, 1, 1, 0])
     mix = mix / np.abs(mix).max() * .95
-    mix = np.tanh(mix * 1.2) / np.tanh(1.2)
+    mix = np.tanh(mix * 1.1) / np.tanh(1.1)
     return mix * 10 ** (-1 / 20)
 
 

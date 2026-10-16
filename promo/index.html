@@ -6,295 +6,339 @@
 </head>
 <body>
 <title>幕間休息 宣傳片</title>
-<meta name="description" content="幕間休息宣傳片「幕間新聞片」：一期復古黑白新聞片，報導全球電影、攝影、藝術新聞。">
+<meta name="description" content="幕間休息宣傳片「明日新聞台」：原子朋克風格的五十年代電視廣告，介紹全球藝術、電影、攝影新聞網站。">
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
-/* Licensed webfonts: subsets of the site's own OFL faces (see promo/README.md). */
+/* Licensed webfonts (see promo/README.md): subsets of the site's OFL faces, a subset of
+   ZCOOL QingKe HuangYou (OFL) and Righteous (OFL, shipped unmodified). */
 @font-face{font-family:'Promo Title';src:url("fonts/promo-title.woff2") format('woff2');font-weight:200 900;font-display:block}
 @font-face{font-family:'Promo Sans';src:url("fonts/promo-sans.woff2") format('woff2');font-weight:200 900;font-display:block}
 @font-face{font-family:'Promo News';src:url("fonts/promo-news.woff2") format('woff2');font-weight:200 800;font-display:block}
+@font-face{font-family:'Promo Retro';src:url("fonts/promo-retro.woff2") format('woff2');font-display:block}
+@font-face{font-family:'Righteous';src:url("fonts/Righteous-Regular.ttf") format('truetype');font-display:block}
 
-/* Layout: a 1920×1080 stage playing one issue of a black-and-white cinema newsreel —
-   the kind once shown in the interval (幕間) before the feature. Monochrome silver with
-   the brand's red as the only colour. A 46-second clock drives CSS delays and the JS
-   render(t) (globe, searchlights, film wear, gate weave, clock hand). */
+/* Layout: a 1920×1080 stage playing a 1950s "World of Tomorrow" television advert —
+   atompunk: cream stock, teal, coral, mustard and navy, halftone print, starbursts and
+   atoms, with the brand's red 日 as the nucleus. One 46-second clock drives CSS delays
+   and the JS render(t) (globe, signals, dials, electrons). */
 :root{
-  --black:#0d0d0c; --silver:#ece8df; --grey:#9b978e; --dark:#1b1a18; --red:#d1361f;
-  --title:'Promo Title','Noto Serif TC','PMingLiU',serif;
+  --cream:#f3e9d2; --paper:#ebdfc3; --teal:#2f9c95; --teal-d:#1d6f6a; --mint:#a7dccf;
+  --coral:#ec6a3d; --mustard:#f0b33a; --navy:#1e2a3a; --red:#d1361f;
+  --retro:'Promo Retro','Promo Sans','PingFang SC',sans-serif;
+  --latin:'Righteous','Promo News',sans-serif;
   --sans:'Promo Sans','Promo News','Noto Sans SC','PingFang SC',sans-serif;
-  --news:'Promo News',Georgia,'Times New Roman',serif;
-  color-scheme:dark;
+  --title:'Promo Title','Noto Serif TC',serif;
+  color-scheme:light;
 }
 html,body{height:100%}
-body{margin:0;background:#000;color:var(--silver);overflow:hidden;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body{margin:0;background:#000;color:var(--navy);overflow:hidden;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .recording body{padding:0}
 #viewport{position:relative;width:100%;height:100%;overflow:hidden}
-#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;margin:-540px 0 0 -960px;overflow:hidden;background:var(--black);
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;margin:-540px 0 0 -960px;overflow:hidden;background:var(--cream);
   transform-origin:50% 50%;font-family:var(--sans);-webkit-font-smoothing:antialiased;font-synthesis:none}
-#film{position:absolute;inset:0}
 .layer,.scene{position:absolute;inset:0}
 svg{display:block;overflow:visible}
-#clock{position:absolute;width:0;height:0;animation:clock 46s linear both}
+#clock{position:absolute;width:0;height:0;animation:clock 46.5s linear both}
 @keyframes clock{to{opacity:1}}
 @keyframes in{from{opacity:0}}
 @keyframes out{to{opacity:0}}
-@keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
-@keyframes wipe-out{from{clip-path:inset(0 0 0 0)}to{clip-path:inset(0 0 0 100%)}}
-@keyframes rise{from{opacity:0;transform:translateY(22px)}}
-@keyframes type{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes pop{0%{opacity:0;transform:scale(.3)}70%{opacity:1;transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes rise{from{opacity:0;transform:translateY(40px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes twinkle{0%,100%{transform:scale(.4);opacity:.3}50%{transform:scale(1);opacity:1}}
 
-/* ── 0 · The intermission slide ── */
-#slide{background:radial-gradient(70% 70% at 50% 46%,#26231f,#0c0b0a 78%);animation:out .01s 4.2s forwards}
-.slide-card{position:absolute;left:340px;top:190px;width:1240px;height:700px;box-sizing:border-box;border:2px solid #ece8dfcc;outline:1px solid #ece8df66;outline-offset:10px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;animation:lamp 1.1s steps(7,end) .25s both}
-@keyframes lamp{0%{opacity:0}20%{opacity:.7}35%{opacity:.15}55%{opacity:.85}70%{opacity:.5}100%{opacity:1}}
-.slide-card .en{margin:0;font-family:var(--news);font-size:40px;letter-spacing:.62em;text-indent:.62em;font-weight:400}
-.slide-card .mark{height:132px;width:auto}
-.slide-card .rule{width:120px;height:2px;background:var(--red)}
-.slide-card .next{margin:0;font-family:var(--title);font-weight:400;font-size:38px;letter-spacing:.5em;text-indent:.5em;text-align:center}
-.slide-card .next small{display:block;margin-top:16px;font-family:var(--news);font-size:18px;letter-spacing:.42em;color:var(--grey)}
-.corner{position:absolute;width:26px;height:26px;border-color:#ece8dfcc;border-style:solid}
-.corner.a{left:22px;top:22px;border-width:2px 0 0 2px}.corner.b{right:22px;top:22px;border-width:2px 2px 0 0}
-.corner.c{left:22px;bottom:22px;border-width:0 0 2px 2px}.corner.d{right:22px;bottom:22px;border-width:0 2px 2px 0}
-.mark path{fill:var(--silver)}
-.mark .light{fill:var(--red)}
-#dim{background:#000;opacity:0;animation:dim 1s ease-in 3.2s both,out .01s 4.25s forwards}
-@keyframes dim{to{opacity:1}}
+/* Copy lines: big retro type with a misregistered print shadow. */
+.copy{position:absolute;left:0;right:0;bottom:70px;margin:0;text-align:center;z-index:20;font-family:var(--retro);font-size:56px;line-height:1.25;letter-spacing:.04em}
+.copy span{display:block}
+.copy.dark{color:var(--cream);text-shadow:4px 4px 0 var(--coral)}
+.copy.light{color:var(--navy);text-shadow:4px 4px 0 var(--mustard)}
+.sparkle{position:absolute;width:44px;height:44px;margin:-22px;
+  background:conic-gradient(from 45deg,transparent 0 10%,currentColor 0 15%,transparent 0 35%,currentColor 0 40%,transparent 0 60%,currentColor 0 65%,transparent 0 85%,currentColor 0 90%,transparent 0);
+  -webkit-mask:radial-gradient(circle,#000 0 12%,transparent 60%);mask:radial-gradient(circle,#000 0 12%,transparent 60%);animation:twinkle 1.4s ease-in-out infinite}
+.star4{position:absolute;width:60px;height:60px;margin:-30px;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);animation:twinkle 1.6s ease-in-out infinite}
+.burst{position:absolute;left:50%;top:50%;width:3200px;height:3200px;margin:-1600px;border-radius:50%;animation:spin 60s linear infinite}
 
-/* ── 1 · Opening titles: globe, searchlights, 幕間新聞 ── */
-#opener{background:radial-gradient(60% 70% at 50% 55%,#1e1d1b,#0b0b0a 75%);animation:in .5s 4.2s both,iris .5s cubic-bezier(.6,0,.9,.4) 9.45s forwards}
-@keyframes iris{from{clip-path:circle(80% at 50% 50%)}to{clip-path:circle(0% at 50% 50%)}}
-#opener canvas{position:absolute;inset:0}
-.headline-title{position:absolute;left:0;right:0;top:360px;margin:0;text-align:center;z-index:3}
-.headline-title strong{display:block;font-family:var(--title);font-weight:900;font-size:176px;line-height:1;letter-spacing:.12em;text-indent:.12em;color:var(--silver);
-  text-shadow:0 6px 0 #000,0 0 40px #0009;animation:slam .32s cubic-bezier(.2,.9,.3,1.2) 5.6s both}
-@keyframes slam{from{opacity:0;transform:scale(2.4);filter:blur(10px)}to{opacity:1;transform:scale(1);filter:blur(0)}}
-.headline-title .bar{display:block;width:520px;height:8px;margin:34px auto 0;background:var(--red);transform-origin:center;animation:bar .4s cubic-bezier(.3,.7,.2,1) 5.95s both}
-@keyframes bar{from{transform:scaleX(0)}}
-.headline-title span{display:block;margin-top:30px;font-family:var(--title);font-weight:400;font-size:38px;letter-spacing:.5em;text-indent:.5em;animation:rise .6s ease-out 6.25s both}
-.headline-title small{display:block;margin-top:18px;font-family:var(--title);font-size:24px;letter-spacing:.4em;text-indent:.4em;color:var(--grey);animation:rise .6s ease-out 6.6s both}
+/* ── 1 · The television set ── */
+#tv-scene{background:linear-gradient(#e7d9b8,#dccaa2 72%,#bfa577 72.2%,#c9b085);animation:out .01s 5.3s forwards}
+#tv-scene .wall{position:absolute;inset:0 0 28% 0;background:radial-gradient(circle at 20px 20px,#d9c69c 3px,transparent 4px) 0 0/80px 80px}
+.tv{position:absolute;left:480px;top:120px;width:960px;height:780px;transform-origin:960px 470px;transform-origin:50% 48%;animation:tv-in .6s cubic-bezier(.3,1.4,.5,1) .05s both,zoom-tv .8s cubic-bezier(.6,0,.9,.4) 4.55s forwards}
+@keyframes tv-in{from{transform:translateY(60px) scale(.94);opacity:0}}
+@keyframes zoom-tv{to{transform:scale(7.5)}}
+.tv .cabinet{position:absolute;left:60px;top:90px;width:840px;height:600px;border-radius:70px;background:linear-gradient(160deg,#2f9c95,#1d6f6a);box-shadow:inset 0 -14px 0 #17514e,0 26px 0 #00000022}
+.tv .bezel{position:absolute;left:110px;top:140px;width:560px;height:440px;border-radius:56px;background:#e9dcbf;box-shadow:inset 0 0 0 10px #d4c49f}
+.tv .screen{position:absolute;left:140px;top:170px;width:500px;height:380px;border-radius:44px/38px;background:#0f1a20;overflow:hidden}
+.tv .knobs{position:absolute;left:705px;top:180px;width:150px}
+.tv .knobs i{display:block;width:84px;height:84px;margin:0 auto 34px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#f6d27a,#e09b2a);box-shadow:0 6px 0 #a96b16}
+.tv .knobs b{display:block;height:12px;margin:10px 20px;border-radius:6px;background:#17514e}
+.tv .legs{position:absolute;left:180px;right:180px;top:680px;height:110px}
+.tv .legs i{position:absolute;top:0;width:18px;height:110px;background:var(--navy);border-radius:9px}
+.tv .legs i:first-child{left:20px;transform:rotate(14deg)}.tv .legs i:last-child{right:20px;transform:rotate(-14deg)}
+.tv .ears{position:absolute;left:420px;top:-20px;width:120px;height:120px}
+.tv .ears i{position:absolute;left:58px;bottom:0;width:6px;height:150px;background:var(--navy);transform-origin:bottom center;border-radius:3px}
+.tv .ears i:first-child{transform:rotate(-32deg)}.tv .ears i:last-child{transform:rotate(30deg)}
+.tv .ears b{position:absolute;left:38px;bottom:-14px;width:46px;height:28px;border-radius:23px 23px 6px 6px;background:var(--navy)}
+.warm{position:absolute;inset:0;background:#f7f2e6;transform:scale(0,.006);animation:warm .7s cubic-bezier(.3,.7,.2,1) .45s both,out .3s 1.1s forwards}
+@keyframes warm{0%{transform:scale(0,.006)}45%{transform:scale(1,.006)}100%{transform:scale(1,1)}}
+.testcard{position:absolute;inset:0;background:var(--teal);overflow:hidden;animation:in .2s 1.05s both}
+.testcard .burst{width:900px;height:900px;margin:-450px;background:repeating-conic-gradient(var(--mustard) 0 7.5deg,var(--teal) 7.5deg 15deg);animation:spin 18s linear infinite}
+.testcard .ring{position:absolute;left:50%;top:50%;width:300px;height:300px;margin:-150px;border-radius:50%;background:var(--cream);box-shadow:0 0 0 12px var(--coral),0 0 0 22px var(--cream)}
+.testcard p{position:absolute;left:0;right:0;top:122px;margin:0;text-align:center;font-family:var(--retro);font-size:44px;line-height:1.15;color:var(--navy);animation:pop .5s cubic-bezier(.3,1.5,.5,1) 1.3s both}
+.testcard p small{display:block;margin-top:10px;font-family:var(--latin);font-size:22px;letter-spacing:.12em;color:var(--red)}
+#tv-scene .copy{animation:pop .5s cubic-bezier(.3,1.5,.5,1) 2.2s both}
+#tv-scene .copy{bottom:58px}
 
-/* ── Section cards ── */
-.section{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#0d0d0c;z-index:6}
-.section strong{font-family:var(--title);font-weight:900;font-size:230px;line-height:1;letter-spacing:.2em;text-indent:.2em}
-.section i{display:block;width:180px;height:6px;background:var(--red);margin:26px 0 14px}
-.section span{font-family:var(--news);font-size:30px;letter-spacing:.7em;text-indent:.7em}
+/* ── 2 · The news machine ── */
+#machine-scene{background:var(--navy);animation:in .01s 5.25s both,out .01s 12.05s forwards}
+#machine-scene .burst{background:repeating-conic-gradient(#24344a 0 6deg,#1e2a3a 6deg 12deg)}
+#machine-scene canvas{position:absolute;inset:0}
+.machine{position:absolute;left:1080px;top:200px;width:640px;height:700px;animation:pop .6s cubic-bezier(.3,1.4,.5,1) 5.5s both}
+.machine .body{position:absolute;left:40px;top:240px;width:560px;height:400px;border-radius:40px 40px 18px 18px;background:var(--coral);box-shadow:inset 0 -16px 0 #c24f27}
+.machine .dome{position:absolute;left:150px;top:120px;width:340px;height:170px;border-radius:170px 170px 0 0;background:var(--mustard);box-shadow:inset 0 -12px 0 #c98d1c}
+.machine .mast{position:absolute;left:312px;top:20px;width:16px;height:110px;background:var(--cream);border-radius:8px}
+.machine .dish{position:absolute;left:250px;top:-40px;width:140px;height:70px;border-radius:0 0 70px 70px;background:var(--cream);border-top:8px solid var(--mint);transform-origin:50% 100%;animation:dish 2.2s ease-in-out infinite alternate}
+@keyframes dish{from{transform:rotate(-22deg)}to{transform:rotate(22deg)}}
+.machine .dial{position:absolute;top:290px;width:120px;height:120px;border-radius:50%;background:var(--cream);box-shadow:inset 0 0 0 8px var(--navy)}
+.machine .dial.a{left:90px}.machine .dial.b{left:260px}.machine .dial.c{left:430px}
+.machine .dial i{position:absolute;left:58px;top:16px;width:5px;height:46px;background:var(--red);transform-origin:50% 100%;border-radius:3px;animation:needle .7s ease-in-out infinite alternate}
+.machine .dial.b i{animation-duration:.53s}.machine .dial.c i{animation-duration:.91s}
+@keyframes needle{from{transform:rotate(-55deg)}to{transform:rotate(60deg)}}
+.machine .tubes{position:absolute;left:110px;top:450px;display:flex;gap:44px}
+.machine .tubes i{width:46px;height:90px;border-radius:23px 23px 8px 8px;background:radial-gradient(circle at 50% 60%,#ffd27a,#f09a3a 45%,#c24f27 80%);box-shadow:0 0 30px #ffb24d;animation:glow .23s steps(2) infinite alternate}
+.machine .tubes i:nth-child(2){animation-duration:.31s}.machine .tubes i:nth-child(3){animation-duration:.19s}.machine .tubes i:nth-child(4){animation-duration:.27s}
+@keyframes glow{to{opacity:.72}}
+.machine .plate{position:absolute;left:150px;top:572px;width:340px;padding:8px 0;border-radius:10px;background:var(--cream);text-align:center;font-family:var(--retro);font-size:30px;color:var(--navy)}
+.machine .slot{position:absolute;left:120px;top:640px;width:400px;height:16px;border-radius:8px;background:#7a2a12}
+#machine-scene .copy{animation:rise .55s cubic-bezier(.3,1.3,.5,1) 6.3s both}
 
-/* ── Dateline cards (shared) ── */
-.card{position:absolute;left:260px;right:260px;top:340px;margin:0}
-.card .dl{display:block;font-family:var(--title);font-weight:600;font-size:34px;letter-spacing:.24em;color:var(--silver)}
-.card .dl em{font-style:normal;color:var(--red)}
-.card b{display:block;margin-top:26px;font-weight:800;font-size:60px;line-height:1.32;text-wrap:balance}
-.card i{display:block;margin-top:22px;font-family:var(--news);font-style:italic;font-size:28px;line-height:1.35;color:#ece8dfb3}
-.card i[lang=ja]{font-family:var(--sans);font-style:normal;font-size:26px}
-.card small{display:block;margin-top:24px;font-family:var(--news);font-size:20px;letter-spacing:.28em;color:var(--grey)}
-.card .dl{animation:type .5s steps(10,end) both}
-.card b{animation:wipe .45s cubic-bezier(.3,.6,.2,1) both}
-.card i,.card small{animation:in .5s both}
+/* ── 3 · Headlines from everywhere meet ── */
+#cards-scene{background:var(--mustard);animation:in .01s 12.05s both,out .01s 19.05s forwards}
+#cards-scene .burst{background:repeating-conic-gradient(#f4c45c 0 6deg,var(--mustard) 6deg 12deg)}
+.card{position:absolute;width:430px;height:268px;border-radius:14px;background:var(--cream);box-shadow:8px 10px 0 var(--navy);overflow:hidden;box-sizing:border-box}
+.card header{display:flex;justify-content:space-between;align-items:baseline;padding:12px 20px;color:var(--cream);font-family:var(--retro);font-size:34px}
+.card header small{font-family:var(--latin);font-size:16px;letter-spacing:.08em}
+.card.t header{background:var(--teal)}.card.c header{background:var(--coral)}.card.n header{background:var(--navy)}
+.card p{margin:14px 20px 0;font-weight:700;font-size:23px;line-height:1.42;color:var(--navy);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card footer{position:absolute;left:20px;bottom:12px;font-family:var(--latin);font-size:15px;letter-spacing:.08em;color:var(--teal-d)}
+.card.k1{left:150px;top:110px;--r:-7deg;animation:fly-l .7s cubic-bezier(.3,1.25,.5,1) 12.3s both}
+.card.k2{left:1340px;top:100px;--r:6deg;animation:fly-r .7s cubic-bezier(.3,1.25,.5,1) 12.9s both}
+.card.k3{left:200px;top:500px;--r:5deg;animation:fly-l .7s cubic-bezier(.3,1.25,.5,1) 13.5s both}
+.card.k4{left:1290px;top:500px;--r:-5deg;animation:fly-r .7s cubic-bezier(.3,1.25,.5,1) 14.1s both}
+.card.k5{left:745px;top:260px;--r:-2deg;animation:fly-t .75s cubic-bezier(.3,1.25,.5,1) 14.7s both}
+.card{transform:rotate(var(--r))}
+@keyframes fly-l{from{transform:translate(-900px,180px) rotate(-40deg)}to{transform:rotate(var(--r))}}
+@keyframes fly-r{from{transform:translate(900px,180px) rotate(40deg)}to{transform:rotate(var(--r))}}
+@keyframes fly-t{from{transform:translate(0,-900px) rotate(25deg)}to{transform:rotate(var(--r))}}
+#cards-scene .copy span:nth-child(1){animation:rise .5s cubic-bezier(.3,1.3,.5,1) 15.5s both}
+#cards-scene .copy span:nth-child(2){animation:rise .5s cubic-bezier(.3,1.3,.5,1) 16.3s both}
+#cards-scene .copy{bottom:44px}
 
-/* ── 2 · 電影 ── */
-#film-seg{animation:in .01s 9.95s both,out .01s 18.5s forwards}
-#film-seg .section{animation:wipe .3s cubic-bezier(.3,.6,.2,1) 10s both,wipe-out .3s cubic-bezier(.6,0,.8,.4) 10.75s forwards}
-.spin{position:absolute;left:370px;top:150px;width:1180px;height:780px;box-sizing:border-box;padding:34px 48px;background:#e8e3d7;color:#141312;
-  box-shadow:0 30px 80px #000;animation:spin 1.15s cubic-bezier(.15,.65,.25,1) 10.85s both,push 1.6s linear 12s forwards,out .2s 13.55s forwards}
-@keyframes spin{from{transform:rotate(-1080deg) scale(.04)}to{transform:rotate(-3deg) scale(1)}}
-@keyframes push{from{transform:rotate(-3deg) scale(1)}to{transform:rotate(-3deg) scale(1.07)}}
-.spin .mast{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;border-bottom:5px double #141312;padding-bottom:12px}
-.spin .mast .mark{height:76px}
-.spin .mast .mark path{fill:#141312}.spin .mast .mark .light{fill:var(--red)}
-.spin .mast span{font-family:var(--title);font-size:17px;letter-spacing:.2em}
-.spin .mast span:last-child{text-align:right}
-.spin h2{margin:26px 0 0;font-weight:900;font-size:62px;line-height:1.24}
-.spin h3{margin:14px 0 0;font-family:var(--news);font-style:italic;font-weight:400;font-size:24px;color:#3b3833}
-.spin .cols{display:grid;grid-template-columns:330px 1fr 1fr;gap:30px;margin-top:26px;padding-top:18px;border-top:1px solid #141312}
-.spin .halftone{height:250px;background:radial-gradient(circle,#141312 38%,transparent 41%) 0 0/9px 9px;
-  -webkit-mask:linear-gradient(160deg,#000 10%,#0008 45%,#0003 75%);mask:linear-gradient(160deg,#000 10%,#0008 45%,#0003 75%)}
-.spin .cols p{margin:0 0 14px;font-weight:700;font-size:19px;line-height:1.45}
-.spin .cols p small{display:block;font-weight:400;font-family:var(--news);font-size:14px;color:#55514a}
-.marquee{position:absolute;left:150px;top:170px;width:1620px;height:740px;
-  --bulb:radial-gradient(circle,#fff6dc 0 5px,#fff1c866 7px,transparent 11px);
-  background:var(--bulb) 0 0/36px 36px repeat-x,var(--bulb) 0 100%/36px 36px repeat-x,var(--bulb) 0 0/36px 36px repeat-y,var(--bulb) 100% 0/36px 36px repeat-y;
-  animation:in .3s 13.6s both,chase .48s steps(3) 13.6s infinite}
-@keyframes chase{from{background-position:0 0,0 100%,0 0,100% 0}to{background-position:36px 0,-36px 100%,0 -36px,100% 36px}}
-#film-seg .k1{animation:in .01s 13.7s both,out .25s 15.95s forwards}
-#film-seg .k1 .dl{animation-delay:13.75s}#film-seg .k1 b{animation-delay:14.2s}#film-seg .k1 i,#film-seg .k1 small{animation-delay:14.6s}
-#film-seg .k2{animation:in .01s 16.2s both,out .25s 18.25s forwards}
-#film-seg .k2 .dl{animation-delay:16.25s}#film-seg .k2 b{animation-delay:16.7s}#film-seg .k2 i,#film-seg .k2 small{animation-delay:17.05s}
+/* ── 4 · World's fair: three pavilions ── */
+#fair-scene{background:linear-gradient(#a7dccf,#e6efdc 60%,#f3e9d2 60.2%,#e9dcbf);overflow:hidden;animation:in .01s 19.05s both,out .01s 31.05s forwards}
+.fair{position:absolute;left:0;top:0;width:5760px;height:1080px;animation:pan 11.4s linear 19.3s both}
+@keyframes pan{0%,27%{transform:translateX(0)}36%,61%{transform:translateX(-1920px)}70%,100%{transform:translateX(-3840px)}}
+.fair .sun{position:absolute;width:520px;height:520px;border-radius:50%;top:60px;background:repeating-conic-gradient(#f6d27a 0 9deg,#f9e3a6 9deg 18deg);opacity:.7;animation:spin 30s linear infinite}
+.track{position:absolute;left:0;right:0;top:640px;height:22px;background:var(--navy)}
+.track::after{content:'';position:absolute;left:0;right:0;top:22px;height:60px;background:repeating-linear-gradient(90deg,var(--navy) 0 14px,transparent 14px 240px)}
+.pavilion{position:absolute;top:0;width:1920px;height:1080px}
+.pavilion .label{position:absolute;left:200px;top:120px;margin:0;font-family:var(--retro);font-size:96px;color:var(--navy);text-shadow:5px 5px 0 var(--coral)}
+.pavilion .label small{display:block;font-family:var(--latin);font-size:30px;letter-spacing:.14em;color:var(--teal-d);text-shadow:none}
+.sign{position:absolute;left:880px;top:200px;width:820px;padding:30px 40px 34px;border-radius:26px;background:var(--cream);box-shadow:inset 0 0 0 8px var(--navy),12px 12px 0 var(--coral);box-sizing:border-box}
+.sign::before{content:'';position:absolute;left:-60px;top:50%;margin-top:-30px;border:30px solid transparent;border-right:60px solid var(--coral)}
+.sign b{display:block;font-weight:900;font-size:40px;line-height:1.36;color:var(--navy)}
+.sign i{display:block;margin-top:14px;font-family:var(--news);font-size:22px;color:#4a5566}
+.sign small{display:block;margin-top:16px;font-family:var(--latin);font-size:18px;letter-spacing:.1em;color:var(--red)}
+.bulbs{position:absolute;inset:-22px;border-radius:40px;--b:radial-gradient(circle,#fff4c9 0 5px,#ffd25a99 7px,transparent 10px);
+  background:var(--b) 0 0/32px 32px repeat-x,var(--b) 0 100%/32px 32px repeat-x;animation:chase .5s steps(2) infinite}
+@keyframes chase{to{background-position:32px 0,-32px 100%}}
+.building{position:absolute}
+.reel{left:300px;top:330px;width:440px;height:340px}
+.reel .tower{position:absolute;left:180px;top:140px;width:80px;height:330px;background:var(--teal);border-radius:12px}
+.reel .disc{position:absolute;left:60px;top:-60px;width:320px;height:320px;animation:spin 3s linear infinite}
+.reel .unused{
+  -webkit-mask:radial-gradient(circle at 50% 22%,transparent 0 34px,#000 35px),radial-gradient(circle at 78% 62%,transparent 0 34px,#000 35px),radial-gradient(circle at 22% 62%,transparent 0 34px,#000 35px);-webkit-mask-composite:source-in;mask-composite:intersect;
+  mask:radial-gradient(circle at 50% 22%,transparent 0 34px,#000 35px),radial-gradient(circle at 78% 62%,transparent 0 34px,#000 35px),radial-gradient(circle at 22% 62%,transparent 0 34px,#000 35px);animation:spin 3s linear infinite}
+.dome{left:260px;top:360px;width:520px;height:300px}
+.dome .shell{position:absolute;left:0;top:20px;width:520px;height:260px;border-radius:260px 260px 0 0;background:var(--teal)}
+.dome .lens{position:absolute;left:150px;top:70px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,#1e2a3a 0 30%,#3d5a73 31% 45%,#1e2a3a 46% 62%,var(--cream) 63% 70%,var(--navy) 71%)}
+.dome .lens::after{content:'';position:absolute;left:60px;top:46px;width:40px;height:26px;border-radius:50%;background:#ffffffaa;transform:rotate(-30deg)}
+.dome .flash{position:absolute;left:400px;top:-20px;width:90px;height:60px;border-radius:8px;background:var(--mustard)}
+.boom{left:180px;top:330px;width:680px;height:340px}
+.boom .roof{position:absolute;left:-20px;top:20px;width:720px;height:110px;background:var(--coral);clip-path:polygon(0 100%,48% 0,52% 0,100% 100%,90% 100%,50% 26%,10% 100%)}
+.boom .pillar{position:absolute;top:120px;width:18px;height:190px;background:var(--navy)}
+.boom .mobile{position:absolute;left:250px;top:100px;width:200px;height:200px;transform-origin:50% 0;animation:sway 3s ease-in-out infinite alternate}
+.boom .mobile::before{content:'';position:absolute;left:98px;top:-40px;width:4px;height:60px;background:var(--navy)}
+.stabile{position:absolute;left:250px;top:150px;width:220px;height:160px}
+.stabile i{position:absolute}
+@keyframes sway{from{transform:rotate(-10deg)}to{transform:rotate(10deg)}}
+.boom .mobile i{position:absolute;border-radius:50%}
+.monorail{position:absolute;top:560px;left:-700px;width:640px;height:90px;border-radius:45px 45px 12px 12px;background:var(--cream);box-shadow:inset 0 -14px 0 var(--coral),inset 0 0 0 6px var(--navy);animation:train 11.4s linear 19.3s both}
+.monorail::before{content:'';position:absolute;left:60px;right:120px;top:20px;height:28px;border-radius:14px;background:repeating-linear-gradient(90deg,var(--teal) 0 60px,var(--cream) 60px 74px)}
+@keyframes train{from{transform:translateX(0)}to{transform:translateX(7400px)}}
 
-/* ── 3 · 攝影 ── */
-#photo-seg{animation:in .01s 18.5s both,out .01s 26.5s forwards}
-#photo-seg .section{animation:wipe .3s cubic-bezier(.3,.6,.2,1) 18.5s both,wipe-out .3s cubic-bezier(.6,0,.8,.4) 19.15s forwards}
-.finder{position:absolute;left:150px;top:150px;width:1620px;height:780px;animation:in .3s 19.4s both;--c:#ece8dfb3;--m:60px;
-  background:linear-gradient(var(--c),var(--c)) left top/var(--m) 3px no-repeat,linear-gradient(var(--c),var(--c)) left top/3px var(--m) no-repeat,linear-gradient(var(--c),var(--c)) right top/var(--m) 3px no-repeat,linear-gradient(var(--c),var(--c)) right top/3px var(--m) no-repeat,linear-gradient(var(--c),var(--c)) left bottom/var(--m) 3px no-repeat,linear-gradient(var(--c),var(--c)) left bottom/3px var(--m) no-repeat,linear-gradient(var(--c),var(--c)) right bottom/var(--m) 3px no-repeat,linear-gradient(var(--c),var(--c)) right bottom/3px var(--m) no-repeat}
-.finder span{position:absolute;right:40px;bottom:30px;font-family:var(--news);font-size:22px;letter-spacing:.2em;color:var(--red)}
-.flash{position:absolute;inset:0;z-index:8;background:radial-gradient(circle at 50% 46%,#fff 0,#fffaf0 30%,#fffaf0aa 60%,#fffaf000 100%);opacity:0}
-.flash.f1{animation:flash .5s ease-out 19.3s both}.flash.f2{animation:flash .5s ease-out 21.85s both}.flash.f3{animation:flash .5s ease-out 24.2s both}
-@keyframes flash{0%{opacity:0}8%{opacity:1}100%{opacity:0}}
-#photo-seg .k1{animation:in .01s 19.4s both,out .2s 21.8s forwards}
-#photo-seg .k1 .dl{animation-delay:19.5s}#photo-seg .k1 b{animation-delay:19.9s}#photo-seg .k1 i,#photo-seg .k1 small{animation-delay:20.3s}
-#photo-seg .k2{animation:in .01s 21.95s both,out .2s 24.15s forwards}
-#photo-seg .k2 .dl{animation-delay:22.05s}#photo-seg .k2 b{animation-delay:22.45s}#photo-seg .k2 i,#photo-seg .k2 small{animation-delay:22.8s}
-#photo-seg .k3{animation:in .01s 24.3s both,out .25s 26.25s forwards}
-#photo-seg .k3 .dl{animation-delay:24.4s}#photo-seg .k3 b{animation-delay:24.8s}#photo-seg .k3 i,#photo-seg .k3 small{animation-delay:25.15s}
+/* ── 5 · 一種關注: the wider view ── */
+#attention-scene{background:var(--navy);overflow:hidden;animation:in .01s 31.05s both,out .01s 37.55s forwards}
+#attention-scene .earth{position:absolute;left:260px;top:700px;width:1400px;height:1400px;border-radius:50%;background:radial-gradient(circle,#2f9c95 0 60%,#1d6f6a);box-shadow:0 0 0 18px #2f9c9544,0 0 120px #a7dccf55}
+.rings i{position:absolute;left:960px;top:640px;width:200px;height:200px;margin:-100px;border-radius:50%;border:5px solid var(--mint);opacity:0}
+.rings i:nth-child(1){animation:ring 2.4s ease-out 32.8s both}.rings i:nth-child(2){animation:ring 2.4s ease-out 33.4s both}.rings i:nth-child(3){animation:ring 2.4s ease-out 34s both}
+@keyframes ring{0%{opacity:.9;transform:scale(.2)}100%{opacity:0;transform:scale(9)}}
+.rocket{position:absolute;left:0;top:0;width:220px;height:90px;offset-path:path('M -200 760 C 400 140, 1300 120, 2150 520');offset-rotate:auto;animation:fly 2.8s cubic-bezier(.4,.1,.5,1) 31.2s both}
+@keyframes fly{from{offset-distance:0%}to{offset-distance:100%}}
+.rocket .hull{position:absolute;left:30px;top:20px;width:170px;height:50px;border-radius:50px 25px 25px 50px / 50%;background:var(--cream);box-shadow:inset 0 -8px 0 #d4c49f}
+.rocket .hull::after{content:'';position:absolute;left:118px;top:13px;width:24px;height:24px;border-radius:50%;background:var(--teal);box-shadow:inset 0 0 0 4px var(--navy)}
+.rocket .fin{position:absolute;left:24px;top:2px;width:56px;height:86px;background:var(--coral);clip-path:polygon(0 0,100% 40%,100% 60%,0 100%,30% 50%)}
+.rocket .flame{position:absolute;left:-40px;top:30px;width:70px;height:30px;border-radius:50%;background:radial-gradient(ellipse at 100% 50%,#fff3c4,var(--mustard) 40%,#ec6a3d00 75%);animation:glow .1s steps(2) infinite alternate}
+.rocket .flag{position:absolute;left:-210px;top:8px;padding:6px 18px 6px 26px;background:var(--coral);color:var(--cream);font-family:var(--retro);font-size:30px;white-space:nowrap;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,10% 50%)}
+.rocket .flag::after{content:'';position:absolute;right:-60px;top:24px;width:60px;height:2px;background:var(--cream)}
+.member{position:absolute;color:var(--cream);animation:pop .45s cubic-bezier(.3,1.5,.5,1) both}
+.member .star4{position:relative;display:block;margin:0 0 6px;left:0;top:0;width:46px;height:46px;background:var(--mustard)}
+.member b{display:block;font-family:var(--latin);font-weight:400;font-size:28px;letter-spacing:.04em}
+.member span{display:block;font-size:17px;color:var(--mint);margin-top:2px}
+#attention-scene .copy span:nth-child(1){animation:rise .5s cubic-bezier(.3,1.3,.5,1) 31.9s both}
+#attention-scene .copy span:nth-child(2){animation:rise .5s cubic-bezier(.3,1.3,.5,1) 32.8s both}
+#attention-scene .copy{bottom:auto;top:90px}
 
-/* ── 4 · 藝術 ── */
-#art-seg{animation:in .01s 26.5s both,out .01s 34.8s forwards}
-#art-seg .section{animation:wipe .3s cubic-bezier(.3,.6,.2,1) 26.5s both,wipe-out .3s cubic-bezier(.6,0,.8,.4) 27.15s forwards}
-.frame{position:absolute;left:170px;top:170px;width:1580px;height:740px;box-sizing:border-box;border:2px solid #ece8df99;outline:1px solid #ece8df4d;outline-offset:12px;animation:in .4s 27.3s both}
-#art-seg .k1{animation:in .01s 27.4s both,iris-card .45s cubic-bezier(.6,0,.9,.4) 29.6s forwards}
-@keyframes iris-card{from{clip-path:circle(120% at 50% 40%)}to{clip-path:circle(0 at 50% 40%)}}
-#art-seg .k1 .dl{animation-delay:27.5s}#art-seg .k1 b{animation-delay:27.9s}#art-seg .k1 i,#art-seg .k1 small{animation-delay:28.3s}
-#art-seg .k2{animation:in .01s 30.05s both,out .25s 32.05s forwards}
-#art-seg .k2 .dl{animation-delay:30.15s}#art-seg .k2 b{animation-delay:30.55s}#art-seg .k2 i,#art-seg .k2 small{animation-delay:30.9s}
-#art-seg .k3{animation:in .01s 32.3s both,out .3s 34.5s forwards}
-#art-seg .k3 .dl{animation-delay:32.4s}#art-seg .k3 b{animation-delay:32.8s}#art-seg .k3 i,#art-seg .k3 small{animation-delay:33.15s}
-.stamp{position:absolute;right:300px;top:250px;margin:0;padding:14px 26px;border:5px solid var(--red);color:var(--red);font-family:var(--title);font-weight:900;font-size:44px;letter-spacing:.24em;
-  transform:rotate(-8deg);animation:stamp .28s cubic-bezier(.2,.9,.3,1.3) 33.35s both,out .3s 34.5s forwards}
-.stamp small{display:block;font-family:var(--sans);font-weight:500;font-size:16px;letter-spacing:.1em;text-align:center;margin-top:4px}
-@keyframes stamp{from{opacity:0;transform:rotate(-8deg) scale(2.2)}to{transform:rotate(-8deg) scale(1)}}
+/* ── 6 · The atom: 幕間休息 ── */
+#atom-scene{background:var(--cream);overflow:hidden;animation:in .01s 37.55s both,crt-off .8s cubic-bezier(.6,0,.9,.4) 45.3s forwards}
+@keyframes crt-off{0%{transform:scale(1,1);filter:brightness(1)}55%{transform:scale(1,.004);filter:brightness(3)}100%{transform:scale(0,.004);filter:brightness(3)}}
+#atom-scene .burst{background:repeating-conic-gradient(#ead9b0 0 6deg,var(--cream) 6deg 12deg)}
+.atom{position:absolute;left:660px;top:120px;width:600px;height:600px;animation:pop .6s cubic-bezier(.3,1.5,.5,1) 37.7s both,atom-up .9s cubic-bezier(.5,0,.3,1) 40.1s forwards}
+@keyframes atom-up{to{transform:translateY(-40px) scale(.62)}}
+.atom svg{position:absolute;inset:0;width:600px;height:600px}
+.atom ellipse{fill:none;stroke:var(--navy);stroke-width:5}
+.nucleus{position:absolute;left:220px;top:220px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#ff6a4a,var(--red) 60%,#a32313);box-shadow:0 0 50px #d1361f88;display:grid;place-items:center;font-family:var(--title);font-weight:700;font-size:96px;color:var(--cream)}
+.electron{position:absolute;left:0;top:0;width:96px;height:96px;margin:-48px;border-radius:50%;display:grid;place-items:center;font-family:var(--retro);font-size:30px;color:var(--cream);box-shadow:0 6px 0 #0002}
+.electron.e1{background:var(--teal)}.electron.e2{background:var(--coral)}.electron.e3{background:var(--mustard);color:var(--navy)}
+.final-mark{position:absolute;left:603px;top:560px;height:150px;width:auto;animation:pop .6s cubic-bezier(.3,1.4,.5,1) 40.5s both}
+.final-mark path{fill:var(--navy)}.final-mark .light{fill:var(--red)}
+.final-line{position:absolute;left:0;right:0;margin:0;text-align:center}
+.final-line.l1{top:750px;font-family:var(--retro);font-size:52px;color:var(--navy);text-shadow:4px 4px 0 var(--mustard);animation:rise .5s cubic-bezier(.3,1.3,.5,1) 41.3s both}
+.final-line.l2{top:850px;font-family:var(--latin);font-size:46px;letter-spacing:.06em;color:var(--coral);animation:pop .5s cubic-bezier(.3,1.5,.5,1) 41.9s both}
 
-/* ── 5 · Recap: the wire never stops ── */
-#recap{background:#0d0d0c;animation:in .3s 34.8s both,out .3s 38.6s forwards}
-.recap-top{position:absolute;left:0;right:0;top:150px;margin:0;text-align:center;font-family:var(--title);font-weight:700;font-size:52px;letter-spacing:.42em;text-indent:.42em;animation:rise .5s ease-out 35s both}
-.ticker{position:absolute;left:0;right:0;height:84px;overflow:hidden;border-top:1px solid #ece8df33;border-bottom:1px solid #ece8df33}
-.ticker.t1{top:330px}.ticker.t2{top:470px}.ticker.t3{top:610px}
-.ticker b{position:absolute;left:0;top:0;bottom:0;z-index:2;width:150px;display:grid;place-items:center;background:var(--red);color:#fff;font-family:var(--title);font-weight:900;font-size:34px;letter-spacing:.2em;text-indent:.2em}
-.ticker .run{position:absolute;left:170px;top:0;line-height:84px;white-space:nowrap;font-weight:600;font-size:32px}
-.ticker .run span{color:var(--red);margin:0 26px}
-.t1 .run{animation:tick1 4s linear 34.8s both}.t2 .run{animation:tick2 4s linear 34.8s both}.t3 .run{animation:tick3 4s linear 34.8s both}
-@keyframes tick1{from{transform:translateX(0)}to{transform:translateX(-2600px)}}
-@keyframes tick2{from{transform:translateX(-2400px)}to{transform:translateX(0)}}
-@keyframes tick3{from{transform:translateX(-200px)}to{transform:translateX(-3000px)}}
-.recap-bottom{position:absolute;left:0;right:0;top:780px;margin:0;text-align:center;font-family:var(--title);font-weight:400;font-size:34px;letter-spacing:.5em;text-indent:.5em;color:var(--grey);animation:rise .5s ease-out 35.6s both}
-
-/* ── 6 · 完 · next issue · wordmark ── */
-#fin{background:radial-gradient(60% 70% at 50% 50%,#1c1b19,#0b0b0a 75%);animation:in .2s 38.7s both,iris .5s cubic-bezier(.6,0,.9,.4) 40.3s forwards}
-.fin-mark{position:absolute;left:760px;top:240px;width:400px;height:400px;box-sizing:border-box;border-radius:50%;border:3px solid var(--silver);outline:1px solid #ece8df66;outline-offset:12px;display:grid;place-items:center}
-.fin-mark strong{font-family:var(--title);font-weight:900;font-size:220px;line-height:1;animation:slam .3s cubic-bezier(.2,.9,.3,1.2) 38.85s both}
-.fin-sub{position:absolute;left:0;right:0;top:720px;margin:0;text-align:center;font-family:var(--title);font-size:30px;letter-spacing:.6em;text-indent:.6em;color:var(--grey);animation:in .5s 39.2s both}
-#next{background:#0b0b0a;animation:in .3s 40.7s both,out .4s 42.6s forwards}
-.clockface{position:absolute;left:810px;top:220px;width:300px;height:300px}
-.clockface circle{fill:none;stroke:var(--silver);stroke-width:3}
-.clockface line{stroke:var(--silver);stroke-linecap:round}
-.clockface .tick{stroke-width:3}
-.clockface .min{stroke-width:5}.clockface .hour{stroke-width:8}
-.next-line{position:absolute;left:0;right:0;top:600px;margin:0;text-align:center}
-.next-line strong{display:block;font-family:var(--title);font-weight:700;font-size:62px;letter-spacing:.4em;text-indent:.4em}
-.next-line span{display:block;margin-top:22px;font-family:var(--title);font-size:26px;letter-spacing:.5em;text-indent:.5em;color:var(--grey)}
-#brand{background:radial-gradient(60% 70% at 50% 45%,#1c1b19,#0b0b0a 75%);animation:in .7s 42.8s both}
-.brand-mark{position:absolute;left:543px;top:330px;height:175px;width:auto}
-.brand-mark path{fill:var(--silver)}.brand-mark .light{fill:var(--red);filter:drop-shadow(0 0 18px #d1361f88)}
-.brand-line{position:absolute;left:0;right:0;margin:0;text-align:center}
-.brand-line.l1{top:590px;font-family:var(--title);font-weight:400;font-size:44px;letter-spacing:.42em;text-indent:.42em;animation:rise .7s ease-out 43.3s both}
-.brand-line.l2{top:672px;font-size:20px;letter-spacing:.4em;text-indent:.4em;color:var(--grey);animation:in .7s 43.7s both}
-.brand-line.l3{top:740px;font-family:var(--news);font-size:34px;letter-spacing:.1em;color:var(--red);animation:in .7s 44s both}
-#blackout{z-index:60;background:#000;opacity:0;animation:blackout .7s 45.2s both}
-@keyframes blackout{to{opacity:1}}
-
-/* ── Film wear ── */
-#wear{z-index:40;pointer-events:none}
-#grain{z-index:41;inset:-120px;pointer-events:none;opacity:.55;mix-blend-mode:overlay;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.5 -.25'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain .4s steps(4) infinite}
+/* ── Print texture ── */
+#halftone{z-index:40;pointer-events:none;opacity:.07;background:radial-gradient(circle,#1e2a3a 1.4px,transparent 1.8px) 0 0/7px 7px;mix-blend-mode:multiply}
+#grain{z-index:41;inset:-120px;pointer-events:none;opacity:.35;mix-blend-mode:overlay;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.2 -.15'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain .5s steps(4) infinite}
 @keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-61px,37px)}50%{transform:translate(43px,-83px)}75%{transform:translate(-97px,-29px)}}
-#vignette{z-index:42;pointer-events:none;background:radial-gradient(120% 110% at 50% 48%,#0000 46%,#00000059 78%,#000000c7 100%)}
+#vignette{z-index:42;pointer-events:none;background:radial-gradient(130% 120% at 50% 45%,#0000 55%,#1e2a3a33 85%,#1e2a3a66 100%)}
+#blackout{z-index:60;background:#000;opacity:0;animation:in .01s 45.9s both}
+#blackout{animation:blackout .01s 46s both}
+@keyframes blackout{to{opacity:1}}
 
 /* ── Player chrome (hidden while recording) ── */
 .controls{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:100;display:flex;gap:8px;font-family:var(--sans)}
-.controls button{appearance:none;border:1px solid #ece8df55;background:#0d0d0ccc;color:var(--silver);font:inherit;font-size:13px;letter-spacing:.1em;padding:7px 14px;cursor:pointer}
-.controls button:hover{border-color:var(--red);color:#fff}
-.controls button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
-.progress{position:fixed;left:0;right:0;bottom:0;height:3px;z-index:99;background:#ffffff14}
-.progress i{display:block;height:100%;background:var(--red);transform-origin:left;animation:progress 46s linear both}
+.controls button{appearance:none;border:2px solid var(--navy);background:var(--cream);color:var(--navy);font:inherit;font-size:13px;font-weight:700;letter-spacing:.08em;padding:7px 14px;border-radius:999px;cursor:pointer}
+.controls button:hover{background:var(--mustard)}
+.controls button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+.progress{position:fixed;left:0;right:0;bottom:0;height:4px;z-index:99;background:#ffffff22}
+.progress i{display:block;height:100%;background:var(--coral);transform-origin:left;animation:progress 46.5s linear both}
 @keyframes progress{from{transform:scaleX(0)}}
 .recording .controls,.recording .progress{display:none}
 </style>
 
 <div id="viewport">
-<div id="stage" role="img" aria-label="幕間休息宣傳片「幕間新聞片」：電影院的幕間幻燈片寫著新聞片即將開始；黑白新聞片片頭，旋轉地球與探照燈，片名幕間新聞；電影版：旋轉報紙飛入，頭條為倫敦查爾斯王子電影院獲救，釜山、溫哥華電影節消息；攝影版：記者閃光燈下，東京代官山、卡達克斯、Aperture攝影書獎消息；藝術版：倫敦Tate Modern展覽、威尼斯皮諾常設展、一種關注的ART AFRICA；全球新聞電報條滾動，每兩小時更新；完；下一期兩小時後；幕間休息 mujianrest.work。">
+<div id="stage" role="img" aria-label="幕間休息宣傳片「明日新聞台」：五十年代電視機開機，測試卡打出幕間休息電視台；新聞機器用雷達從地球各地接收電影、攝影、藝術新聞；東京、釜山、倫敦、紐約、威尼斯的頭條卡片飛來相遇；世博會的電影館、攝影館、藝術館招牌上是溫哥華電影節、InCadaqués攝影節與Tate Modern的消息；掛著一種關注旗幟的火箭飛向南方，六家地區媒體亮成星星；紅色的日成為原子核，電影、攝影、藝術三顆電子繞行，字標幕間休息與網址 mujianrest.work。">
   <i id="clock"></i>
-  <div id="film">
 
-    <div class="scene" id="opener">
-      <canvas id="globe" width="1920" height="1080"></canvas>
-      <p class="headline-title"><strong>幕間新聞</strong><i class="bar"></i><span>全球藝術・電影・攝影</span><small>二〇二六年十月十六日</small></p>
-    </div>
-
-    <div class="scene" id="film-seg">
-      <div class="section"><strong>電影</strong><i></i><span>FILM</span></div>
-      <article class="spin">
-        <div class="mast"><span>二〇二六年十月十五日</span><svg class="mark" viewBox="0 36 4379 921" style="aspect-ratio:4379/921" aria-hidden="true"><g class="c0"><path class="ink" d="M705 49Q704 59 696 65Q688 71 671 73L671 200Q671 203 665 207Q659 211 649 214Q639 218 629 218L619 218L619 39ZM334 49Q333 59 325 65Q317 71 300 73L300 201Q300 204 294 208Q288 212 278 215Q268 219 258 219L247 219L247 40ZM677 680L705 645L783 702Q779 707 767 713Q754 718 739 720L739 842Q739 864 734 880Q728 896 711 906Q693 916 655 919Q654 909 650 899Q646 889 637 883Q627 877 611 872Q594 867 567 864L567 848Q567 848 579 849Q592 850 610 851Q627 852 644 853Q660 854 667 854Q679 854 683 850Q687 845 687 836L687 680ZM426 492Q383 548 323 603Q263 657 185 702Q107 747 10 776L0 760Q91 725 165 674Q240 624 295 565Q351 506 385 445L469 477Q465 485 456 489Q447 493 426 492ZM598 539Q629 575 684 606Q738 638 801 661Q865 685 925 698L924 708Q908 710 897 721Q886 732 881 750Q824 730 766 700Q708 670 660 632Q611 593 581 549ZM829 484Q829 484 843 494Q856 504 874 518Q893 532 908 547Q905 563 881 563L35 563L26 533L787 533ZM239 481Q239 483 232 487Q225 491 215 494Q205 498 193 498L185 498L185 233L185 205L185 205L244 233L726 233L726 263L239 263ZM691 233L723 200L793 253Q789 258 778 263Q767 268 754 270L754 469Q754 472 746 477Q738 482 728 486Q718 490 708 490L700 490L700 233ZM732 429L732 459L205 459L205 429ZM733 331L733 361L213 361L213 331ZM248 894Q248 897 236 905Q224 913 204 913L197 913L197 659L201 654L260 680L248 680ZM518 592Q517 602 510 608Q503 614 485 616L485 937Q485 940 479 945Q473 950 463 953Q454 957 443 957L433 957L433 582ZM708 680L708 710L228 710L228 680ZM838 69Q838 69 845 75Q852 81 863 90Q874 99 886 110Q899 121 909 131Q905 147 883 147L500 147L492 117L799 117ZM400 70Q400 70 412 79Q424 89 441 103Q458 118 470 131Q467 147 446 147L38 147L29 117L363 117Z"/></g><g class="c1"><path class="ink" d="M1185 107L1185 77L1185 77L1243 107L1485 107L1485 136L1238 136L1238 933Q1238 937 1232 942Q1226 947 1217 951Q1207 955 1194 955L1185 955ZM1641 107L1641 79L1641 79L1699 107L1952 107L1952 136L1694 136L1694 414Q1694 416 1687 420Q1681 425 1670 428Q1660 432 1648 432L1641 432ZM1925 107L1915 107L1945 68L2023 127Q2018 133 2006 139Q1994 145 1978 147L1978 868Q1978 891 1973 909Q1968 927 1948 939Q1927 951 1883 956Q1882 943 1877 931Q1872 920 1861 914Q1849 907 1829 901Q1809 896 1775 891L1775 875Q1775 875 1791 876Q1807 878 1829 879Q1852 881 1873 882Q1893 883 1901 883Q1915 883 1920 878Q1925 873 1925 861ZM1459 107L1450 107L1481 73L1550 126Q1546 131 1535 136Q1524 142 1512 144L1512 416Q1512 419 1504 423Q1496 428 1486 432Q1476 435 1467 435L1459 435ZM1211 233L1482 233L1482 262L1211 262ZM1211 362L1482 362L1482 391L1211 391ZM1669 233L1949 233L1949 262L1669 262ZM1669 362L1949 362L1949 391L1669 391Z"/><path class="light" d="M1398 499L1398 471L1398 471L1456 499L1739 499L1739 527L1451 527L1451 856Q1451 858 1445 863Q1438 868 1428 871Q1419 874 1407 874L1398 874ZM1421 783L1733 783L1733 813L1421 813ZM1421 637L1733 637L1733 666L1421 666ZM1708 499L1700 499L1730 465L1800 518Q1796 523 1785 528Q1775 534 1762 536L1762 846Q1762 849 1754 854Q1746 859 1736 863Q1725 867 1716 867L1708 867Z"/></g><g class="c2"><path class="ink" d="M2554 294L3075 294L3120 240Q3120 240 3128 246Q3135 253 3148 263Q3161 273 3175 285Q3190 297 3201 308Q3197 323 3175 323L2562 323ZM2835 58L2924 69Q2923 79 2915 86Q2908 94 2888 97L2888 929Q2888 934 2882 939Q2876 945 2866 948Q2856 952 2845 952L2835 952ZM2803 294L2861 294L2861 310Q2819 460 2736 589Q2652 718 2529 813L2514 799Q2584 733 2640 652Q2696 571 2737 480Q2778 388 2803 294ZM2441 326L2455 309L2526 336Q2520 350 2495 354L2495 935Q2494 937 2488 942Q2481 946 2471 950Q2461 954 2451 954L2441 954ZM2521 45L2613 74Q2610 83 2601 89Q2591 95 2574 94Q2541 186 2498 272Q2454 358 2404 432Q2353 506 2298 562L2283 552Q2329 491 2373 410Q2418 329 2456 235Q2494 142 2521 45ZM2901 298Q2926 389 2975 473Q3025 557 3089 625Q3154 694 3224 738L3221 749Q3186 757 3175 794Q3108 742 3049 665Q2991 589 2948 498Q2905 406 2881 309Z"/></g><g class="c3"><path class="ink" d="M3804 647Q3803 656 3796 662Q3789 669 3774 671L3774 856Q3774 867 3783 871Q3793 875 3831 875L3978 875Q4031 875 4067 874Q4104 873 4117 872Q4128 871 4132 869Q4136 867 4141 861Q4146 849 4153 820Q4160 791 4167 754L4180 754L4182 864Q4199 868 4206 873Q4212 878 4212 887Q4212 898 4204 905Q4195 912 4171 917Q4146 921 4100 923Q4054 925 3978 925L3826 925Q3782 925 3759 920Q3737 915 3729 902Q3721 889 3721 865L3721 637ZM3619 688Q3628 742 3618 785Q3607 827 3588 855Q3569 883 3552 897Q3534 910 3515 915Q3496 919 3487 906Q3480 896 3486 883Q3492 870 3504 861Q3527 848 3548 822Q3569 796 3584 761Q3598 725 3600 687ZM4199 681Q4257 707 4294 736Q4331 764 4350 791Q4369 818 4374 841Q4379 864 4374 879Q4368 894 4356 898Q4343 901 4327 890Q4321 856 4298 819Q4275 782 4246 748Q4217 713 4188 690ZM3883 630Q3931 649 3960 672Q3990 694 4005 716Q4020 738 4024 757Q4027 775 4022 787Q4016 800 4005 802Q3994 805 3980 795Q3977 767 3959 738Q3942 709 3919 683Q3895 657 3871 639ZM3990 61Q3987 71 3977 76Q3967 81 3951 80Q3942 93 3928 108Q3915 123 3901 138Q3887 153 3876 166L3848 166Q3858 142 3871 103Q3883 65 3893 36ZM4145 151L4178 114L4252 171Q4247 177 4235 182Q4223 187 4208 190L4208 615Q4208 618 4201 622Q4193 627 4182 631Q4172 635 4162 635L4155 635L4155 151ZM4186 552L4186 581L3674 581L3674 552ZM4186 282L4186 312L3674 312L3674 282ZM4186 416L4186 446L3674 446L3674 416ZM3703 619Q3703 623 3697 627Q3690 632 3681 636Q3671 639 3659 639L3650 639L3650 151L3650 121L3650 121L3708 151L4187 151L4187 181L3703 181Z"/></g></svg><span>電影版</span></div>
-        <h2>邪典影院“查尔斯王子电影院”在签署租约续签后“得救”</h2>
-        <h3 lang="en">Cult venue Prince Charles cinema ‘saved’ after lease renewal signed — The Guardian</h3>
-        <div class="cols">
-          <div class="halftone"></div>
-          <div><p>乔安娜·霍格将担任埃尔古纳电影节评审团主席<small>Variety · 10.14</small></p><p>马吉德·马吉迪的《Midday Meal》斩获釜山奖<small>Screen Daily · 10.15</small></p></div>
-          <div><p>温哥华电影节观众奖揭晓：《我拍洛奇》与《仪式》获重要奖项<small>Variety · 10.13</small></p></div>
-        </div>
-      </article>
-      <div class="marquee"></div>
-      <p class="card k1"><span class="dl">釜山 · 十月十五日 <em>——</em></span><b>马吉德·马吉迪的《Midday Meal》斩获釜山奖，电影节迎来2015年以来最高观众人数</b><i lang="en">Majid Majidi’s ‘Midday Meal’ wins Busan Award as festival hits biggest audience since 2015</i><small>SCREEN DAILY</small></p>
-      <p class="card k2"><span class="dl">溫哥華 · 十月十三日 <em>——</em></span><b>温哥华电影节观众奖揭晓：《我拍洛奇》与《仪式》获重要奖项</b><i lang="en">Vancouver Film Festival Audience Award Winners: ’I Play Rocky,’ ‘Ceremony’ Among Big Wins</i><small>VARIETY</small></p>
-    </div>
-
-    <div class="scene" id="photo-seg">
-      <div class="section"><strong>攝影</strong><i></i><span>PHOTOGRAPHY</span></div>
-      <div class="finder"><span>12A</span></div>
-      <p class="card k1"><span class="dl">東京・代官山 · 十月九日 <em>——</em></span><b>中野道通过摄影展“Meimetsu”告别青春，代官山开展</b><i lang="ja">中野道が「自分の青春にさよならする」。写真展「めいめつ」が代官山で開催</i><small>IMA</small></p>
-      <p class="card k2"><span class="dl">卡達克斯 · 十月十日 <em>——</em></span><b>InCadaqués 摄影节：Julie Peiffer 获2026年女性摄影奖</b><i lang="fr">InCadaqués Festival : Julie Peiffer remporte le Premi Fotografia Femenina 2026</i><small>FISHEYE</small></p>
-      <p class="card k3"><span class="dl">APERTURE · 十月八日 <em>——</em></span><b>公布2026年PhotoBook Awards入围名单</b><i lang="en">Announcing the 2026 PhotoBook Awards Shortlist</i><small>APERTURE</small></p>
-      <i class="flash f1"></i><i class="flash f2"></i><i class="flash f3"></i>
-    </div>
-
-    <div class="scene" id="art-seg">
-      <div class="section"><strong>藝術</strong><i></i><span>ART</span></div>
-      <div class="frame"></div>
-      <p class="card k1"><span class="dl">倫敦 · TATE MODERN <em>——</em></span><b>光影幻境：艺术摄影的诞生</b><i lang="en">Light and Magic: The Birth of Art Photography</i><small>展期 2026.10.14 — 2027.02.21</small></p>
-      <p class="card k2"><span class="dl">威尼斯 · 十月十五日 <em>——</em></span><b>法国收藏家弗朗索瓦·皮诺计划在威尼斯博物馆举办常设展</b><i lang="en">French Collector François Pinault Plans Permanent Hang in Venice Museum</i><small>ARTNEWS</small></p>
-      <p class="card k3"><span class="dl">ART AFRICA · 十月十四日 <em>——</em></span><b>当城市成为舞台</b><i lang="en">When the City Becomes the Stage</i><small>非洲與全球南方</small></p>
-      <p class="stamp">一種關注<small>本站精選地區媒體</small></p>
-    </div>
-
-    <div class="scene" id="recap">
-      <p class="recap-top">全球來源　中文閱讀　原文對照</p>
-      <div class="ticker t1"><b>電影</b><div class="run">新 AFM 峰会将探讨联邦制作税收激励政策<span>◆</span>确保《奥德赛》顺利启航的幕后核心创作者们<span>◆</span>《惊天外交》第4季剧评：一个又一个糟糕的决定，让该剧难言自圆其说<span>◆</span>《Sacrifice》影评：一部表现乏力的流行讽刺片<span>◆</span>FilmQuest 详述全新主打类型片的电影市场“克苏鲁市场”（独家）<span>◆</span>《街头霸王》评测：一款街机经典作品迎来了混乱而极繁主义的重启，注定成为邪典<span>◆</span>伍德斯托克电影节影评：《自然状态》审视了不信之心的矛盾状态<span>◆</span>邪典影院“查尔斯王子电影院”在签署租约续签后“得救”<span>◆</span>“比虚构更怪诞”：兰斯·奥ppenheim如何拍出今年最受关注的两部电影<span>◆</span>为什么一位独立制片人拒绝让她的最新电影在流媒体上默默无闻<span>◆</span>Fandango与Plex合作 将电影票销售整合至流媒体平台中<span>◆</span>布莱恩·达菲尔德拍了一部关于在抹香鲸体内求生的现实主义电影</div></div>
-      <div class="ticker t2"><b>攝影</b><div class="run">第10届 InCadaqués 摄影节：超现实主义漫游<span>◆</span>2026年AOP新锐人才奖：支持摄影生涯起步阶段的摄影师<span>◆</span>一位施虐女王与她被紧紧绑缚的客户：贾达·里帕的最佳摄影作品<span>◆</span>2026年度野生生物摄影师大赛获奖作品全景展示<span>◆</span>“与显而易见的事物交战”：威廉·埃格尔斯顿的日常天才——图集<span>◆</span>公开征集 – 2026年 Aftermath Project 冲突后资助金<span>◆</span>最后时刻——HIPA 启动全球摄影比赛<span>◆</span>播客 – Reza、Aina Boy，或那个成为意见领袖的孩子<span>◆</span>展出80年代坂本龙一拍摄的宝丽来及抓拍照片，摄影集也将先行发售<span>◆</span>Chabe! – 第 5 期即将面世<span>◆</span>弗拉朗修道院——摄影诞生二百周年<span>◆</span>梅丽莎·奥夫·德·莫尔：一把贝斯与一台尼康</div></div>
-      <div class="ticker t3"><b>藝術</b><div class="run">瓦莱里奥·阿达米的冷热艺术<span>◆</span>大都会艺术博物馆即将举办的展览将以全新视角呈现伦勃朗对古代艺术的痴迷<span>◆</span>Vintage、古董与现代主义旧货：周末不容错过的5个集市<span>◆</span>法国收藏家弗朗索瓦·皮诺计划在威尼斯博物馆举办常设展<span>◆</span>FOG Design+Art艺博会公布2027年展会76家参展画廊名单并调整布局<span>◆</span>2026年亚洲艺术展（Asia NOW）将当代亚洲艺术带到巴黎<span>◆</span>UCLA 媒体艺术硕士（MFA）项目现正接受申请<span>◆</span>《安德鲁·格雷厄姆-迪克森评维米尔》有声书评——一部犀利而权威的指南<span>◆</span>森林与城市在达维德·帕卢萨于的里雅斯特街头的摄影作品中相互交叠<span>◆</span>在米兰展出的ISIA Roma Design 200项项目中，排版与数字技术交汇<span>◆</span>参观艾米·怀恩豪斯的私人废旧杂物：不容错过的五个免费艺术展<span>◆</span>重新发现多纳托·德·多纳蒂斯，萨兰托隐秘生活的摄影师</div></div>
-      <p class="recap-bottom">每兩小時更新</p>
-    </div>
-
-    <div class="scene" id="fin">
-      <div class="fin-mark"><strong>完</strong></div>
-      <p class="fin-sub">幕間新聞 · 本期</p>
-    </div>
-
-    <div class="scene" id="next">
-      <svg class="clockface" viewBox="-150 -150 300 300" aria-hidden="true">
-        <circle r="140"/><line class="tick" x1="0" y1="-128" x2="0" y2="-112" transform="rotate(0)"/><line class="tick" x1="0" y1="-128" x2="0" y2="-120" transform="rotate(30)"/><line class="tick" x1="0" y1="-128" x2="0" y2="-120" transform="rotate(60)"/><line class="tick" x1="0" y1="-128" x2="0" y2="-112" transform="rotate(90)"/><line class="tick" x1="0" y1="-128" x2="0" y2="-120" transform="rotate(120)"/><line class="tick" x1="0" y1="-128" x2="0" y2="-120" transform="rotate(150)"/><line class="tick" x1="0" y1="-128" x2="0" y2="-112" transform="rotate(180)"/><line class="tick" x1="0" y1="-128" x2="0" y2="-120" transform="rotate(210)"/><line class="tick" x1="0" y1="-128" x2="0" y2="-120" transform="rotate(240)"/><line class="tick" x1="0" y1="-128" x2="0" y2="-112" transform="rotate(270)"/><line class="tick" x1="0" y1="-128" x2="0" y2="-120" transform="rotate(300)"/><line class="tick" x1="0" y1="-128" x2="0" y2="-120" transform="rotate(330)"/>
-        <line class="hour" id="hand-h" x1="0" y1="0" x2="0" y2="-70"/>
-        <line class="min" id="hand-m" x1="0" y1="0" x2="0" y2="-112"/>
-      </svg>
-      <p class="next-line"><strong>下一期　兩小時後</strong><span>幕間新聞每兩小時更新</span></p>
-    </div>
-
-    <div class="scene" id="brand">
-      <svg class="brand-mark" viewBox="0 36 4379 921" style="aspect-ratio:4379/921" aria-hidden="true"><g class="c0"><path class="ink" d="M705 49Q704 59 696 65Q688 71 671 73L671 200Q671 203 665 207Q659 211 649 214Q639 218 629 218L619 218L619 39ZM334 49Q333 59 325 65Q317 71 300 73L300 201Q300 204 294 208Q288 212 278 215Q268 219 258 219L247 219L247 40ZM677 680L705 645L783 702Q779 707 767 713Q754 718 739 720L739 842Q739 864 734 880Q728 896 711 906Q693 916 655 919Q654 909 650 899Q646 889 637 883Q627 877 611 872Q594 867 567 864L567 848Q567 848 579 849Q592 850 610 851Q627 852 644 853Q660 854 667 854Q679 854 683 850Q687 845 687 836L687 680ZM426 492Q383 548 323 603Q263 657 185 702Q107 747 10 776L0 760Q91 725 165 674Q240 624 295 565Q351 506 385 445L469 477Q465 485 456 489Q447 493 426 492ZM598 539Q629 575 684 606Q738 638 801 661Q865 685 925 698L924 708Q908 710 897 721Q886 732 881 750Q824 730 766 700Q708 670 660 632Q611 593 581 549ZM829 484Q829 484 843 494Q856 504 874 518Q893 532 908 547Q905 563 881 563L35 563L26 533L787 533ZM239 481Q239 483 232 487Q225 491 215 494Q205 498 193 498L185 498L185 233L185 205L185 205L244 233L726 233L726 263L239 263ZM691 233L723 200L793 253Q789 258 778 263Q767 268 754 270L754 469Q754 472 746 477Q738 482 728 486Q718 490 708 490L700 490L700 233ZM732 429L732 459L205 459L205 429ZM733 331L733 361L213 361L213 331ZM248 894Q248 897 236 905Q224 913 204 913L197 913L197 659L201 654L260 680L248 680ZM518 592Q517 602 510 608Q503 614 485 616L485 937Q485 940 479 945Q473 950 463 953Q454 957 443 957L433 957L433 582ZM708 680L708 710L228 710L228 680ZM838 69Q838 69 845 75Q852 81 863 90Q874 99 886 110Q899 121 909 131Q905 147 883 147L500 147L492 117L799 117ZM400 70Q400 70 412 79Q424 89 441 103Q458 118 470 131Q467 147 446 147L38 147L29 117L363 117Z"/></g><g class="c1"><path class="ink" d="M1185 107L1185 77L1185 77L1243 107L1485 107L1485 136L1238 136L1238 933Q1238 937 1232 942Q1226 947 1217 951Q1207 955 1194 955L1185 955ZM1641 107L1641 79L1641 79L1699 107L1952 107L1952 136L1694 136L1694 414Q1694 416 1687 420Q1681 425 1670 428Q1660 432 1648 432L1641 432ZM1925 107L1915 107L1945 68L2023 127Q2018 133 2006 139Q1994 145 1978 147L1978 868Q1978 891 1973 909Q1968 927 1948 939Q1927 951 1883 956Q1882 943 1877 931Q1872 920 1861 914Q1849 907 1829 901Q1809 896 1775 891L1775 875Q1775 875 1791 876Q1807 878 1829 879Q1852 881 1873 882Q1893 883 1901 883Q1915 883 1920 878Q1925 873 1925 861ZM1459 107L1450 107L1481 73L1550 126Q1546 131 1535 136Q1524 142 1512 144L1512 416Q1512 419 1504 423Q1496 428 1486 432Q1476 435 1467 435L1459 435ZM1211 233L1482 233L1482 262L1211 262ZM1211 362L1482 362L1482 391L1211 391ZM1669 233L1949 233L1949 262L1669 262ZM1669 362L1949 362L1949 391L1669 391Z"/><path class="light" d="M1398 499L1398 471L1398 471L1456 499L1739 499L1739 527L1451 527L1451 856Q1451 858 1445 863Q1438 868 1428 871Q1419 874 1407 874L1398 874ZM1421 783L1733 783L1733 813L1421 813ZM1421 637L1733 637L1733 666L1421 666ZM1708 499L1700 499L1730 465L1800 518Q1796 523 1785 528Q1775 534 1762 536L1762 846Q1762 849 1754 854Q1746 859 1736 863Q1725 867 1716 867L1708 867Z"/></g><g class="c2"><path class="ink" d="M2554 294L3075 294L3120 240Q3120 240 3128 246Q3135 253 3148 263Q3161 273 3175 285Q3190 297 3201 308Q3197 323 3175 323L2562 323ZM2835 58L2924 69Q2923 79 2915 86Q2908 94 2888 97L2888 929Q2888 934 2882 939Q2876 945 2866 948Q2856 952 2845 952L2835 952ZM2803 294L2861 294L2861 310Q2819 460 2736 589Q2652 718 2529 813L2514 799Q2584 733 2640 652Q2696 571 2737 480Q2778 388 2803 294ZM2441 326L2455 309L2526 336Q2520 350 2495 354L2495 935Q2494 937 2488 942Q2481 946 2471 950Q2461 954 2451 954L2441 954ZM2521 45L2613 74Q2610 83 2601 89Q2591 95 2574 94Q2541 186 2498 272Q2454 358 2404 432Q2353 506 2298 562L2283 552Q2329 491 2373 410Q2418 329 2456 235Q2494 142 2521 45ZM2901 298Q2926 389 2975 473Q3025 557 3089 625Q3154 694 3224 738L3221 749Q3186 757 3175 794Q3108 742 3049 665Q2991 589 2948 498Q2905 406 2881 309Z"/></g><g class="c3"><path class="ink" d="M3804 647Q3803 656 3796 662Q3789 669 3774 671L3774 856Q3774 867 3783 871Q3793 875 3831 875L3978 875Q4031 875 4067 874Q4104 873 4117 872Q4128 871 4132 869Q4136 867 4141 861Q4146 849 4153 820Q4160 791 4167 754L4180 754L4182 864Q4199 868 4206 873Q4212 878 4212 887Q4212 898 4204 905Q4195 912 4171 917Q4146 921 4100 923Q4054 925 3978 925L3826 925Q3782 925 3759 920Q3737 915 3729 902Q3721 889 3721 865L3721 637ZM3619 688Q3628 742 3618 785Q3607 827 3588 855Q3569 883 3552 897Q3534 910 3515 915Q3496 919 3487 906Q3480 896 3486 883Q3492 870 3504 861Q3527 848 3548 822Q3569 796 3584 761Q3598 725 3600 687ZM4199 681Q4257 707 4294 736Q4331 764 4350 791Q4369 818 4374 841Q4379 864 4374 879Q4368 894 4356 898Q4343 901 4327 890Q4321 856 4298 819Q4275 782 4246 748Q4217 713 4188 690ZM3883 630Q3931 649 3960 672Q3990 694 4005 716Q4020 738 4024 757Q4027 775 4022 787Q4016 800 4005 802Q3994 805 3980 795Q3977 767 3959 738Q3942 709 3919 683Q3895 657 3871 639ZM3990 61Q3987 71 3977 76Q3967 81 3951 80Q3942 93 3928 108Q3915 123 3901 138Q3887 153 3876 166L3848 166Q3858 142 3871 103Q3883 65 3893 36ZM4145 151L4178 114L4252 171Q4247 177 4235 182Q4223 187 4208 190L4208 615Q4208 618 4201 622Q4193 627 4182 631Q4172 635 4162 635L4155 635L4155 151ZM4186 552L4186 581L3674 581L3674 552ZM4186 282L4186 312L3674 312L3674 282ZM4186 416L4186 446L3674 446L3674 416ZM3703 619Q3703 623 3697 627Q3690 632 3681 636Q3671 639 3659 639L3650 639L3650 151L3650 121L3650 121L3708 151L4187 151L4187 181L3703 181Z"/></g></svg>
-      <p class="brand-line l1">正片開始前，先看看世界。</p>
-      <p class="brand-line l2">全球藝術・電影・攝影新聞　中文閱讀</p>
-      <p class="brand-line l3">mujianrest.work</p>
-    </div>
-
-    <div class="scene" id="slide">
-      <div class="slide-card">
-        <i class="corner a"></i><i class="corner b"></i><i class="corner c"></i><i class="corner d"></i>
-        <p class="en">INTERMISSION</p>
-        <svg class="mark" viewBox="0 36 4379 921" style="aspect-ratio:4379/921" aria-hidden="true"><g class="c0"><path class="ink" d="M705 49Q704 59 696 65Q688 71 671 73L671 200Q671 203 665 207Q659 211 649 214Q639 218 629 218L619 218L619 39ZM334 49Q333 59 325 65Q317 71 300 73L300 201Q300 204 294 208Q288 212 278 215Q268 219 258 219L247 219L247 40ZM677 680L705 645L783 702Q779 707 767 713Q754 718 739 720L739 842Q739 864 734 880Q728 896 711 906Q693 916 655 919Q654 909 650 899Q646 889 637 883Q627 877 611 872Q594 867 567 864L567 848Q567 848 579 849Q592 850 610 851Q627 852 644 853Q660 854 667 854Q679 854 683 850Q687 845 687 836L687 680ZM426 492Q383 548 323 603Q263 657 185 702Q107 747 10 776L0 760Q91 725 165 674Q240 624 295 565Q351 506 385 445L469 477Q465 485 456 489Q447 493 426 492ZM598 539Q629 575 684 606Q738 638 801 661Q865 685 925 698L924 708Q908 710 897 721Q886 732 881 750Q824 730 766 700Q708 670 660 632Q611 593 581 549ZM829 484Q829 484 843 494Q856 504 874 518Q893 532 908 547Q905 563 881 563L35 563L26 533L787 533ZM239 481Q239 483 232 487Q225 491 215 494Q205 498 193 498L185 498L185 233L185 205L185 205L244 233L726 233L726 263L239 263ZM691 233L723 200L793 253Q789 258 778 263Q767 268 754 270L754 469Q754 472 746 477Q738 482 728 486Q718 490 708 490L700 490L700 233ZM732 429L732 459L205 459L205 429ZM733 331L733 361L213 361L213 331ZM248 894Q248 897 236 905Q224 913 204 913L197 913L197 659L201 654L260 680L248 680ZM518 592Q517 602 510 608Q503 614 485 616L485 937Q485 940 479 945Q473 950 463 953Q454 957 443 957L433 957L433 582ZM708 680L708 710L228 710L228 680ZM838 69Q838 69 845 75Q852 81 863 90Q874 99 886 110Q899 121 909 131Q905 147 883 147L500 147L492 117L799 117ZM400 70Q400 70 412 79Q424 89 441 103Q458 118 470 131Q467 147 446 147L38 147L29 117L363 117Z"/></g><g class="c1"><path class="ink" d="M1185 107L1185 77L1185 77L1243 107L1485 107L1485 136L1238 136L1238 933Q1238 937 1232 942Q1226 947 1217 951Q1207 955 1194 955L1185 955ZM1641 107L1641 79L1641 79L1699 107L1952 107L1952 136L1694 136L1694 414Q1694 416 1687 420Q1681 425 1670 428Q1660 432 1648 432L1641 432ZM1925 107L1915 107L1945 68L2023 127Q2018 133 2006 139Q1994 145 1978 147L1978 868Q1978 891 1973 909Q1968 927 1948 939Q1927 951 1883 956Q1882 943 1877 931Q1872 920 1861 914Q1849 907 1829 901Q1809 896 1775 891L1775 875Q1775 875 1791 876Q1807 878 1829 879Q1852 881 1873 882Q1893 883 1901 883Q1915 883 1920 878Q1925 873 1925 861ZM1459 107L1450 107L1481 73L1550 126Q1546 131 1535 136Q1524 142 1512 144L1512 416Q1512 419 1504 423Q1496 428 1486 432Q1476 435 1467 435L1459 435ZM1211 233L1482 233L1482 262L1211 262ZM1211 362L1482 362L1482 391L1211 391ZM1669 233L1949 233L1949 262L1669 262ZM1669 362L1949 362L1949 391L1669 391Z"/><path class="light" d="M1398 499L1398 471L1398 471L1456 499L1739 499L1739 527L1451 527L1451 856Q1451 858 1445 863Q1438 868 1428 871Q1419 874 1407 874L1398 874ZM1421 783L1733 783L1733 813L1421 813ZM1421 637L1733 637L1733 666L1421 666ZM1708 499L1700 499L1730 465L1800 518Q1796 523 1785 528Q1775 534 1762 536L1762 846Q1762 849 1754 854Q1746 859 1736 863Q1725 867 1716 867L1708 867Z"/></g><g class="c2"><path class="ink" d="M2554 294L3075 294L3120 240Q3120 240 3128 246Q3135 253 3148 263Q3161 273 3175 285Q3190 297 3201 308Q3197 323 3175 323L2562 323ZM2835 58L2924 69Q2923 79 2915 86Q2908 94 2888 97L2888 929Q2888 934 2882 939Q2876 945 2866 948Q2856 952 2845 952L2835 952ZM2803 294L2861 294L2861 310Q2819 460 2736 589Q2652 718 2529 813L2514 799Q2584 733 2640 652Q2696 571 2737 480Q2778 388 2803 294ZM2441 326L2455 309L2526 336Q2520 350 2495 354L2495 935Q2494 937 2488 942Q2481 946 2471 950Q2461 954 2451 954L2441 954ZM2521 45L2613 74Q2610 83 2601 89Q2591 95 2574 94Q2541 186 2498 272Q2454 358 2404 432Q2353 506 2298 562L2283 552Q2329 491 2373 410Q2418 329 2456 235Q2494 142 2521 45ZM2901 298Q2926 389 2975 473Q3025 557 3089 625Q3154 694 3224 738L3221 749Q3186 757 3175 794Q3108 742 3049 665Q2991 589 2948 498Q2905 406 2881 309Z"/></g><g class="c3"><path class="ink" d="M3804 647Q3803 656 3796 662Q3789 669 3774 671L3774 856Q3774 867 3783 871Q3793 875 3831 875L3978 875Q4031 875 4067 874Q4104 873 4117 872Q4128 871 4132 869Q4136 867 4141 861Q4146 849 4153 820Q4160 791 4167 754L4180 754L4182 864Q4199 868 4206 873Q4212 878 4212 887Q4212 898 4204 905Q4195 912 4171 917Q4146 921 4100 923Q4054 925 3978 925L3826 925Q3782 925 3759 920Q3737 915 3729 902Q3721 889 3721 865L3721 637ZM3619 688Q3628 742 3618 785Q3607 827 3588 855Q3569 883 3552 897Q3534 910 3515 915Q3496 919 3487 906Q3480 896 3486 883Q3492 870 3504 861Q3527 848 3548 822Q3569 796 3584 761Q3598 725 3600 687ZM4199 681Q4257 707 4294 736Q4331 764 4350 791Q4369 818 4374 841Q4379 864 4374 879Q4368 894 4356 898Q4343 901 4327 890Q4321 856 4298 819Q4275 782 4246 748Q4217 713 4188 690ZM3883 630Q3931 649 3960 672Q3990 694 4005 716Q4020 738 4024 757Q4027 775 4022 787Q4016 800 4005 802Q3994 805 3980 795Q3977 767 3959 738Q3942 709 3919 683Q3895 657 3871 639ZM3990 61Q3987 71 3977 76Q3967 81 3951 80Q3942 93 3928 108Q3915 123 3901 138Q3887 153 3876 166L3848 166Q3858 142 3871 103Q3883 65 3893 36ZM4145 151L4178 114L4252 171Q4247 177 4235 182Q4223 187 4208 190L4208 615Q4208 618 4201 622Q4193 627 4182 631Q4172 635 4162 635L4155 635L4155 151ZM4186 552L4186 581L3674 581L3674 552ZM4186 282L4186 312L3674 312L3674 282ZM4186 416L4186 446L3674 446L3674 416ZM3703 619Q3703 623 3697 627Q3690 632 3681 636Q3671 639 3659 639L3650 639L3650 151L3650 121L3650 121L3708 151L4187 151L4187 181L3703 181Z"/></g></svg>
-        <span class="rule"></span>
-        <p class="next">新聞片即將開始<small>NEWSREEL TO FOLLOW</small></p>
+  <div class="scene" id="tv-scene">
+    <div class="wall"></div>
+    <div class="tv">
+      <div class="ears"><i></i><i></i><b></b></div>
+      <div class="cabinet"></div>
+      <div class="bezel"></div>
+      <div class="screen">
+        <div class="testcard"><div class="burst"></div><div class="ring"></div><p>幕間休息<br>電視台<small>MUJIAN TV</small></p></div>
+        <div class="warm"></div>
       </div>
+      <div class="knobs"><i></i><i></i><b></b><b></b><b></b></div>
+      <div class="legs"><i></i><i></i></div>
     </div>
-    <div class="layer" id="dim"></div>
+    <p class="copy light"><span>各位觀衆，明日世界的新聞，現在播送！</span></p>
   </div>
 
-  <canvas class="layer" id="wear" width="1920" height="1080"></canvas>
+  <div class="scene" id="machine-scene">
+    <div class="burst"></div>
+    <canvas id="globe" width="1920" height="1080"></canvas>
+    <div class="machine">
+      <div class="mast"></div><div class="dish"></div>
+      <div class="dome"></div>
+      <div class="body"></div>
+      <div class="dial a"><i></i></div><div class="dial b"><i></i></div><div class="dial c"><i></i></div>
+      <div class="tubes"><i></i><i></i><i></i><i></i></div>
+      <div class="plate">新聞機</div>
+      <div class="slot"></div>
+    </div>
+    <i class="star4" style="left:240px;top:140px;background:var(--mustard)"></i>
+    <i class="star4" style="left:880px;top:110px;background:var(--cream);animation-delay:.5s"></i>
+    <i class="star4" style="left:1800px;top:760px;background:var(--mint);animation-delay:.9s"></i>
+    <p class="copy dark"><span>每兩小時，幕間休息從全世界的媒體，</span><span>接收電影、攝影與藝術的最新消息。</span></p>
+  </div>
+
+  <div class="scene" id="cards-scene">
+    <div class="burst"></div>
+    <article class="card t k1"><header>東京<small>10.09</small></header><p>中野道通过摄影展“Meimetsu”告别青春，代官山开展</p><footer>IMA</footer></article>
+    <article class="card c k2"><header>釜山<small>10.15</small></header><p>马吉德·马吉迪的《Midday Meal》斩获釜山奖，电影节迎来2015年以来最高观众人数</p><footer>SCREEN DAILY</footer></article>
+    <article class="card n k3"><header>倫敦<small>10.15</small></header><p>邪典影院“查尔斯王子电影院”在签署租约续签后“得救”</p><footer>THE GUARDIAN</footer></article>
+    <article class="card t k4"><header>紐約<small>10.15</small></header><p>大都会艺术博物馆即将举办的展览将以全新视角呈现伦勃朗对古代艺术的痴迷</p><footer>HYPERALLERGIC</footer></article>
+    <article class="card c k5"><header>威尼斯<small>10.15</small></header><p>法国收藏家弗朗索瓦·皮诺计划在威尼斯博物馆举办常设展</p><footer>ARTNEWS</footer></article>
+    <p class="copy light"><span>從東京到倫敦，從釜山到紐約——</span><span>世界的藝文頭條，在這裏相遇。</span></p>
+  </div>
+
+  <div class="scene" id="fair-scene">
+    <div class="fair">
+      <div class="track"></div>
+      <section class="pavilion" style="left:0">
+        <div class="sun" style="left:1300px"></div>
+        <p class="label">電影館<small>CINEMA</small></p>
+        <div class="building reel"><div class="tower"></div><svg class="disc" viewBox="-160 -160 320 320" aria-hidden="true"><circle r="158" fill="#ec6a3d"/><circle r="150" fill="none" stroke="#1e2a3a" stroke-width="8"/><circle cx="92.0" cy="0.0" r="38" fill="#f3e9d2"/><circle cx="28.4" cy="87.5" r="38" fill="#f3e9d2"/><circle cx="-74.4" cy="54.1" r="38" fill="#f3e9d2"/><circle cx="-74.4" cy="-54.1" r="38" fill="#f3e9d2"/><circle cx="28.4" cy="-87.5" r="38" fill="#f3e9d2"/><circle r="26" fill="#1e2a3a"/><circle r="9" fill="#f3e9d2"/></svg></div>
+        <div class="sign"><div class="bulbs"></div><b>温哥华电影节观众奖揭晓：《我拍洛奇》与《仪式》获重要奖项</b><i>Vancouver Film Festival Audience Award Winners: ’I Play Rocky,’ ‘Ceremony’ Among Big Wins</i><small>VARIETY · 2026.10.13</small></div>
+      </section>
+      <section class="pavilion" style="left:1920px">
+        <div class="sun" style="left:1250px;top:100px"></div>
+        <p class="label">攝影館<small>PHOTOGRAPHY</small></p>
+        <div class="building dome"><div class="flash"></div><div class="shell"></div><div class="lens"></div></div>
+        <div class="sign"><div class="bulbs"></div><b>InCadaqués 摄影节：Julie Peiffer 获2026年女性摄影奖</b><i lang="fr">InCadaqués Festival : Julie Peiffer remporte le Premi Fotografia Femenina 2026</i><small>FISHEYE · 2026.10.10</small></div>
+      </section>
+      <section class="pavilion" style="left:3840px">
+        <div class="sun" style="left:1320px;top:80px"></div>
+        <p class="label">藝術館<small>ART</small></p>
+        <div class="building boom"><div class="roof"></div><i class="pillar" style="left:90px"></i><i class="pillar" style="left:574px"></i>
+          <div class="mobile"><i style="left:0;top:20px;width:90px;height:90px;background:var(--red)"></i><i style="left:120px;top:60px;width:56px;height:56px;background:var(--navy)"></i><i style="left:70px;top:120px;width:44px;height:44px;background:var(--mustard)"></i></div></div>
+        <div class="sign"><div class="bulbs"></div><b>光影幻境：艺术摄影的诞生</b><i>Light and Magic: The Birth of Art Photography</i><small>TATE MODERN · 倫敦 · 2026.10.14 — 2027.02.21</small></div>
+      </section>
+    </div>
+    <div class="monorail"></div>
+  </div>
+
+  <div class="scene" id="attention-scene">
+    <div class="earth"></div>
+    <div class="rings"><i></i><i></i><i></i></div>
+    <i class="star4" style="left:160px;top:300px;background:var(--cream);width:20px;height:20px;margin:-10px"></i>
+    <i class="star4" style="left:1760px;top:240px;background:var(--cream);width:24px;height:24px;margin:-12px;animation-delay:.6s"></i>
+    <div class="member" style="left:300px;top:640px;animation-delay:33.7s"><i class="star4"></i><b>Artishock</b><span>智利与拉美</span></div>
+    <div class="member" style="left:600px;top:470px;animation-delay:34.0s"><i class="star4"></i><b>ZUM</b><span>巴西、拉美与跨地区摄影</span></div>
+    <div class="member" style="left:900px;top:380px;animation-delay:34.3s"><i class="star4"></i><b>ART AFRICA</b><span>非洲与全球南方</span></div>
+    <div class="member" style="left:1110px;top:560px;animation-delay:34.6s"><i class="star4"></i><b>ArtThrob</b><span>南非与非洲创作现场</span></div>
+    <div class="member" style="left:1380px;top:400px;animation-delay:34.9s"><i class="star4"></i><b>TAKE on Art</b><span>印度与南亚</span></div>
+    <div class="member" style="left:1600px;top:600px;animation-delay:35.2s"><i class="star4"></i><b>Matca</b><span>越南与东南亚摄影</span></div>
+    <div class="rocket"><div class="flag">一種關注</div><div class="flame"></div><div class="fin"></div><div class="hull"></div></div>
+    <p class="copy dark"><span>還有「一種關注」——</span><span>把目光投向更遠的角落，看見更寬的世界。</span></p>
+  </div>
+
+  <div class="scene" id="atom-scene">
+    <div class="burst"></div>
+    <div class="atom">
+      <svg viewBox="0 0 600 600" aria-hidden="true"><ellipse cx="300" cy="300" rx="280" ry="96"/><ellipse cx="300" cy="300" rx="280" ry="96" transform="rotate(60 300 300)"/><ellipse cx="300" cy="300" rx="280" ry="96" transform="rotate(120 300 300)"/></svg>
+      <div class="nucleus">日</div>
+      <div class="electron e1" id="e1">電影</div><div class="electron e2" id="e2">攝影</div><div class="electron e3" id="e3">藝術</div>
+    </div>
+    <svg class="final-mark" viewBox="0 36 4379 921" style="aspect-ratio:4379/921" aria-hidden="true"><g class="c0"><path class="ink" d="M705 49Q704 59 696 65Q688 71 671 73L671 200Q671 203 665 207Q659 211 649 214Q639 218 629 218L619 218L619 39ZM334 49Q333 59 325 65Q317 71 300 73L300 201Q300 204 294 208Q288 212 278 215Q268 219 258 219L247 219L247 40ZM677 680L705 645L783 702Q779 707 767 713Q754 718 739 720L739 842Q739 864 734 880Q728 896 711 906Q693 916 655 919Q654 909 650 899Q646 889 637 883Q627 877 611 872Q594 867 567 864L567 848Q567 848 579 849Q592 850 610 851Q627 852 644 853Q660 854 667 854Q679 854 683 850Q687 845 687 836L687 680ZM426 492Q383 548 323 603Q263 657 185 702Q107 747 10 776L0 760Q91 725 165 674Q240 624 295 565Q351 506 385 445L469 477Q465 485 456 489Q447 493 426 492ZM598 539Q629 575 684 606Q738 638 801 661Q865 685 925 698L924 708Q908 710 897 721Q886 732 881 750Q824 730 766 700Q708 670 660 632Q611 593 581 549ZM829 484Q829 484 843 494Q856 504 874 518Q893 532 908 547Q905 563 881 563L35 563L26 533L787 533ZM239 481Q239 483 232 487Q225 491 215 494Q205 498 193 498L185 498L185 233L185 205L185 205L244 233L726 233L726 263L239 263ZM691 233L723 200L793 253Q789 258 778 263Q767 268 754 270L754 469Q754 472 746 477Q738 482 728 486Q718 490 708 490L700 490L700 233ZM732 429L732 459L205 459L205 429ZM733 331L733 361L213 361L213 331ZM248 894Q248 897 236 905Q224 913 204 913L197 913L197 659L201 654L260 680L248 680ZM518 592Q517 602 510 608Q503 614 485 616L485 937Q485 940 479 945Q473 950 463 953Q454 957 443 957L433 957L433 582ZM708 680L708 710L228 710L228 680ZM838 69Q838 69 845 75Q852 81 863 90Q874 99 886 110Q899 121 909 131Q905 147 883 147L500 147L492 117L799 117ZM400 70Q400 70 412 79Q424 89 441 103Q458 118 470 131Q467 147 446 147L38 147L29 117L363 117Z"/></g><g class="c1"><path class="ink" d="M1185 107L1185 77L1185 77L1243 107L1485 107L1485 136L1238 136L1238 933Q1238 937 1232 942Q1226 947 1217 951Q1207 955 1194 955L1185 955ZM1641 107L1641 79L1641 79L1699 107L1952 107L1952 136L1694 136L1694 414Q1694 416 1687 420Q1681 425 1670 428Q1660 432 1648 432L1641 432ZM1925 107L1915 107L1945 68L2023 127Q2018 133 2006 139Q1994 145 1978 147L1978 868Q1978 891 1973 909Q1968 927 1948 939Q1927 951 1883 956Q1882 943 1877 931Q1872 920 1861 914Q1849 907 1829 901Q1809 896 1775 891L1775 875Q1775 875 1791 876Q1807 878 1829 879Q1852 881 1873 882Q1893 883 1901 883Q1915 883 1920 878Q1925 873 1925 861ZM1459 107L1450 107L1481 73L1550 126Q1546 131 1535 136Q1524 142 1512 144L1512 416Q1512 419 1504 423Q1496 428 1486 432Q1476 435 1467 435L1459 435ZM1211 233L1482 233L1482 262L1211 262ZM1211 362L1482 362L1482 391L1211 391ZM1669 233L1949 233L1949 262L1669 262ZM1669 362L1949 362L1949 391L1669 391Z"/><path class="light" d="M1398 499L1398 471L1398 471L1456 499L1739 499L1739 527L1451 527L1451 856Q1451 858 1445 863Q1438 868 1428 871Q1419 874 1407 874L1398 874ZM1421 783L1733 783L1733 813L1421 813ZM1421 637L1733 637L1733 666L1421 666ZM1708 499L1700 499L1730 465L1800 518Q1796 523 1785 528Q1775 534 1762 536L1762 846Q1762 849 1754 854Q1746 859 1736 863Q1725 867 1716 867L1708 867Z"/></g><g class="c2"><path class="ink" d="M2554 294L3075 294L3120 240Q3120 240 3128 246Q3135 253 3148 263Q3161 273 3175 285Q3190 297 3201 308Q3197 323 3175 323L2562 323ZM2835 58L2924 69Q2923 79 2915 86Q2908 94 2888 97L2888 929Q2888 934 2882 939Q2876 945 2866 948Q2856 952 2845 952L2835 952ZM2803 294L2861 294L2861 310Q2819 460 2736 589Q2652 718 2529 813L2514 799Q2584 733 2640 652Q2696 571 2737 480Q2778 388 2803 294ZM2441 326L2455 309L2526 336Q2520 350 2495 354L2495 935Q2494 937 2488 942Q2481 946 2471 950Q2461 954 2451 954L2441 954ZM2521 45L2613 74Q2610 83 2601 89Q2591 95 2574 94Q2541 186 2498 272Q2454 358 2404 432Q2353 506 2298 562L2283 552Q2329 491 2373 410Q2418 329 2456 235Q2494 142 2521 45ZM2901 298Q2926 389 2975 473Q3025 557 3089 625Q3154 694 3224 738L3221 749Q3186 757 3175 794Q3108 742 3049 665Q2991 589 2948 498Q2905 406 2881 309Z"/></g><g class="c3"><path class="ink" d="M3804 647Q3803 656 3796 662Q3789 669 3774 671L3774 856Q3774 867 3783 871Q3793 875 3831 875L3978 875Q4031 875 4067 874Q4104 873 4117 872Q4128 871 4132 869Q4136 867 4141 861Q4146 849 4153 820Q4160 791 4167 754L4180 754L4182 864Q4199 868 4206 873Q4212 878 4212 887Q4212 898 4204 905Q4195 912 4171 917Q4146 921 4100 923Q4054 925 3978 925L3826 925Q3782 925 3759 920Q3737 915 3729 902Q3721 889 3721 865L3721 637ZM3619 688Q3628 742 3618 785Q3607 827 3588 855Q3569 883 3552 897Q3534 910 3515 915Q3496 919 3487 906Q3480 896 3486 883Q3492 870 3504 861Q3527 848 3548 822Q3569 796 3584 761Q3598 725 3600 687ZM4199 681Q4257 707 4294 736Q4331 764 4350 791Q4369 818 4374 841Q4379 864 4374 879Q4368 894 4356 898Q4343 901 4327 890Q4321 856 4298 819Q4275 782 4246 748Q4217 713 4188 690ZM3883 630Q3931 649 3960 672Q3990 694 4005 716Q4020 738 4024 757Q4027 775 4022 787Q4016 800 4005 802Q3994 805 3980 795Q3977 767 3959 738Q3942 709 3919 683Q3895 657 3871 639ZM3990 61Q3987 71 3977 76Q3967 81 3951 80Q3942 93 3928 108Q3915 123 3901 138Q3887 153 3876 166L3848 166Q3858 142 3871 103Q3883 65 3893 36ZM4145 151L4178 114L4252 171Q4247 177 4235 182Q4223 187 4208 190L4208 615Q4208 618 4201 622Q4193 627 4182 631Q4172 635 4162 635L4155 635L4155 151ZM4186 552L4186 581L3674 581L3674 552ZM4186 282L4186 312L3674 312L3674 282ZM4186 416L4186 446L3674 446L3674 416ZM3703 619Q3703 623 3697 627Q3690 632 3681 636Q3671 639 3659 639L3650 639L3650 151L3650 121L3650 121L3708 151L4187 151L4187 181L3703 181Z"/></g></svg>
+    <p class="final-line l1">全球藝術、電影、攝影新聞</p>
+    <p class="final-line l2">mujianrest.work</p>
+    <i class="star4" style="left:420px;top:250px;background:var(--coral)"></i>
+    <i class="star4" style="left:1500px;top:300px;background:var(--teal);animation-delay:.4s"></i>
+    <i class="star4" style="left:1380px;top:820px;background:var(--mustard);animation-delay:.8s"></i>
+  </div>
+
+  <div class="layer" id="halftone"></div>
   <div class="layer" id="grain"></div>
   <div class="layer" id="vignette"></div>
   <div class="layer" id="blackout"></div>
@@ -306,7 +350,7 @@ svg{display:block;overflow:visible}
 
 <script>
 (function () {
-  var DURATION = 46000;
+  var DURATION = 46500;
   var DOTS = [-81.0,83.0,-79.0,83.0,-77.0,83.0,-75.0,83.0,-73.0,83.0,-71.0,83.0,-69.0,83.0,-67.0,83.0,-43.0,83.0,-41.0,83.0,-39.0,83.0,-37.0,83.0,-35.0,83.0,-33.0,83.0,-31.0,83.0,-29.0,83.0,-27.0,83.0,-25.0,83.0,-93.0,81.0,-89.0,81.0,-87.0,81.0,-85.0,81.0,-83.0,81.0,-81.0,81.0,-79.0,81.0,-77.0,81.0,-75.0,81.0,-73.0,81.0,-71.0,81.0,-69.0,81.0,-63.0,81.0,-61.0,81.0,-59.0,81.0,-57.0,81.0,-55.0,81.0,-53.0,81.0,-51.0,81.0,-49.0,81.0,-47.0,81.0,-45.0,81.0,-43.0,81.0,-41.0,81.0,-39.0,81.0,-37.0,81.0,-35.0,81.0,-33.0,81.0,-31.0,81.0,-29.0,81.0,-27.0,81.0,-25.0,81.0,-23.0,81.0,-21.0,81.0,-19.0,81.0,-17.0,81.0,-15.0,81.0,95.0,81.0,-105.0,79.0,-103.0,79.0,-93.0,79.0,-91.0,79.0,-89.0,79.0,-85.0,79.0,-83.0,79.0,-81.0,79.0,-79.0,79.0,-77.0,79.0,-67.0,79.0,-65.0,79.0,-63.0,79.0,-61.0,79.0,-59.0,79.0,-57.0,79.0,-55.0,79.0,-53.0,79.0,-51.0,79.0,-49.0,79.0,-47.0,79.0,-45.0,79.0,-43.0,79.0,-41.0,79.0,-39.0,79.0,-37.0,79.0,-35.0,79.0,-33.0,79.0,-31.0,79.0,-29.0,79.0,-27.0,79.0,-25.0,79.0,-23.0,79.0,-21.0,79.0,13.0,79.0,15.0,79.0,17.0,79.0,19.0,79.0,21.0,79.0,97.0,79.0,99.0,79.0,101.0,79.0,103.0,79.0,-119.0,77.0,-117.0,77.0,-95.0,77.0,-89.0,77.0,-87.0,77.0,-85.0,77.0,-83.0,77.0,-81.0,77.0,-71.0,77.0,-69.0,77.0,-67.0,77.0,-65.0,77.0,-63.0,77.0,-61.0,77.0,-59.0,77.0,-57.0,77.0,-55.0,77.0,-53.0,77.0,-51.0,77.0,-49.0,77.0,-47.0,77.0,-45.0,77.0,-43.0,77.0,-41.0,77.0,-39.0,77.0,-37.0,77.0,-35.0,77.0,-33.0,77.0,-31.0,77.0,-29.0,77.0,-27.0,77.0,-25.0,77.0,-23.0,77.0,-21.0,77.0,-19.0,77.0,17.0,77.0,103.0,77.0,105.0,77.0,-111.0,75.0,-109.0,75.0,-107.0,75.0,-99.0,75.0,-95.0,75.0,-91.0,75.0,-89.0,75.0,-87.0,75.0,-85.0,75.0,-83.0,75.0,-81.0,75.0,-57.0,75.0,-55.0,75.0,-53.0,75.0,-51.0,75.0,-49.0,75.0,-47.0,75.0,-45.0,75.0,-43.0,75.0,-41.0,75.0,-39.0,75.0,-37.0,75.0,-35.0,75.0,-33.0,75.0,-31.0,75.0,-29.0,75.0,-27.0,75.0,-25.0,75.0,-23.0,75.0,-21.0,75.0,57.0,75.0,59.0,75.0,87.0,75.0,89.0,75.0,91.0,75.0,93.0,75.0,95.0,75.0,97.0,75.0,99.0,75.0,101.0,75.0,103.0,75.0,105.0,75.0,107.0,75.0,109.0,75.0,111.0,75.0,139.0,75.0,141.0,75.0,143.0,75.0,147.0,75.0,149.0,75.0,-123.0,73.0,-121.0,73.0,-119.0,73.0,-115.0,73.0,-107.0,73.0,-99.0,73.0,-95.0,73.0,-93.0,73.0,-89.0,73.0,-87.0,73.0,-85.0,73.0,-83.0,73.0,-79.0,73.0,-77.0,73.0,-55.0,73.0,-53.0,73.0,-51.0,73.0,-49.0,73.0,-47.0,73.0,-45.0,73.0,-43.0,73.0,-41.0,73.0,-39.0,73.0,-37.0,73.0,-35.0,73.0,-33.0,73.0,-31.0,73.0,-29.0,73.0,-27.0,73.0,-25.0,73.0,-23.0,73.0,53.0,73.0,55.0,73.0,81.0,73.0,83.0,73.0,85.0,73.0,87.0,73.0,89.0,73.0,91.0,73.0,93.0,73.0,95.0,73.0,97.0,73.0,99.0,73.0,101.0,73.0,103.0,73.0,105.0,73.0,107.0,73.0,109.0,73.0,111.0,73.0,113.0,73.0,115.0,73.0,117.0,73.0,119.0,73.0,121.0,73.0,125.0,73.0,127.0,73.0,-179.0,71.0,-157.0,71.0,-155.0,71.0,-123.0,71.0,-117.0,71.0,-115.0,71.0,-113.0,71.0,-111.0,71.0,-109.0,71.0,-107.0,71.0,-105.0,71.0,-95.0,71.0,-93.0,71.0,-87.0,71.0,-85.0,71.0,-83.0,71.0,-81.0,71.0,-79.0,71.0,-77.0,71.0,-75.0,71.0,-73.0,71.0,-51.0,71.0,-49.0,71.0,-47.0,71.0,-45.0,71.0,-43.0,71.0,-41.0,71.0,-39.0,71.0,-37.0,71.0,-35.0,71.0,-33.0,71.0,-31.0,71.0,-29.0,71.0,-27.0,71.0,-23.0,71.0,25.0,71.0,27.0,71.0,55.0,71.0,67.0,71.0,69.0,71.0,71.0,71.0,75.0,71.0,77.0,71.0,79.0,71.0,81.0,71.0,83.0,71.0,85.0,71.0,87.0,71.0,89.0,71.0,91.0,71.0,131.0,71.0,153.0,71.0,155.0,71.0,159.0,71.0,161.0,71.0,163.0,71.0,165.0,71.0,167.0,71.0,169.0,71.0,171.0,71.0,173.0,71.0,175.0,71.0,177.0,71.0,-163.0,69.0,-161.0,69.0,-159.0,69.0,-157.0,69.0,-155.0,69.0,-153.0,69.0,-151.0,69.0,-137.0,69.0,-117.0,69.0,-115.0,69.0,-107.0,69.0,-105.0,69.0,-101.0,69.0,-99.0,69.0,-95.0,69.0,-87.0,69.0,-81.0,69.0,-79.0,69.0,-77.0,69.0,-67.0,69.0,-65.0,69.0,-63.0,69.0,-61.0,69.0,-59.0,69.0,-57.0,69.0,-55.0,69.0,-53.0,69.0,-25.0,69.0,-23.0,69.0,-21.0,69.0,-19.0,69.0,-17.0,69.0,-15.0,69.0,-13.0,69.0,-11.0,69.0,-9.0,69.0,-7.0,69.0,-5.0,69.0,-3.0,69.0,-1.0,69.0,1.0,69.0,3.0,69.0,5.0,69.0,7.0,69.0,9.0,69.0,11.0,69.0,13.0,69.0,15.0,69.0,17.0,69.0,37.0,69.0,39.0,69.0,41.0,69.0,43.0,69.0,45.0,69.0,47.0,69.0,49.0,69.0,51.0,69.0,53.0,69.0,55.0,69.0,57.0,69.0,59.0,69.0,67.0,69.0,73.0,69.0,169.0,69.0,-173.0,67.0,-171.0,67.0,-169.0,67.0,-167.0,67.0,-165.0,67.0,-81.0,67.0,-79.0,67.0,-77.0,67.0,-75.0,67.0,-63.0,67.0,-61.0,67.0,-59.0,67.0,-57.0,67.0,-55.0,67.0,-33.0,67.0,-31.0,67.0,-29.0,67.0,-27.0,67.0,-25.0,67.0,-23.0,67.0,-21.0,67.0,-19.0,67.0,-17.0,67.0,-15.0,67.0,-13.0,67.0,-11.0,67.0,-9.0,67.0,-7.0,67.0,-5.0,67.0,-3.0,67.0,-1.0,67.0,1.0,67.0,3.0,67.0,5.0,67.0,7.0,67.0,9.0,67.0,11.0,67.0,13.0,67.0,43.0,67.0,47.0,67.0,73.0,67.0,-179.0,65.0,-177.0,65.0,-171.0,65.0,-169.0,65.0,-167.0,65.0,-87.0,65.0,-83.0,65.0,-81.0,65.0,-79.0,65.0,-65.0,65.0,-63.0,65.0,-61.0,65.0,-59.0,65.0,-57.0,65.0,-55.0,65.0,-53.0,65.0,-39.0,65.0,-37.0,65.0,-35.0,65.0,-33.0,65.0,-31.0,65.0,-29.0,65.0,-27.0,65.0,-25.0,65.0,-23.0,65.0,-13.0,65.0,-11.0,65.0,-9.0,65.0,-7.0,65.0,-5.0,65.0,-3.0,65.0,-1.0,65.0,1.0,65.0,3.0,65.0,5.0,65.0,7.0,65.0,9.0,65.0,11.0,65.0,23.0,65.0,25.0,65.0,35.0,65.0,39.0,65.0,-163.0,63.0,-161.0,63.0,-159.0,63.0,-157.0,63.0,-155.0,63.0,-153.0,63.0,-151.0,63.0,-149.0,63.0,-147.0,63.0,-145.0,63.0,-143.0,63.0,-141.0,63.0,-139.0,63.0,-137.0,63.0,-135.0,63.0,-133.0,63.0,-131.0,63.0,-129.0,63.0,-127.0,63.0,-125.0,63.0,-123.0,63.0,-121.0,63.0,-119.0,63.0,-117.0,63.0,-115.0,63.0,-113.0,63.0,-111.0,63.0,-109.0,63.0,-107.0,63.0,-105.0,63.0,-103.0,63.0,-101.0,63.0,-99.0,63.0,-97.0,63.0,-95.0,63.0,-93.0,63.0,-91.0,63.0,-71.0,63.0,-69.0,63.0,-65.0,63.0,-49.0,63.0,-47.0,63.0,-45.0,63.0,-43.0,63.0,9.0,63.0,11.0,63.0,13.0,63.0,15.0,63.0,17.0,63.0,23.0,63.0,25.0,63.0,27.0,63.0,29.0,63.0,31.0,63.0,33.0,63.0,35.0,63.0,37.0,63.0,39.0,63.0,41.0,63.0,43.0,63.0,45.0,63.0,47.0,63.0,49.0,63.0,51.0,63.0,53.0,63.0,55.0,63.0,57.0,63.0,59.0,63.0,61.0,63.0,63.0,63.0,65.0,63.0,67.0,63.0,69.0,63.0,71.0,63.0,73.0,63.0,75.0,63.0,77.0,63.0,79.0,63.0,81.0,63.0,83.0,63.0,85.0,63.0,87.0,63.0,89.0,63.0,91.0,63.0,93.0,63.0,95.0,63.0,97.0,63.0,99.0,63.0,101.0,63.0,103.0,63.0,105.0,63.0,107.0,63.0,109.0,63.0,111.0,63.0,113.0,63.0,115.0,63.0,117.0,63.0,119.0,63.0,121.0,63.0,123.0,63.0,125.0,63.0,127.0,63.0,129.0,63.0,131.0,63.0,133.0,63.0,135.0,63.0,137.0,63.0,139.0,63.0,141.0,63.0,143.0,63.0,145.0,63.0,147.0,63.0,149.0,63.0,151.0,63.0,153.0,63.0,155.0,63.0,157.0,63.0,159.0,63.0,161.0,63.0,163.0,63.0,165.0,63.0,167.0,63.0,169.0,63.0,171.0,63.0,173.0,63.0,175.0,63.0,177.0,63.0,179.0,63.0,-165.0,61.0,-163.0,61.0,-161.0,61.0,-159.0,61.0,-157.0,61.0,-155.0,61.0,-153.0,61.0,-149.0,61.0,-147.0,61.0,-145.0,61.0,-143.0,61.0,-141.0,61.0,-139.0,61.0,-137.0,61.0,-135.0,61.0,-133.0,61.0,-131.0,61.0,-129.0,61.0,-127.0,61.0,-125.0,61.0,-123.0,61.0,-121.0,61.0,-119.0,61.0,-117.0,61.0,-115.0,61.0,-113.0,61.0,-111.0,61.0,-109.0,61.0,-107.0,61.0,-105.0,61.0,-103.0,61.0,-101.0,61.0,-99.0,61.0,-97.0,61.0,-95.0,61.0,-77.0,61.0,-75.0,61.0,-73.0,61.0,-71.0,61.0,-47.0,61.0,-45.0,61.0,-43.0,61.0,7.0,61.0,9.0,61.0,11.0,61.0,13.0,61.0,15.0,61.0,17.0,61.0,23.0,61.0,25.0,61.0,27.0,61.0,29.0,61.0,31.0,61.0,33.0,61.0,35.0,61.0,37.0,61.0,39.0,61.0,41.0,61.0,43.0,61.0,45.0,61.0,47.0,61.0,49.0,61.0,51.0,61.0,53.0,61.0,55.0,61.0,57.0,61.0,59.0,61.0,61.0,61.0,63.0,61.0,65.0,61.0,67.0,61.0,69.0,61.0,71.0,61.0,73.0,61.0,75.0,61.0,77.0,61.0,79.0,61.0,81.0,61.0,83.0,61.0,85.0,61.0,87.0,61.0,89.0,61.0,91.0,61.0,93.0,61.0,95.0,61.0,97.0,61.0,99.0,61.0,101.0,61.0,103.0,61.0,105.0,61.0,107.0,61.0,109.0,61.0,111.0,61.0,113.0,61.0,115.0,61.0,117.0,61.0,119.0,61.0,121.0,61.0,123.0,61.0,125.0,61.0,127.0,61.0,129.0,61.0,131.0,61.0,133.0,61.0,135.0,61.0,137.0,61.0,139.0,61.0,141.0,61.0,143.0,61.0,145.0,61.0,147.0,61.0,149.0,61.0,151.0,61.0,153.0,61.0,155.0,61.0,161.0,61.0,165.0,61.0,167.0,61.0,169.0,61.0,171.0,61.0,-161.0,59.0,-159.0,59.0,-157.0,59.0,-155.0,59.0,-137.0,59.0,-135.0,59.0,-133.0,59.0,-131.0,59.0,-129.0,59.0,-127.0,59.0,-125.0,59.0,-123.0,59.0,-121.0,59.0,-119.0,59.0,-117.0,59.0,-115.0,59.0,-113.0,59.0,-111.0,59.0,-109.0,59.0,-107.0,59.0,-105.0,59.0,-103.0,59.0,-101.0,59.0,-99.0,59.0,-97.0,59.0,-95.0,59.0,-77.0,59.0,-75.0,59.0,-73.0,59.0,-71.0,59.0,-65.0,59.0,7.0,59.0,9.0,59.0,11.0,59.0,13.0,59.0,15.0,59.0,17.0,59.0,25.0,59.0,27.0,59.0,29.0,59.0,31.0,59.0,33.0,59.0,35.0,59.0,37.0,59.0,39.0,59.0,41.0,59.0,43.0,59.0,45.0,59.0,47.0,59.0,49.0,59.0,51.0,59.0,53.0,59.0,55.0,59.0,57.0,59.0,59.0,59.0,61.0,59.0,63.0,59.0,65.0,59.0,67.0,59.0,69.0,59.0,71.0,59.0,73.0,59.0,75.0,59.0,77.0,59.0,79.0,59.0,81.0,59.0,83.0,59.0,85.0,59.0,87.0,59.0,89.0,59.0,91.0,59.0,93.0,59.0,95.0,59.0,97.0,59.0,99.0,59.0,101.0,59.0,103.0,59.0,105.0,59.0,107.0,59.0,109.0,59.0,111.0,59.0,113.0,59.0,115.0,59.0,117.0,59.0,119.0,59.0,121.0,59.0,123.0,59.0,125.0,59.0,127.0,59.0,129.0,59.0,131.0,59.0,133.0,59.0,135.0,59.0,137.0,59.0,139.0,59.0,141.0,59.0,153.0,59.0,161.0,59.0,-157.0,57.0,-133.0,57.0,-131.0,57.0,-129.0,57.0,-127.0,57.0,-125.0,57.0,-123.0,57.0,-121.0,57.0,-119.0,57.0,-117.0,57.0,-115.0,57.0,-113.0,57.0,-111.0,57.0,-109.0,57.0,-107.0,57.0,-105.0,57.0,-103.0,57.0,-101.0,57.0,-99.0,57.0,-97.0,57.0,-95.0,57.0,-93.0,57.0,-91.0,57.0,-75.0,57.0,-73.0,57.0,-71.0,57.0,-69.0,57.0,-67.0,57.0,-65.0,57.0,-63.0,57.0,-5.0,57.0,-3.0,57.0,9.0,57.0,13.0,57.0,15.0,57.0,23.0,57.0,25.0,57.0,27.0,57.0,29.0,57.0,31.0,57.0,33.0,57.0,35.0,57.0,37.0,57.0,39.0,57.0,41.0,57.0,43.0,57.0,45.0,57.0,47.0,57.0,49.0,57.0,51.0,57.0,53.0,57.0,55.0,57.0,57.0,57.0,59.0,57.0,61.0,57.0,63.0,57.0,65.0,57.0,67.0,57.0,69.0,57.0,71.0,57.0,73.0,57.0,75.0,57.0,77.0,57.0,79.0,57.0,81.0,57.0,83.0,57.0,85.0,57.0,87.0,57.0,89.0,57.0,91.0,57.0,93.0,57.0,95.0,57.0,97.0,57.0,99.0,57.0,101.0,57.0,103.0,57.0,105.0,57.0,107.0,57.0,109.0,57.0,111.0,57.0,113.0,57.0,115.0,57.0,117.0,57.0,119.0,57.0,121.0,57.0,123.0,57.0,125.0,57.0,127.0,57.0,129.0,57.0,131.0,57.0,133.0,57.0,135.0,57.0,137.0,57.0,157.0,57.0,159.0,57.0,161.0,57.0,163.0,57.0,-163.0,55.0,-129.0,55.0,-127.0,55.0,-125.0,55.0,-123.0,55.0,-121.0,55.0,-119.0,55.0,-117.0,55.0,-115.0,55.0,-113.0,55.0,-111.0,55.0,-109.0,55.0,-107.0,55.0,-105.0,55.0,-103.0,55.0,-101.0,55.0,-99.0,55.0,-97.0,55.0,-95.0,55.0,-93.0,55.0,-91.0,55.0,-89.0,55.0,-87.0,55.0,-85.0,55.0,-83.0,55.0,-77.0,55.0,-75.0,55.0,-73.0,55.0,-71.0,55.0,-69.0,55.0,-67.0,55.0,-65.0,55.0,-63.0,55.0,-61.0,55.0,-59.0,55.0,-7.0,55.0,-5.0,55.0,-3.0,55.0,9.0,55.0,21.0,55.0,23.0,55.0,25.0,55.0,27.0,55.0,29.0,55.0,31.0,55.0,33.0,55.0,35.0,55.0,37.0,55.0,39.0,55.0,41.0,55.0,43.0,55.0,45.0,55.0,47.0,55.0,49.0,55.0,51.0,55.0,53.0,55.0,55.0,55.0,57.0,55.0,59.0,55.0,61.0,55.0,63.0,55.0,65.0,55.0,67.0,55.0,69.0,55.0,71.0,55.0,73.0,55.0,75.0,55.0,77.0,55.0,79.0,55.0,81.0,55.0,83.0,55.0,85.0,55.0,87.0,55.0,89.0,55.0,91.0,55.0,93.0,55.0,95.0,55.0,97.0,55.0,99.0,55.0,101.0,55.0,103.0,55.0,105.0,55.0,107.0,55.0,109.0,55.0,111.0,55.0,113.0,55.0,115.0,55.0,117.0,55.0,119.0,55.0,121.0,55.0,123.0,55.0,125.0,55.0,127.0,55.0,129.0,55.0,131.0,55.0,133.0,55.0,135.0,55.0,157.0,55.0,159.0,55.0,161.0,55.0,-129.0,53.0,-127.0,53.0,-125.0,53.0,-123.0,53.0,-121.0,53.0,-119.0,53.0,-117.0,53.0,-115.0,53.0,-113.0,53.0,-111.0,53.0,-109.0,53.0,-107.0,53.0,-105.0,53.0,-103.0,53.0,-101.0,53.0,-99.0,53.0,-97.0,53.0,-95.0,53.0,-93.0,53.0,-91.0,53.0,-89.0,53.0,-87.0,53.0,-85.0,53.0,-83.0,53.0,-77.0,53.0,-75.0,53.0,-73.0,53.0,-71.0,53.0,-69.0,53.0,-67.0,53.0,-65.0,53.0,-63.0,53.0,-61.0,53.0,-59.0,53.0,-57.0,53.0,-9.0,53.0,-7.0,53.0,-3.0,53.0,-1.0,53.0,5.0,53.0,7.0,53.0,9.0,53.0,11.0,53.0,13.0,53.0,15.0,53.0,17.0,53.0,19.0,53.0,21.0,53.0,23.0,53.0,25.0,53.0,27.0,53.0,29.0,53.0,31.0,53.0,33.0,53.0,35.0,53.0,37.0,53.0,39.0,53.0,41.0,53.0,43.0,53.0,45.0,53.0,47.0,53.0,49.0,53.0,51.0,53.0,53.0,53.0,55.0,53.0,57.0,53.0,59.0,53.0,61.0,53.0,63.0,53.0,65.0,53.0,67.0,53.0,69.0,53.0,71.0,53.0,73.0,53.0,75.0,53.0,77.0,53.0,79.0,53.0,81.0,53.0,83.0,53.0,85.0,53.0,87.0,53.0,89.0,53.0,91.0,53.0,93.0,53.0,95.0,53.0,97.0,53.0,99.0,53.0,101.0,53.0,103.0,53.0,105.0,53.0,107.0,53.0,109.0,53.0,111.0,53.0,113.0,53.0,115.0,53.0,117.0,53.0,119.0,53.0,121.0,53.0,123.0,53.0,125.0,53.0,127.0,53.0,129.0,53.0,131.0,53.0,133.0,53.0,135.0,53.0,137.0,53.0,139.0,53.0,141.0,53.0,143.0,53.0,157.0,53.0,-127.0,51.0,-125.0,51.0,-123.0,51.0,-121.0,51.0,-119.0,51.0,-117.0,51.0,-115.0,51.0,-113.0,51.0,-111.0,51.0,-109.0,51.0,-107.0,51.0,-105.0,51.0,-103.0,51.0,-101.0,51.0,-99.0,51.0,-97.0,51.0,-95.0,51.0,-93.0,51.0,-91.0,51.0,-89.0,51.0,-87.0,51.0,-85.0,51.0,-83.0,51.0,-81.0,51.0,-79.0,51.0,-77.0,51.0,-75.0,51.0,-73.0,51.0,-71.0,51.0,-69.0,51.0,-67.0,51.0,-65.0,51.0,-63.0,51.0,-61.0,51.0,-59.0,51.0,-57.0,51.0,-3.0,51.0,-1.0,51.0,3.0,51.0,5.0,51.0,7.0,51.0,9.0,51.0,11.0,51.0,13.0,51.0,15.0,51.0,17.0,51.0,19.0,51.0,21.0,51.0,23.0,51.0,25.0,51.0,27.0,51.0,29.0,51.0,31.0,51.0,33.0,51.0,35.0,51.0,37.0,51.0,39.0,51.0,41.0,51.0,43.0,51.0,45.0,51.0,47.0,51.0,49.0,51.0,51.0,51.0,53.0,51.0,55.0,51.0,57.0,51.0,59.0,51.0,61.0,51.0,63.0,51.0,65.0,51.0,67.0,51.0,69.0,51.0,71.0,51.0,73.0,51.0,75.0,51.0,77.0,51.0,79.0,51.0,81.0,51.0,83.0,51.0,85.0,51.0,87.0,51.0,89.0,51.0,91.0,51.0,93.0,51.0,95.0,51.0,97.0,51.0,99.0,51.0,101.0,51.0,103.0,51.0,105.0,51.0,107.0,51.0,109.0,51.0,111.0,51.0,113.0,51.0,115.0,51.0,117.0,51.0,119.0,51.0,121.0,51.0,123.0,51.0,125.0,51.0,127.0,51.0,129.0,51.0,131.0,51.0,133.0,51.0,135.0,51.0,137.0,51.0,139.0,51.0,143.0,51.0,-125.0,49.0,-121.0,49.0,-119.0,49.0,-117.0,49.0,-115.0,49.0,-113.0,49.0,-111.0,49.0,-109.0,49.0,-107.0,49.0,-105.0,49.0,-103.0,49.0,-101.0,49.0,-99.0,49.0,-97.0,49.0,-95.0,49.0,-93.0,49.0,-91.0,49.0,-89.0,49.0,-87.0,49.0,-85.0,49.0,-83.0,49.0,-81.0,49.0,-79.0,49.0,-77.0,49.0,-75.0,49.0,-73.0,49.0,-71.0,49.0,-69.0,49.0,-65.0,49.0,-57.0,49.0,-55.0,49.0,-1.0,49.0,1.0,49.0,3.0,49.0,5.0,49.0,7.0,49.0,9.0,49.0,11.0,49.0,13.0,49.0,15.0,49.0,17.0,49.0,19.0,49.0,21.0,49.0,23.0,49.0,25.0,49.0,27.0,49.0,29.0,49.0,31.0,49.0,33.0,49.0,35.0,49.0,37.0,49.0,39.0,49.0,41.0,49.0,43.0,49.0,45.0,49.0,47.0,49.0,49.0,49.0,51.0,49.0,53.0,49.0,55.0,49.0,57.0,49.0,59.0,49.0,61.0,49.0,63.0,49.0,65.0,49.0,67.0,49.0,69.0,49.0,71.0,49.0,73.0,49.0,75.0,49.0,77.0,49.0,79.0,49.0,81.0,49.0,83.0,49.0,85.0,49.0,87.0,49.0,89.0,49.0,91.0,49.0,93.0,49.0,95.0,49.0,97.0,49.0,99.0,49.0,101.0,49.0,103.0,49.0,105.0,49.0,107.0,49.0,109.0,49.0,111.0,49.0,113.0,49.0,115.0,49.0,117.0,49.0,119.0,49.0,121.0,49.0,123.0,49.0,125.0,49.0,127.0,49.0,129.0,49.0,131.0,49.0,133.0,49.0,135.0,49.0,137.0,49.0,139.0,49.0,143.0,49.0,-123.0,47.0,-121.0,47.0,-119.0,47.0,-117.0,47.0,-115.0,47.0,-113.0,47.0,-111.0,47.0,-109.0,47.0,-107.0,47.0,-105.0,47.0,-103.0,47.0,-101.0,47.0,-99.0,47.0,-97.0,47.0,-95.0,47.0,-93.0,47.0,-91.0,47.0,-89.0,47.0,-87.0,47.0,-85.0,47.0,-83.0,47.0,-81.0,47.0,-79.0,47.0,-77.0,47.0,-75.0,47.0,-73.0,47.0,-71.0,47.0,-69.0,47.0,-67.0,47.0,-65.0,47.0,-53.0,47.0,-1.0,47.0,1.0,47.0,3.0,47.0,5.0,47.0,7.0,47.0,9.0,47.0,11.0,47.0,13.0,47.0,15.0,47.0,17.0,47.0,19.0,47.0,21.0,47.0,23.0,47.0,25.0,47.0,27.0,47.0,29.0,47.0,31.0,47.0,33.0,47.0,35.0,47.0,37.0,47.0,39.0,47.0,41.0,47.0,43.0,47.0,45.0,47.0,47.0,47.0,49.0,47.0,51.0,47.0,53.0,47.0,55.0,47.0,57.0,47.0,59.0,47.0,61.0,47.0,63.0,47.0,65.0,47.0,67.0,47.0,69.0,47.0,71.0,47.0,73.0,47.0,75.0,47.0,77.0,47.0,79.0,47.0,81.0,47.0,83.0,47.0,85.0,47.0,87.0,47.0,89.0,47.0,91.0,47.0,93.0,47.0,95.0,47.0,97.0,47.0,99.0,47.0,101.0,47.0,103.0,47.0,105.0,47.0,107.0,47.0,109.0,47.0,111.0,47.0,113.0,47.0,115.0,47.0,117.0,47.0,119.0,47.0,121.0,47.0,123.0,47.0,125.0,47.0,127.0,47.0,129.0,47.0,131.0,47.0,133.0,47.0,135.0,47.0,137.0,47.0,143.0,47.0,-123.0,45.0,-121.0,45.0,-119.0,45.0,-117.0,45.0,-115.0,45.0,-113.0,45.0,-111.0,45.0,-109.0,45.0,-107.0,45.0,-105.0,45.0,-103.0,45.0,-101.0,45.0,-99.0,45.0,-97.0,45.0,-95.0,45.0,-93.0,45.0,-91.0,45.0,-89.0,45.0,-87.0,45.0,-85.0,45.0,-83.0,45.0,-81.0,45.0,-79.0,45.0,-77.0,45.0,-75.0,45.0,-73.0,45.0,-71.0,45.0,-69.0,45.0,-65.0,45.0,-63.0,45.0,-1.0,45.0,1.0,45.0,3.0,45.0,5.0,45.0,7.0,45.0,9.0,45.0,11.0,45.0,15.0,45.0,17.0,45.0,19.0,45.0,21.0,45.0,23.0,45.0,25.0,45.0,27.0,45.0,29.0,45.0,35.0,45.0,39.0,45.0,41.0,45.0,43.0,45.0,45.0,45.0,47.0,45.0,53.0,45.0,55.0,45.0,57.0,45.0,59.0,45.0,61.0,45.0,63.0,45.0,65.0,45.0,67.0,45.0,69.0,45.0,71.0,45.0,73.0,45.0,75.0,45.0,77.0,45.0,79.0,45.0,81.0,45.0,83.0,45.0,85.0,45.0,87.0,45.0,89.0,45.0,91.0,45.0,93.0,45.0,95.0,45.0,97.0,45.0,99.0,45.0,101.0,45.0,103.0,45.0,105.0,45.0,107.0,45.0,109.0,45.0,111.0,45.0,113.0,45.0,115.0,45.0,117.0,45.0,119.0,45.0,121.0,45.0,123.0,45.0,125.0,45.0,127.0,45.0,129.0,45.0,131.0,45.0,133.0,45.0,135.0,45.0,-123.0,43.0,-121.0,43.0,-119.0,43.0,-117.0,43.0,-115.0,43.0,-113.0,43.0,-111.0,43.0,-109.0,43.0,-107.0,43.0,-105.0,43.0,-103.0,43.0,-101.0,43.0,-99.0,43.0,-97.0,43.0,-95.0,43.0,-93.0,43.0,-91.0,43.0,-89.0,43.0,-87.0,43.0,-85.0,43.0,-83.0,43.0,-81.0,43.0,-79.0,43.0,-77.0,43.0,-75.0,43.0,-73.0,43.0,-71.0,43.0,-9.0,43.0,-7.0,43.0,-5.0,43.0,-3.0,43.0,-1.0,43.0,1.0,43.0,3.0,43.0,11.0,43.0,13.0,43.0,19.0,43.0,21.0,43.0,23.0,43.0,25.0,43.0,27.0,43.0,41.0,43.0,43.0,43.0,45.0,43.0,47.0,43.0,53.0,43.0,55.0,43.0,57.0,43.0,59.0,43.0,61.0,43.0,63.0,43.0,65.0,43.0,67.0,43.0,69.0,43.0,71.0,43.0,73.0,43.0,75.0,43.0,77.0,43.0,79.0,43.0,81.0,43.0,83.0,43.0,85.0,43.0,87.0,43.0,89.0,43.0,91.0,43.0,93.0,43.0,95.0,43.0,97.0,43.0,99.0,43.0,101.0,43.0,103.0,43.0,105.0,43.0,107.0,43.0,109.0,43.0,111.0,43.0,113.0,43.0,115.0,43.0,117.0,43.0,119.0,43.0,121.0,43.0,123.0,43.0,125.0,43.0,127.0,43.0,129.0,43.0,131.0,43.0,133.0,43.0,141.0,43.0,143.0,43.0,-123.0,41.0,-121.0,41.0,-119.0,41.0,-117.0,41.0,-115.0,41.0,-113.0,41.0,-111.0,41.0,-109.0,41.0,-107.0,41.0,-105.0,41.0,-103.0,41.0,-101.0,41.0,-99.0,41.0,-97.0,41.0,-95.0,41.0,-93.0,41.0,-91.0,41.0,-89.0,41.0,-87.0,41.0,-85.0,41.0,-83.0,41.0,-81.0,41.0,-79.0,41.0,-77.0,41.0,-75.0,41.0,-73.0,41.0,-7.0,41.0,-5.0,41.0,-3.0,41.0,-1.0,41.0,9.0,41.0,15.0,41.0,17.0,41.0,21.0,41.0,23.0,41.0,25.0,41.0,27.0,41.0,31.0,41.0,33.0,41.0,35.0,41.0,37.0,41.0,39.0,41.0,41.0,41.0,43.0,41.0,45.0,41.0,47.0,41.0,49.0,41.0,55.0,41.0,57.0,41.0,59.0,41.0,61.0,41.0,63.0,41.0,65.0,41.0,67.0,41.0,69.0,41.0,71.0,41.0,73.0,41.0,75.0,41.0,77.0,41.0,79.0,41.0,81.0,41.0,83.0,41.0,85.0,41.0,87.0,41.0,89.0,41.0,91.0,41.0,93.0,41.0,95.0,41.0,97.0,41.0,99.0,41.0,101.0,41.0,103.0,41.0,105.0,41.0,107.0,41.0,109.0,41.0,111.0,41.0,113.0,41.0,115.0,41.0,117.0,41.0,119.0,41.0,121.0,41.0,123.0,41.0,125.0,41.0,127.0,41.0,129.0,41.0,141.0,41.0,-123.0,39.0,-121.0,39.0,-119.0,39.0,-117.0,39.0,-115.0,39.0,-113.0,39.0,-111.0,39.0,-109.0,39.0,-107.0,39.0,-105.0,39.0,-103.0,39.0,-101.0,39.0,-99.0,39.0,-97.0,39.0,-95.0,39.0,-93.0,39.0,-91.0,39.0,-89.0,39.0,-87.0,39.0,-85.0,39.0,-83.0,39.0,-81.0,39.0,-79.0,39.0,-77.0,39.0,-9.0,39.0,-7.0,39.0,-5.0,39.0,-3.0,39.0,-1.0,39.0,17.0,39.0,21.0,39.0,23.0,39.0,27.0,39.0,29.0,39.0,31.0,39.0,33.0,39.0,35.0,39.0,37.0,39.0,39.0,39.0,41.0,39.0,43.0,39.0,45.0,39.0,47.0,39.0,49.0,39.0,55.0,39.0,57.0,39.0,59.0,39.0,61.0,39.0,63.0,39.0,65.0,39.0,67.0,39.0,69.0,39.0,71.0,39.0,73.0,39.0,75.0,39.0,77.0,39.0,79.0,39.0,81.0,39.0,83.0,39.0,85.0,39.0,87.0,39.0,89.0,39.0,91.0,39.0,93.0,39.0,95.0,39.0,97.0,39.0,99.0,39.0,101.0,39.0,103.0,39.0,105.0,39.0,107.0,39.0,109.0,39.0,111.0,39.0,113.0,39.0,115.0,39.0,117.0,39.0,127.0,39.0,141.0,39.0,-121.0,37.0,-119.0,37.0,-117.0,37.0,-115.0,37.0,-113.0,37.0,-111.0,37.0,-109.0,37.0,-107.0,37.0,-105.0,37.0,-103.0,37.0,-101.0,37.0,-99.0,37.0,-97.0,37.0,-95.0,37.0,-93.0,37.0,-91.0,37.0,-89.0,37.0,-87.0,37.0,-85.0,37.0,-83.0,37.0,-81.0,37.0,-79.0,37.0,-77.0,37.0,-5.0,37.0,-3.0,37.0,7.0,37.0,9.0,37.0,11.0,37.0,15.0,37.0,29.0,37.0,31.0,37.0,33.0,37.0,35.0,37.0,37.0,37.0,39.0,37.0,41.0,37.0,43.0,37.0,45.0,37.0,47.0,37.0,49.0,37.0,55.0,37.0,57.0,37.0,59.0,37.0,61.0,37.0,63.0,37.0,65.0,37.0,67.0,37.0,69.0,37.0,71.0,37.0,73.0,37.0,75.0,37.0,77.0,37.0,79.0,37.0,81.0,37.0,83.0,37.0,85.0,37.0,87.0,37.0,89.0,37.0,91.0,37.0,93.0,37.0,95.0,37.0,97.0,37.0,99.0,37.0,101.0,37.0,103.0,37.0,105.0,37.0,107.0,37.0,109.0,37.0,111.0,37.0,113.0,37.0,115.0,37.0,117.0,37.0,119.0,37.0,121.0,37.0,127.0,37.0,129.0,37.0,137.0,37.0,139.0,37.0,-119.0,35.0,-117.0,35.0,-115.0,35.0,-113.0,35.0,-111.0,35.0,-109.0,35.0,-107.0,35.0,-105.0,35.0,-103.0,35.0,-101.0,35.0,-99.0,35.0,-97.0,35.0,-95.0,35.0,-93.0,35.0,-91.0,35.0,-89.0,35.0,-87.0,35.0,-85.0,35.0,-83.0,35.0,-81.0,35.0,-79.0,35.0,-77.0,35.0,-5.0,35.0,-3.0,35.0,-1.0,35.0,1.0,35.0,3.0,35.0,5.0,35.0,7.0,35.0,9.0,35.0,25.0,35.0,33.0,35.0,37.0,35.0,39.0,35.0,41.0,35.0,43.0,35.0,45.0,35.0,47.0,35.0,49.0,35.0,51.0,35.0,53.0,35.0,55.0,35.0,57.0,35.0,59.0,35.0,61.0,35.0,63.0,35.0,65.0,35.0,67.0,35.0,69.0,35.0,71.0,35.0,73.0,35.0,75.0,35.0,77.0,35.0,79.0,35.0,81.0,35.0,83.0,35.0,85.0,35.0,87.0,35.0,89.0,35.0,91.0,35.0,93.0,35.0,95.0,35.0,97.0,35.0,99.0,35.0,101.0,35.0,103.0,35.0,105.0,35.0,107.0,35.0,109.0,35.0,111.0,35.0,113.0,35.0,115.0,35.0,117.0,35.0,119.0,35.0,127.0,35.0,133.0,35.0,135.0,35.0,137.0,35.0,139.0,35.0,-117.0,33.0,-115.0,33.0,-113.0,33.0,-111.0,33.0,-109.0,33.0,-107.0,33.0,-105.0,33.0,-103.0,33.0,-101.0,33.0,-99.0,33.0,-97.0,33.0,-95.0,33.0,-93.0,33.0,-91.0,33.0,-89.0,33.0,-87.0,33.0,-85.0,33.0,-83.0,33.0,-81.0,33.0,-7.0,33.0,-5.0,33.0,-3.0,33.0,-1.0,33.0,1.0,33.0,3.0,33.0,5.0,33.0,7.0,33.0,9.0,33.0,11.0,33.0,37.0,33.0,39.0,33.0,41.0,33.0,43.0,33.0,45.0,33.0,47.0,33.0,49.0,33.0,51.0,33.0,53.0,33.0,55.0,33.0,57.0,33.0,59.0,33.0,61.0,33.0,63.0,33.0,65.0,33.0,67.0,33.0,69.0,33.0,71.0,33.0,73.0,33.0,75.0,33.0,77.0,33.0,79.0,33.0,81.0,33.0,83.0,33.0,85.0,33.0,87.0,33.0,89.0,33.0,91.0,33.0,93.0,33.0,95.0,33.0,97.0,33.0,99.0,33.0,101.0,33.0,103.0,33.0,105.0,33.0,107.0,33.0,109.0,33.0,111.0,33.0,113.0,33.0,115.0,33.0,117.0,33.0,119.0,33.0,131.0,33.0,133.0,33.0,-115.0,31.0,-113.0,31.0,-111.0,31.0,-109.0,31.0,-107.0,31.0,-105.0,31.0,-103.0,31.0,-101.0,31.0,-99.0,31.0,-97.0,31.0,-95.0,31.0,-93.0,31.0,-91.0,31.0,-89.0,31.0,-87.0,31.0,-85.0,31.0,-83.0,31.0,-9.0,31.0,-7.0,31.0,-5.0,31.0,-3.0,31.0,-1.0,31.0,1.0,31.0,3.0,31.0,5.0,31.0,7.0,31.0,9.0,31.0,11.0,31.0,13.0,31.0,15.0,31.0,17.0,31.0,21.0,31.0,23.0,31.0,25.0,31.0,27.0,31.0,31.0,31.0,33.0,31.0,35.0,31.0,37.0,31.0,39.0,31.0,41.0,31.0,43.0,31.0,45.0,31.0,47.0,31.0,49.0,31.0,51.0,31.0,53.0,31.0,55.0,31.0,57.0,31.0,59.0,31.0,61.0,31.0,63.0,31.0,65.0,31.0,67.0,31.0,69.0,31.0,71.0,31.0,73.0,31.0,75.0,31.0,77.0,31.0,79.0,31.0,81.0,31.0,83.0,31.0,85.0,31.0,87.0,31.0,89.0,31.0,91.0,31.0,93.0,31.0,95.0,31.0,97.0,31.0,99.0,31.0,101.0,31.0,103.0,31.0,105.0,31.0,107.0,31.0,109.0,31.0,111.0,31.0,113.0,31.0,115.0,31.0,117.0,31.0,119.0,31.0,121.0,31.0,-111.0,29.0,-109.0,29.0,-107.0,29.0,-105.0,29.0,-103.0,29.0,-101.0,29.0,-99.0,29.0,-97.0,29.0,-81.0,29.0,-9.0,29.0,-7.0,29.0,-5.0,29.0,-3.0,29.0,-1.0,29.0,1.0,29.0,3.0,29.0,5.0,29.0,7.0,29.0,9.0,29.0,11.0,29.0,13.0,29.0,15.0,29.0,17.0,29.0,19.0,29.0,21.0,29.0,23.0,29.0,25.0,29.0,27.0,29.0,29.0,29.0,31.0,29.0,33.0,29.0,35.0,29.0,37.0,29.0,39.0,29.0,41.0,29.0,43.0,29.0,45.0,29.0,47.0,29.0,51.0,29.0,53.0,29.0,55.0,29.0,57.0,29.0,59.0,29.0,61.0,29.0,63.0,29.0,65.0,29.0,67.0,29.0,69.0,29.0,71.0,29.0,73.0,29.0,75.0,29.0,77.0,29.0,79.0,29.0,81.0,29.0,83.0,29.0,85.0,29.0,87.0,29.0,89.0,29.0,91.0,29.0,93.0,29.0,95.0,29.0,97.0,29.0,99.0,29.0,101.0,29.0,103.0,29.0,105.0,29.0,107.0,29.0,109.0,29.0,111.0,29.0,113.0,29.0,115.0,29.0,117.0,29.0,119.0,29.0,121.0,29.0,-113.0,27.0,-109.0,27.0,-107.0,27.0,-105.0,27.0,-103.0,27.0,-101.0,27.0,-99.0,27.0,-81.0,27.0,-13.0,27.0,-11.0,27.0,-9.0,27.0,-7.0,27.0,-5.0,27.0,-3.0,27.0,-1.0,27.0,1.0,27.0,3.0,27.0,5.0,27.0,7.0,27.0,9.0,27.0,11.0,27.0,13.0,27.0,15.0,27.0,17.0,27.0,19.0,27.0,21.0,27.0,23.0,27.0,25.0,27.0,27.0,27.0,29.0,27.0,31.0,27.0,33.0,27.0,37.0,27.0,39.0,27.0,41.0,27.0,43.0,27.0,45.0,27.0,47.0,27.0,49.0,27.0,55.0,27.0,57.0,27.0,59.0,27.0,61.0,27.0,63.0,27.0,65.0,27.0,67.0,27.0,69.0,27.0,71.0,27.0,73.0,27.0,75.0,27.0,77.0,27.0,79.0,27.0,81.0,27.0,83.0,27.0,85.0,27.0,87.0,27.0,89.0,27.0,91.0,27.0,93.0,27.0,95.0,27.0,97.0,27.0,99.0,27.0,101.0,27.0,103.0,27.0,105.0,27.0,107.0,27.0,109.0,27.0,111.0,27.0,113.0,27.0,115.0,27.0,117.0,27.0,119.0,27.0,-111.0,25.0,-107.0,25.0,-105.0,25.0,-103.0,25.0,-101.0,25.0,-99.0,25.0,-13.0,25.0,-11.0,25.0,-9.0,25.0,-7.0,25.0,-5.0,25.0,-3.0,25.0,-1.0,25.0,1.0,25.0,3.0,25.0,5.0,25.0,7.0,25.0,9.0,25.0,11.0,25.0,13.0,25.0,15.0,25.0,17.0,25.0,19.0,25.0,21.0,25.0,23.0,25.0,25.0,25.0,27.0,25.0,29.0,25.0,31.0,25.0,33.0,25.0,39.0,25.0,41.0,25.0,43.0,25.0,45.0,25.0,47.0,25.0,49.0,25.0,51.0,25.0,55.0,25.0,67.0,25.0,69.0,25.0,71.0,25.0,73.0,25.0,75.0,25.0,77.0,25.0,79.0,25.0,81.0,25.0,83.0,25.0,85.0,25.0,87.0,25.0,89.0,25.0,91.0,25.0,93.0,25.0,95.0,25.0,97.0,25.0,99.0,25.0,101.0,25.0,103.0,25.0,105.0,25.0,107.0,25.0,109.0,25.0,111.0,25.0,113.0,25.0,115.0,25.0,117.0,25.0,119.0,25.0,-105.0,23.0,-103.0,23.0,-101.0,23.0,-99.0,23.0,-83.0,23.0,-81.0,23.0,-15.0,23.0,-13.0,23.0,-11.0,23.0,-9.0,23.0,-7.0,23.0,-5.0,23.0,-3.0,23.0,-1.0,23.0,1.0,23.0,3.0,23.0,5.0,23.0,7.0,23.0,9.0,23.0,11.0,23.0,13.0,23.0,15.0,23.0,17.0,23.0,19.0,23.0,21.0,23.0,23.0,23.0,25.0,23.0,27.0,23.0,29.0,23.0,31.0,23.0,33.0,23.0,35.0,23.0,39.0,23.0,41.0,23.0,43.0,23.0,45.0,23.0,47.0,23.0,49.0,23.0,51.0,23.0,53.0,23.0,55.0,23.0,57.0,23.0,59.0,23.0,71.0,23.0,73.0,23.0,75.0,23.0,77.0,23.0,79.0,23.0,81.0,23.0,83.0,23.0,85.0,23.0,87.0,23.0,89.0,23.0,91.0,23.0,93.0,23.0,95.0,23.0,97.0,23.0,99.0,23.0,101.0,23.0,103.0,23.0,105.0,23.0,107.0,23.0,109.0,23.0,111.0,23.0,113.0,23.0,115.0,23.0,121.0,23.0,-105.0,21.0,-103.0,21.0,-101.0,21.0,-99.0,21.0,-89.0,21.0,-87.0,21.0,-77.0,21.0,-17.0,21.0,-15.0,21.0,-13.0,21.0,-11.0,21.0,-9.0,21.0,-7.0,21.0,-5.0,21.0,-3.0,21.0,-1.0,21.0,1.0,21.0,3.0,21.0,5.0,21.0,7.0,21.0,9.0,21.0,11.0,21.0,13.0,21.0,15.0,21.0,17.0,21.0,19.0,21.0,21.0,21.0,23.0,21.0,25.0,21.0,27.0,21.0,29.0,21.0,31.0,21.0,33.0,21.0,35.0,21.0,37.0,21.0,41.0,21.0,43.0,21.0,45.0,21.0,47.0,21.0,49.0,21.0,51.0,21.0,53.0,21.0,55.0,21.0,57.0,21.0,71.0,21.0,73.0,21.0,75.0,21.0,77.0,21.0,79.0,21.0,81.0,21.0,83.0,21.0,85.0,21.0,87.0,21.0,93.0,21.0,95.0,21.0,97.0,21.0,99.0,21.0,101.0,21.0,103.0,21.0,105.0,21.0,107.0,21.0,-103.0,19.0,-101.0,19.0,-99.0,19.0,-97.0,19.0,-91.0,19.0,-89.0,19.0,-71.0,19.0,-15.0,19.0,-13.0,19.0,-11.0,19.0,-9.0,19.0,-7.0,19.0,-5.0,19.0,-3.0,19.0,-1.0,19.0,1.0,19.0,3.0,19.0,5.0,19.0,7.0,19.0,9.0,19.0,11.0,19.0,13.0,19.0,15.0,19.0,17.0,19.0,19.0,19.0,21.0,19.0,23.0,19.0,25.0,19.0,27.0,19.0,29.0,19.0,31.0,19.0,33.0,19.0,35.0,19.0,37.0,19.0,43.0,19.0,45.0,19.0,47.0,19.0,49.0,19.0,51.0,19.0,53.0,19.0,55.0,19.0,57.0,19.0,73.0,19.0,75.0,19.0,77.0,19.0,79.0,19.0,81.0,19.0,83.0,19.0,95.0,19.0,97.0,19.0,99.0,19.0,101.0,19.0,103.0,19.0,105.0,19.0,109.0,19.0,-99.0,17.0,-97.0,17.0,-95.0,17.0,-93.0,17.0,-91.0,17.0,-89.0,17.0,-15.0,17.0,-13.0,17.0,-11.0,17.0,-9.0,17.0,-7.0,17.0,-5.0,17.0,-3.0,17.0,-1.0,17.0,1.0,17.0,3.0,17.0,5.0,17.0,7.0,17.0,9.0,17.0,11.0,17.0,13.0,17.0,15.0,17.0,17.0,17.0,19.0,17.0,21.0,17.0,23.0,17.0,25.0,17.0,27.0,17.0,29.0,17.0,31.0,17.0,33.0,17.0,35.0,17.0,37.0,17.0,43.0,17.0,45.0,17.0,47.0,17.0,49.0,17.0,51.0,17.0,53.0,17.0,75.0,17.0,77.0,17.0,79.0,17.0,81.0,17.0,95.0,17.0,97.0,17.0,99.0,17.0,101.0,17.0,103.0,17.0,105.0,17.0,107.0,17.0,121.0,17.0,-91.0,15.0,-89.0,15.0,-87.0,15.0,-85.0,15.0,-17.0,15.0,-15.0,15.0,-13.0,15.0,-11.0,15.0,-9.0,15.0,-7.0,15.0,-5.0,15.0,-3.0,15.0,-1.0,15.0,1.0,15.0,3.0,15.0,5.0,15.0,7.0,15.0,9.0,15.0,11.0,15.0,13.0,15.0,15.0,15.0,17.0,15.0,19.0,15.0,21.0,15.0,23.0,15.0,25.0,15.0,27.0,15.0,29.0,15.0,31.0,15.0,33.0,15.0,35.0,15.0,37.0,15.0,39.0,15.0,43.0,15.0,45.0,15.0,47.0,15.0,49.0,15.0,75.0,15.0,77.0,15.0,79.0,15.0,99.0,15.0,101.0,15.0,103.0,15.0,105.0,15.0,107.0,15.0,121.0,15.0,-87.0,13.0,-85.0,13.0,-15.0,13.0,-13.0,13.0,-11.0,13.0,-9.0,13.0,-7.0,13.0,-5.0,13.0,-3.0,13.0,-1.0,13.0,1.0,13.0,3.0,13.0,5.0,13.0,7.0,13.0,9.0,13.0,11.0,13.0,13.0,13.0,15.0,13.0,17.0,13.0,19.0,13.0,21.0,13.0,23.0,13.0,25.0,13.0,27.0,13.0,29.0,13.0,31.0,13.0,33.0,13.0,35.0,13.0,37.0,13.0,39.0,13.0,41.0,13.0,45.0,13.0,75.0,13.0,77.0,13.0,79.0,13.0,99.0,13.0,101.0,13.0,103.0,13.0,105.0,13.0,107.0,13.0,109.0,13.0,121.0,13.0,-85.0,11.0,-75.0,11.0,-73.0,11.0,-71.0,11.0,-69.0,11.0,-15.0,11.0,-13.0,11.0,-11.0,11.0,-9.0,11.0,-7.0,11.0,-5.0,11.0,-3.0,11.0,-1.0,11.0,1.0,11.0,3.0,11.0,5.0,11.0,7.0,11.0,9.0,11.0,11.0,11.0,13.0,11.0,15.0,11.0,17.0,11.0,19.0,11.0,21.0,11.0,23.0,11.0,25.0,11.0,27.0,11.0,29.0,11.0,31.0,11.0,33.0,11.0,35.0,11.0,37.0,11.0,39.0,11.0,41.0,11.0,43.0,11.0,49.0,11.0,51.0,11.0,77.0,11.0,79.0,11.0,99.0,11.0,105.0,11.0,107.0,11.0,125.0,11.0,-83.0,9.0,-79.0,9.0,-75.0,9.0,-73.0,9.0,-71.0,9.0,-69.0,9.0,-67.0,9.0,-65.0,9.0,-63.0,9.0,-61.0,9.0,-13.0,9.0,-11.0,9.0,-9.0,9.0,-7.0,9.0,-5.0,9.0,-3.0,9.0,-1.0,9.0,1.0,9.0,3.0,9.0,5.0,9.0,7.0,9.0,9.0,9.0,11.0,9.0,13.0,9.0,15.0,9.0,17.0,9.0,19.0,9.0,21.0,9.0,23.0,9.0,25.0,9.0,27.0,9.0,29.0,9.0,31.0,9.0,33.0,9.0,35.0,9.0,37.0,9.0,39.0,9.0,41.0,9.0,43.0,9.0,45.0,9.0,47.0,9.0,49.0,9.0,77.0,9.0,81.0,9.0,99.0,9.0,105.0,9.0,-77.0,7.0,-75.0,7.0,-73.0,7.0,-71.0,7.0,-69.0,7.0,-67.0,7.0,-65.0,7.0,-63.0,7.0,-61.0,7.0,-59.0,7.0,-11.0,7.0,-9.0,7.0,-7.0,7.0,-5.0,7.0,-3.0,7.0,-1.0,7.0,1.0,7.0,3.0,7.0,5.0,7.0,7.0,7.0,9.0,7.0,11.0,7.0,13.0,7.0,15.0,7.0,17.0,7.0,19.0,7.0,21.0,7.0,23.0,7.0,25.0,7.0,27.0,7.0,29.0,7.0,31.0,7.0,33.0,7.0,35.0,7.0,37.0,7.0,39.0,7.0,41.0,7.0,43.0,7.0,45.0,7.0,47.0,7.0,49.0,7.0,81.0,7.0,125.0,7.0,-77.0,5.0,-75.0,5.0,-73.0,5.0,-71.0,5.0,-69.0,5.0,-67.0,5.0,-65.0,5.0,-63.0,5.0,-61.0,5.0,-59.0,5.0,-57.0,5.0,-55.0,5.0,-53.0,5.0,-9.0,5.0,-7.0,5.0,-3.0,5.0,7.0,5.0,9.0,5.0,11.0,5.0,13.0,5.0,15.0,5.0,17.0,5.0,19.0,5.0,21.0,5.0,23.0,5.0,25.0,5.0,27.0,5.0,29.0,5.0,31.0,5.0,33.0,5.0,35.0,5.0,37.0,5.0,39.0,5.0,41.0,5.0,43.0,5.0,45.0,5.0,47.0,5.0,97.0,5.0,101.0,5.0,103.0,5.0,115.0,5.0,117.0,5.0,-77.0,3.0,-75.0,3.0,-73.0,3.0,-71.0,3.0,-69.0,3.0,-67.0,3.0,-65.0,3.0,-63.0,3.0,-61.0,3.0,-59.0,3.0,-57.0,3.0,-55.0,3.0,-53.0,3.0,-51.0,3.0,11.0,3.0,13.0,3.0,15.0,3.0,17.0,3.0,19.0,3.0,21.0,3.0,23.0,3.0,25.0,3.0,27.0,3.0,29.0,3.0,31.0,3.0,33.0,3.0,35.0,3.0,37.0,3.0,39.0,3.0,41.0,3.0,43.0,3.0,45.0,3.0,99.0,3.0,103.0,3.0,113.0,3.0,115.0,3.0,117.0,3.0,-79.0,1.0,-77.0,1.0,-75.0,1.0,-73.0,1.0,-71.0,1.0,-69.0,1.0,-67.0,1.0,-65.0,1.0,-63.0,1.0,-61.0,1.0,-59.0,1.0,-57.0,1.0,-55.0,1.0,-53.0,1.0,-51.0,1.0,11.0,1.0,13.0,1.0,15.0,1.0,17.0,1.0,19.0,1.0,21.0,1.0,23.0,1.0,25.0,1.0,27.0,1.0,29.0,1.0,31.0,1.0,33.0,1.0,35.0,1.0,37.0,1.0,39.0,1.0,41.0,1.0,43.0,1.0,99.0,1.0,101.0,1.0,111.0,1.0,113.0,1.0,115.0,1.0,117.0,1.0,121.0,1.0,-79.0,-1.0,-77.0,-1.0,-75.0,-1.0,-73.0,-1.0,-71.0,-1.0,-69.0,-1.0,-67.0,-1.0,-65.0,-1.0,-63.0,-1.0,-61.0,-1.0,-59.0,-1.0,-57.0,-1.0,-55.0,-1.0,-53.0,-1.0,-51.0,-1.0,-49.0,-1.0,-47.0,-1.0,9.0,-1.0,11.0,-1.0,13.0,-1.0,15.0,-1.0,17.0,-1.0,19.0,-1.0,21.0,-1.0,23.0,-1.0,25.0,-1.0,27.0,-1.0,29.0,-1.0,31.0,-1.0,33.0,-1.0,35.0,-1.0,37.0,-1.0,39.0,-1.0,41.0,-1.0,101.0,-1.0,103.0,-1.0,111.0,-1.0,113.0,-1.0,115.0,-1.0,117.0,-1.0,131.0,-1.0,133.0,-1.0,-79.0,-3.0,-77.0,-3.0,-75.0,-3.0,-73.0,-3.0,-71.0,-3.0,-69.0,-3.0,-67.0,-3.0,-65.0,-3.0,-63.0,-3.0,-61.0,-3.0,-59.0,-3.0,-57.0,-3.0,-55.0,-3.0,-53.0,-3.0,-51.0,-3.0,-49.0,-3.0,-47.0,-3.0,-45.0,-3.0,-43.0,-3.0,-41.0,-3.0,11.0,-3.0,13.0,-3.0,15.0,-3.0,17.0,-3.0,19.0,-3.0,21.0,-3.0,23.0,-3.0,25.0,-3.0,27.0,-3.0,29.0,-3.0,31.0,-3.0,33.0,-3.0,35.0,-3.0,37.0,-3.0,39.0,-3.0,103.0,-3.0,105.0,-3.0,111.0,-3.0,113.0,-3.0,115.0,-3.0,119.0,-3.0,121.0,-3.0,129.0,-3.0,133.0,-3.0,137.0,-3.0,139.0,-3.0,141.0,-3.0,-81.0,-5.0,-79.0,-5.0,-77.0,-5.0,-75.0,-5.0,-73.0,-5.0,-71.0,-5.0,-69.0,-5.0,-67.0,-5.0,-65.0,-5.0,-63.0,-5.0,-61.0,-5.0,-59.0,-5.0,-57.0,-5.0,-55.0,-5.0,-53.0,-5.0,-51.0,-5.0,-49.0,-5.0,-47.0,-5.0,-45.0,-5.0,-43.0,-5.0,-41.0,-5.0,-39.0,-5.0,-37.0,-5.0,13.0,-5.0,15.0,-5.0,17.0,-5.0,19.0,-5.0,21.0,-5.0,23.0,-5.0,25.0,-5.0,27.0,-5.0,29.0,-5.0,31.0,-5.0,33.0,-5.0,35.0,-5.0,37.0,-5.0,39.0,-5.0,105.0,-5.0,123.0,-5.0,139.0,-5.0,141.0,-5.0,143.0,-5.0,145.0,-5.0,-79.0,-7.0,-77.0,-7.0,-75.0,-7.0,-73.0,-7.0,-71.0,-7.0,-69.0,-7.0,-67.0,-7.0,-65.0,-7.0,-63.0,-7.0,-61.0,-7.0,-59.0,-7.0,-57.0,-7.0,-55.0,-7.0,-53.0,-7.0,-51.0,-7.0,-49.0,-7.0,-47.0,-7.0,-45.0,-7.0,-43.0,-7.0,-41.0,-7.0,-39.0,-7.0,-37.0,-7.0,-35.0,-7.0,13.0,-7.0,15.0,-7.0,17.0,-7.0,19.0,-7.0,21.0,-7.0,23.0,-7.0,25.0,-7.0,27.0,-7.0,29.0,-7.0,31.0,-7.0,33.0,-7.0,35.0,-7.0,37.0,-7.0,39.0,-7.0,107.0,-7.0,109.0,-7.0,111.0,-7.0,139.0,-7.0,141.0,-7.0,143.0,-7.0,145.0,-7.0,147.0,-7.0,157.0,-7.0,-77.0,-9.0,-75.0,-9.0,-73.0,-9.0,-71.0,-9.0,-69.0,-9.0,-67.0,-9.0,-65.0,-9.0,-63.0,-9.0,-61.0,-9.0,-59.0,-9.0,-57.0,-9.0,-55.0,-9.0,-53.0,-9.0,-51.0,-9.0,-49.0,-9.0,-47.0,-9.0,-45.0,-9.0,-43.0,-9.0,-41.0,-9.0,-39.0,-9.0,-37.0,-9.0,13.0,-9.0,15.0,-9.0,17.0,-9.0,19.0,-9.0,21.0,-9.0,23.0,-9.0,25.0,-9.0,27.0,-9.0,29.0,-9.0,31.0,-9.0,33.0,-9.0,35.0,-9.0,37.0,-9.0,39.0,-9.0,117.0,-9.0,125.0,-9.0,141.0,-9.0,143.0,-9.0,147.0,-9.0,161.0,-9.0,-77.0,-11.0,-75.0,-11.0,-73.0,-11.0,-71.0,-11.0,-69.0,-11.0,-67.0,-11.0,-65.0,-11.0,-63.0,-11.0,-61.0,-11.0,-59.0,-11.0,-57.0,-11.0,-55.0,-11.0,-53.0,-11.0,-51.0,-11.0,-49.0,-11.0,-47.0,-11.0,-45.0,-11.0,-43.0,-11.0,-41.0,-11.0,-39.0,-11.0,15.0,-11.0,17.0,-11.0,19.0,-11.0,21.0,-11.0,23.0,-11.0,25.0,-11.0,27.0,-11.0,29.0,-11.0,31.0,-11.0,33.0,-11.0,35.0,-11.0,37.0,-11.0,39.0,-11.0,-75.0,-13.0,-73.0,-13.0,-71.0,-13.0,-69.0,-13.0,-67.0,-13.0,-65.0,-13.0,-63.0,-13.0,-61.0,-13.0,-59.0,-13.0,-57.0,-13.0,-55.0,-13.0,-53.0,-13.0,-51.0,-13.0,-49.0,-13.0,-47.0,-13.0,-45.0,-13.0,-43.0,-13.0,-41.0,-13.0,-39.0,-13.0,13.0,-13.0,15.0,-13.0,17.0,-13.0,19.0,-13.0,21.0,-13.0,23.0,-13.0,25.0,-13.0,27.0,-13.0,29.0,-13.0,31.0,-13.0,33.0,-13.0,35.0,-13.0,37.0,-13.0,39.0,-13.0,49.0,-13.0,131.0,-13.0,133.0,-13.0,135.0,-13.0,143.0,-13.0,-75.0,-15.0,-73.0,-15.0,-71.0,-15.0,-69.0,-15.0,-67.0,-15.0,-65.0,-15.0,-63.0,-15.0,-61.0,-15.0,-59.0,-15.0,-57.0,-15.0,-55.0,-15.0,-53.0,-15.0,-51.0,-15.0,-49.0,-15.0,-47.0,-15.0,-45.0,-15.0,-43.0,-15.0,-41.0,-15.0,-39.0,-15.0,13.0,-15.0,15.0,-15.0,17.0,-15.0,19.0,-15.0,21.0,-15.0,23.0,-15.0,25.0,-15.0,27.0,-15.0,29.0,-15.0,31.0,-15.0,33.0,-15.0,35.0,-15.0,37.0,-15.0,39.0,-15.0,49.0,-15.0,125.0,-15.0,127.0,-15.0,129.0,-15.0,131.0,-15.0,133.0,-15.0,135.0,-15.0,143.0,-15.0,145.0,-15.0,167.0,-15.0,-71.0,-17.0,-69.0,-17.0,-67.0,-17.0,-65.0,-17.0,-63.0,-17.0,-61.0,-17.0,-59.0,-17.0,-57.0,-17.0,-55.0,-17.0,-53.0,-17.0,-51.0,-17.0,-49.0,-17.0,-47.0,-17.0,-45.0,-17.0,-43.0,-17.0,-41.0,-17.0,13.0,-17.0,15.0,-17.0,17.0,-17.0,19.0,-17.0,21.0,-17.0,23.0,-17.0,25.0,-17.0,27.0,-17.0,29.0,-17.0,31.0,-17.0,33.0,-17.0,35.0,-17.0,37.0,-17.0,45.0,-17.0,47.0,-17.0,49.0,-17.0,123.0,-17.0,125.0,-17.0,127.0,-17.0,129.0,-17.0,131.0,-17.0,133.0,-17.0,135.0,-17.0,137.0,-17.0,143.0,-17.0,145.0,-17.0,-69.0,-19.0,-67.0,-19.0,-65.0,-19.0,-63.0,-19.0,-61.0,-19.0,-59.0,-19.0,-57.0,-19.0,-55.0,-19.0,-53.0,-19.0,-51.0,-19.0,-49.0,-19.0,-47.0,-19.0,-45.0,-19.0,-43.0,-19.0,-41.0,-19.0,13.0,-19.0,15.0,-19.0,17.0,-19.0,19.0,-19.0,21.0,-19.0,23.0,-19.0,25.0,-19.0,27.0,-19.0,29.0,-19.0,31.0,-19.0,33.0,-19.0,35.0,-19.0,45.0,-19.0,47.0,-19.0,49.0,-19.0,123.0,-19.0,125.0,-19.0,127.0,-19.0,129.0,-19.0,131.0,-19.0,133.0,-19.0,135.0,-19.0,137.0,-19.0,139.0,-19.0,141.0,-19.0,143.0,-19.0,145.0,-19.0,-69.0,-21.0,-67.0,-21.0,-65.0,-21.0,-63.0,-21.0,-61.0,-21.0,-59.0,-21.0,-57.0,-21.0,-55.0,-21.0,-53.0,-21.0,-51.0,-21.0,-49.0,-21.0,-47.0,-21.0,-45.0,-21.0,-43.0,-21.0,-41.0,-21.0,15.0,-21.0,17.0,-21.0,19.0,-21.0,21.0,-21.0,23.0,-21.0,25.0,-21.0,27.0,-21.0,29.0,-21.0,31.0,-21.0,33.0,-21.0,35.0,-21.0,45.0,-21.0,47.0,-21.0,117.0,-21.0,119.0,-21.0,121.0,-21.0,123.0,-21.0,125.0,-21.0,127.0,-21.0,129.0,-21.0,131.0,-21.0,133.0,-21.0,135.0,-21.0,137.0,-21.0,139.0,-21.0,141.0,-21.0,143.0,-21.0,145.0,-21.0,147.0,-21.0,149.0,-21.0,165.0,-21.0,-69.0,-23.0,-67.0,-23.0,-65.0,-23.0,-63.0,-23.0,-61.0,-23.0,-59.0,-23.0,-57.0,-23.0,-55.0,-23.0,-53.0,-23.0,-51.0,-23.0,-49.0,-23.0,-47.0,-23.0,-45.0,-23.0,15.0,-23.0,17.0,-23.0,19.0,-23.0,21.0,-23.0,23.0,-23.0,25.0,-23.0,27.0,-23.0,29.0,-23.0,31.0,-23.0,33.0,-23.0,35.0,-23.0,45.0,-23.0,47.0,-23.0,115.0,-23.0,117.0,-23.0,119.0,-23.0,121.0,-23.0,123.0,-23.0,125.0,-23.0,127.0,-23.0,129.0,-23.0,131.0,-23.0,133.0,-23.0,135.0,-23.0,137.0,-23.0,139.0,-23.0,141.0,-23.0,143.0,-23.0,145.0,-23.0,147.0,-23.0,149.0,-23.0,-69.0,-25.0,-67.0,-25.0,-65.0,-25.0,-63.0,-25.0,-61.0,-25.0,-59.0,-25.0,-57.0,-25.0,-55.0,-25.0,-53.0,-25.0,-51.0,-25.0,-49.0,-25.0,15.0,-25.0,17.0,-25.0,19.0,-25.0,21.0,-25.0,23.0,-25.0,25.0,-25.0,27.0,-25.0,29.0,-25.0,31.0,-25.0,33.0,-25.0,45.0,-25.0,115.0,-25.0,117.0,-25.0,119.0,-25.0,121.0,-25.0,123.0,-25.0,125.0,-25.0,127.0,-25.0,129.0,-25.0,131.0,-25.0,133.0,-25.0,135.0,-25.0,137.0,-25.0,139.0,-25.0,141.0,-25.0,143.0,-25.0,145.0,-25.0,147.0,-25.0,149.0,-25.0,151.0,-25.0,-69.0,-27.0,-67.0,-27.0,-65.0,-27.0,-63.0,-27.0,-61.0,-27.0,-59.0,-27.0,-57.0,-27.0,-55.0,-27.0,-53.0,-27.0,-51.0,-27.0,-49.0,-27.0,17.0,-27.0,19.0,-27.0,21.0,-27.0,23.0,-27.0,25.0,-27.0,27.0,-27.0,29.0,-27.0,31.0,-27.0,115.0,-27.0,117.0,-27.0,119.0,-27.0,121.0,-27.0,123.0,-27.0,125.0,-27.0,127.0,-27.0,129.0,-27.0,131.0,-27.0,133.0,-27.0,135.0,-27.0,137.0,-27.0,139.0,-27.0,141.0,-27.0,143.0,-27.0,145.0,-27.0,147.0,-27.0,149.0,-27.0,151.0,-27.0,153.0,-27.0,-71.0,-29.0,-69.0,-29.0,-67.0,-29.0,-65.0,-29.0,-63.0,-29.0,-61.0,-29.0,-59.0,-29.0,-57.0,-29.0,-55.0,-29.0,-53.0,-29.0,-51.0,-29.0,17.0,-29.0,19.0,-29.0,21.0,-29.0,23.0,-29.0,25.0,-29.0,27.0,-29.0,29.0,-29.0,31.0,-29.0,115.0,-29.0,117.0,-29.0,119.0,-29.0,121.0,-29.0,123.0,-29.0,125.0,-29.0,127.0,-29.0,129.0,-29.0,131.0,-29.0,133.0,-29.0,135.0,-29.0,137.0,-29.0,139.0,-29.0,141.0,-29.0,143.0,-29.0,145.0,-29.0,147.0,-29.0,149.0,-29.0,151.0,-29.0,153.0,-29.0,-71.0,-31.0,-69.0,-31.0,-67.0,-31.0,-65.0,-31.0,-63.0,-31.0,-61.0,-31.0,-59.0,-31.0,-57.0,-31.0,-55.0,-31.0,-53.0,-31.0,-51.0,-31.0,19.0,-31.0,21.0,-31.0,23.0,-31.0,25.0,-31.0,27.0,-31.0,29.0,-31.0,117.0,-31.0,119.0,-31.0,121.0,-31.0,123.0,-31.0,125.0,-31.0,127.0,-31.0,129.0,-31.0,131.0,-31.0,133.0,-31.0,135.0,-31.0,137.0,-31.0,139.0,-31.0,141.0,-31.0,143.0,-31.0,145.0,-31.0,147.0,-31.0,149.0,-31.0,151.0,-31.0,153.0,-31.0,-71.0,-33.0,-69.0,-33.0,-67.0,-33.0,-65.0,-33.0,-63.0,-33.0,-61.0,-33.0,-59.0,-33.0,-57.0,-33.0,-55.0,-33.0,-53.0,-33.0,19.0,-33.0,21.0,-33.0,23.0,-33.0,25.0,-33.0,27.0,-33.0,117.0,-33.0,119.0,-33.0,121.0,-33.0,123.0,-33.0,135.0,-33.0,137.0,-33.0,139.0,-33.0,141.0,-33.0,143.0,-33.0,145.0,-33.0,147.0,-33.0,149.0,-33.0,151.0,-33.0,-71.0,-35.0,-69.0,-35.0,-67.0,-35.0,-65.0,-35.0,-63.0,-35.0,-61.0,-35.0,-59.0,-35.0,117.0,-35.0,139.0,-35.0,141.0,-35.0,143.0,-35.0,145.0,-35.0,147.0,-35.0,149.0,-35.0,173.0,-35.0,-73.0,-37.0,-71.0,-37.0,-69.0,-37.0,-67.0,-37.0,-65.0,-37.0,-63.0,-37.0,-61.0,-37.0,-59.0,-37.0,-57.0,-37.0,141.0,-37.0,143.0,-37.0,145.0,-37.0,147.0,-37.0,149.0,-37.0,175.0,-37.0,-73.0,-39.0,-71.0,-39.0,-69.0,-39.0,-67.0,-39.0,-65.0,-39.0,-63.0,-39.0,175.0,-39.0,177.0,-39.0,-73.0,-41.0,-71.0,-41.0,-69.0,-41.0,-67.0,-41.0,-63.0,-41.0,145.0,-41.0,147.0,-41.0,173.0,-41.0,175.0,-41.0,-71.0,-43.0,-69.0,-43.0,-67.0,-43.0,-65.0,-43.0,147.0,-43.0,171.0,-43.0,173.0,-43.0,-73.0,-45.0,-71.0,-45.0,-69.0,-45.0,-67.0,-45.0,169.0,-45.0,171.0,-45.0,-73.0,-47.0,-71.0,-47.0,-69.0,-47.0,-67.0,-47.0,-75.0,-49.0,-73.0,-49.0,-71.0,-49.0,-69.0,-49.0,69.0,-49.0,-75.0,-51.0,-73.0,-51.0,-71.0,-51.0,-73.0,-53.0,-71.0,-53.0,-69.0,-53.0,-71.0,-55.0,-69.0,-55.0];               // land dots [lon, lat, …], Natural Earth 110m
   var stage = document.getElementById('stage'), viewport = document.getElementById('viewport');
   var root = document.documentElement;
@@ -317,12 +361,11 @@ svg{display:block;overflow:visible}
 
   function clamp(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
   function ramp(t, a, b) { return clamp((t - a) / (b - a)); }
-  function smooth(x) { x = clamp(x); return x * x * (3 - 2 * x); }
-  function hash(n) { n = Math.sin(n * 127.1 + 311.7) * 43758.5453; return n - Math.floor(n); }
 
-  /* ── Globe and searchlights (opening titles) ── */
+  /* ── Globe with incoming signals (the news machine scene) ── */
   var globe = document.getElementById('globe'), g = globe.getContext('2d');
-  var R = 300, CX = 960, CY = 520, TILT = 18 * Math.PI / 180;
+  var R = 270, CX = 540, CY = 540, TILT = 20 * Math.PI / 180, ANT = [1400, 190];
+  var CITIES = [[139.7, 35.7], [129.1, 35.2], [-0.1, 51.5], [-74, 40.7], [12.3, 45.4], [-123.1, 49.3], [18.4, -33.9], [77.6, 13], [-46.6, -23.5]];
   function project(lon, lat, rot) {
     var l = (lon + rot) * Math.PI / 180, p = lat * Math.PI / 180;
     var x = Math.cos(p) * Math.sin(l), y = Math.sin(p), z = Math.cos(p) * Math.cos(l);
@@ -331,78 +374,49 @@ svg{display:block;overflow:visible}
   }
   function drawGlobe(t) {
     g.clearRect(0, 0, 1920, 1080);
-    if (t < 4 || t > 10.2) return;
-    var rot = -40 + (t - 4) * 22;
-    var dim = 1 - .62 * smooth(ramp(t, 5.5, 6.0));
-    g.save(); g.globalCompositeOperation = 'lighter';
-    [[520, 1090, -.55, 1.3], [1400, 1090, .5, 1.05]].forEach(function (s, i) {
-      var a = s[2] + Math.sin((t - 4) * s[3] + i) * .38, len = 1500, w = .085;
-      var grad = g.createLinearGradient(s[0], s[1], s[0] + Math.sin(a) * len, s[1] - Math.cos(a) * len);
-      grad.addColorStop(0, 'rgba(236,232,223,.30)'); grad.addColorStop(1, 'rgba(236,232,223,0)');
-      g.fillStyle = grad; g.beginPath(); g.moveTo(s[0], s[1]);
-      g.lineTo(s[0] + Math.sin(a - w) * len, s[1] - Math.cos(a - w) * len);
-      g.lineTo(s[0] + Math.sin(a + w) * len, s[1] - Math.cos(a + w) * len); g.closePath(); g.fill();
-    });
-    g.restore();
-    var body = g.createRadialGradient(CX - 90, CY - 110, 20, CX, CY, R);
-    body.addColorStop(0, '#2c2b28'); body.addColorStop(1, '#121211');
-    g.globalAlpha = dim;
-    g.fillStyle = body; g.beginPath(); g.arc(CX, CY, R, 0, 6.2832); g.fill();
-    g.strokeStyle = 'rgba(236,232,223,.5)'; g.lineWidth = 2; g.stroke();
-    g.strokeStyle = 'rgba(236,232,223,.16)'; g.lineWidth = 1.2;
-    for (var lon = -180; lon < 180; lon += 30) {
-      g.beginPath(); var first = true;
-      for (var lat = -90; lat <= 90; lat += 5) { var q = project(lon, lat, rot); if (q[2] < 0) { first = true; continue; } if (first) g.moveTo(q[0], q[1]); else g.lineTo(q[0], q[1]); first = false; }
-      g.stroke();
-    }
-    for (var la = -60; la <= 60; la += 30) {
-      g.beginPath(); var f2 = true;
-      for (var lo = -180; lo <= 180; lo += 5) { var q2 = project(lo, la, rot); if (q2[2] < 0) { f2 = true; continue; } if (f2) g.moveTo(q2[0], q2[1]); else g.lineTo(q2[0], q2[1]); f2 = false; }
-      g.stroke();
-    }
+    if (t < 5.2 || t > 12.1) return;
+    var k = ramp(t, 5.25, 5.8), s = .3 + .7 * (1 - Math.pow(1 - k, 3));
+    var rot = -30 + (t - 5.2) * 28;
+    g.save(); g.translate(CX, CY); g.scale(s, s); g.translate(-CX, -CY);
+    g.fillStyle = '#2f9c95'; g.beginPath(); g.arc(CX, CY, R, 0, 6.2832); g.fill();
+    g.lineWidth = 10; g.strokeStyle = '#f3e9d2'; g.stroke();
     for (var i = 0; i < DOTS.length; i += 2) {
       var p = project(DOTS[i], DOTS[i + 1], rot);
       if (p[2] <= 0) continue;
-      g.fillStyle = 'rgba(236,232,223,' + (.35 + .6 * p[2]) + ')';
-      g.beginPath(); g.arc(p[0], p[1], 1.6 + 1.6 * p[2], 0, 6.2832); g.fill();
+      g.fillStyle = 'rgba(243,233,210,' + (.45 + .55 * p[2]) + ')';
+      g.beginPath(); g.arc(p[0], p[1], 2 + 1.6 * p[2], 0, 6.2832); g.fill();
     }
-    g.globalAlpha = 1;
+    g.restore();
+    // signals: from visible cities to the machine's antenna, pulses travelling along.
+    if (t > 6.0) {
+      CITIES.forEach(function (c, n) {
+        var p = project(c[0], c[1], rot);
+        if (p[2] < .1) return;
+        var mx = (p[0] + ANT[0]) / 2, my = Math.min(p[1], ANT[1]) - 160 - 40 * n % 120;
+        g.save(); g.setLineDash([10, 12]); g.lineDashOffset = -t * 90; g.strokeStyle = 'rgba(240,179,58,.75)'; g.lineWidth = 3;
+        g.beginPath(); g.moveTo(p[0], p[1]); g.quadraticCurveTo(mx, my, ANT[0], ANT[1]); g.stroke(); g.restore();
+        var u = ((t - 6) * .7 + n * .23) % 1, iu = 1 - u;
+        var px = iu * iu * p[0] + 2 * iu * u * mx + u * u * ANT[0], py = iu * iu * p[1] + 2 * iu * u * my + u * u * ANT[1];
+        g.fillStyle = '#ec6a3d'; g.beginPath(); g.arc(px, py, 9, 0, 6.2832); g.fill();
+        g.fillStyle = '#f3e9d2'; g.beginPath(); g.arc(p[0], p[1], 7, 0, 6.2832); g.fill();
+      });
+    }
   }
 
-  /* ── Film wear: flicker, scratches, dust; gate weave and the title slam shake. ── */
-  var wear = document.getElementById('wear'), w = wear.getContext('2d'), film = document.getElementById('film');
-  function drawWear(t) {
-    var f = Math.floor(t * 24);
-    w.clearRect(0, 0, 1920, 1080);
-    var k = t > 4 && t < 42.8 ? 1 : .35;              // the newsreel itself is worn film
-    w.fillStyle = 'rgba(255,250,235,' + (.035 * k * hash(f * 1.7)) + ')'; w.fillRect(0, 0, 1920, 1080);
-    w.fillStyle = 'rgba(0,0,0,' + (.05 * k * hash(f * 2.3)) + ')'; w.fillRect(0, 0, 1920, 1080);
-    w.strokeStyle = 'rgba(236,232,223,' + (.22 * k) + ')'; w.lineWidth = 1.2;
-    for (var s = 0; s < 3; s++) {
-      if (hash(f * 3.1 + s) > .45) continue;
-      var x = 120 + hash(f * 5.7 + s * 9) * 1680;
-      w.beginPath(); w.moveTo(x, 0); w.lineTo(x + (hash(f + s) - .5) * 14, 1080); w.stroke();
-    }
-    for (var d = 0; d < 7 * k; d++) {
-      var dx = hash(f * 11.3 + d) * 1920, dy = hash(f * 13.7 + d * 3) * 1080, r = .8 + hash(f * 17.1 + d) * 2.6;
-      w.fillStyle = hash(f + d * 7) > .5 ? 'rgba(0,0,0,.55)' : 'rgba(236,232,223,.45)';
-      w.beginPath(); w.arc(dx, dy, r, 0, 6.2832); w.fill();
-    }
-    var shake = t > 5.6 && t < 6.1 ? (1 - ramp(t, 5.6, 6.1)) * 14 : 0;
-    var jx = (hash(f * 1.31) - .5) * 2.2 * k + (hash(f * 4.1) - .5) * shake;
-    var jy = (hash(f * 2.77) - .5) * 2.6 * k + (hash(f * 6.3) - .5) * shake;
-    film.style.transform = 'translate(' + jx.toFixed(2) + 'px,' + jy.toFixed(2) + 'px)';
+  /* ── Electrons on the three orbits ── */
+  var electrons = [document.getElementById('e1'), document.getElementById('e2'), document.getElementById('e3')];
+  function drawAtom(t) {
+    var speed = 1.6;
+    electrons.forEach(function (el, i) {
+      var a = (t - 37.7) * speed + i * 2.094, rot = i * Math.PI / 3;
+      var x = 280 * Math.cos(a), y = 96 * Math.sin(a);
+      var X = 300 + x * Math.cos(rot) - y * Math.sin(rot), Y = 300 + x * Math.sin(rot) + y * Math.cos(rot);
+      el.style.transform = 'translate(' + X.toFixed(1) + 'px,' + Y.toFixed(1) + 'px)';
+      el.style.zIndex = Math.sin(a) > 0 ? 3 : 1;
+    });
   }
 
-  /* ── Next issue: two hours pass on the clock. ── */
-  var hourHand = document.getElementById('hand-h'), minHand = document.getElementById('hand-m');
-  function drawClock(t) {
-    var k = smooth(ramp(t, 40.9, 42.4));
-    minHand.setAttribute('transform', 'rotate(' + (720 * k) + ')');
-    hourHand.setAttribute('transform', 'rotate(' + (300 + 60 * k) + ')');
-  }
-
-  function render(ms) { var t = ms / 1000; drawGlobe(t); drawWear(t); drawClock(t); }
+  function render(ms) { var t = ms / 1000; drawGlobe(t); drawAtom(t); }
 
   /* ── Clock, seeking, playback and sound ── */
   var all = null;
@@ -411,7 +425,6 @@ svg{display:block;overflow:visible}
   function seek(ms) { animations().forEach(function (a) { a.pause(); a.currentTime = ms; }); render(ms); }
   window.seekPromo = seek;
   window.promoDuration = DURATION;
-
   var pauseButton = document.getElementById('pause'), paused = false;
   function setPaused(value) {
     paused = value;
@@ -443,7 +456,7 @@ svg{display:block;overflow:visible}
   stage.addEventListener('click', function () { setPaused(!paused); });
 
   if (recording) { seek(0); return; }
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { seek(44500); setPaused(true); return; }
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { seek(43000); setPaused(true); return; }
   (function loop() {
     var c = clock();
     if (c) {

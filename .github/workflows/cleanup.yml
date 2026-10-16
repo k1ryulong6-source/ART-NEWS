@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: cultural-news-data-write
   cancel-in-progress: false
@@ -24,16 +25,22 @@ jobs:
       - run: python scripts/export_snapshot.py
       - run: python scripts/audit_data.py --output data/quality.json --strict
       - run: python scripts/prepare_translation_queue.py
+      - run: python scripts/update_acceptance.py
       - name: Save cleaned bodies and matching translations
         run: |
           git config user.name 'Culture Desk updater'
           git config user.email 'updater@users.noreply.github.com'
-          git add data/live.json data/quality.json data/translation-queue.json data/translation-queue data/translation-input data/translations data/article-cleanup-report.json
+          git add data/live.json data/quality.json data/translation-queue.json data/translation-queue data/translation-input data/translations data/article-cleanup-report.json data/ai-translation-progress data/acceptance.json
           if ! git diff --cached --quiet; then
             git commit -m 'Clean verified publisher widgets and preserve aligned translations'
-            git pull --rebase origin main
-            git push origin HEAD:main
+            python scripts/push_public_update.py
           fi
+      - name: Publish cleaned public originals and translations
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run pages.yml --ref main --repo "$GITHUB_REPOSITORY"
+          gh workflow run automation-health.yml --ref main --repo "$GITHUB_REPOSITORY"
       - uses: actions/upload-artifact@v4
         with:
           name: article-cleanup-report

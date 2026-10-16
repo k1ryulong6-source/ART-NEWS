@@ -31,6 +31,76 @@ class CleanupTests(unittest.TestCase):
         self.assertNotIn('Donation and newsletter', result['article_text'])
         self.assertEqual(result['article_author'], 'Public Author')
 
+    def sharing_widget(self):
+        return ('<div data-component="social-media"><ul data-alias="social-media__list">'
+                '<li><a href="https://www.facebook.com/sharer.php?u=https://www.artnews.com/a">Share on Facebook</a></li>'
+                '<li><a href="https://www.reddit.com/submit?url=https://www.artnews.com/a">Submit to Reddit</a></li>'
+                '<li><a href="https://www.linkedin.com/shareArticle?url=https://www.artnews.com/a">Share on LinkedIn</a></li>'
+                '<li>Post</li><li>Pin it</li><li>Post to Tumblr</li><li>Email</li><li>Print This Page</li><li>Share on WhatsApp</li>'
+                '</ul></div>')
+
+    def test_share_email_print_component_removed_but_discussion_and_links_kept(self):
+        html = ('<div class="article-body">' + self.sharing_widget() + '<p>' + self.prose + '</p>'
+                '<blockquote>The work is titled “Share on Facebook”.</blockquote>'
+                '<p>A reader may <a href="https://www.facebook.com/artist">follow the artist on Facebook</a>.</p>'
+                '<figure><img src="/art.jpg"><figcaption>Art print, 2026</figcaption></figure></div>')
+        result = extract_article(html, self.source['homepage_url'] + '/a', self.source)
+        blocks = json.loads(result['article_blocks_json'])
+        self.assertFalse(any(b['type'] == 'list_item' for b in blocks))
+        self.assertIn(self.prose, result['article_text'])
+        self.assertIn('The work is titled “Share on Facebook”.', result['article_text'])
+        self.assertIn('follow the artist on Facebook', result['article_text'])
+        self.assertEqual(next(b for b in blocks if b['type'] == 'image')['caption'], 'Art print, 2026')
+        self.assertNotIn('Print This Page', result['article_text'])
+
+    def test_share_alias_run_is_dom_proof_not_a_keyword_deletion(self):
+        html = '<div class="article-body">' + self.sharing_widget() + '<p>' + self.prose + '</p></div>'
+        legacy = html.replace('data-component="social-media"', '').replace('data-alias="social-media__list"', '')
+        old = json.loads(extract_article(legacy, self.source['homepage_url'], self.source)['article_blocks_json'])
+        indexes = cached_widget_indexes(html, self.source['homepage_url'], self.source, old)
+        self.assertEqual(indexes, [9])
+        self.assertTrue(widget_deletions_only(html, self.source['homepage_url'], self.source, old, indexes))
+        # The same words and URLs in a real list without component evidence stay.
+        self.assertIsNone(cached_widget_indexes(legacy, self.source['homepage_url'], self.source, old))
+
+    def test_cleanup_preserves_matching_api_checkpoint_without_api_call(self):
+        from backend.ai_translation import configuration, input_hash, source_units
+        from backend.article_cleanup import remap_ai_progress
+        with TemporaryDirectory() as td:
+            store = Store(Path(td) / 'test.db'); store.register_sources([self.source])
+            row = content_record(self.source, 'An artist at work', self.source['homepage_url'] + '/a')
+            store.ingest_records([row], [], [])
+            html = '<div class="article-body">' + self.sharing_widget() + '<p>' + self.prose + '</p></div>'
+            legacy = html.replace('data-component="social-media"', '').replace('data-alias="social-media__list"', '')
+            old = extract_article(legacy, row['canonical_url'], self.source)
+            with store.connect() as db:
+                db.execute('UPDATE content SET ' + ','.join(k + '=?' for k in old) + ' WHERE id=?', [*old.values(), row['id']])
+            row = store.dataset('live')['content'][0]
+            cfg = configuration(); provider = 'contextual-api:gemini:gemini-3.5-flash-lite:direct-v1'
+            _, units, _ = source_units(row, cfg['source_characters_per_unit'])
+            state = {'schema_version': 1, 'id': row['id'], 'provider': provider, 'source_hash': row['article_hash'],
+                     'input_hash': input_hash(row, provider, cfg), 'outputs': {k: '译文:' + text for k, text in units},
+                     'retry_after': '2026-10-16T07:15:00+00:00'}
+            progress = Path(td) / 'progress'; progress.mkdir()
+            path = progress / (row['id'] + '.json'); path.write_text(json.dumps(state))
+            clean = extract_article(html, row['canonical_url'], self.source)
+            self.assertIsNone(remap_ai_progress(row, clean, [9], {**state, 'source_hash': 'different'}, cfg))
+            self.assertIsNone(remap_ai_progress(row, clean, [9], {**state, 'input_hash': 'stale'}, cfg))
+            dry = clean_saved_bodies(store, getter=lambda url, src: (html, url), pack_directory=Path(td) / 'packs', progress_directory=progress)
+            self.assertEqual(dry['preserved_ai_checkpoint_units'], 2)  # title and real paragraph
+            self.assertEqual(json.loads(path.read_text()), state)
+            report = clean_saved_bodies(store, apply=True, getter=lambda url, src: (html, url), pack_directory=Path(td) / 'packs', progress_directory=progress)
+            saved = store.dataset('live')['content'][0]; checkpoint = json.loads(path.read_text())
+            self.assertEqual(report['removed_blocks'], 9)
+            self.assertEqual(report['updated_ai_checkpoints'], [row['id']])
+            self.assertEqual(checkpoint['outputs']['block:0:text:0'], state['outputs']['block:9:text:0'])
+            self.assertEqual(checkpoint['retry_after'], state['retry_after'])
+            self.assertEqual(checkpoint['provider'], state['provider'])
+            self.assertEqual(checkpoint['source_hash'], saved['article_hash'])
+            self.assertEqual(checkpoint['input_hash'], input_hash(saved, provider, cfg))
+            self.assertEqual(len(checkpoint['outputs']), 2)
+            self.assertEqual(saved['article_text'], self.prose)
+
     def setUp(self):
         self.source = {'id': 'artnews', 'name': 'ARTnews', 'homepage_url': 'https://www.artnews.com',
                        'source_type': 'media', 'language': 'en', 'channels': ['art'],

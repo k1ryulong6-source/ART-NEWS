@@ -9,10 +9,11 @@ import os
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from urllib.parse import urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from backend.articles import allowed_url, fetch_page, extract_article
-from backend.article_cleanup import subset_indexes, remap_translations, cached_widget_indexes, widget_deletions_only
+from backend.article_cleanup import subset_indexes, remap_translations, cached_widget_indexes, widget_deletions_only, remap_ai_progress
 from backend.editorial import checked_result
 from backend.storage import ROOT, Store, now
 
@@ -20,13 +21,32 @@ from backend.storage import ROOT, Store, now
 def contaminated(row):
     blocks = json.loads(row.get('article_blocks_json') or '[]')
     texts = {b.get('text', '').strip() for b in blocks}
-    return ((row['source_id'] == 'artnet' and 'Sign up for our daily newsletter.' in texts)
+    return (sharing_controls_present(blocks)
+            or (row['source_id'] == 'artnet' and 'Sign up for our daily newsletter.' in texts)
             or (row['source_id'] in ('artnews', 'variety-film', 'deadline-film')
                 and 'Related Articles' in texts)
             or (row['source_id'] == 'lenscratch' and 'Recommended' in texts))
 
 
-def clean_saved_bodies(store, apply=False, limit=100, getter=None, pack_directory=None):
+def sharing_controls_present(blocks):
+    """Candidate detection only; actual deletions still require fetched DOM proof."""
+    endpoints = {('www.facebook.com', '/sharer.php'), ('www.facebook.com', '/sharer/sharer.php'),
+                 ('www.linkedin.com', '/shareArticle'), ('www.reddit.com', '/submit'),
+                 ('pinterest.com', '/pin/create/link/'), ('www.pinterest.com', '/pin/create/button/'),
+                 ('www.tumblr.com', '/widgets/share/tool/preview')}
+    hits = 0
+    for block in blocks:
+        if block.get('type') != 'list_item':
+            continue
+        for link in block.get('links', []):
+            parts = urlsplit(link.get('url') or '')
+            if (parts.hostname, parts.path) in endpoints:
+                hits += 1
+                break
+    return hits >= 2
+
+
+def clean_saved_bodies(store, apply=False, limit=100, getter=None, pack_directory=None, progress_directory=None):
     catalog = {s['id']: s for s in json.loads((ROOT / 'config/sources.json').read_text())['sources'] if s['enabled']}
     with store.connect() as db:
         rows = [dict(r) for r in db.execute('SELECT * FROM content WHERE is_demo=0')]
@@ -34,8 +54,10 @@ def clean_saved_bodies(store, apply=False, limit=100, getter=None, pack_director
     report = {'schema_version': 1, 'at': now(), 'mode': 'apply' if apply else 'dry-run',
               'candidates': len(candidates), 'changed': [], 'unchanged': [], 'deferred': [],
               'failed': [], 'removed_blocks': 0, 'removed_characters': 0,
-              'preserved_ai': 0, 'preserved_machine': 0, 'updated_packs': []}
+              'preserved_ai': 0, 'preserved_machine': 0, 'updated_packs': [],
+              'updated_ai_checkpoints': [], 'preserved_ai_checkpoint_units': 0}
     packs = Path(pack_directory or ROOT / 'data/translations')
+    progress = Path(progress_directory or ROOT / 'data/ai-translation-progress')
 
     def prepare(row):
         try:
@@ -87,7 +109,11 @@ def clean_saved_bodies(store, apply=False, limit=100, getter=None, pack_director
                     if review.get('pack_hash') == old_digest:
                         review['pack_hash'] = hashlib.sha256(json.dumps(pack, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
                         fields['editorial_review_json'] = json.dumps(review, ensure_ascii=False)
-            return row, (fields, indexes, pack_path, pack), None
+            progress_path = progress / (row['id'] + '.json')
+            checkpoint = None
+            if progress_path.exists():
+                checkpoint = remap_ai_progress(row, fields, indexes, json.loads(progress_path.read_text()))
+            return row, (fields, indexes, pack_path, pack, progress_path, checkpoint), None
         except Exception as exc:
             return row, None, 'failed:' + str(exc)[:160]
 
@@ -96,7 +122,7 @@ def clean_saved_bodies(store, apply=False, limit=100, getter=None, pack_director
             if reason == 'unchanged': report['unchanged'].append(row['id'])
             else: report['failed' if reason.startswith('failed:') else 'deferred'].append({'id': row['id'], 'reason': reason})
             continue
-        fields, indexes, pack_path, pack = result
+        fields, indexes, pack_path, pack, progress_path, checkpoint = result
         if apply:
             with store.connect() as db:
                 changed = db.execute('UPDATE content SET ' + ','.join(k + '=?' for k in fields)
@@ -107,12 +133,18 @@ def clean_saved_bodies(store, apply=False, limit=100, getter=None, pack_director
                 continue
             if pack is not None:
                 pack_path.write_text(json.dumps(pack, ensure_ascii=False, indent=2) + '\n')
+            if checkpoint is not None:
+                from backend.autonomous_translation import write_json
+                write_json(progress_path, checkpoint)
         report['changed'].append(row['id'])
         report['removed_blocks'] += len(json.loads(row['article_blocks_json'])) - len(indexes)
         report['removed_characters'] += len(row.get('article_text') or '') - len(fields['article_text'])
         report['preserved_ai'] += int(row.get('editorial_status') in ('reviewed', 'translated'))
         report['preserved_machine'] += int(bool(fields.get('article_translation_hash')))
         if pack is not None: report['updated_packs'].append(row['id'])
+        if checkpoint is not None:
+            report['updated_ai_checkpoints'].append(row['id'])
+            report['preserved_ai_checkpoint_units'] += len(checkpoint['outputs'])
     report['status'] = 'partial' if report['failed'] or report['deferred'] else 'completed'
     return report
 

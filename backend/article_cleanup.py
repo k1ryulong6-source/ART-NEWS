@@ -10,7 +10,8 @@ WIDGETS = ('.condensed-newsletter-signup,.theme-newsletter-signup,'
            '.post-navigation,.entry-footer,.cookie-banner,.cookie-notice,'
            '.ad-slot,.advertising,.subscription-prompt,'
            '[role="navigation"],[role="search"],'
-           '[data-component="newsletter-signup"]')
+           '[data-component="newsletter-signup"],'
+           '[data-component="social-media"],[data-alias="social-media__list"]')
 
 
 def widget_nodes(soup, source):
@@ -67,7 +68,7 @@ def widget_block_runs(payload, url, source):
     for widget in widget_nodes(soup, source):
         clone = BeautifulSoup(str(widget), 'lxml')
         for tag in clone.find_all(True):
-            for key in ('class', 'id', 'role', 'data-component'):
+            for key in ('class', 'id', 'role', 'data-component', 'data-alias'):
                 tag.attrs.pop(key, None)
         fragment = '<div class="article-body"><p>' + marker + '</p>' + str(clone.body or clone) + '</div>'
         extracted = extract_article(fragment, url, {**source, 'article_selectors': ['.article-body']})
@@ -150,3 +151,35 @@ def remap_translations(row, fields, indexes):
                 # keep their text as a partial draft, not a claimed valid body.
                 result['article_translation_hash'] = None
     return result
+
+
+def remap_ai_progress(row, fields, indexes, state, cfg=None):
+    """Reindex accepted API units after proven deletions; never infer old text."""
+    from .ai_translation import configuration, input_hash, source_units
+    cfg = cfg or configuration()
+    provider = state.get('provider') or ''
+    if (not provider.startswith('contextual-api:gemini:') or state.get('id') != row['id']
+            or state.get('source_hash') != row['article_hash']
+            or state.get('input_hash') != input_hash(row, provider, cfg)
+            or not isinstance(state.get('outputs'), dict)):
+        return None
+    _, old_units, _ = source_units(row, cfg['source_characters_per_unit'])
+    cleaned_row = {**row, **fields}
+    _, new_units, _ = source_units(cleaned_row, cfg['source_characters_per_unit'])
+    old_units = dict(old_units)
+    outputs = {}
+    for key, text in new_units:
+        old_key = key
+        if key.startswith('block:'):
+            parts = key.split(':')
+            parts[1] = str(indexes[int(parts[1])])
+            old_key = ':'.join(parts)
+        if old_units.get(old_key) != text:
+            return None
+        translated = state['outputs'].get(old_key)
+        if isinstance(translated, str):
+            outputs[key] = translated
+    return {**state, 'source_hash': fields['article_hash'],
+            'input_hash': input_hash(cleaned_row, provider, cfg), 'outputs': outputs,
+            'cleanup': {'from_source_hash': row['article_hash'], 'retained_units': len(outputs),
+                        'removed_units': len(state['outputs']) - len(outputs)}}

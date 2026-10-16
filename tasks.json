@@ -2208,6 +2208,36 @@
         "Pages38770771630 success；https://mujianrest.work/data.js实际200且16:38:11快照包含两站20/18条及各8正文。生产Chromium逐站直接#reader/ID打开，保存原文均直接可读、图片显示，未要求手动切换。",
         "57候选/55启用=44RSS+11公开网页；每2小时现有采集/后台API/头条AI硬门槛保持，Claude前端未改；全文积压T028/无人值守全量验收T062仍doing。"
       ]
+    },
+    {
+      "id": "T068",
+      "title": "清理分享、邮件与打印控件，修复抓取并保留译文",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex（正文提取/存量清理）",
+      "updated_at": "2026-10-16",
+      "depends_on": [],
+      "scope": [
+        "backend/article_cleanup.py",
+        "backend/articles.py",
+        "scripts/clean_article_bodies.py",
+        ".github/workflows/cleanup.yml",
+        "tests/",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "查明用户列举控件的真实来源/DOM，不按Facebook等正文关键词删段",
+        "新增抓取不再包含控件，正文/引文/图注/日期/正常链接保留",
+        "存量按DOM证据纯删块并保留AI/机翻身份与有效正文，不调用翻译API",
+        "程序回归、真实远端清理/发布与线上复核，未处理项如实报告"
+      ],
+      "evidence": [
+        "真实IndieWire DOM确认3处social-media组件，正文中1处9个工具栏块；当前29篇污染（13 AI/8机翻）。",
+        "本地只读dry-run：29篇可纯删261块/3741字；保留13AI/8机翻/5断点89单元；另1篇既存非分享候选未获纯删证据，保留未冒充修复。",
+        "192 Python、项目检查、cleanup YAML/写锁与发布权限、git diff --check通过。新增回归覆盖组件过滤、作品同名/正常社交链接保留、DOM证据、过期断点拒绝与有效断点重映射；未调用翻译API。",
+        "待真实GitHub cleanup、Pages与线上原文/中文正文核对。"
+      ]
     }
   ]
 }

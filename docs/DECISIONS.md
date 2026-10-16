@@ -352,3 +352,11 @@ T063用户追加授权：第二密钥已配置，要求本次重置前充分使�
 TAB/pageN为前端渲染，匿名浏览器核对后只支持当前公开所选页的安全富文本转写，严格校验路由/slug/page/total/Page nation，绝不从hydration中的paginated_contents一次取出全页或补订阅内容。Index章节计数不当分页。保留主体内活动卡的标题/公开日期/链接，去掉推荐文章卡和交互控件；最多12页，未知节点或抓取失败明确partial。免费API与现有请求/采集预算保持。
 
 美術展ナビ真实正文包含表格：扩展公共结构化提取对td/th的支持，避免展期、票价、交通漏段，并避免嵌套p重复。仅按来源准确DOM组件移除分享、推荐；同一活动信息段末的推荐必须有紧邻iframely本站卡片佐证才截尾，保留前面的活动说明。列表只有日期时不造时刻，由正文公开meta补真实发布时间；以后列表空值不能清掉该时刻。
+
+## T068 · 分享/邮件/打印工具栏与译文保留（2026-10-16）
+
+用户提供Share on Facebook/LinkedIn/WhatsApp、Submit to Reddit、Pin it、Post to Tumblr、Email、Print This Page的中英混排实例。实际定位为IndieWire Gutenberg正文中的[data-component="social-media"]与[data-alias="social-media__list"]，hash类名会变化；新增这两个精确组件选择器，不按Facebook/分享等词清空段落或正常艺术家链接。采集与质量对照共用remove_widgets，新增原文不再带入该工具栏。
+
+存量候选以至少两个list_item中的真实分享端点标记，仅筛选待检查文章；删除必须逐篇重取真实页面，证明旧块与DOM分享组件的完整块序列精确匹配，或保留所有旧正文、纯删完整widget run。删除段落、改写/重排和歧义匹配拒绝，失败保留原文。对应AI/机翻逐块投影，旧模型/审核/作者/公开部分身份保持，不调用任何模型或API。现有有效Gemini断点须old source_hash/input_hash/provider/单元内容全部匹配后重映射block索引及新hash；不匹配的历史断点不冒充有效，不清除项目退避、配额或已用次数。
+
+cleanup Actions在原共享数据写锁内恢复最新main、应用纯删块、重建队列/验收、使用safe push保存，明确接续Pages与健康检查，保存受影响AI断点。原采集/翻译调度、费用/请求保护和Claude前端不改。

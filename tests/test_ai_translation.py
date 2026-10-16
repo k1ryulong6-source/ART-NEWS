@@ -11,7 +11,7 @@ class AITranslationTests(unittest.TestCase):
     # Reuse source/body storage fixture, not the offline worker tests.
     setUp = fixtures.AutonomousTranslationTests.setUp
     def run_ai_worker(self, provider, **overrides):
-        cfg = {**configuration(), 'request_interval_seconds': 0, **overrides}
+        cfg = {**configuration(), 'request_interval_seconds': 0, 'transient_retry': {**configuration().get('transient_retry', {}), 'inline_retries_per_run': 0}, **overrides}
         return run_ai(self.store, provider, self.root / 'ai-progress', self.root / 'ledger.json',
                       cfg=cfg, sleep=lambda seconds: None)
 

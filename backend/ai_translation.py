@@ -13,6 +13,7 @@ from .storage import ROOT, now
 from .editorial import checked_result, numbers, publish_translation, rules
 from .autonomous_translation import assemble, write_json, read_checkpoint
 from .priority import rank_snapshot, translation_batch
+from . import ai_retry
 
 
 def configuration():
@@ -50,7 +51,7 @@ class GeminiTranslator:
                 return json.loads(raw)
         except HTTPError as error:
             retry = error.headers.get('Retry-After', '')
-            raise ServiceError(error.code, int(retry) if retry.isdigit() else 0) from None
+            raise ServiceError(error.code, ai_retry.retry_after_seconds(retry)) from None
 
     def translate(self, document, keys):
         self.last_usage = None
@@ -175,6 +176,7 @@ def reserve_requests(path, reservation_id, cfg=None):
 
 def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reservation_id=None, checkpoint_sink=None, eligible_ids=None, io_lock=None, clock=time.monotonic, sleep=time.sleep):
     cfg = cfg or configuration()
+    retry_cfg = ai_retry.configuration(cfg)
     def persist(path, value):
         with io_lock if io_lock is not None else nullcontext():
             write_json(path, value)
@@ -195,7 +197,8 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
     start = clock()
     report = {'status': 'completed', 'provider': provider.name, 'model': provider.model,
               'account_mode': cfg['account_mode'], 'started_at': now(), 'translated': [], 'failed': [],
-              'deferred': [], 'resumed': [], 'stale': [], 'requests': 0, 'input_tokens': 0, 'output_tokens': 0}
+              'deferred': [], 'resumed': [], 'stale': [], 'requests': 0, 'input_tokens': 0, 'output_tokens': 0,
+              'service_retry_policy': ai_retry.POLICY, 'inline_service_retries': 0, 'service_failures': []}
     with io_lock if io_lock is not None else nullcontext():
         ledger = json.loads(ledger_path.read_text()) if ledger_path.exists() else {'schema_version': 1, 'days': {}}
     if not isinstance(ledger, dict) or not isinstance(ledger.get('days'), dict):
@@ -320,11 +323,38 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                     persist(ledger_path, ledger)
                     try:
                         outputs, tokens = provider.translate(document, [key for key, _ in chunk])
-                    except Exception:
+                    except Exception as error:
                         if getattr(provider, 'last_usage', None) is not None:
                             record_tokens(provider.last_usage)
+                            ai_retry.recovered(ledger)
+                            persist(ledger_path, ledger)
+                        transient = ((isinstance(error, ServiceError) and error.status in ai_retry.TRANSIENT_HTTP)
+                                     or isinstance(error, (URLError, TimeoutError, ConnectionError)))
+                        if transient:
+                            reason = str(error) if isinstance(error, ServiceError) else type(error).__name__
+                            plan = ai_retry.schedule(ledger, cfg, ledger_path.name, reason,
+                                                     getattr(error, 'retry_seconds', 0))
+                            error.service_retry_recorded = True
+                            quota_remaining = (reservation['remaining'] if reservation else
+                                cfg['requests_per_day'] - usage['requests'] - usage.get('reserved_requests', 0))
+                            inline = (report['inline_service_retries'] < retry_cfg['inline_retries_per_run']
+                                      and plan['delay_seconds'] <= retry_cfg['inline_wait_limit_seconds']
+                                      and report['requests'] < cfg['requests_per_run'] and quota_remaining > 0
+                                      # Leave room for the normal 120s HTTP timeout.
+                                      and clock() - start + plan['delay_seconds'] + cfg['request_interval_seconds'] + 120 < cfg['seconds_per_run'])
+                            report['service_failures'].append({**plan, 'inline_retry': inline})
+                            persist(path, state)
+                            persist(ledger_path, ledger)
+                            if checkpoint_sink:
+                                checkpoint_sink()
+                            if inline:
+                                report['inline_service_retries'] += 1
+                                sleep(plan['delay_seconds'])
+                                continue
                         raise
                     record_tokens(tokens)
+                    ai_retry.recovered(ledger)
+                    persist(ledger_path, ledger)
                     accepted, invalid = {}, []
                     for key, source in chunk:
                         translated = outputs[key]
@@ -373,25 +403,20 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                 if not reservation:
                     with io_lock if io_lock is not None else nullcontext():
                         path.unlink(missing_ok=True)
-            except ServiceError as error:
-                reason = str(error)
-                if error.status in (400, 401, 403, 404):
+            except (ServiceError, URLError, TimeoutError, ConnectionError) as error:
+                reason = str(error) if isinstance(error, ServiceError) else type(error).__name__
+                if getattr(error, 'service_retry_recorded', False):
+                    report['status'] = 'service_wait'
+                elif isinstance(error, ServiceError) and error.status in (400, 401, 403, 404):
                     report['status'] = 'configuration_error'
                     ledger['retry_after'] = (datetime.now(timezone.utc) + timedelta(hours=6)).isoformat()
                 else:
-                    report['status'] = 'quota_wait' if error.status == 429 else 'service_wait'
-                    ledger['retry_after'] = (datetime.now(timezone.utc) + timedelta(seconds=max(error.retry_seconds, 3600))).isoformat()
+                    report['status'] = 'quota_wait' if isinstance(error, ServiceError) and error.status == 429 else 'service_wait'
+                    ledger['retry_after'] = (datetime.now(timezone.utc) + timedelta(seconds=max(getattr(error, 'retry_seconds', 0), 3600))).isoformat()
                 ledger.update(retry_status=report['status'], retry_error=reason)
                 persist(path, state)
                 persist(ledger_path, ledger)
                 report.update(error=reason, retry_after=ledger['retry_after'])
-                break
-            except (URLError, TimeoutError, ConnectionError) as error:
-                ledger['retry_after'] = (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
-                ledger.update(retry_status='service_wait', retry_error=type(error).__name__)
-                persist(path, state)
-                persist(ledger_path, ledger)
-                report.update(status='service_wait', error=type(error).__name__, retry_after=ledger['retry_after'])
                 break
             except Exception as error:
                 state['error'] = str(error)[:120] if isinstance(error, ValueError) else type(error).__name__
@@ -413,4 +438,6 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
     report.update(finished_at=now(), seconds=round(clock() - start, 2),
                   requests_today=usage['requests'], daily_request_limit=cfg['requests_per_day'],
                   unknown_usage_requests_today=usage.get('unknown_usage_requests', 0))
+    if ledger.get('service_retry'):
+        report['service_retry'] = ledger['service_retry']
     return report

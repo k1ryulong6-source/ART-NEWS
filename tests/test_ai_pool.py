@@ -15,7 +15,7 @@ class AIPoolTests(unittest.TestCase):
     setUp = fixtures.AutonomousTranslationTests.setUp
 
     def setup_pool(self, *, second_article=False, env=None, **limits):
-        self.cfg = {**configuration(), 'request_interval_seconds': 0, **limits}
+        self.cfg = {**configuration(), 'request_interval_seconds': 0, 'transient_retry': {**configuration().get('transient_retry', {}), 'inline_retries_per_run': 0}, **limits}
         self.env = {'GEMINI_API_KEY': 'first-test-key', 'GEMINI_API_KEY_SECONDARY': 'second-test-key'} if env is None else env
         (self.root / 'data').mkdir(exist_ok=True)
         if second_article:
@@ -80,6 +80,26 @@ class AIPoolTests(unittest.TestCase):
 
     def test_503_is_project_local_and_other_project_takes_remaining_article_next_batch(self):
         self.check_project_error_isolation(503, 'service_wait')
+
+    def test_short_failure_retries_only_its_project_while_other_finishes(self):
+        self.setup_pool(second_article=True, transient_retry={
+            **configuration()['transient_retry'], 'inline_retries_per_run': 2, 'jitter_seconds': 0})
+        attempts = {'primary': 0, 'secondary': 0}
+        def factory(project):
+            good = self.provider(project)
+            def transport(payload):
+                attempts[project['id']] += 1
+                if project['id'] == 'primary' and attempts['primary'] == 1:
+                    raise ServiceError(503)
+                return good.transport(payload)
+            return GeminiTranslator(project['key'], cfg=project['cfg'], transport=transport)
+        report = self.execute(factory)
+        self.assertEqual(len(report['translated']), 2)
+        self.assertEqual(attempts, {'primary': 2, 'secondary': 1})
+        self.assertEqual(report['requests'], 3)
+        self.assertEqual(report['inline_service_retries'], 1)
+        self.assertEqual(report['service_failures'][0]['project'], 'primary')
+        self.assertEqual(report['projects'][1]['inline_service_retries'], 0)
 
     def test_429_is_project_local_and_preserves_both_request_counts(self):
         self.check_project_error_isolation(429, 'quota_wait')

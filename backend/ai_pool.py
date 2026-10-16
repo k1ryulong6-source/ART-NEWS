@@ -11,6 +11,7 @@ from .ai_translation import configuration, GeminiTranslator, reserve_requests, r
 from .autonomous_translation import write_json
 from .quota_repair import apply_verified_repairs
 from .storage import ROOT, now
+from .ai_retry import POLICY as SERVICE_RETRY_POLICY
 
 
 PROJECTS = (
@@ -167,6 +168,10 @@ def run_pool(store, reservation_id, *, root=ROOT, cfg=None, environ=None,
               'model': cfg['model'], 'account_mode': cfg['account_mode'], 'pool_mode': 'parallel_disjoint_articles',
               'started_at': started, 'finished_at': now(), 'projects': lanes,
               'pending_before': len(pending), 'configured_projects': len(active)}
+    report['service_retry_policy'] = SERVICE_RETRY_POLICY
+    report['inline_service_retries'] = sum(r.get('inline_service_retries', 0) for r in active)
+    report['service_failures'] = [{**failure, 'project': r['id']}
+                                for r in active for failure in r.get('service_failures', [])]
     for field in ('translated', 'resumed', 'deferred', 'stale'):
         report[field] = list(dict.fromkeys(i for r in active for i in r.get(field, [])))
     report['failed'] = [{**item, 'project': r['id']} for r in active for item in r.get('failed', [])]

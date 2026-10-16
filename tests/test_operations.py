@@ -113,3 +113,15 @@ class OperationsTests(unittest.TestCase):
                     self.assertEqual(response.json()['translation'], public.json()['translation'])
                     self.assertEqual((await client.post('/api/operations', json={})).status_code, 405)
             asyncio.run(check())
+
+    def test_transient_retry_evidence_remains_distinct_from_translation_failures(self):
+        ai = self.evidence['ai']
+        ai.update(service_retry_policy='bounded-exponential-v1', inline_service_retries=1,
+                  service_failures=[{'error': 'ai_http_503', 'delay_seconds': 60, 'project': 'primary'}])
+        ai['projects'] = [{'id': 'primary', 'configured': True, 'status': 'service_wait',
+                           'inline_service_retries': 1, 'service_retry': {'consecutive_failures': 2}}]
+        report = operations_report(self.snapshot, self.evidence, self.instant)
+        self.assertEqual(report['api']['inline_service_retries'], 1)
+        self.assertEqual(report['api']['projects'][0]['service_retry']['consecutive_failures'], 2)
+        self.assertEqual(report['api']['service_failures'][0]['delay_seconds'], 60)
+        self.assertEqual(len(report['api']['last_run_failed']), 1)

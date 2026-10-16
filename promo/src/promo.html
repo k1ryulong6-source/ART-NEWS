@@ -29,7 +29,10 @@ body{margin:0;background:#000;color:var(--ink);overflow:hidden;padding-left:max(
 #viewport{position:relative;width:100%;height:100%;overflow:hidden}
 #stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;margin:-540px 0 0 -960px;overflow:hidden;background:#000;
   transform-origin:50% 50%;font-family:var(--sans);-webkit-font-smoothing:antialiased;font-synthesis:none}
-#film{position:absolute;inset:0;filter:url(#boil) grayscale(1) contrast(1.08) blur(.6px)}
+#film{position:absolute;inset:0;filter:grayscale(1) contrast(1.08) blur(.5px)}
+/* hand inking: one of three cels shows at a time */
+.cel{display:none}#film[data-cel="0"] .cel0,#film[data-cel="1"] .cel1,#film[data-cel="2"] .cel2{display:inline}
+.ink-clip{clip-path:var(--ink-clip0)!important}#film[data-cel="1"] .ink-clip{clip-path:var(--ink-clip1)!important}#film[data-cel="2"] .ink-clip{clip-path:var(--ink-clip2)!important}
 .paper-tex{position:absolute;inset:0;z-index:25;pointer-events:none;mix-blend-mode:multiply;opacity:.32;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.004 .09' numOctaves='3' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .52 0 0 0 0 .48 0 0 0 1.6 -.45'/%3E%3C/filter%3E%3Crect width='600' height='600' filter='url(%23f)'/%3E%3C/svg%3E")}
 .layer,.scene{position:absolute;inset:0}
 svg{display:block;overflow:visible}
@@ -233,8 +236,7 @@ svg{display:block;overflow:visible}
 
 <div id="viewport">
 <div id="stage" role="img" aria-label="幕間休息宣傳片「明日新聞台」：黑白五十年代卡通。主持人幕間先生在老電視旁招手；新聞機用雷達從地球各地接收電影、攝影、藝術新聞；東京、釜山、倫敦、紐約、威尼斯的頭條卡片飛到他身邊；他坐單軌列車經過世博會的電影館、攝影館、藝術館，招牌上是溫哥華電影節、InCadaqués攝影節與Tate Modern的消息；掛著一種關注旗幟的火箭飛向南方，六家地區媒體亮成星星；原子標誌與字標幕間休息，他眨眼豎起大拇指，網址 mujianrest.work。英文旁白，中文字幕。">
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="boil" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence id="boil-noise" type="fractalNoise" baseFrequency=".021" numOctaves="2" seed="1"/><feDisplacementMap in="SourceGraphic" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
-  <div id="film">
+  <div id="film" data-cel="0">
 
   <div class="scene" id="tv-scene">
     <div class="wall"></div>
@@ -433,9 +435,8 @@ svg{display:block;overflow:visible}
     });
   }
 
-  /* ── Film wear: flicker, scratches, dust, gate weave, line boil ── */
+  /* ── Film wear: flicker, scratches, dust, gate weave ── */
   var wear = document.getElementById('wear'), w = wear.getContext('2d'), film = document.getElementById('film');
-  var boil = document.getElementById('boil-noise');
   function drawWear(t) {
     var f = Math.floor(t * 24);
     w.clearRect(0, 0, 1920, 1080);
@@ -460,10 +461,199 @@ svg{display:block;overflow:visible}
     var slip = hash(Math.floor(t * 2) * 5.1) > .9 && hash(f * 1.9) > .6 ? 14 : 0;
     var jx = (hash(f * 1.31) - .5) * 5, jy = (hash(f * 2.77) - .5) * 5 + slip;
     film.style.transform = 'translate(' + jx.toFixed(2) + 'px,' + jy.toFixed(2) + 'px)';
-    boil.setAttribute('seed', String(Math.floor(t * 8) % 97));   // hand-drawn lines "boil" 8 times a second
   }
 
   function render(ms) { var t = ms / 1000; drawGlobe(t); drawAtom(t); }
+
+  /* ── Hand inking ──
+     Redraws the film's shapes as brush work, once at load: every SVG shape and every
+     outlined CSS box gets a slightly crooked outline and strokes that swell and thin like
+     a pen. Each is drawn CELS times; seek() shows one cel at a time, so the lines boil
+     like hand-traced drawings instead of the whole frame warping. */
+  var CELS = 3, NS = 'http://www.w3.org/2000/svg';
+  function inkRand(seed) { seed = seed % 2147483647 || 1; return function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
+  function inkWave(rand, period) {           // smooth noise along a line, about [-1, 1]
+    var f = [];
+    for (var i = 0; i < 3; i++) f.push([2 * Math.PI / (period * (0.7 + rand() * 0.8) / (i + 1)), rand() * 6.283, 1 / (i + 1.4)]);
+    return function (s) { return (f[0][2] * Math.sin(s * f[0][0] + f[0][1]) + f[1][2] * Math.sin(s * f[1][0] + f[1][1]) + f[2][2] * Math.sin(s * f[2][0] + f[2][1])) / 1.05; };
+  }
+  function inkD(pts, closed) {               // Catmull-Rom curve through the points
+    var n = pts.length, d = 'M' + pts[0][0].toFixed(1) + ' ' + pts[0][1].toFixed(1);
+    var get = function (k) { return closed ? pts[(k + n) % n] : pts[Math.max(0, Math.min(n - 1, k))]; };
+    for (var i = 0; i < (closed ? n : n - 1); i++) {
+      var p0 = get(i - 1), p1 = get(i), p2 = get(i + 1), p3 = get(i + 2);
+      d += 'C' + (p1[0] + (p2[0] - p0[0]) / 6).toFixed(1) + ' ' + (p1[1] + (p2[1] - p0[1]) / 6).toFixed(1) + ' ' +
+           (p2[0] - (p3[0] - p1[0]) / 6).toFixed(1) + ' ' + (p2[1] - (p3[1] - p1[1]) / 6).toFixed(1) + ' ' +
+           p2[0].toFixed(1) + ' ' + p2[1].toFixed(1);
+    }
+    return d + (closed ? 'Z' : '');
+  }
+  function inkNormals(pts, closed) {        // unit normals (-dy, dx)
+    var m = pts.length;
+    return pts.map(function (_, i) {
+      var a = pts[closed ? (i - 1 + m) % m : Math.max(0, i - 1)], b = pts[closed ? (i + 1) % m : Math.min(m - 1, i + 1)];
+      var dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
+      return [-dy / l, dx / l];
+    });
+  }
+  function inkArc(pts) { var s = [0]; for (var i = 1; i < pts.length; i++) s.push(s[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); return s; }
+  // One hand's version of a line: the points pushed off course by `amount`.
+  function inkStray(pts, normals, arc, rand, amount, closed) {
+    var len = arc[arc.length - 1] || 1, drift = inkWave(rand, Math.max(60, len / 5)), shake = inkWave(rand, 18);
+    return pts.map(function (q, k) { var off = amount * drift(arc[k]) + 0.15 * shake(arc[k]); return [q[0] + normals[k][0] * off, q[1] + normals[k][1] * off]; });
+  }
+  // A brush stroke along the points: width swells and thins; open strokes taper at both ends.
+  function inkRibbon(pts, arc, rand, width, closed, taper, centre) {
+    var len = arc[arc.length - 1] || 1, normals = inkNormals(pts, closed), left = [], right = [];
+    var swell = inkWave(rand, 80), flick = inkWave(rand, 26), amp = Math.min(width * 0.5, 3.4);
+    for (var i = 0; i < pts.length; i++) {
+      var half = (width + amp * (0.8 * swell(arc[i]) + 0.35 * flick(arc[i]))) / 2;
+      if (taper) half *= 0.3 + 0.7 * Math.min(1, Math.min(arc[i], len - arc[i]) / Math.min(18, len / 3));
+      half = Math.max(0.5, half);
+      var c = centre || 0;
+      left.push([pts[i][0] + normals[i][0] * (c + half), pts[i][1] + normals[i][1] * (c + half)]);
+      right.push([pts[i][0] + normals[i][0] * (c - half), pts[i][1] + normals[i][1] * (c - half)]);
+    }
+    return closed ? inkD(left, true) + inkD(right.slice().reverse(), true) : inkD(left.concat(right.slice().reverse()), true);
+  }
+  function svgEl(tag, attrs) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
+
+  function inkSvg(root, seed) {
+    // A path of several pieces ("M… M…") is inked piece by piece, or the hand would draw the jumps.
+    Array.prototype.forEach.call(root.querySelectorAll('path'), function (el) {
+      var d = (el.getAttribute('d') || '').trim(), pieces = d.split(/(?=M)/);
+      if (pieces.length < 2 || /m/.test(d)) return;
+      pieces.forEach(function (piece) { var c = el.cloneNode(false); c.setAttribute('d', piece); el.parentNode.insertBefore(c, el); });
+      el.parentNode.removeChild(el);
+    });
+    var shapes = root.querySelectorAll('path,rect,circle,ellipse,line,polyline,polygon');
+    Array.prototype.forEach.call(shapes, function (el, index) {
+      if (el.closest('defs,clipPath,mask,filter,symbol,[data-noink]')) return;
+      var cs = getComputedStyle(el);
+      if (cs.strokeDasharray && cs.strokeDasharray !== 'none') return;
+      var len; try { len = el.getTotalLength(); } catch (e) { return; }
+      if (!len || len < 4) return;
+      var fill = cs.fill, stroke = cs.stroke, sw = parseFloat(cs.strokeWidth) || 0;
+      var hasFill = fill && fill !== 'none', hasStroke = stroke && stroke !== 'none' && sw > 0;
+      var tag = el.tagName.toLowerCase(), closed = /rect|circle|ellipse|polygon/.test(tag) || /z\s*$/i.test((el.getAttribute('d') || '').trim());
+      var n = Math.max(closed ? 12 : 4, Math.round(len / 6)), pts = [];
+      for (var i = 0; i <= n; i++) { var p = el.getPointAtLength(Math.min(len, len * i / n)); pts.push([p.x, p.y]); }
+      if (closed) pts.pop();
+      var normals = inkNormals(pts, closed), arc = inkArc(pts), amount = Math.min(2, 0.7 + len / 500);
+      var holder = svgEl('g', {});
+      if (el.hasAttribute('transform')) holder.setAttribute('transform', el.getAttribute('transform'));
+      if (cs.opacity !== '1') holder.setAttribute('opacity', cs.opacity);
+      for (var c = 0; c < CELS; c++) {
+        var rand = inkRand(seed * 7919 + index * 104729 + c * 15485863 + 1);
+        var g = svgEl('g', { 'class': 'cel cel' + c }), line = inkStray(pts, normals, arc, rand, amount, closed);
+        if (hasFill) g.appendChild(svgEl('path', { d: inkD(line, closed), fill: fill, 'fill-opacity': cs.fillOpacity }));
+        if (hasStroke) {
+          g.appendChild(svgEl('path', { d: inkRibbon(line, arc, rand, sw, closed, !closed && sw < 14), fill: stroke, 'fill-rule': 'evenodd', 'fill-opacity': cs.strokeOpacity }));
+          if (!closed && sw >= 14 && cs.strokeLinecap === 'round') [0, line.length - 1].forEach(function (k) {
+            g.appendChild(svgEl('circle', { cx: line[k][0].toFixed(1), cy: line[k][1].toFixed(1), r: (sw / 2).toFixed(1), fill: stroke }));
+          });
+        }
+        holder.appendChild(g);
+      }
+      el.parentNode.replaceChild(holder, el);
+    });
+  }
+
+  // CSS boxes: the rounded-rect outline from border-radius (or a clip-path polygon).
+  function boxOutline(el, w, h) {
+    var cs = getComputedStyle(el), poly = /^polygon\((.*)\)$/.exec(cs.clipPath || '');
+    var pts = [];
+    if (poly) {
+      var corners = poly[1].split(',').map(function (pair) {
+        var v = pair.trim().split(/\s+/);
+        var px = function (s, size) { return s.indexOf('%') > -1 ? parseFloat(s) / 100 * size : parseFloat(s); };
+        return [px(v[0], w), px(v[1], h)];
+      });
+      corners.forEach(function (a, i) {
+        var b = corners[(i + 1) % corners.length], steps = Math.max(1, Math.round(Math.hypot(b[0] - a[0], b[1] - a[1]) / 8));
+        for (var s = 0; s < steps; s++) pts.push([a[0] + (b[0] - a[0]) * s / steps, a[1] + (b[1] - a[1]) * s / steps]);
+      });
+      return { pts: pts, polygon: true };
+    }
+    var r = ['borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomRightRadius', 'borderBottomLeftRadius'].map(function (k) {
+      var v = cs[k].split(' '), x = v[0], y = v[1] || v[0];
+      var px = function (s, size) { return s.indexOf('%') > -1 ? parseFloat(s) / 100 * size : parseFloat(s) || 0; };
+      return [px(x, w), px(y, h)];
+    });
+    var f = Math.min(1, w / (r[0][0] + r[1][0] || 1), w / (r[3][0] + r[2][0] || 1), h / (r[0][1] + r[3][1] || 1), h / (r[1][1] + r[2][1] || 1));
+    r = r.map(function (q) { return [q[0] * f, q[1] * f]; });
+    var corner = [[r[0][0], r[0][1], Math.PI], [w - r[1][0], r[1][1], 1.5 * Math.PI], [w - r[2][0], h - r[2][1], 0], [r[3][0], h - r[3][1], 0.5 * Math.PI]];
+    corner.forEach(function (c, i) {                 // clockwise: each corner arc, then the straight side to the next
+      var rx = r[i][0], ry = r[i][1], steps = Math.max(1, Math.round(Math.max(rx, ry) * 1.57 / 7));
+      for (var s = 0; s <= steps; s++) { var a = c[2] + s / steps * Math.PI / 2; pts.push([c[0] + rx * Math.cos(a), c[1] + ry * Math.sin(a)]); }
+      var end = pts[pts.length - 1], next = corner[(i + 1) % 4], nr = r[(i + 1) % 4];
+      var start = [next[0] + nr[0] * Math.cos(next[2]), next[1] + nr[1] * Math.sin(next[2])];
+      var n = Math.round(Math.hypot(start[0] - end[0], start[1] - end[1]) / 8);
+      for (var k = 1; k < n; k++) pts.push([end[0] + (start[0] - end[0]) * k / n, end[1] + (start[1] - end[1]) * k / n]);
+    });
+    return { pts: pts, polygon: false };
+  }
+  function parseShadows(value) {
+    if (!value || value === 'none') return [];
+    return value.split(/,(?![^(]*\))/).map(function (s) {
+      var colour = (/rgba?\([^)]*\)/.exec(s) || [''])[0], rest = s.replace(colour, '');
+      var nums = (rest.match(/-?[\d.]+px|\b0\b/g) || []).map(parseFloat);
+      return { text: s.trim(), colour: colour, inset: /inset/.test(rest), x: nums[0] || 0, y: nums[1] || 0, blur: nums[2] || 0, spread: nums[3] || 0 };
+    });
+  }
+  function inkBox(el, seed) {
+    var cs = getComputedStyle(el), w = el.offsetWidth, h = el.offsetHeight;
+    if (!w || !h) return;
+    var outline = boxOutline(el, w, h), pts = outline.pts;
+    if (pts.length < 3) return;
+    var area = 0;
+    for (var i = 0; i < pts.length; i++) { var u = pts[i], v = pts[(i + 1) % pts.length]; area += u[0] * v[1] - v[0] * u[1]; }
+    if (area > 0) pts.reverse();                     // normals must point out of the box
+    var normals = inkNormals(pts, true), arc = inkArc(pts), len = arc[arc.length - 1];
+    var shadows = parseShadows(cs.boxShadow), keep = [], rings = [];
+    shadows.forEach(function (s) { if (!s.x && !s.y && !s.blur && s.spread > 0) rings.push(s); else keep.push(s.text); });
+    var bw = parseFloat(cs.borderTopWidth) || 0;
+    if (bw && cs.borderTopStyle === 'solid' && cs.borderTopWidth === cs.borderBottomWidth && cs.borderTopWidth === cs.borderLeftWidth && cs.borderTopColor === cs.borderLeftColor) {
+      rings.push({ inset: true, spread: bw, colour: cs.borderTopColor });
+      el.style.borderColor = 'transparent';
+    }
+    var amount = Math.min(rings.length ? 1.5 : 3.5, 0.8 + len / 700);
+    if (cs.position === 'static') el.style.position = 'relative';
+    var svg = svgEl('svg', { 'class': 'ink-box', width: w, height: h, viewBox: '0 0 ' + w + ' ' + h, 'aria-hidden': 'true' });
+    svg.style.cssText = 'position:absolute;left:' + (-(parseFloat(cs.borderLeftWidth) || 0)) + 'px;top:' + (-(parseFloat(cs.borderTopWidth) || 0)) + 'px;' +
+      'width:' + w + 'px;height:' + h + 'px;overflow:visible;pointer-events:none';
+    var lines = [];
+    for (var c = 0; c < CELS; c++) {
+      var rand = inkRand(seed * 7919 + c * 15485863 + 7), line = inkStray(pts, normals, arc, rand, amount, true);
+      lines.push(line);
+      var g = svgEl('g', { 'class': 'cel cel' + c });
+      var outer = rings.filter(function (s) { return !s.inset; }).sort(function (a, b) { return b.spread - a.spread; });
+      var inner = rings.filter(function (s) { return s.inset; });
+      outer.forEach(function (s, i) {                // rings outside the box, outermost first
+        var prev = outer[i + 1] ? outer[i + 1].spread : 0, width = s.spread - prev;
+        g.appendChild(svgEl('path', { d: inkRibbon(line, arc, rand, width + 1.5, true, false, prev + width / 2 - 0.5), fill: s.colour, 'fill-rule': 'evenodd' }));
+      });
+      inner.forEach(function (s) {
+        g.appendChild(svgEl('path', { d: inkRibbon(line, arc, rand, s.spread + 1.5, true, false, -s.spread / 2 + 0.5), fill: s.colour, 'fill-rule': 'evenodd' }));
+      });
+      svg.appendChild(g);
+    }
+    if (rings.length) {
+      el.style.boxShadow = keep.length ? keep.join(', ') : 'none';
+      el.appendChild(svg);
+    } else {                                          // no outline: the box's own edge goes crooked
+      lines.forEach(function (line, c) { el.style.setProperty('--ink-clip' + c, "path('" + inkD(line, true) + "')"); });
+      el.classList.add('ink-clip');
+    }
+  }
+  function handInk(film) {
+    film.querySelectorAll('svg').forEach(function (svg, i) { if (!svg.closest('[data-noink]')) inkSvg(svg, i + 1); });
+    film.querySelectorAll(INK_BOXES).forEach(function (el, i) { inkBox(el, 1000 + i); });
+  }
+  var INK_BOXES = '.tv .cabinet,.tv .bezel,.tv .screen,.tv .knobs i,.tv .knobs b,.tv .legs i,.tv .ears i,.tv .ears b,.testcard .ring,' +
+    '.machine .body,.machine .dome,.machine .mast,.machine .dish,.machine .dial,.machine .dial i,.machine .tubes i,.machine .plate,.star4,' +
+    '.sign,.reel .tower,.dome .shell,.dome .lens,.dome .flash,.boom .roof,.boom .pillar,.boom .mobile i,.car .shell,.track,' +
+    '#attention-scene .earth,.rings i,.rocket .hull,.rocket .fin,.rocket .flag,.nucleus,.electron';
 
   /* ── Timing: the cartoon moves "on twos" (12 drawings a second); the film wear runs at
      24. Every CSS animation is paused and positioned from one clock — the recorder's
@@ -473,7 +663,11 @@ svg{display:block;overflow:visible}
   function animations() { return all || (all = document.getAnimations()); }
   function seek(ms) {
     var q = Math.floor(ms / 1000 * FPS);
-    if (q !== lastFrame) { animations().forEach(function (a) { a.pause(); a.currentTime = q / FPS * 1000; }); lastFrame = q; render(q / FPS * 1000); }
+    if (q !== lastFrame) {
+      animations().forEach(function (a) { a.pause(); a.currentTime = q / FPS * 1000; });
+      lastFrame = q; render(q / FPS * 1000);
+      film.dataset.cel = String(Math.floor(q / 2) % CELS);    // a new cel every other drawing: the lines boil
+    }
     drawWear(ms / 1000);
   }
   window.seekPromo = function (ms) { lastFrame = -1; seek(ms); };
@@ -508,6 +702,7 @@ svg{display:block;overflow:visible}
   audio.addEventListener('ended', function () { if (soundOn) started = performance.now() - DURATION; });
 
   animations().forEach(function (a) { a.pause(); });
+  window.promoReady = document.fonts.ready.then(function () { handInk(film); lastFrame = -1; });
   if (recording) { window.seekPromo(0); return; }
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { window.seekPromo(43000); paused = true; held = 43000; pauseButton.textContent = '播放'; return; }
   (function loop() {

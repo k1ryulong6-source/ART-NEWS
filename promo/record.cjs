@@ -23,6 +23,7 @@ const still = flag('--still', null);
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
   await page.goto('file://' + path.join(__dirname, 'index.html') + '?record');
   await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => window.promoReady);           // hand inking is drawn once fonts are in
   const duration = await page.evaluate(() => window.promoDuration);
 
   if (still !== null) {

@@ -65,7 +65,7 @@ def wordmark_svg(css_class: str = "mark") -> str:
         parts.append(f'<g class="c{i}">{inner}</g>')
     _, _, width, height = (float(v) for v in view_box.split())
     return (f'<svg class="{css_class}" viewBox="{view_box}" style="aspect-ratio:{width:g}/{height:g}" '
-            f'aria-hidden="true">{"".join(parts)}</svg>')
+            f'aria-hidden="true" data-noink>{"".join(parts)}</svg>')
 
 
 # ── Land dots for the globe ──────────────────────────────────────────────────────

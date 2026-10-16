@@ -222,13 +222,19 @@ def configured(environ):
     return bool(token and re.fullmatch(r'[a-fA-F0-9]{32}', account))
 
 
+def credential_checks(environ):
+    token, account = credentials(environ)
+    return {'api_token_present': bool(token), 'account_id_present': bool(account),
+            'account_id_format_valid': bool(re.fullmatch(r'[a-fA-F0-9]{32}', account))}
+
+
 def reserve_cloudflare(identity, *, root=ROOT, environ=None, probe=False):
     import os
     from .ai_translation import reserve_requests
     environ = os.environ if environ is None else environ
     cfg, root = configuration(), Path(root)
     if not cfg['enabled'] or not configured(environ):
-        return {'status': 'not_configured', 'requests': 0}
+        return {'status': 'not_configured', 'requests': 0, 'credential_checks': credential_checks(environ)}
     if not probe and not cfg['verified_enabled']:
         return {'status': 'awaiting_verification', 'requests': 0}
     if probe:
@@ -258,6 +264,7 @@ def run_cloudflare(store, identity, *, root=ROOT, environ=None, probe=False, tra
     environ = os.environ if environ is None else environ
     status = {'provider': 'contextual-api:cloudflare:' + MODEL + ':direct-v1', 'model': MODEL,
               'configured': configured(environ), 'requests': 0, 'translated': [], 'failed': [],
+              'credential_checks': credential_checks(environ),
               'started_at': now(), 'verification_run': probe}
     if not cfg['enabled'] or not configured(environ):
         return {**status, 'status': 'not_configured', 'finished_at': now()}

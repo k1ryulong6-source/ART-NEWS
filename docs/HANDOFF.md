@@ -542,3 +542,8 @@ Gemini最近已保存14:53–15:01Z批次22请求、5全文、11数字检查失�
 - 跳过：`live-ae63bcb7ecfb2122f666c0ff`（已在 main 上有译文）。
 - 合并 main 时发现以下 5 篇已被 DeepSeek 译完并上线，保留 main 的译文，本 PR 不覆盖：
   `live-794714375d331268d3ec6d1b`、`live-4738639e28ec3bf2d86212f0`、`live-3e020dba55978ab28830c31f`、`live-ec4c93f3b0d19b3b5119c5b5`、`live-b5da27134218a4a423cc3fe0`。
+
+## 会话直接翻译第六批（Claude Haiku 5.5）
+
+- 本批 10 篇文章由 Claude Haiku 5.5 直接翻译，标注为 AI 译稿（`claude-session:claude-haiku-5-5`），未经人工校对或审阅。
+- 通过程序的 `checked_result` 与数字检查后写入；仅改动这 10 条记录。

@@ -2284,7 +2284,7 @@
       "id": "T070",
       "title": "API故障期间临时补译：记录备用失败并验证当前窗口单篇发布",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex（临时备用尝试）",
       "updated_at": "2026-10-16",
       "depends_on": [
@@ -2311,7 +2311,9 @@
         "后台最新21:36:59 JST报告仍service_wait并尊重旧退避，0新请求；保留772待AI/8缺正文，API独立链未变。",
         "记录data/session-fallback-attempt-2026-10-16.json；任务blocked，未自动重试/升级型号/恢复每日任务/改变收费。",
         "用户后续询问可否当前窗口直接翻译；当前对话完成主头条live-8da5d55a887e39b3833e6adb全部11块，execution=interactive，draft_model明确当前窗口、具体型号未暴露；无二次模型校对。",
-        "checked_result程序结构/数字检查通过；临时数据库对当前全部pack导入模拟仅新增本篇，55 unchanged/6 stale/0 invalid，0既有AI稿被覆盖。尚待GitHub导入与Pages真实验收。"
+        "checked_result程序结构/数字检查通过；临时数据库对当前全部pack导入模拟仅新增本篇，55 unchanged/6 stale/0 invalid，0既有AI稿被覆盖。尚待GitHub导入与Pages真实验收。",
+        "4f0619e已发布；Project checks38904711570、译稿导入38904711478 success。线上独立JSON HTTP200确认kind=ai-direct，标题/全部11块与pack逐项一致，原文hash匹配，2张原图保留。本次实际1篇当前窗口全文；5.6失败仍为0，Gemini产量不冒领。",
+        "只验收本次单篇交互补充；不恢复每日会话任务、不自动继续批量、不启动新模型或付费。全量T028、四项T062及API恢复T069仍未完成。"
       ]
     }
   ]

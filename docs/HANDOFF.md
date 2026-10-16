@@ -476,3 +476,6 @@ T069代码873b7be已上线：CI38901732914、Pages38901732873/38902320671 succes
 
 
 T070后续用户询问当前窗口能否直接翻译，本次不再调用工作者，由当前对话先补1篇主头条live-8da5d55a887e39b3833e6adb（东京非洲当代艺术奖展览），全部11块、源hash与标题匹配，execution=interactive，draft_model明确当前会话/具体型号未暴露；不能算作5.6或Gemini产出。程序结构/数字通过，临时数据库全pack导入模拟仅本篇新增、55 unchanged/6 stale/0 invalid、0既有AI覆盖；未做二次模型校对。T070改doing等待真实导入/发布，不自动扩展当前窗口批量或恢复每日任务；后台免费API/付费状态保持。
+
+
+T070本次单篇交互补充已验收：4f0619e；CI38904711570、导入38904711478 success。生产/integrations/babel/live-8da5d55a887e39b3833e6adb.json HTTP200，kind=ai-direct、源hash匹配，中文标题及全部11块与pack精确一致、保留2原图。实际当前窗口全文1篇，5.6仍0，不计作Gemini。T070仅本次有限补充done，不自动恢复任务/加派模型/批量；T028/T062与API恢复T069仍未完成。

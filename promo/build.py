@@ -1,26 +1,31 @@
 """Build the 幕間休息 promo film page.
 
-promo/src/promo.html is the source. This script injects the site's own wordmark
-outlines (from frontend/index.html), subsets the three OFL faces to the characters
-the film uses, and writes:
+promo/src/promo.html is the source. This script fills in:
 
-  promo/index.html         standalone page (fonts from promo/fonts/)
-  <--inline PATH>          optional single-file copy with fonts as data URIs
+  {{DOTS}}        land dots from Natural Earth 110m land (world-atlas topojson)
+  {{WORDMARK}}    the site's wordmark outline (frontend/index.html), split per character
+  {{CURTAIN_*}}   the closing curtain, woven from recent original headlines in data/live.json
+  {{FONT_*}}      subsets of the site's OFL faces, cut to the characters the film uses
+
+and writes promo/index.html (fonts from promo/fonts/), plus an optional single-file
+copy with the fonts embedded.
 
 Usage:
-  python promo/build.py [--serif-source NotoSerifTC[wght].ttf] [--sans-source NotoSansSC[wght].ttf]
+  python promo/build.py --land land-110m.json
+                        [--serif-source NotoSerifTC[wght].ttf] [--sans-source NotoSansSC[wght].ttf]
                         [--inline out.html]
 
-The upstream TTFs (google/fonts ofl/notoseriftc, ofl/notosanssc) are only needed to
-re-subset after changing the film's text; without them the committed subsets in
-promo/fonts/ are reused. The site's own Noto Sans SC subset lacks some kanji used in
-Japanese titles, hence the upstream source for the sans face.
+land-110m.json: https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-110m.json (ISC;
+Natural Earth data, public domain). Without --land the committed promo/land-dots.json is
+reused. The upstream font TTFs (google/fonts ofl/notoseriftc, ofl/notosanssc) are needed
+only when the film's text changes; otherwise the committed subsets are reused.
 """
 from __future__ import annotations
 
 import argparse
 import base64
 import html
+import json
 import re
 from pathlib import Path
 
@@ -28,43 +33,120 @@ ROOT = Path(__file__).resolve().parent.parent
 PROMO = ROOT / "promo"
 FONTS = PROMO / "fonts"
 SITE_FONTS = ROOT / "frontend" / "fonts"
+DOTS_FILE = PROMO / "land-dots.json"
+
+STEP = 1.5                      # degrees between dots
+LAT_TOP, LAT_BOTTOM = 80, -56   # crop: Arctic islands to Tierra del Fuego
 
 
-def wordmark_paths(symbol_id: str) -> tuple[str, str, str]:
+# ── Land dots ──────────────────────────────────────────────────────────────────
+def topo_rings(topo: dict) -> list[list[tuple[float, float]]]:
+    scale, translate = topo["transform"]["scale"], topo["transform"]["translate"]
+    arcs = []
+    for arc in topo["arcs"]:
+        x = y = 0
+        points = []
+        for dx, dy in arc:
+            x += dx
+            y += dy
+            points.append((x * scale[0] + translate[0], y * scale[1] + translate[1]))
+        arcs.append(points)
+
+    def ring(indices: list[int]) -> list[tuple[float, float]]:
+        out: list[tuple[float, float]] = []
+        for index in indices:
+            points = arcs[index] if index >= 0 else arcs[~index][::-1]
+            out.extend(points[1:] if out else points)
+        return out
+
+    rings = []
+    for geometry in topo["objects"]["land"]["geometries"]:
+        polygons = geometry["arcs"] if geometry["type"] == "MultiPolygon" else [geometry["arcs"]]
+        for polygon in polygons:
+            rings.extend(ring(r) for r in polygon)
+    return rings
+
+
+def land_dots(path: Path) -> list[float]:
+    import numpy as np
+
+    rings = topo_rings(json.loads(path.read_text(encoding="utf-8")))
+    lons = np.arange(-180 + STEP / 2, 180, STEP)
+    lats = np.arange(LAT_TOP - STEP / 2, LAT_BOTTOM, -STEP)
+    grid_lon, grid_lat = np.meshgrid(lons, lats)
+    px, py = grid_lon.ravel(), grid_lat.ravel()
+    inside = np.zeros(px.shape, dtype=bool)
+    for ring in rings:                      # even-odd rule over every ring (holes too)
+        pts = np.array(ring)
+        x1, y1 = pts[:-1, 0][:, None], pts[:-1, 1][:, None]
+        x2, y2 = pts[1:, 0][:, None], pts[1:, 1][:, None]
+        crosses = ((y1 > py) != (y2 > py)) & (px < (x2 - x1) * (py - y1) / np.where(y2 == y1, 1e-12, y2 - y1) + x1)
+        inside ^= (crosses.sum(axis=0) % 2).astype(bool)
+    dots: list[float] = []
+    for lon, lat in zip(px[inside], py[inside]):
+        dots += [round(float(lon), 2), round(float(lat), 2)]
+    return dots
+
+
+# ── Wordmark ───────────────────────────────────────────────────────────────────
+def wordmark_svg() -> str:
     page = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
-    match = re.search(r'<symbol id="%s" viewBox="([^"]+)">(.*?)</symbol>' % re.escape(symbol_id), page, re.S)
+    match = re.search(r'<symbol id="wordmark" viewBox="([^"]+)">(.*?)</symbol>', page, re.S)
     if not match:
-        raise SystemExit(f"wordmark symbol {symbol_id} not found in frontend/index.html")
+        raise SystemExit("wordmark symbol not found in frontend/index.html")
+    view_box = match.group(1)
     paths = dict((cls or "ink", d) for cls, d in re.findall(r'<path(?: class="(wordmark-light)")? d="([^"]+)"', match.group(2)))
-    return match.group(1), paths["ink"], paths["wordmark-light"]
-
-
-def wordmark_svg(symbol_id: str, css_class: str) -> str:
-    view_box, ink, light = wordmark_paths(symbol_id)
+    # Split the single ink path into its subpaths and file each under its character by
+    # where it starts: 幕 < 1050 ≤ 間 < 2200 ≤ 休 < 3400 ≤ 息.
+    groups: list[list[str]] = [[], [], [], []]
+    for sub in re.findall(r"M[^M]+", paths["ink"]):
+        x = float(re.match(r"M\s*(-?[\d.]+)", sub).group(1))
+        groups[0 if x < 1050 else 1 if x < 2200 else 2 if x < 3400 else 3].append(sub)
+    parts = []
+    for i, subs in enumerate(groups):
+        inner = f'<path class="ink" d="{"".join(subs)}"/>'
+        if i == 1:
+            inner += f'<path class="light" d="{paths["wordmark-light"]}"/>'
+        parts.append(f'<g class="c{i}">{inner}</g>')
     _, _, width, height = (float(v) for v in view_box.split())
-    return (f'<svg class="{css_class}" viewBox="{view_box}" style="aspect-ratio:{width:g}/{height:g}" '
-            f'aria-hidden="true"><path d="{ink}"/><path class="light" d="{light}"/></svg>')
+    return (f'<svg class="mark" viewBox="{view_box}" style="aspect-ratio:{width:g}/{height:g}" '
+            f'aria-hidden="true">{"".join(parts)}</svg>')
 
 
-def edge_print(count: int, step: int, period: int) -> str:
-    spans = []
-    for i in range(count):
-        k = i % period
-        label = "幕間休息" if k == period // 2 else f"• {21 + k}&#8195;{21 + k}A"
-        spans.append(f'<span style="left:{i * step}px">{label}</span>')
-    return "".join(spans)
+# ── Curtain of headlines ───────────────────────────────────────────────────────
+def curtain(columns: int) -> tuple[str, str]:
+    data = json.loads((ROOT / "data" / "live.json").read_text(encoding="utf-8"))
+    sources = json.loads((ROOT / "config" / "sources.json").read_text(encoding="utf-8"))
+    language = {s["id"]: s.get("language") for s in (sources["sources"] if isinstance(sources, dict) else sources)}
+    rows = sorted((r for r in data["content"] if r.get("title_original") and not r.get("is_demo")),
+                  key=lambda r: r.get("published_at") or "", reverse=True)
+    by_source: dict[str, list[dict]] = {}
+    for row in rows:
+        by_source.setdefault(row["source_id"], []).append(row)
+    picked: list[tuple[str, str]] = []
+    depth = 0
+    while len(picked) < columns * 2 and depth < 12:      # round-robin across sources
+        for source_id, items in by_source.items():
+            if depth < len(items) and len(picked) < columns * 2:
+                picked.append((items[depth]["title_original"].strip(), language.get(source_id) or "en"))
+        depth += 1
+
+    def column(title: str, lang: str) -> str:
+        text = html.escape(title)
+        attr = "" if lang in ("zh", "ja") else f' lang="{lang}"'
+        return f"<p{attr}>{text}　{text}</p>"
+
+    left = "".join(column(*item) for item in picked[0::2])
+    right = "".join(column(*item) for item in picked[1::2])
+    return left, right
 
 
-def strip_print() -> str:
-    labels = ["幕間休息", "• 21", "21A"]
-    return "".join(f'<span style="top:{i * 160 + 20}px">{labels[i % 3]}</span>' for i in range(13))
-
-
+# ── Fonts ──────────────────────────────────────────────────────────────────────
 def used_text(page: str) -> str:
-    text = re.sub(r"<style.*?</style>|<script.*?</script>", " ", page, flags=re.S)
+    text = re.sub(r"<style.*?</style>", " ", page, flags=re.S)
     text = re.sub(r'\s(?:d|style|class|viewBox|href|src)="[^"]*"', " ", text)
     text = html.unescape(re.sub(r"<[^>]+>", " ", text))
-    extra = "0123456789.,:;!?·•–—’‘“”()「」『』《》。，、；：！？－―・ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    extra = "0123456789.,:;!?·•–—’‘“”«»„()「」『』《》。，、；：！？－―・…　 ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     return "".join(sorted(set(text + extra) - {"\n", "\t"}))
 
 
@@ -84,29 +166,32 @@ def subset(source: Path, target: Path, text: str) -> None:
     ft_subset.save_font(font, str(target), options)
 
 
-def coverage(font_path: Path, text: str) -> set[str]:
+def not_covered(font_path: Path, text: str) -> str:
     from fontTools.ttLib import TTFont
 
     cmap = TTFont(str(font_path)).getBestCmap()
-    return {c for c in text if ord(c) not in cmap and not c.isspace()}
+    return "".join(sorted({c for c in text if ord(c) not in cmap and not c.isspace()}))
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--land", type=Path, help="world-atlas land-110m.json")
     parser.add_argument("--serif-source", type=Path, help="upstream NotoSerifTC[wght].ttf")
     parser.add_argument("--sans-source", type=Path, help="upstream NotoSansSC[wght].ttf")
     parser.add_argument("--inline", type=Path, help="also write a single-file copy with embedded fonts")
     args = parser.parse_args()
 
-    page = (PROMO / "src" / "promo.html").read_text(encoding="utf-8")
-    page = (page
-            .replace("{{WORDMARK_H}}", wordmark_svg("wordmark", "wordmark-h"))
-            .replace("{{WORDMARK_END}}", wordmark_svg("wordmark", "end-mark"))
-            .replace("{{WORDMARK_V}}", wordmark_svg("wordmark-vertical", "wordmark-v"))
-            .replace("{{EDGE_PRINT}}", edge_print(35, 120, 8))
-            .replace("{{STRIP_PRINT}}", strip_print()))
+    if args.land:
+        DOTS_FILE.write_text(json.dumps(land_dots(args.land), separators=(",", ":")) + "\n", encoding="utf-8")
+    dots = DOTS_FILE.read_text(encoding="utf-8").strip()
+    print(f"land dots: {dots.count(',') // 2 + 1}")
 
-    text = used_text(page)
+    left, right = curtain(22)
+    page = (PROMO / "src" / "promo.html").read_text(encoding="utf-8")
+    page = (page.replace("{{DOTS}}", dots).replace("{{WORDMARK}}", wordmark_svg())
+            .replace("{{CURTAIN_L}}", left).replace("{{CURTAIN_R}}", right))
+
+    text = used_text(page.replace(dots, ""))
     FONTS.mkdir(exist_ok=True)
     fonts = {
         "FONT_TITLE": FONTS / "promo-title.woff2",
@@ -118,17 +203,15 @@ def main() -> None:
     if args.sans_source:
         subset(args.sans_source, fonts["FONT_SANS"], text)
     subset(SITE_FONTS / "intermission-news-v1.woff2", fonts["FONT_NEWS"], text)
-
-    for key, path in fonts.items():
-        # The Latin face only needs Latin; CJK falls through to the next face in the stack.
-        wanted = "".join(c for c in text if ord(c) < 0x2000) if key == "FONT_NEWS" else text
-        missing = "".join(sorted(coverage(path, wanted)))
-        print(f"{path.name}: {path.stat().st_size:,} bytes; not covered: {missing or 'none'}")
+    latin = "".join(c for c in text if ord(c) < 0x2000)
+    print(f"{fonts['FONT_SANS'].name}: not covered {not_covered(fonts['FONT_SANS'], text) or 'none'}")
+    print(f"{fonts['FONT_NEWS'].name}: Latin not covered {not_covered(fonts['FONT_NEWS'], latin) or 'none'}")
 
     standalone = page
     for key, path in fonts.items():
         standalone = standalone.replace("{{%s}}" % key, f"fonts/{path.name}")
-    head = '<!doctype html>\n<html lang="zh-Hant">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n'
+    head = ('<!doctype html>\n<html lang="zh-Hant">\n<head>\n<meta charset="utf-8">\n'
+            '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n')
     (PROMO / "index.html").write_text(head + standalone + "</body>\n</html>\n", encoding="utf-8")
     print("wrote promo/index.html")
 

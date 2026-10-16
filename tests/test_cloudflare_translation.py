@@ -145,3 +145,10 @@ class CloudflareTests(unittest.TestCase):
                                    fixtures.configuration())
         self.assertEqual(cf['day'],'2026-10-16')
         self.assertEqual(gemini['day'],'2026-10-15')
+
+    def test_mid_run_activation_waits_for_a_committed_reservation(self):
+        with patch('backend.cloudflare_translation.configuration',return_value=self.cfg(verified_enabled=True)):
+            r=run_cloudflare(self.store,'unreserved',root=self.root,environ=self.env(),
+                             transport=lambda _:self.fail('unreserved request'))
+        self.assertEqual(r['status'],'awaiting_reservation')
+        self.assertEqual(r['requests'],0)

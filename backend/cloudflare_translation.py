@@ -265,6 +265,11 @@ def run_cloudflare(store, identity, *, root=ROOT, environ=None, probe=False, tra
         return {**status, 'status': 'awaiting_verification', 'finished_at': now()}
     budget = NeuronBudget(root / 'data/cloudflare-neurons-ledger.json', identity, cfg)
     ledger_path = root / 'data/cloudflare-translation-ledger.json'
+    entry = load_budget(budget.path)['reservations'].get(identity)
+    if not entry or entry.get('status') != 'reserved':
+        # A code/config update can arrive during Gemini's checkpoint rebase,
+        # after this run's reservation phase. Wait for the next reserved run.
+        return {**status, 'status': 'awaiting_reservation', 'finished_at': now()}
     try:
         previous = json.loads((root / 'data/ai-translation-status.json').read_text()) if (root / 'data/ai-translation-status.json').exists() else {}
         blocked = previous.get('status') in {'service_wait', 'quota_wait', 'retry_wait', 'daily_limit', 'configuration_error', 'failed', 'needs_configuration', 'partial_failure'}

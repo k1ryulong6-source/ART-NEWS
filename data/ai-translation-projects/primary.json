@@ -3,22 +3,39 @@
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-16T08:36:59.274469+00:00",
+  "started_at": "2026-10-16T08:47:34.207085+00:00",
   "translated": [],
-  "failed": [],
-  "deferred": [],
+  "failed": [
+    {
+      "id": "live-3dc48ee1ae3c5f83b233af8c",
+      "reason": "ai_numbers_missing:block:4:text:0"
+    },
+    {
+      "id": "live-80873b0d831a13d97ee39db0",
+      "reason": "ai_numbers_missing:block:10:text:0"
+    }
+  ],
+  "deferred": [
+    "live-b5b1ef3bbd49bb2e2b2a5f50",
+    "live-e6595cc49ea67462f695ade2",
+    "live-54732d5d5023d76df3aff8a1",
+    "live-8183b707fddf5be7d8e4b969",
+    "live-b195fd03fcc926008af29226"
+  ],
   "resumed": [],
   "stale": [],
-  "requests": 0,
-  "input_tokens": 0,
-  "output_tokens": 0,
-  "retry_after": "2026-10-16T08:41:03.377297+00:00",
+  "requests": 3,
+  "input_tokens": 8434,
+  "output_tokens": 4443,
+  "pending_before": 374,
   "error": "ai_http_503",
-  "finished_at": "2026-10-16T08:36:59.460215+00:00",
-  "seconds": 0.19,
-  "requests_today": 1,
+  "retry_after": "2026-10-16T09:48:26.776184+00:00",
+  "pending_after": 374,
+  "finished_at": "2026-10-16T08:48:26.778025+00:00",
+  "seconds": 52.57,
+  "requests_today": 4,
   "daily_request_limit": 500,
-  "unknown_usage_requests_today": 1,
+  "unknown_usage_requests_today": 2,
   "id": "primary",
   "configured": true
 }

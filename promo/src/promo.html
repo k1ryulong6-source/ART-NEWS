@@ -50,6 +50,23 @@ svg{display:block;overflow:visible}
 .host-box{position:absolute;width:400px;height:520px;transform-origin:50% 100%}
 .host-box svg{width:400px;height:520px}
 .host-box .bob{animation:bob .6s ease-in-out infinite alternate}
+/* the host acts: breathes, tilts his head, blinks, gestures; the mouth follows the voice (data-m) */
+.host .mouth{display:none}
+.host-box:not([data-m]) .m1,.host-box[data-m="0"] .m0,.host-box[data-m="1"] .m1,.host-box[data-m="2"] .m2{display:inline}
+.host .h-body{transform-origin:200px 520px;animation:h-breathe 1.3s ease-in-out infinite alternate}
+.host .h-head{transform-origin:200px 300px;animation:h-tilt 1.5s ease-in-out infinite alternate}
+.host .h-eyes{transform-origin:200px 176px;animation:h-blink 3.4s linear infinite}
+.pose-wave .h-arm{transform-origin:290px 380px;animation:h-wave .34s ease-in-out infinite alternate}
+.pose-thumbs .h-arm{transform-origin:290px 380px;animation:h-pump .5s ease-in-out infinite alternate}
+.pose-point .h-arm{transform-origin:290px 380px;animation:h-jab .55s ease-in-out infinite alternate}
+.pose-surprised .h-arm{animation:h-tremble .17s steps(2) infinite}
+@keyframes h-breathe{to{transform:scaleY(1.012)}}
+@keyframes h-tilt{from{transform:rotate(-2.5deg)}to{transform:rotate(3deg) translateY(-2px)}}
+@keyframes h-blink{0%,90%,100%{transform:none}94%{transform:scaleY(.08)}}
+@keyframes h-wave{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
+@keyframes h-pump{from{transform:rotate(-5deg) translateY(4px)}to{transform:rotate(3deg) translateY(-6px)}}
+@keyframes h-jab{from{transform:rotate(-2deg)}to{transform:rotate(3deg) translate(8px,-3px)}}
+@keyframes h-tremble{from{transform:translate(-2px,1px)}to{transform:translate(2px,-1px)}}
 
 /* Subtitles: Chinese, as on a dubbed broadcast. */
 .sub{position:absolute;left:180px;right:180px;bottom:64px;filter:blur(.4px);margin:0;z-index:30;text-align:center;font-weight:700;font-size:40px;line-height:1.4;color:#fff;
@@ -361,6 +378,7 @@ svg{display:block;overflow:visible}
 (function () {
   var DURATION = 46500;
   var DOTS = {{DOTS}};               // land dots [lon, lat, …], Natural Earth 110m
+  var MOUTH = '{{MOUTH}}';           // the host's mouth per drawing (12 a second): . rest, 0 closed, 1 half, 2 open
   var stage = document.getElementById('stage'), viewport = document.getElementById('viewport');
   var root = document.documentElement;
   var recording = /[?&]record\b/.test(location.search);
@@ -463,7 +481,14 @@ svg{display:block;overflow:visible}
     film.style.transform = 'translate(' + jx.toFixed(2) + 'px,' + jy.toFixed(2) + 'px)';
   }
 
-  function render(ms) { var t = ms / 1000; drawGlobe(t); drawAtom(t); }
+  var hosts = document.querySelectorAll('.host-box'), mouthNow = null;
+  function drawMouth(t) {                 // lip sync, from the voice's loudness
+    var m = MOUTH.charAt(Math.round(t * 12)) || '.';
+    if (m === mouthNow) return;
+    mouthNow = m;
+    Array.prototype.forEach.call(hosts, function (h) { if (m === '.') h.removeAttribute('data-m'); else h.setAttribute('data-m', m); });
+  }
+  function render(ms) { var t = ms / 1000; drawGlobe(t); drawAtom(t); drawMouth(t); }
 
   /* ── Hand inking ──
      Redraws the film's shapes as brush work, once at load: every SVG shape and every
@@ -500,14 +525,14 @@ svg{display:block;overflow:visible}
   // One hand's version of a line: the points pushed off course by `amount`.
   function inkStray(pts, normals, arc, rand, amount, closed) {
     var len = arc[arc.length - 1] || 1, drift = inkWave(rand, Math.max(60, len / 5)), shake = inkWave(rand, 18);
-    return pts.map(function (q, k) { var off = amount * drift(arc[k]) + 0.15 * shake(arc[k]); return [q[0] + normals[k][0] * off, q[1] + normals[k][1] * off]; });
+    return pts.map(function (q, k) { var off = amount * drift(arc[k]) + 0.04 * shake(arc[k]); return [q[0] + normals[k][0] * off, q[1] + normals[k][1] * off]; });
   }
   // A brush stroke along the points: width swells and thins; open strokes taper at both ends.
   function inkRibbon(pts, arc, rand, width, closed, taper, centre) {
     var len = arc[arc.length - 1] || 1, normals = inkNormals(pts, closed), left = [], right = [];
-    var swell = inkWave(rand, 80), flick = inkWave(rand, 26), amp = Math.min(width * 0.5, 3.4);
+    var swell = inkWave(rand, 90), flick = inkWave(rand, 30), amp = Math.min(width * 0.45, 3);
     for (var i = 0; i < pts.length; i++) {
-      var half = (width + amp * (0.8 * swell(arc[i]) + 0.35 * flick(arc[i]))) / 2;
+      var half = (width + amp * (0.85 * swell(arc[i]) + 0.2 * flick(arc[i]))) / 2;
       if (taper) half *= 0.3 + 0.7 * Math.min(1, Math.min(arc[i], len - arc[i]) / Math.min(18, len / 3));
       half = Math.max(0.5, half);
       var c = centre || 0;
@@ -539,7 +564,7 @@ svg{display:block;overflow:visible}
       var n = Math.max(closed ? 12 : 4, Math.round(len / 6)), pts = [];
       for (var i = 0; i <= n; i++) { var p = el.getPointAtLength(Math.min(len, len * i / n)); pts.push([p.x, p.y]); }
       if (closed) pts.pop();
-      var normals = inkNormals(pts, closed), arc = inkArc(pts), amount = Math.min(2, 0.7 + len / 500);
+      var normals = inkNormals(pts, closed), arc = inkArc(pts), amount = Math.min(1, 0.3 + len / 900);
       var holder = svgEl('g', {});
       if (el.hasAttribute('transform')) holder.setAttribute('transform', el.getAttribute('transform'));
       if (cs.opacity !== '1') holder.setAttribute('opacity', cs.opacity);
@@ -617,12 +642,35 @@ svg{display:block;overflow:visible}
       rings.push({ inset: true, spread: bw, colour: cs.borderTopColor });
       el.style.borderColor = 'transparent';
     }
-    var amount = Math.min(rings.length ? 1.5 : 3.5, 0.8 + len / 700);
+    var amount = Math.min(rings.length ? 1 : 2, 0.5 + len / 1200);
+    var shaded = el.matches(INK_SHADED) && Math.min(w, h) >= 16;
     if (cs.position === 'static') el.style.position = 'relative';
     var svg = svgEl('svg', { 'class': 'ink-box', width: w, height: h, viewBox: '0 0 ' + w + ' ' + h, 'aria-hidden': 'true' });
     svg.style.cssText = 'position:absolute;left:' + (-(parseFloat(cs.borderLeftWidth) || 0)) + 'px;top:' + (-(parseFloat(cs.borderTopWidth) || 0)) + 'px;' +
       'width:' + w + 'px;height:' + h + 'px;overflow:visible;pointer-events:none';
-    var lines = [];
+    var lines = [], defs = svgEl('defs', {});
+    svg.appendChild(defs);
+    if (shaded) {                                     // light from the upper left, as on the host
+      var depth = Math.max(5, Math.min(26, Math.min(w, h) * 0.14)), id = 'ink-shade-' + seed;
+      var mask = svgEl('mask', { id: id, maskUnits: 'userSpaceOnUse', x: -20, y: -20, width: w + 40, height: h + 40 });
+      mask.appendChild(svgEl('path', { d: inkD(pts, true), fill: '#fff' }));
+      mask.appendChild(svgEl('path', { d: inkD(pts, true), fill: '#000', transform: 'translate(' + (-depth) + ' ' + (-depth * 0.8) + ')' }));
+      defs.appendChild(mask);
+      svg.appendChild(svgEl('rect', { x: 0, y: 0, width: w, height: h, fill: '#000', opacity: '.22', mask: 'url(#' + id + ')' }));
+      // a glint: a short tapered streak just inside the upper-left edge
+      var lit = normals.map(function (q) { return -q[0] * 0.6 - q[1] * 0.8 > 0.55; }), startAt = lit.indexOf(false);
+      if (startAt > -1 && lit.indexOf(true) > -1) {
+        var run = [], best = [];
+        for (var k = 1; k <= pts.length; k++) {
+          var j = (startAt + k) % pts.length;
+          if (lit[j]) run.push(j); else { if (run.length > best.length) best = run; run = []; }
+        }
+        if (run.length > best.length) best = run;
+        var inset = Math.max(5, depth * 0.55), cut = Math.floor(best.length * 0.18);
+        var glint = best.slice(cut, best.length - cut).map(function (j) { return [pts[j][0] - normals[j][0] * inset, pts[j][1] - normals[j][1] * inset]; });
+        if (glint.length > 2) svg.appendChild(svgEl('path', { d: inkRibbon(glint, inkArc(glint), inkRand(seed + 3), Math.max(3, depth * 0.3), false, true), fill: '#fff', opacity: '.55' }));
+      }
+    }
     for (var c = 0; c < CELS; c++) {
       var rand = inkRand(seed * 7919 + c * 15485863 + 7), line = inkStray(pts, normals, arc, rand, amount, true);
       lines.push(line);
@@ -638,13 +686,12 @@ svg{display:block;overflow:visible}
       });
       svg.appendChild(g);
     }
-    if (rings.length) {
-      el.style.boxShadow = keep.length ? keep.join(', ') : 'none';
-      el.appendChild(svg);
-    } else {                                          // no outline: the box's own edge goes crooked
+    if (rings.length) el.style.boxShadow = keep.length ? keep.join(', ') : 'none';
+    else {                                            // no outline: the box's own edge goes crooked
       lines.forEach(function (line, c) { el.style.setProperty('--ink-clip' + c, "path('" + inkD(line, true) + "')"); });
       el.classList.add('ink-clip');
     }
+    if (rings.length || shaded) el.appendChild(svg);
   }
   function handInk(film) {
     film.querySelectorAll('svg').forEach(function (svg, i) { if (!svg.closest('[data-noink]')) inkSvg(svg, i + 1); });
@@ -653,7 +700,9 @@ svg{display:block;overflow:visible}
   var INK_BOXES = '.tv .cabinet,.tv .bezel,.tv .screen,.tv .knobs i,.tv .knobs b,.tv .legs i,.tv .ears i,.tv .ears b,.testcard .ring,' +
     '.machine .body,.machine .dome,.machine .mast,.machine .dish,.machine .dial,.machine .dial i,.machine .tubes i,.machine .plate,.star4,' +
     '.sign,.reel .tower,.dome .shell,.dome .lens,.dome .flash,.boom .roof,.boom .pillar,.boom .mobile i,.car .shell,.track,' +
-    '#attention-scene .earth,.rings i,.rocket .hull,.rocket .fin,.rocket .flag,.nucleus,.electron';
+    '#attention-scene .earth,.rocket .hull,.rocket .fin,.rocket .flag,.nucleus,.electron';
+  var INK_SHADED = '.tv .cabinet,.tv .knobs i,.tv .legs i,.machine .body,.machine .dome,.machine .mast,.reel .tower,.dome .shell,' +
+    '.dome .flash,.car .shell,.rocket .hull,.boom .mobile i,.boom .pillar,.tv .ears b,.machine .dish';
 
   /* ── Timing: the cartoon moves "on twos" (12 drawings a second); the film wear runs at
      24. Every CSS animation is paused and positioned from one clock — the recorder's

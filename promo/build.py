@@ -6,6 +6,7 @@ promo/src/promo.html is the source. This script fills in:
   {{HOST:pose}}   the host 幕間先生 (promo/src/host.py), black and white
   {{REEL}}        the cinema pavilion's film reel
   {{DOTS}}        land dots for the opening globe, from Natural Earth 110m (world-atlas)
+  {{MOUTH}}       the host's lip sync, from the loudness of promo/voice/l1–l6.mp3
   {{FONT_*}}      subsets of the site's OFL faces, cut to the characters the film uses
   {{SCORE}}       the score (promo/score.mp3, made by promo/score.py)
 
@@ -136,6 +137,36 @@ def reel_svg() -> str:
             f'<circle r="150" fill="none" stroke="#141414" stroke-width="8"/>{holes}<circle r="26" fill="#141414"/><circle r="9" fill="#f2efe6"/></svg>')
 
 
+# ── Lip sync ─────────────────────────────────────────────────────────────────────
+VOICE_AT = [0.9, 7.1, 15.0, 21.8, 30.4, 36.6]       # as in score.py
+DURATION, DRAWINGS = 46.5, 12
+
+
+def mouth_track() -> str:
+    """One character per drawing: '.' no voice, else 0/1/2 for how open the mouth is."""
+    import subprocess
+    import numpy as np
+
+    rate, step = 16000, 16000 // DRAWINGS
+    track = ["."] * int(DURATION * DRAWINGS + 1)
+    for i, start in enumerate(VOICE_AT, 1):
+        raw = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(PROMO / "voice" / f"l{i}.mp3"), "-f", "s16le",
+                              "-ac", "1", "-ar", str(rate), "-"], capture_output=True, check=True).stdout
+        x = np.frombuffer(raw, "<i2").astype(float)
+        rms = np.array([np.sqrt(np.mean(x[k:k + step] ** 2)) for k in range(0, len(x) - step + 1, step)])
+        loud = rms / (np.percentile(rms, 95) or 1)
+        voiced = np.nonzero(loud > .12)[0]
+        if not len(voiced):
+            continue
+        first = int(round(start * DRAWINGS))
+        for k in range(voiced[0], voiced[-1] + 1):
+            if first + k < len(track):
+                track[first + k] = "0" if loud[k] < .2 else "1" if loud[k] < .55 else "2"
+    import re
+    # a pause longer than a third of a second rests on the smile rather than a shut mouth
+    return re.sub(r"0{5,}", lambda m: "." * len(m.group(0)), "".join(track))
+
+
 # ── Fonts ──────────────────────────────────────────────────────────────────────
 def used_text(page: str) -> str:
     text = re.sub(r"<style.*?</style>", " ", page, flags=re.S)
@@ -184,7 +215,7 @@ def main() -> None:
 
     page = (PROMO / "src" / "promo.html").read_text(encoding="utf-8")
     page = re.sub(r"\{\{WORDMARK:([\w-]+)\}\}", lambda m: wordmark_svg(m.group(1)), page)
-    page = page.replace("{{DOTS}}", dots).replace("{{REEL}}", reel_svg())
+    page = page.replace("{{DOTS}}", dots).replace("{{REEL}}", reel_svg()).replace("{{MOUTH}}", mouth_track())
     page = re.sub(r"\{\{HOST:(\w+)\}\}", lambda m: host_svg(m.group(1)), page)
 
     text = used_text(page.replace(dots, ""))

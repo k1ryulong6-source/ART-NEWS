@@ -2419,7 +2419,9 @@
         "tests/test_gemini_access.py",
         "tests/test_ai_retry.py",
         "docs/",
-        "tasks.json"
+        "tasks.json",
+        "backend/operations.py",
+        ".github/workflows/autotranslate.yml"
       ],
       "acceptance": [
         "核对启用后的常规Cloudflare批次和发布，不把探针等同无人值守产量",
@@ -2429,7 +2431,10 @@
       ],
       "evidence": [
         "既有千问探针1篇完整8块已发布；首个启用后的常规批次尚待执行验收。",
-        "最近已保存Gemini批次22请求/5完整篇/11数字检查失败/5次503，属于间歇故障，不能称完全不可用或用完额度。"
+        "最近已保存Gemini批次22请求/5完整篇/11数字检查失败/5次503，属于间歇故障，不能称完全不可用或用完额度。",
+        "228 Python测试通过；新增生产HTTP错误分类、未知/坏JSON不猜原因、凭据/正文/账户metadata不泄露，以及恢复/最终等待证据持久化回归。",
+        "e30aa49已推送，Project checks 38922760198 success；原免费模型/请求/持久退避保持，安全原因证据随常规API请求采集。",
+        "补充operations.json逐路error_detail公开接口，便于无需读取Actions全文日志即可排查。"
       ]
     }
   ]

@@ -473,3 +473,6 @@ T068生产验收完成：代码ae15e7d；Project checks38840234045、cleanup3884
 用户本次允许Gemini故障期间用便宜会话模型补译、API恢复即回归API。仅尝试一个此前指定默认gpt-5.6-sol工作者（low），实际返回“Selected model is at capacity”；0篇译稿，无文章翻译或导入/上线成果。实时会话费率不可见，未把别的型号猜成更便宜、未自动升级或继续派发。T070 blocked；不要因本次临时授权恢复每日会话任务。证据data/session-fallback-attempt-2026-10-16.json。
 
 T069代码873b7be已上线：CI38901732914、Pages38901732873/38902320671 success。真实API38901732798报告21:36:59 JST使用bounded-exponential-v1但旧服务等待未到期，0新请求/0新全文；不能冒称Google恢复，T069仍doing。两路免费API原链、断点、配额与费用保持；T028/T062仍未完成。
+
+
+T070后续用户询问当前窗口能否直接翻译，本次不再调用工作者，由当前对话先补1篇主头条live-8da5d55a887e39b3833e6adb（东京非洲当代艺术奖展览），全部11块、源hash与标题匹配，execution=interactive，draft_model明确当前会话/具体型号未暴露；不能算作5.6或Gemini产出。程序结构/数字通过，临时数据库全pack导入模拟仅本篇新增、55 unchanged/6 stale/0 invalid、0既有AI覆盖；未做二次模型校对。T070改doing等待真实导入/发布，不自动扩展当前窗口批量或恢复每日任务；后台免费API/付费状态保持。

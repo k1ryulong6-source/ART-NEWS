@@ -2282,9 +2282,9 @@
     },
     {
       "id": "T070",
-      "title": "API故障期间临时便宜会话模型补译，恢复后回归API",
+      "title": "API故障期间临时补译：记录备用失败并验证当前窗口单篇发布",
       "milestone": "M6",
-      "status": "blocked",
+      "status": "doing",
       "owner": "Codex（临时备用尝试）",
       "updated_at": "2026-10-16",
       "depends_on": [
@@ -2300,7 +2300,7 @@
         "tasks.json"
       ],
       "acceptance": [
-        "仅用户本次授权的单个便宜会话工作者，不能无价格依据宣称最便宜或自动升级",
+        "明确区分5.6备用容量失败与用户后续询问的当前窗口单篇直译，不凭型号或猜测费用声称最便宜，不继续派工作者",
         "重要头条/时效与旧稿份额，完整语境全文及程序检查，无第二轮模型校对",
         "已有有效API稿复用，实际Gemini新请求恢复后停止分配新会话文章，后台不依赖聊天",
         "真实可用性/译稿数量/导入和发布逐项报告，不启动旧每日任务或付费"
@@ -2309,7 +2309,9 @@
         "沿用用户此前指定默认gpt-5.6-sol，明确实时会话费率不可见；仅启动一个工作者，请求低推理强度，未启动其他型号。",
         "工作者实际返回Selected model is at capacity；未读写文章译稿，完成0篇/0译稿，无发布译文可验收。",
         "后台最新21:36:59 JST报告仍service_wait并尊重旧退避，0新请求；保留772待AI/8缺正文，API独立链未变。",
-        "记录data/session-fallback-attempt-2026-10-16.json；任务blocked，未自动重试/升级型号/恢复每日任务/改变收费。"
+        "记录data/session-fallback-attempt-2026-10-16.json；任务blocked，未自动重试/升级型号/恢复每日任务/改变收费。",
+        "用户后续询问可否当前窗口直接翻译；当前对话完成主头条live-8da5d55a887e39b3833e6adb全部11块，execution=interactive，draft_model明确当前窗口、具体型号未暴露；无二次模型校对。",
+        "checked_result程序结构/数字检查通过；临时数据库对当前全部pack导入模拟仅新增本篇，55 unchanged/6 stale/0 invalid，0既有AI稿被覆盖。尚待GitHub导入与Pages真实验收。"
       ]
     }
   ]

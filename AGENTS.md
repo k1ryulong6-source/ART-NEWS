@@ -1,5 +1,7 @@
 # AI 与开发者工作约定
 
+> 2026-10-16后续当前窗口补充：5.6容量失败后，用户询问可否由会话窗口直接翻译。本次当前对话仅先补1篇待译主头条live-8da5d55a887e39b3833e6adb，execution=interactive，实际具体模型标识未暴露，不冒称5.6/API或最便宜。无子工作者/二次校对/付费变更；不恢复每日会话任务或建立长期fallback，后续全量仍走独立免费Gemini。
+
 > 2026-10-16临时备用尝试已结束：用户允许Gemini故障期间先用便宜会话模型、API恢复即回归API。本次仅尝试一个此前用户指定的gpt-5.6-sol工作者，实际返回“Selected model is at capacity”，0篇译稿、未执行文章翻译。其他型号实时会话费率不可见，不能声称最便宜或自动升级替代。未恢复每日会话任务，未建立长期会话fallback，后台双路免费Gemini继续独立重试，费用/密钥/配额/旧断点不变。具体证据见data/session-fallback-attempt-2026-10-16.json；T070 blocked，不自动重复启动工作者。
 
 本文件适用于整个项目。先读本文件，再读 `docs/HANDOFF.md`、`docs/PRODUCT.md`、`docs/DECISIONS.md` 和 `tasks.json`。

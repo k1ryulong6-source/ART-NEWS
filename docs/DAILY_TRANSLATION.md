@@ -1,3 +1,5 @@
+> 2026-10-16后续：用户询问当前对话能否直接翻译，当前窗口先补1篇主头条，execution=interactive；不标成5.6/Gemini，不启动工作者、不恢复每日任务、不自动付费。全量仍由独立免费API执行。此前5.6失败记录保留，不能将失败尝试当作本次实际模型。
+
 > 2026-10-16本次临时备用尝试结果：用户允许Gemini故障时先用便宜会话模型、API恢复即回归API。唯一gpt-5.6-sol工作者实际返回“Selected model is at capacity”，0篇译稿。没有其他型号更便宜的可靠当前费率，不自动改型号；没有恢复每日会话任务或建立长期fallback。尝试已结束，T070 blocked，后台免费API继续独立运行。执行证据见data/session-fallback-attempt-2026-10-16.json；不能将计划中的5篇计入完成量。
 
 > 2026-10-15历史覆盖：仅运行GitHub后台Gemini免费API，不启动任何会话翻译工作者；旧每日ChatGPT翻译任务已暂停。本文下方及config/translation.json中会话分工/5.6默认是历史；该旧配置保留以免API断点指纹无谓失效。有效既有译稿复用；不能自动付费。详见AUTONOMOUS_WORKFLOW.md。

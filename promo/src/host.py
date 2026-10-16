@@ -1,11 +1,13 @@
 """幕間先生 (Mr. Intermission): the promo's original host, drawn as SVG.
 
 A 1950s educational-cartoon presenter — slicked black hair, teal suit, red bow tie and a
-red 日 badge — designed for this site (not based on any existing mascot). `host(pose)`
-returns an SVG group in a 400×520 box; poses: wave, thumbs, point, surprised, plain.
+red 日 badge — designed for this site (not based on any existing mascot). Drawn black and
+white after the Fallout-style cartoon reference; `host(pose, badge)` returns an SVG group in a 400×520 box; poses: wave, thumbs, point, surprised, plain.
 """
-INK, SKIN, HAIR, SHINE = "#1e2a3a", "#f3c79b", "#1e2a3a", "#5d7390"
-TEAL, LAPEL, SHIRT, RED, CHEEK = "#2f9c95", "#1d6f6a", "#f6eedb", "#d1361f", "#f0a07a"
+# Black-and-white 1950s cartoon palette; BADGE is the one place the brand red may stay.
+INK, SKIN, HAIR, SHINE = "#141414", "#f4f1e8", "#141414", "#6b6b6b"
+TEAL, LAPEL, SHIRT, RED, CHEEK = "#8c8a84", "#55534f", "#f4f1e8", "#141414", "#cfcabe"
+BADGE = "#d1361f"
 O = f'stroke="{INK}" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"'
 
 
@@ -49,7 +51,7 @@ def face(expression: str) -> str:
     cheeks = f'<ellipse cx="160" cy="220" rx="14" ry="8" fill="{CHEEK}" opacity=".6"/><ellipse cx="240" cy="220" rx="14" ry="8" fill="{CHEEK}" opacity=".6"/>'
     eye_l = f'<ellipse cx="174" cy="176" rx="9" ry="13" fill="{INK}"/><circle cx="177" cy="171" r="3" fill="#fff"/>'
     eye_r = f'<ellipse cx="226" cy="176" rx="9" ry="13" fill="{INK}"/><circle cx="229" cy="171" r="3" fill="#fff"/>'
-    grin = (f'<path d="M160 226 Q200 276 240 226 Q200 240 160 226 Z" fill="#7a1f12" {O}/>'
+    grin = (f'<path d="M160 226 Q200 276 240 226 Q200 240 160 226 Z" fill="#141414" {O}/>'
             f'<path d="M168 230 Q200 242 232 230 L229 238 Q200 250 171 238 Z" fill="#fff"/>'
             f'<path d="M156 222 Q152 228 158 232 M244 222 Q248 228 242 232" fill="none" stroke="{INK}" stroke-width="4" stroke-linecap="round"/>')
     if expression == "wink":
@@ -59,21 +61,21 @@ def face(expression: str) -> str:
         eye_l = f'<ellipse cx="174" cy="174" rx="12" ry="17" fill="#fff" {O}/><circle cx="174" cy="176" r="6" fill="{INK}"/>'
         eye_r = f'<ellipse cx="226" cy="174" rx="12" ry="17" fill="#fff" {O}/><circle cx="226" cy="176" r="6" fill="{INK}"/>'
         brows = brows.replace("M156 152 Q172 140 188 148", "M154 140 Q172 126 190 136").replace("M212 148 Q228 140 244 152", "M210 136 Q228 126 246 140")
-        grin = f'<ellipse cx="200" cy="240" rx="18" ry="22" fill="#7a1f12" {O}/>'
+        grin = f'<ellipse cx="200" cy="240" rx="18" ry="22" fill="#141414" {O}/>'
     return head + hair + brows + eye_l + eye_r + nose + cheeks + grin
 
 
-def body() -> str:
+def body(badge: str = BADGE) -> str:
     return (f'<path d="M184 290 H216 V330 H184 Z" fill="{SKIN}" {O}/>'
             f'<path d="M92 520 C92 392 134 336 200 334 C266 336 308 392 308 520 Z" fill="{TEAL}" {O}/>'
             f'<path d="M200 336 L164 344 L188 420 L200 380 L212 420 L236 344 Z" fill="{SHIRT}" {O}/>'
             f'<path d="M164 344 L140 360 L180 470 L198 400 Z M236 344 L260 360 L220 470 L202 400 Z" fill="{LAPEL}" {O}/>'
             f'<path d="M200 352 L170 334 L170 370 Z M200 352 L230 334 L230 370 Z" fill="{RED}" {O}/><circle cx="200" cy="352" r="9" fill="{RED}" {O}/>'
-            f'<circle cx="252" cy="410" r="20" fill="{RED}" {O}/>'
+            f'<circle cx="252" cy="410" r="20" fill="{badge}" {O}/>'
             f'<text x="252" y="418" text-anchor="middle" font-family="Promo Title, Noto Serif TC, serif" font-weight="700" font-size="22" fill="{SHIRT}">日</text>')
 
 
-def host(pose: str = "plain") -> str:
+def host(pose: str = "plain", badge: str = BADGE) -> str:
     arms_back = arms_front = ""
     expression = "smile"
     if pose == "wave":
@@ -91,7 +93,7 @@ def host(pose: str = "plain") -> str:
         arms_front = arm("M290 380 Q340 330 330 260") + open_hand(330, 246, 14) + arm("M110 380 Q60 330 70 260") + open_hand(70, 246, -14)
     else:
         arms_back = arm("M118 400 Q106 440 110 482") + arm("M282 400 Q294 440 290 482")
-    return f'<g class="host">{arms_back}{body()}{face(expression)}{arms_front}</g>'
+    return f'<g class="host">{arms_back}{body(badge)}{face(expression)}{arms_front}</g>'
 
 
 if __name__ == "__main__":

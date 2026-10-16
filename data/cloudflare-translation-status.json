@@ -4,16 +4,20 @@
   "configured": true,
   "requests": 8,
   "translated": [
-    "live-0eb83c1b1baf2aa07f6bef83"
+    "live-b5da27134218a4a423cc3fe0"
   ],
   "failed": [
     {
-      "id": "live-a1245d0a7e9bc7cd87940813",
-      "reason": "ai_numbers_missing:excerpt:0"
+      "id": "live-8da5d55a887e39b3833e6adb",
+      "reason": "ai_numbers_missing:block:3:text:0"
     },
     {
-      "id": "live-36a9755e4f1e706986cf877e",
-      "reason": "ai_numbers_missing:excerpt:0"
+      "id": "live-8dac6ca281f2471e9a57fb92",
+      "reason": "Unterminated string starting at: line 1 column 600 (char 599)"
+    },
+    {
+      "id": "live-9cabb7f507d8fa011a73bb5b",
+      "reason": "ai_numbers_missing:block:6:text:0"
     }
   ],
   "credential_checks": {
@@ -21,11 +25,13 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-16T18:47:59.147813+00:00",
+  "started_at": "2026-10-16T19:00:07.381029+00:00",
   "verification_run": false,
   "status": "daily_limit",
   "account_mode": "free-project-only",
   "deferred": [
+    "live-a1245d0a7e9bc7cd87940813",
+    "live-36a9755e4f1e706986cf877e",
     "live-d4393418baa160e650fd5017",
     "live-80873b0d831a13d97ee39db0",
     "live-9b8a2f96c53d4364b079bad6",
@@ -54,29 +60,29 @@
   ],
   "resumed": [],
   "stale": [],
-  "input_tokens": 24725,
-  "output_tokens": 4201,
+  "input_tokens": 29142,
+  "output_tokens": 4016,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 719,
+  "pending_before": 736,
   "retry_after": "2026-10-17T00:15:00+00:00",
-  "pending_after": 718,
-  "finished_at": "2026-10-16T18:49:17.154072+00:00",
-  "seconds": 78.0,
-  "requests_today": 66,
+  "pending_after": 735,
+  "finished_at": "2026-10-16T19:01:19.555638+00:00",
+  "seconds": 72.17,
+  "requests_today": 74,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
     "day": "2026-10-16",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 2400.7208,
+    "estimated_neurons": 2657.89015,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 4000.0,
-    "requests": 66,
-    "input_tokens": 200896,
-    "output_tokens": 48288,
+    "requests": 74,
+    "input_tokens": 230038,
+    "output_tokens": 52304,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

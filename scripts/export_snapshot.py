@@ -5,8 +5,11 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from backend.storage import ROOT, Store, now
+from backend.cloudflare_translation import restore_completed
 
 store = Store(os.getenv("CULTURE_DESK_DB", ROOT / "runtime/culture-desk.db"))
+recovered = restore_completed(store)
+print(f"Recovered {len(recovered['restored'])} complete Cloudflare copies without API calls")
 snapshot = store.dataset("live")
 snapshot["snapshot_at"] = now()
 snapshot["source_status"] = store.source_status()

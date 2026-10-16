@@ -3,41 +3,34 @@
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-16T13:17:29.121663+00:00",
+  "started_at": "2026-10-16T14:11:49.117067+00:00",
   "translated": [
-    "live-0eef33eb93234ebf89171da1"
+    "live-5eeffaa44b0ec77345bebb79",
+    "live-0d163f1a3548f615cefdd5f0",
+    "live-0af11b085d8ff54364650d42"
   ],
   "failed": [
     {
-      "id": "live-53e5d31021e8ac55442c3aa0",
-      "reason": "ai_numbers_missing:block:11:text:0"
-    },
-    {
-      "id": "live-363d3b735faef18a83eefd8b",
-      "reason": "ai_numbers_missing:excerpt:0"
-    },
-    {
-      "id": "live-c61443f7d79124b9b9faaffa",
-      "reason": "block_not_chinese"
-    },
-    {
-      "id": "live-94bdc03c725bc72a385bf0bd",
-      "reason": "ai_numbers_missing:block:3:text:0"
+      "id": "live-baf6f8171a2e101c19b6a6fb",
+      "reason": "ai_paragraph_not_translated:block:8:text:0"
     }
   ],
   "deferred": [
-    "live-79876f3b61f560a76ea60cef",
-    "live-8ea2838c503677499dc470f2"
+    "live-80873b0d831a13d97ee39db0",
+    "live-9b8a2f96c53d4364b079bad6",
+    "live-c61443f7d79124b9b9faaffa",
+    "live-990ab7debd4efe4c42994d11",
+    "live-363d3b735faef18a83eefd8b"
   ],
   "resumed": [
-    "live-363d3b735faef18a83eefd8b",
-    "live-c61443f7d79124b9b9faaffa",
-    "live-94bdc03c725bc72a385bf0bd"
+    "live-5eeffaa44b0ec77345bebb79",
+    "live-baf6f8171a2e101c19b6a6fb",
+    "live-8183b707fddf5be7d8e4b969"
   ],
   "stale": [],
-  "requests": 8,
-  "input_tokens": 15261,
-  "output_tokens": 4256,
+  "requests": 7,
+  "input_tokens": 9852,
+  "output_tokens": 4234,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 2,
   "service_failures": [
@@ -47,18 +40,8 @@
       "delay_seconds": 75,
       "server_retry_seconds": 0,
       "error": "ai_http_503",
-      "failed_at": "2026-10-16T13:18:46.185254+00:00",
-      "retry_after": "2026-10-16T13:20:01.185254+00:00",
-      "inline_retry": true
-    },
-    {
-      "policy": "bounded-exponential-v1",
-      "consecutive_failures": 2,
-      "delay_seconds": 122,
-      "server_retry_seconds": 0,
-      "error": "ai_http_503",
-      "failed_at": "2026-10-16T13:20:16.613732+00:00",
-      "retry_after": "2026-10-16T13:22:18.613732+00:00",
+      "failed_at": "2026-10-16T14:12:37.831691+00:00",
+      "retry_after": "2026-10-16T14:13:52.831691+00:00",
       "inline_retry": true
     },
     {
@@ -67,28 +50,38 @@
       "delay_seconds": 75,
       "server_retry_seconds": 0,
       "error": "ai_http_503",
-      "failed_at": "2026-10-16T13:23:30.806458+00:00",
-      "retry_after": "2026-10-16T13:24:45.806458+00:00",
+      "failed_at": "2026-10-16T14:15:06.880946+00:00",
+      "retry_after": "2026-10-16T14:16:21.880946+00:00",
+      "inline_retry": true
+    },
+    {
+      "policy": "bounded-exponential-v1",
+      "consecutive_failures": 1,
+      "delay_seconds": 75,
+      "server_retry_seconds": 0,
+      "error": "ai_http_503",
+      "failed_at": "2026-10-16T14:16:58.912303+00:00",
+      "retry_after": "2026-10-16T14:18:13.912303+00:00",
       "inline_retry": false
     }
   ],
-  "pending_before": 394,
+  "pending_before": 390,
   "error": "ai_http_503",
-  "retry_after": "2026-10-16T13:24:45.806458+00:00",
-  "pending_after": 393,
-  "finished_at": "2026-10-16T13:23:30.809163+00:00",
-  "seconds": 361.69,
-  "requests_today": 25,
+  "retry_after": "2026-10-16T14:18:13.912303+00:00",
+  "pending_after": 387,
+  "finished_at": "2026-10-16T14:17:00.497131+00:00",
+  "seconds": 311.38,
+  "requests_today": 32,
   "daily_request_limit": 500,
-  "unknown_usage_requests_today": 7,
+  "unknown_usage_requests_today": 10,
   "service_retry": {
     "policy": "bounded-exponential-v1",
     "consecutive_failures": 1,
     "delay_seconds": 75,
     "server_retry_seconds": 0,
     "error": "ai_http_503",
-    "failed_at": "2026-10-16T13:23:30.806458+00:00",
-    "retry_after": "2026-10-16T13:24:45.806458+00:00"
+    "failed_at": "2026-10-16T14:16:58.912303+00:00",
+    "retry_after": "2026-10-16T14:18:13.912303+00:00"
   },
   "id": "secondary",
   "configured": true

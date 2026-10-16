@@ -46,12 +46,36 @@ def numbers(text):
     return values
 
 
+# Chinese counts and ordinals that legitimately replace a small Arabic digit
+# ("2人" -> "两人", "Phase 01" -> "第一阶段"). Only accepted next to an ordinal
+# prefix or a measure word, so a bare "一" elsewhere never satisfies the check.
+CHINESE_SMALL = {1: '一', 2: '二两', 3: '三', 4: '四', 5: '五', 6: '六', 7: '七', 8: '八', 9: '九', 10: '十'}
+MEASURE_WORDS = '个人位名部次届年天周月日场件张幅季集章阶期种项座家所条只组篇首本册把段层代国版轮'
+
+
+def numbers_preserved(source, translated):
+    """Every source number survives, allowing only two conventional Chinese renderings."""
+    translated = translated or ''
+    missing = numbers(source) - numbers(translated)
+    decades = {m.group(1) for m in re.finditer(r'(?<!\d)(1[89]\d0)(?:s\b|’?s\b|年代)', source or '')}
+    for value in missing:
+        # "the 1960s" -> "上世纪60年代"
+        if value in decades and re.search(r'(?<!\d)' + value[2:] + r'年代', translated):
+            continue
+        small = int(value) if value.isdigit() and 1 <= int(value) <= 10 else None
+        if small and re.search('第[' + CHINESE_SMALL[small] + ']|[' + CHINESE_SMALL[small] + '][' + MEASURE_WORDS + ']',
+                               translated):
+            continue
+        return False
+    return True
+
+
 def checked_result(row, result):
     if not isinstance(result, dict): raise ValueError('invalid_translation_object')
     title, excerpt, translated = result.get('title_zh'), result.get('excerpt_zh'), result.get('blocks')
     if not isinstance(title, str) or not title.strip() or len(title) > 600: raise ValueError('invalid_title')
     if not isinstance(excerpt, str) or len(excerpt) > 2000: raise ValueError('invalid_excerpt')
-    if not numbers(row['title_original']) <= numbers(title): raise ValueError('title_numbers_missing')
+    if not numbers_preserved(row['title_original'], title): raise ValueError('title_numbers_missing')
     original = json.loads(row['article_blocks_json'])
     if not isinstance(translated, list) or len(translated) != len(original): raise ValueError('paragraph_coverage_mismatch')
     output = []
@@ -62,7 +86,7 @@ def checked_result(row, result):
         field = 'caption' if source['type'] == 'image' else 'text'
         text = item.get(field)
         if not isinstance(text, str) or source.get(field) and not text.strip(): raise ValueError('empty_translation_block')
-        if not numbers(source.get(field)) <= numbers(text): raise ValueError('paragraph_numbers_missing')
+        if not numbers_preserved(source.get(field), text): raise ValueError('paragraph_numbers_missing')
         if len(text) > max(2000, len(source.get(field, '')) * 5): raise ValueError('unexpected_translation_expansion')
         if source.get(field) and not re.search(r'[\u3400-\u9fff]', text) and text != source[field]:
             # Proper names, copyright captions, URLs and artwork codes may remain unchanged.

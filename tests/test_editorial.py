@@ -99,3 +99,19 @@ class EditorialTests(unittest.TestCase):
         row=self.store.dataset('live')['content'][0]
         self.assertEqual(row['editorial_status'],'translated');self.assertIsNone(row['editorial_review_model'])
         self.assertFalse(json.loads(row['editorial_review_json'])['approved'])
+
+
+class NumbersPreservedTests(unittest.TestCase):
+    def test_conventional_chinese_renderings_count_as_preserved(self):
+        from backend.editorial import numbers_preserved
+        for source, translated in (('2人が出会った', '两人相遇'), ('Phase 01 – lectures', '第一阶段：讲座'),
+                                   ('２つのシリーズ', '两个系列'), ('In the 1960s he', '在上世纪60年代，他'),
+                                   ('1990年代の台湾', '20世纪90年代的台湾'), ('It made $4 million', '收入400万美元')):
+            self.assertTrue(numbers_preserved(source, translated), source)
+
+    def test_real_omissions_still_fail(self):
+        from backend.editorial import numbers_preserved
+        for source, translated in (('2人が出会った', '他们相遇了一次'), ('It made $4 million', '收入不错'),
+                                   ('3 films', '一部电影'), ('in 2026', '在二〇二六年'),
+                                   ('11 artists', '十一位艺术家'), ('the 1960s', '那个年代')):
+            self.assertFalse(numbers_preserved(source, translated), source)

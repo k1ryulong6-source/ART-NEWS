@@ -10,7 +10,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 from .storage import ROOT, now
-from .editorial import checked_result, numbers, publish_translation, rules
+from .editorial import checked_result, numbers_preserved, publish_translation, rules
 from .autonomous_translation import assemble, write_json, read_checkpoint
 from .priority import rank_snapshot, translation_batch
 from . import ai_retry
@@ -27,6 +27,7 @@ INSTRUCTION = ('你是电影、艺术、摄影新闻译者。先通读全部原�
                '未知译名保留原名，作品编码、数字、时间、金额、URL及版权人不得丢失。'
                '阿拉伯数字的字面形式原样保留，不改成中文数字、不换算单位、不改动数字内部的标点。'
                '每个单元的numeric_literals列出需要保留的原文数字；逐项原样保留在该单元译文中。'
+               '例如“2人”写“2人”，“1960s”写“1960年代”，“$4 million”写“400万美元”，“10 Things I Hate About You”等含数字的片名保留数字。'
                '相邻单元可能是同一段的片段，应联系上下文翻译，但每个单元只对应自己的内容。'
                '输出JSON对象：{"outputs":{"单元key":"中文译文",...}}，不要Markdown。')
 
@@ -146,7 +147,7 @@ def input_hash(row, provider, cfg):
 def invalid_assembled_keys(row, translation, keys):
     """Locate failed fields with the same program checks, never a model review."""
     title = translation.get('title_zh')
-    if not isinstance(title, str) or not title.strip() or len(title) > 600 or not numbers(row['title_original']) <= numbers(title):
+    if not isinstance(title, str) or not title.strip() or len(title) > 600 or not numbers_preserved(row['title_original'], title):
         return keys['title']
     excerpt = translation.get('excerpt_zh')
     if not isinstance(excerpt, str) or len(excerpt) > 2000:
@@ -385,7 +386,7 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                         translated = outputs[key]
                         if not isinstance(translated, str) or not translated.strip():
                             invalid.append(('empty_ai_translation', key))
-                        elif not numbers(source) <= numbers(translated):
+                        elif not numbers_preserved(source, translated):
                             invalid.append(('ai_numbers_missing', key))
                         elif len(translated) > max(2000, len(source) * 5):
                             invalid.append(('ai_translation_expansion', key))

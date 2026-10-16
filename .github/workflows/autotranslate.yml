@@ -87,23 +87,28 @@ jobs:
             echo 'continue_ai=true' >> "$GITHUB_OUTPUT"
           fi
       - name: Free Cloudflare Qwen fallback after a blocked Gemini batch
+        id: cloudflare
         if: success() || failure()
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFLARE_AUTH_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
-        run: python scripts/run_cloudflare_translation.py
+        run: |
+          python scripts/run_cloudflare_translation.py
+          if jq -e '(.translated // []) | length > 0' data/cloudflare-translation-status.json >/dev/null; then
+            echo 'useful_work=true' >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/cache@v4
-        if: (success() || failure()) && steps.ai.outputs.continue_ai != 'true'
+        if: (success() || failure()) && steps.ai.outputs.continue_ai != 'true' && steps.cloudflare.outputs.useful_work != 'true'
         with:
           path: runtime/models/m2m100-int8
           key: offline-m2m100-int8-18e406c615ef2991-v1
       - run: pip install -r requirements-translation.txt
-        if: (success() || failure()) && steps.ai.outputs.continue_ai != 'true'
+        if: (success() || failure()) && steps.ai.outputs.continue_ai != 'true' && steps.cloudflare.outputs.useful_work != 'true'
       - name: Temporary offline machine translation fallback
         if: success() || failure()
         id: translation
         env:
-          CONTINUE_AI: ${{ steps.ai.outputs.continue_ai }}
+          CONTINUE_AI: ${{ steps.ai.outputs.continue_ai == 'true' || steps.cloudflare.outputs.useful_work == 'true' }}
         run: |
           if [ "$CONTINUE_AI" = 'true' ]; then
             python - <<'PY'

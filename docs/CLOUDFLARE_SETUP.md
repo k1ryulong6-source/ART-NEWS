@@ -16,3 +16,5 @@
 报告：data/cloudflare-verification-report.json；常规状态data/cloudflare-translation-status.json；公开/reports/operations.json的cloudflare.verification区分已配密钥、实际请求、正文完成与错误。测试未调用会话工作者，不做第二轮模型审校。
 
 2026-10-16 23:50:48 JST真实探针38919032806结果：Token已传入，Account ID缺失，0请求/0篇。等待添加CLOUDFLARE_ACCOUNT_ID；不能称接通或产生译文。配置状态以之后真实报告为准。
+
+更新：Account ID已补齐，真实探针38920332045完成1篇英文全文，38920726685导入/38921273182发布均success，线上8块与main精确匹配。累计3请求估算67.85455 Neurons，前两次日文失败未算完成；verified_enabled已开启，实际常规产量看之后报告，不保证所有语种一次通过。完整证据见data/cloudflare-activation-evidence.json。

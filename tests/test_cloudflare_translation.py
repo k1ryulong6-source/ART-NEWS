@@ -125,7 +125,8 @@ class CloudflareTests(unittest.TestCase):
     def test_missing_credentials_and_unverified_production_do_not_call(self):
         r=run_cloudflare(self.store,'none',root=self.root,environ={},transport=lambda _:self.fail())
         self.assertEqual(r['status'],'not_configured')
-        r=run_cloudflare(self.store,'none',root=self.root,environ=self.env(),transport=lambda _:self.fail())
+        with patch('backend.cloudflare_translation.configuration',return_value=self.cfg(verified_enabled=False)):
+            r=run_cloudflare(self.store,'none',root=self.root,environ=self.env(),transport=lambda _:self.fail())
         self.assertEqual(r['status'],'awaiting_verification')
 
     def test_healthy_gemini_skips_qwen_and_releases_unused_budget(self):

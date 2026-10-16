@@ -499,3 +499,9 @@ T071本批5篇已实际发布验收：e3c57d1/097fe35，真实导入38909978377 
 已补autotranslate备用步骤/保存/artifact、cloudflare-verify手动真实探针、operations独立状态与提供商计数，原Gemini配额/断点和Claude视觉保持。首轮218 Python通过，后补UTC/Gemini日界隔离及operations不混账测试21通过；初次真实Actions/API/正文与Pages验收待执行。T072 doing；全量T028/T062未完成。
 
 T072最新阻塞（2026-10-16 23:50 JST）：接入/独立Neurons预留/断点/探针代码已发布，222 Python通过，CI38918088695 success。原共享写锁探针被采集恢复队列替换，未发模型请求；改为独立cloudflare-free-api-verification组，探针只提交自身账本/断点/报告，绝不export旧live覆盖新采集；正常串行任务的import_snapshot无API恢复源hash/全部单元/数字均匹配的完整copy。实际38918783949/38919032806均保存报告，最新credential_checks只有Token=true，Account ID=false；真实0请求/0篇，不能以GHA success冒称千问调用成功。已兼容CLOUDFLARE_AUTH_TOKEN Secret别名与同名Account ID变量，仍未收到Account ID。T072 blocked，用户已收到添加CLOUDFLARE_ACCOUNT_ID的具体步骤；verified_enabled=false，补齐后必须再真实试译/发布才开启自动备用。指南docs/CLOUDFLARE_SETUP.md，探针报告data/cloudflare-verification-report.json。
+
+T072已实际接通并发布（最新覆盖前述缺Account ID记录）：用户补齐后，探针38919574072/38919917001/38920332045实际3请求，5196输入/1438输出token，估算67.85455 Neurons，0未知/0预留。前两次日文未译/数字缺失，未计全文并保留19有效单元；第三次英文《“战争状况”导致卡拉奇双年展取消》完成8块。发布38920726685/Pages38921273182 success；公开Babel JSON HTTP200/kind=ai-direct，源hash/标题/8块与main精确一致，模型真实为Cloudflare Qwen3-30B-A3B。data/cloudflare-activation-evidence.json与verification-history保存证据。
+
+已在真实全文/上线验证后打开verified_enabled=true，原后台Gemini受阻时免费备用；10000 Neurons/UTC日及2000预留、未知上界、原文/有效稿/免费与Gemini计数保持。CF已有合格全文则当批不再加载离线模型，尽早释放写锁，没AI进展仍机翻兜底。T072接入/实测/发布验收done，但首个常规备用批次还须看新实际报告，不能把启用当新产量或24h独立链验收；T028/T062仍doing。
+
+恢复阶段修正：完整CF断点在scripts/import_daily_translations.py或scripts/export_snapshot.py发布阶段恢复并计入实际变化，import_snapshot仅恢复基础快照，避免恢复后changed=false漏发布。全套224 Python+后续CF/operations回归通过，没有会话翻译工作者/二次模型审校/收费开通。

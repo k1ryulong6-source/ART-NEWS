@@ -2359,7 +2359,7 @@
       "id": "T072",
       "title": "Cloudflare免费千问备用API：接入、独立额度保护和真实试译发布",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex（后台/API，无会话翻译工作者）",
       "updated_at": "2026-10-16",
       "depends_on": [
@@ -2378,7 +2378,9 @@
         "docs/",
         "AGENTS.md",
         "tasks.json",
-        "scripts/import_snapshot.py"
+        "scripts/import_snapshot.py",
+        "scripts/export_snapshot.py",
+        "scripts/import_daily_translations.py"
       ],
       "acceptance": [
         "实际使用用户GitHub Secrets，不读/打印密钥，固定免费可用Qwen型号、不启用付费",
@@ -2393,7 +2395,11 @@
         "bf72c0a/e2d1854/93e1851已推送，首CI38918088695 success。早期共享锁探针两次被采集恢复挤掉，均未实际运行；改为cloudflare-free-api-verification独立组，只提交自身账本/断点/探针报告，正常import_snapshot在串行数据任务恢复。",
         "真实探针38918783949及38919032806均结束并保存证据；最新2026-10-16 23:50:48 JST credential_checks：api_token_present=true、account_id_present=false、account_id_format_valid=false。0生成请求/0篇译稿，没有Neurons消耗记录；不能宣称API已接通或把GHA绿色当成功。",
         "已兼容官方CLOUDFLARE_AUTH_TOKEN别名及非敏感Account ID的仓库变量；仍缺Account ID，等待用户在同仓库Secrets添加CLOUDFLARE_ACCOUNT_ID。verified_enabled保持false，不自动放开未实测备用，不变更Gemini费用/配额。",
-        "用户已补Account ID；真实38919574072已configured=true，1请求/2007输入+791输出token、估算33.3881 Neurons，0 unknown/0预留。主正文被原样返回触发ai_paragraph_not_translated，保留19个合格单元、未发布整篇；正在显式单次重试唯一未译单元，非第二轮模型校对。"
+        "用户已补Account ID；真实38919574072已configured=true，1请求/2007输入+791输出token、估算33.3881 Neurons，0 unknown/0预留。主正文被原样返回触发ai_paragraph_not_translated，保留19个合格单元、未发布整篇；正在显式单次重试唯一未译单元，非第二轮模型校对。",
+        "凭据齐全后真实38919574072、38919917001、38920332045累计3请求/5196输入+1438输出token，估算67.85455 Neurons（约每日10000保护的0.68%），0 unknown/0预留。日文两次程序失败未计全文，19有效单元与断点保留；英文艺术新闻完整8块成功。",
+        "真实译稿发布38920726685和Pages38921273182 success；生产/integrations/babel/live-2d37b03d3c7fe402485854c6.json HTTP200/kind=ai-direct，源hash、标题、全部8块与main逐项一致，真实模型为@cf/qwen/qwen3-30b-a3b-fp8。",
+        "224 Python全套及后续25项CF/operations通过；独立探针不写旧live，普通串行导入/导出阶段无API恢复完整copy并准确触发发布；只有未译单元的显式单次诊断重试，不是第二轮校译。",
+        "真实成功/发布后verified_enabled=true，加入Gemini受阻时的独立免费备用；CF有合格全文时跳过当批离线模型加载，释放写锁，未有AI进展仍保留机翻。下一常规批次实际产量以新报告为准，尚未当成已完成；T028/T062仍doing，禁止宣称全量/四项已验收。"
       ]
     }
   ]

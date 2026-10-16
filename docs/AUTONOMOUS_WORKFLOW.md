@@ -103,3 +103,5 @@ T063用户追加授权：第二密钥已配置，要求本次重置前充分使�
 公开/reports/operations.json新增cloudflare状态/实际完成/失败/Neurons估计，translation.api_provider_counts分提供商；Gemini quota字段不混入Cloudflare。暂无真实试译成功证据，不以已添加Secrets或测试mock宣称调用成功。
 
 T072探针隔离修正：独立cloudflare-free-api-verification组只提交Cloudflare自身账本/断点/verification-report，不写旧live；普通串行采集/翻译的import_snapshot经hash与完整单元/数字检查，无API恢复已完成copy。避免共享pending槽被采集恢复反复替换，又不覆盖新采集。2026-10-16 23:50 JST实测仅Token传入、Account ID缺失，0请求/0篇；verified_enabled仍false，详情CLOUDFLARE_SETUP.md。
+
+T072已真实验证：3请求/5196输入+1438输出token，估算67.85455 Neurons，1篇完整8块已上线；日文两次程序失败未计完成，断点保留。证据cloudflare-activation-evidence.json及verification-history，Pages38921273182 success。verified_enabled已打开，后续常规产量仍由实际报告证明，不冒称日均或全量完成。完整copy在import_daily_translations/export_snapshot发布阶段恢复，避免changed判定漏发布；CF有全文进展时跳过该批离线模型加载，其余情况保留机翻兜底。普通备用与探针费率/免费保护相同，不自动开收费。

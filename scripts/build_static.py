@@ -1,5 +1,6 @@
 """Create a portable static edition using the same frontend and demo records."""
 import json
+import re
 import base64
 import shutil
 import sys
@@ -87,7 +88,7 @@ def build():
     write_split_site(bundle, output, bootstrap)
     if (output / 'fonts').exists():
         shutil.rmtree(output / 'fonts')
-    shutil.copytree(ROOT / 'frontend/fonts', output / 'fonts')
+    shutil.copytree(ROOT / 'frontend/fonts', output / 'fonts', ignore=shutil.ignore_patterns('slices.json'))
     html = (output / "index.html").read_text(encoding="utf-8")
     if site_url:
         html = html.replace('</head>', '<link rel="canonical" href="' + escape(site_url, quote=True) + '">\n</head>')
@@ -96,6 +97,8 @@ def build():
     html = html.replace('<link rel="preload" href="fonts/intermission-masthead-v1.woff2" as="font" type="font/woff2" crossorigin>', '')
     for name in ('styles.css', 'theme.css'):
         css = (output / name).read_text(encoding='utf-8')
+        # One whole font embeds smaller than its unicode-range slices.
+        css = re.sub(r'/\* sans-slices:begin.*?/\* sans-slices:end \*/', lambda _: "@font-face{font-family:'Intermission Sans';src:url(\"fonts/intermission-sans-v1.woff2\") format('woff2');font-weight:200 900;font-style:normal;font-display:swap}", css, flags=re.S)
         for font in sorted((output / 'fonts').glob('*.woff2')):
             css = css.replace('fonts/' + font.name, 'data:font/woff2;base64,' + base64.b64encode(font.read_bytes()).decode('ascii'))
         html = html.replace(f'<link rel="stylesheet" href="{name}">', '<style>' + css + '</style>')

@@ -32,3 +32,5 @@ mashanzheng-OFL.txt、notosanssc-OFL.txt、newsreader-OFL.txt、notoseriftc-OFL.
 用户要求标题用“王家卫那种比较瘦的繁体”后（T043），字标改由`scripts/build_wordmark.py`从`intermission-title-v1.woff2`（`scripts/build_title_font.py --source NotoSerifTC[wght].ttf`生成）绘制；此前的黑体字标停用。favicon为红底细明体“間”。
 
 「一種關注」（T058）：标题细明体子集加入一種關注；导航黑体另用2字Noto Sans TC子集 intermission-sans-tc-v1.woff2（種、關），许可 notosanstc-OFL.txt。
+
+「按需切片」（T077）：网页不再直接加载intermission-sans-v1.woff2，而是加载`sans-v1/`下73个unicode-range切片（`python scripts/split_sans_font.py`生成，需fonttools[woff]）。黑体字库更新后先递增版本，再重跑该脚本；`--reorder`按当前文章字频重排切片。

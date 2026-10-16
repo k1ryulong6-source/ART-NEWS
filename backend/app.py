@@ -248,6 +248,7 @@ def create_app(db_path=None):
     assets.update({'fonts/intermission-masthead-v1.woff2', 'fonts/intermission-sans-v1.woff2', 'fonts/intermission-title-v1.woff2', 'fonts/notoseriftc-OFL.txt', 'fonts/intermission-sans-tc-v1.woff2', 'fonts/notosanstc-OFL.txt',
                    'fonts/intermission-news-v1.woff2', 'fonts/mashanzheng-OFL.txt',
                    'fonts/notosanssc-OFL.txt', 'fonts/newsreader-OFL.txt'})
+    assets.update('fonts/sans-v1/' + path.name for path in (ROOT / 'frontend/fonts/sans-v1').glob('*.woff2'))
 
     @app.get("/")
     async def index():

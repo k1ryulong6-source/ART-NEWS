@@ -1,9 +1,16 @@
 {
-  "checked_at": "2026-10-16T20:35:11.147052+00:00",
-  "list_audit_at": "2026-10-16T18:52:03.410079+00:00",
+  "checked_at": "2026-10-16T20:44:47.637225+00:00",
+  "list_audit_at": "2026-10-16T20:44:00.861253+00:00",
   "scope": "configured_sources_current_lists_only",
   "global_completeness": "unknown",
   "core_source_problems": [
+    {
+      "source_id": "wpo-awards",
+      "reasons": [
+        "latest_collection_failed"
+      ],
+      "last_success_at": "2026-10-16T18:51:30.988756+00:00"
+    },
     {
       "source_id": "asianmoviepulse",
       "reasons": [
@@ -20,6 +27,14 @@
         "no_recent_success"
       ],
       "last_success_at": "2026-10-14T00:31:48.725165+00:00"
+    },
+    {
+      "source_id": "zum",
+      "reasons": [
+        "latest_collection_failed",
+        "list_audit_failed"
+      ],
+      "last_success_at": "2026-10-16T18:50:13.809549+00:00"
     }
   ],
   "missing_important_items": [],
@@ -1749,7 +1764,7 @@
             "failed_source_ids": [
               "cineuropa"
             ],
-            "inventory_from_assigned_sources": 282,
+            "inventory_from_assigned_sources": 283,
             "coverage_status": "assigned_sources_only"
           },
           "art": {
@@ -1818,7 +1833,7 @@
             "rss_sources": 4,
             "successful_rss_checks": 4,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 216,
+            "inventory_from_assigned_sources": 218,
             "coverage_status": "assigned_sources_only"
           },
           "photography": {
@@ -1888,7 +1903,7 @@
             "rss_sources": 5,
             "successful_rss_checks": 5,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 212,
+            "inventory_from_assigned_sources": 213,
             "coverage_status": "assigned_sources_only"
           }
         }
@@ -2257,7 +2272,7 @@
             "rss_sources": 3,
             "successful_rss_checks": 3,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 76,
+            "inventory_from_assigned_sources": 78,
             "coverage_status": "assigned_sources_only"
           },
           "art": {
@@ -2318,7 +2333,7 @@
             "rss_sources": 1,
             "successful_rss_checks": 1,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 11,
+            "inventory_from_assigned_sources": 12,
             "coverage_status": "assigned_sources_only"
           },
           "photography": {
@@ -2377,8 +2392,10 @@
               "zum"
             ],
             "rss_sources": 1,
-            "successful_rss_checks": 1,
-            "failed_source_ids": [],
+            "successful_rss_checks": 0,
+            "failed_source_ids": [
+              "zum"
+            ],
             "inventory_from_assigned_sources": 17,
             "coverage_status": "assigned_sources_only"
           }
@@ -2403,7 +2420,7 @@
             "rss_sources": 3,
             "successful_rss_checks": 3,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 240,
+            "inventory_from_assigned_sources": 244,
             "coverage_status": "assigned_sources_only"
           },
           "art": {
@@ -2421,7 +2438,7 @@
             "rss_sources": 3,
             "successful_rss_checks": 3,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 150,
+            "inventory_from_assigned_sources": 158,
             "coverage_status": "assigned_sources_only"
           },
           "photography": {
@@ -2582,7 +2599,7 @@
             "failed_source_ids": [
               "cineuropa"
             ],
-            "inventory_from_assigned_sources": 727,
+            "inventory_from_assigned_sources": 734,
             "coverage_status": "assigned_sources_only"
           },
           "art": {
@@ -2606,7 +2623,7 @@
             "rss_sources": 14,
             "successful_rss_checks": 14,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 490,
+            "inventory_from_assigned_sources": 500,
             "coverage_status": "assigned_sources_only"
           },
           "photography": {
@@ -2624,15 +2641,17 @@
               "lenscratch"
             ],
             "rss_sources": 9,
-            "successful_rss_checks": 9,
-            "failed_source_ids": [],
-            "inventory_from_assigned_sources": 332,
+            "successful_rss_checks": 8,
+            "failed_source_ids": [
+              "zum"
+            ],
+            "inventory_from_assigned_sources": 333,
             "coverage_status": "assigned_sources_only"
           }
         }
       }
     ],
-    "unlocated_content": 1221,
+    "unlocated_content": 1236,
     "discovery_share_of_available_new_body_slots": 0.2,
     "global_completeness": "unknown",
     "limitations": [

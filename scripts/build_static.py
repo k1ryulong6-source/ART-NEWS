@@ -93,6 +93,9 @@ def build():
     if site_url:
         html = html.replace('</head>', '<link rel="canonical" href="' + escape(site_url, quote=True) + '">\n</head>')
         (output / 'index.html').write_text(html, encoding='utf-8')
+    if 'live' in bundle:
+        from backend.share_pages import write_share_pages
+        write_share_pages(output, html, bundle['live'], site_url, bundle.get('headlines'))
     # The portable edition embeds its own fonts, without external requests.
     html = html.replace('<link rel="preload" href="fonts/intermission-masthead-v1.woff2" as="font" type="font/woff2" crossorigin>', '')
     for name in ('styles.css', 'theme.css'):

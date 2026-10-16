@@ -42,7 +42,7 @@
 2. 需要时`python promo/voice.py [--cafile 代理CA]`重新生成旁白。
 3. `python promo/score.py score.wav`，再`ffmpeg -i score.wav -af volume=-4.3dB -b:a 160k promo/score.mp3`。
 4. `python promo/build.py [--land …] [--serif-source …] [--sans-source …] [--retro-source ZCOOLQingKeHuangYou-Regular.ttf] [--righteous Righteous-Regular.ttf]`：注入字标、主持人、胶片盘、地球点阵与声音，按片中文字子集化字体，输出`index.html`。不增减文字时可省略字体参数。
-5. `NODE_PATH="$(npm root -g)" node promo/record.cjs silent.mp4`逐帧渲染（约40分钟），再`ffmpeg -i silent.mp4 -i score.wav -c:v copy -af volume=-4.3dB -c:a aac -b:a 192k -shortest promo/intermission-promo.mp4`。
+5. `NODE_PATH="$(npm root -g)" node promo/record.cjs silent.mp4`逐帧渲染（可用`--from`/`--to`分段并行后`ffmpeg -f concat`拼接），再`ffmpeg -i silent.mp4 -i score.wav -c:v libx264 -preset slow -crf 24 -pix_fmt yuv420p -movflags +faststart -af volume=-4.3dB -c:a aac -b:a 192k -shortest promo/intermission-promo.mp4`。
 
 需要`pip install numpy scipy 'fonttools[woff]' edge-tts`。地图数据：world-atlas land-110m（ISC；Natural Earth，公有领域）。
 

@@ -16,7 +16,7 @@
 
 `frontend/styles.css`为现有基础行为/布局样式。`frontend/app.js`管理状态、渲染页面和事件；新增组件或改交互时在此接入。`frontend/core.js`处理筛选、优先级、时间、安全转义和导入等公共逻辑。`frontend/data.js`与`dist/`是生成文件，不手改。
 
-主题变量：`--canvas`、`--paper`、`--white`、`--ink`、`--muted`、`--line`、`--accent`、`--green`、`--serif`、`--display`、`--sans`、`--paper-width`、`--paper-gutter`、`--headline-size`、`--article-size`。改变颜色与字号不用改采集或数据库。内容图片只在卡片/头条采用报纸滤色，阅读正文原图保持正常颜色；占位图必须注明原创示意。
+主题变量：`--canvas`、`--paper`、`--white`、`--ink`、`--muted`、`--line`、`--accent`、`--green`、`--serif`、`--display`、`--sans`、`--paper-width`、`--paper-gutter`、`--headline-size`、`--article-size`、`--reader-measure`（阅读页正文宽度）。改变颜色与字号不用改采集或数据库。内容图片只在卡片/头条采用报纸滤色，阅读正文原图保持正常颜色；占位图必须注明原创示意。
 
 ## CultureUI v1
 

@@ -1,3 +1,5 @@
+> T075待合并（2026-10-16，Claude前端）：文章阅读页排版优化，只改theme.css与app.js的阅读部分。正文单栏行长改为--reader-measure（700px），--article-size改18px；中文正文取消两端对齐（含长英文名的行会被拉开字距）；日文原文改用日文字体栈；自动机翻正文在显示时把半角,.;:?!改为中文标点并去掉⁇（仅展示，存储不变）；桌面端中文/原文切换条吸顶，切换后按段落序号停在同一段；标题行显示约读时长。数据、选稿、收藏和接口均未改。
+
 > T074进行中（2026-10-16，Claude接手后台）：新增DeepSeek翻译提供方（backend/deepseek_translation.py）。设置GitHub Secret DEEPSEEK_API_KEY后自动翻译默认走DeepSeek（deepseek-flash，关闭thinking），Actions变量AI_TRANSLATION_PROVIDER=gemini切回Gemini，DEEPSEEK_MODEL改模型。独立账本data/ai-translation-ledger-deepseek.json，300请求/太平洋日；402余额不足暂停6小时。235项测试通过，尚无真实DeepSeek调用证据，见D074。
 
 > T061已验收（2026-10-15）：3e940d5已上线，CI38696435261/Pages38696435200 success；132Python+27JS、stdlib构建/项目检查。生产1440/390px主头条与三栏ID精确匹配后台/队列，旧10月8日/9月24日占位稿退出；新头条为Sandra Hüller/Rose访谈、Gary Waddell讣告、Tammy Nguyen威尼斯双年展、野生动物摄影奖，均已有有效Gemini中文全文（34/12/15/47块），公开原文hash/中原文块数及原文/Babel验证通过，无额外重译。正常主头条72h、缺新最多7天，所有栏目不回灌7天外旧库；每2h减1分、重要性/紧急度及既定降权/来源平衡，发布时间未知仅明确2天内活动后备，不以抓取时间伪造新鲜度/随机凑版。Claude视觉不改。已保留并发采集新增5条，最新900资讯/661待AI/841输入；API新批38696435355仍pending、旧批38696221501 active，未称已完成。T028继续doing；API独立接续、免费500/日不变、禁止会话翻译工作者。
@@ -519,3 +521,6 @@ Gemini最近已保存14:53–15:01Z批次22请求、5全文、11数字检查失�
 ## 2026-10-16 · 会话直接翻译第二批（Claude Haiku 5.5）
 
 第二批仍为会话直接翻译，共2篇：live-014873121c1c7a37a6702140（日文展览发布）与 live-11ba09a36836efc2a784b0ff（英文影视）。两篇均经 checked_result 与数字保留检查后写入，provider 为 claude-session:claude-haiku-5-5，标AI翻译，未标校译。快照仅替换这两条记录，其余记录与 main 保持一致。
+## 2026-10-16 · 会话直接翻译首批（Claude Haiku 5.5）
+
+用户要求在DeepSeek测试结束后，由当前会话的 Haiku 5.5 直接翻译未译文章。本批只写入 live-105fcd48e54a793df3d8a050（“从画架旁看：Allan Wexler”），经 checked_result 与数字保留检查后写入，provider 为 claude-session:claude-haiku-5-5，标AI翻译，未标校译。快照仅替换该条记录，其余与 main 一致。

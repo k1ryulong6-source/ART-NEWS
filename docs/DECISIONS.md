@@ -401,3 +401,7 @@ D072验收：凭据补齐后独立真实探针3请求，前2次日文程序失�
 ## D074 · 用户授权DeepSeek预充值API作为自动翻译主路线
 
 2026-10-16用户因Gemini免费层持续503，要求接入DeepSeek翻译。DeepSeek是预充值付费API，用户明确要求即视为授权；费用以账户余额为硬上限，程序另设300请求/太平洋日保护上限（config/ai-translation.json的deepseek段）。选择规则：Actions变量AI_TRANSLATION_PROVIDER显式指定优先；未指定时，设置了Secret DEEPSEEK_API_KEY就用DeepSeek，否则仍走免费Gemini双项目。默认模型deepseek-flash（DeepSeek-V4.1-Flash；旧名deepseek-chat已于2026-07退役），关闭thinking，JSON输出，单轮直译，提示词与Gemini共用。译稿标contextual-api:deepseek，独立账本，不复用Gemini配额。Cloudflare千问/离线机翻兜底顺序不变。
+
+## D075 · 阅读页排版以连续阅读为先 · 2026-10-16
+
+用户要求优化文章排版和阅读体验。阅读页保持单栏，行长约38个汉字／70个拉丁字符；中文正文改为左对齐，因为外文人名常在行尾无法断开，两端对齐会把整行汉字拉散。机翻稿的半角标点只在显示时转换，不改存储译文，AI稿与原文不做此处理。中文与原文按段一一对应，切换时保持阅读位置。

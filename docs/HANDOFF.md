@@ -515,3 +515,7 @@ T072已实际接通并发布（最新覆盖前述缺Account ID记录）：用户
 Gemini最近已保存14:53–15:01Z批次22请求、5全文、11数字检查失败、5次503；接口并非完全不可用。生产补充backend/gemini_errors.py，只公开HTTP/API状态及白名单原因短语（如high demand），不发布原始错误正文/metadata/请求。错误分类在批次service_failures.provider_error和最终error_detail中持久化，原退避/请求预算/免费模式保持；不额外发诊断生成请求、不派会话翻译或换模型。
 
 当前待真实常规结果与新诊断代码上线核验；T073 doing，全量T028及四项T062仍未通过，不承诺Google恢复时间或全球完整覆盖。
+
+## 2026-10-16 · 会话直接翻译第二批（Claude Haiku 5.5）
+
+第二批仍为会话直接翻译，共2篇：live-014873121c1c7a37a6702140（日文展览发布）与 live-11ba09a36836efc2a784b0ff（英文影视）。两篇均经 checked_result 与数字保留检查后写入，provider 为 claude-session:claude-haiku-5-5，标AI翻译，未标校译。快照仅替换这两条记录，其余记录与 main 保持一致。

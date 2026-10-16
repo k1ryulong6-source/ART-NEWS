@@ -37,6 +37,7 @@
     }
     const brief = row => card(row, false, { art: false });
     function feature(row) {
+      C.needBody(row);
       const translated = C.editorialReady(row) || C.machineReady(row), blocks = translated ? C.articleBlocks(row, true) : C.articleBlocks(row);
       const paragraphs = blocks.filter(b => ['paragraph','quote'].includes(b.type) && !(b.text.length < 120 && promo.test(b.text))).slice(0, 6).map(b => b.text.slice(0, 550));
       const copyLang = paragraphs.length ? (translated || row.language === 'zh' ? zh : foreign(row)) : summaryLang(row);

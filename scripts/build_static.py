@@ -75,12 +75,16 @@ def build():
     if 'live' in bundle:
         export_articles(bundle['live'], bundle['sources'], output / 'integrations/babel')
     for key in ('live', 'dataset'): bundle[key] = browser_snapshot(bundle[key])
-    text = "window.CULTURE_BOOTSTRAP = " + json.dumps(bundle, ensure_ascii=False, separators=(',', ':')).replace("<", "\\u003c") + ";\n"
+    def bootstrap(value):
+        return "window.CULTURE_BOOTSTRAP = " + json.dumps(value, ensure_ascii=False, separators=(',', ':')).replace("<", "\\u003c") + ";\n"
+    # The local app and single-file preview keep bodies inline; the site loads them on demand.
+    text = bootstrap(bundle)
     (ROOT / "frontend/data.js").write_text(text, encoding="utf-8")
     output = ROOT / "dist"
     output.mkdir(exist_ok=True)
-    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "data.js", "core.js", "ui.js", "app.js"):
+    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "core.js", "ui.js", "app.js"):
         shutil.copy2(ROOT / "frontend" / name, output / name)
+    write_split_site(bundle, output, bootstrap)
     if (output / 'fonts').exists():
         shutil.rmtree(output / 'fonts')
     shutil.copytree(ROOT / 'frontend/fonts', output / 'fonts')
@@ -98,11 +102,34 @@ def build():
     favicon = (output / "favicon.svg").read_bytes()
     html = html.replace('href="favicon.svg"', 'href="data:image/svg+xml;base64,' + base64.b64encode(favicon).decode('ascii') + '"')
     for name in ("data.js", "core.js", "ui.js", "app.js"):
-        script = (output / name).read_text(encoding="utf-8").replace('</script', '<\\/script')
+        script = (text if name == "data.js" else (output / name).read_text(encoding="utf-8")).replace('</script', '<\\/script')
         html = html.replace(f'<script defer src="{name}"></script>', '')
         html = html.replace('</body>', '<script>' + script + '</script>\n</body>')
     (output / "culture-desk-preview.html").write_text(html, encoding="utf-8")
     print("Static edition built in dist/ (public live snapshot + separate demo; browser storage)")
+
+
+def write_split_site(bundle, output, bootstrap):
+    """Publish an article index in data.js plus per-article bodies and a lazy search index."""
+    import hashlib
+    from backend.presentation import split_bodies
+    site = dict(bundle)
+    bodies, search = {}, {}
+    if 'live' in site:
+        site['live'], bodies, search = split_bodies(site['live'])
+    store = output / 'bodies'
+    store.mkdir(exist_ok=True)
+    for path in store.glob('*.json'):
+        if path.stem not in bodies: path.unlink()
+    for row_id, body in bodies.items():
+        data = json.dumps(body, ensure_ascii=False, separators=(',', ':'), sort_keys=True)
+        path = store / (row_id + '.json')
+        if not path.exists() or path.read_text(encoding='utf-8') != data: path.write_text(data, encoding='utf-8')
+    index = json.dumps(search, ensure_ascii=False, separators=(',', ':'), sort_keys=True)
+    (output / 'search-index.json').write_text(index, encoding='utf-8')
+    if bodies:
+        site['body_store'] = {'bodies': 'bodies/', 'search': 'search-index.json?v=' + hashlib.sha256(index.encode('utf-8')).hexdigest()[:12]}
+    (output / 'data.js').write_text(bootstrap(site), encoding='utf-8')
 
 
 if __name__ == "__main__":

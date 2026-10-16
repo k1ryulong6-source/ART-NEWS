@@ -17,7 +17,15 @@
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const safeUrl = value => { try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } };
   const originalPageUrl = row => safeImageUrl(row.original_page_url || row.canonical_url);
-  const editorialReady = row => ['reviewed','translated'].includes(row.editorial_status) && Boolean(row.editorial_blocks_json && row.editorial_title_zh);
+  // The static site ships article bodies separately (row.body_ref) and attaches them when a view needs one.
+  const bodyPending = row => Boolean(row?.body_ref) && !row.body_loaded;
+  const wantedBodies = new Set();
+  const needBody = row => { if (bodyPending(row) && !row.body_failed) wantedBodies.add(row); return !bodyPending(row); };
+  const takeWantedBodies = () => { const rows = [...wantedBodies]; wantedBodies.clear(); return rows; };
+  const attachBody = (row, body) => { for (const [key, value] of Object.entries(body && typeof body === 'object' ? body : {})) if (!(key in row)) row[key] = value; row.body_loaded = true; };
+  const searchTexts = new Map();
+  const setSearchTexts = texts => { for (const [id, text] of Object.entries(texts && typeof texts === 'object' ? texts : {})) if (typeof text === 'string') searchTexts.set(id, text); };
+  const editorialReady = row => ['reviewed','translated'].includes(row.editorial_status) && Boolean((row.editorial_blocks_json || (bodyPending(row) && row.has_editorial_body)) && row.editorial_title_zh);
   const headlineReady = row => {
     if (typeof row.headline_ready === 'boolean') return row.headline_ready;
     // Current builds provide the flag after paragraph, numeric/source checks.
@@ -35,7 +43,7 @@
       });
     } catch { return false; }
   };
-  const machineReady = row => row.machine_translation_ready !== false && String(row.article_translation_provider || '').startsWith('offline-m2m100:') && row.translation_status === 'machine' && Boolean(row.article_translation_hash && row.article_translation_json && row.translated_title_zh);
+  const machineReady = row => row.machine_translation_ready !== false && String(row.article_translation_provider || '').startsWith('offline-m2m100:') && row.translation_status === 'machine' && Boolean(row.article_translation_hash && (row.article_translation_json || (bodyPending(row) && row.has_translation_body)) && row.translated_title_zh);
   const priorityOf = row => { const value = root.CULTURE_BOOTSTRAP?.priorities?.[row.id]; return value?.source_title === row.title_original ? value : null; };
   const priorityRank = row => Number(priorityOf(row)?.priority?.slice(1) || 2);
   const priorityCompare = (a, b) => { const x=priorityOf(a)||{}, y=priorityOf(b)||{}, importance={high:0,medium:1,normal:2}; return priorityRank(a)-priorityRank(b) || (importance[x.importance]??2)-(importance[y.importance]??2) || (x.due?.days??999)-(y.due?.days??999) || String(b.published_at||'').localeCompare(String(a.published_at||'')); };
@@ -69,7 +77,7 @@
   const readerRoute = id => '#reader/' + encodeURIComponent(id);
   function babelReaderUrl(row) {
     const integration = root.CULTURE_BOOTSTRAP?.integrations?.babel;
-    if (integration?.enabled === false || row.is_demo || !/^live-[a-f0-9]{24}$/.test(row.id) || !/^[a-f0-9]{64}$/.test(row.article_hash || '') || !sourceText(row).trim() || !articleBlocks(row).length) return '';
+    if (integration?.enabled === false || row.is_demo || !/^live-[a-f0-9]{24}$/.test(row.id) || !/^[a-f0-9]{64}$/.test(row.article_hash || '') || (bodyPending(row) ? !row.has_original_body : !sourceText(row).trim() || !articleBlocks(row).length)) return '';
     try {
       const url = new URL(integration?.reader_url || 'https://k1ryulong6-source.github.io/babel/');
       if (url.protocol !== 'https:' && !(url.protocol === 'http:' && ['localhost','127.0.0.1'].includes(url.hostname))) return '';
@@ -86,7 +94,7 @@
   }
   const reviewedHeadline = row => { const pack = root.CULTURE_BOOTSTRAP?.headlines?.[row.id]; return pack?.source_title === row.title_original ? pack.title_zh : null; };
   const displayTitle = row => (editorialReady(row) ? row.editorial_title_zh : null) || reviewedHeadline(row) || row.title_zh || (machineReady(row) ? row.translated_title_zh : null) || row.title_original || '标题未取得';
-  const readingSummary = row => (editorialReady(row) ? row.editorial_excerpt_zh : null) || row.summary_zh || (machineReady(row) ? row.translated_excerpt_zh : null) || row.excerpt_original || articleBlocks(row).find(block => ['paragraph','quote'].includes(block.type))?.text.slice(0,400) || '正文尚未取得';
+  const readingSummary = row => (editorialReady(row) ? row.editorial_excerpt_zh : null) || row.summary_zh || (machineReady(row) ? row.translated_excerpt_zh : null) || row.excerpt_original || row.body_preview || articleBlocks(row).find(block => ['paragraph','quote'].includes(block.type))?.text.slice(0,400) || '正文尚未取得';
   const safeImageUrl = value => { try { const u = new URL(value); return u.protocol === 'https:' && !u.username && !u.password && !['localhost', '127.0.0.1', '[::1]'].includes(u.hostname) ? u.href : ''; } catch { return ''; } };
   const translatedArticleUrl = row => { const original = safeUrl(row.original_page_url || row.canonical_url || row.evidence_url); return original ? 'https://translate.google.com/translate?sl=auto&tl=zh-CN&u=' + encodeURIComponent(original) : ''; };
   const dateNumber = value => { if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return null; const [y, m, d] = value.split('-').map(Number), date = new Date(Date.UTC(y, m - 1, d)); return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d ? date.getTime() / 86400000 : null; };
@@ -106,7 +114,7 @@
     if (filters.language && filters.language !== 'all' && row.language && row.language !== filters.language) return false;
     if (filters.buzz === false && row.kind === 'industry_buzz') return false;
     const needle = (filters.query || '').trim().toLocaleLowerCase();
-    return !needle || [displayTitle(row), row.title_zh, row.translated_title_zh, row.title_original, row.editorial_title_zh, row.editorial_excerpt_zh, row.summary_zh, row.translated_excerpt_zh, row.excerpt_original, sourceText(row), readingText(row), row.city, row.venue].join(' ').toLocaleLowerCase().includes(needle);
+    return !needle || [displayTitle(row), row.title_zh, row.translated_title_zh, row.title_original, row.editorial_title_zh, row.editorial_excerpt_zh, row.summary_zh, row.translated_excerpt_zh, row.excerpt_original, ...(bodyPending(row) ? [searchTexts.get(row.id)] : [sourceText(row), readingText(row)]), row.city, row.venue].join(' ').toLocaleLowerCase().includes(needle);
   }
   function isCurrentContent(row, reference, linkedEvents = [], maxAge = 30) {
     const published = row.published_at?.slice(0, 10);
@@ -254,7 +262,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { frontpageRows, babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, headlineReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { bodyPending, needBody, takeWantedBodies, attachBody, setSearchTexts, frontpageRows, babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, headlineReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -18,6 +18,23 @@
   const safeUrl = value => { try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } };
   const originalPageUrl = row => safeImageUrl(row.original_page_url || row.canonical_url);
   const editorialReady = row => ['reviewed','translated'].includes(row.editorial_status) && Boolean(row.editorial_blocks_json && row.editorial_title_zh);
+  const headlineReady = row => {
+    if (typeof row.headline_ready === 'boolean') return row.headline_ready;
+    // Current builds provide the flag after paragraph, numeric/source checks.
+    // Older cached datasets still need a complete AI body, never a title alone.
+    try {
+      const original = JSON.parse(row.article_blocks_json || '[]');
+      if (!Array.isArray(original) || !original.length) return false;
+      if (row.language === 'zh') return original.some(b=>b?.type !== 'image' && typeof b?.text === 'string' && b.text.trim());
+      if (!editorialReady(row)) return false;
+      const translated = JSON.parse(row.editorial_blocks_json);
+      return Array.isArray(translated) && translated.length === original.length && original.every((b,i)=> {
+        const field=b.type === 'image' ? 'caption' : 'text', text=translated[i]?.[field];
+        return typeof text === 'string' && (!b[field] || text.trim()) &&
+          !(b.type !== 'image' && b.type !== 'heading' && b[field]?.length > 100 && text === b[field]);
+      });
+    } catch { return false; }
+  };
   const machineReady = row => row.machine_translation_ready !== false && String(row.article_translation_provider || '').startsWith('offline-m2m100:') && row.translation_status === 'machine' && Boolean(row.article_translation_hash && row.article_translation_json && row.translated_title_zh);
   const priorityOf = row => { const value = root.CULTURE_BOOTSTRAP?.priorities?.[row.id]; return value?.source_title === row.title_original ? value : null; };
   const priorityRank = row => Number(priorityOf(row)?.priority?.slice(1) || 2);
@@ -65,7 +82,7 @@
   function parseRoute(hash) {
     const value = (hash || '').replace(/^#/, '');
     if (value.startsWith('reader/')) { try { const id = decodeURIComponent(value.slice(7)); return id ? { view: 'reader', id } : { view: 'today' }; } catch { return { view: 'today' }; } }
-    return { view: ['today','explore','calendar','bookmarks','settings','coverage'].includes(value) ? value : 'today' };
+    return { view: ['today','explore','calendar','bookmarks','settings','coverage','attention'].includes(value) ? value : 'today' };
   }
   const reviewedHeadline = row => { const pack = root.CULTURE_BOOTSTRAP?.headlines?.[row.id]; return pack?.source_title === row.title_original ? pack.title_zh : null; };
   const displayTitle = row => (editorialReady(row) ? row.editorial_title_zh : null) || reviewedHeadline(row) || row.title_zh || (machineReady(row) ? row.translated_title_zh : null) || row.title_original || '标题未取得';
@@ -139,6 +156,45 @@
     const allowed = buzz.enabled && buzz.max_share > 0 ? Math.min(deferred.length, buzz.max_share === 1 ? limit : Math.floor(selected.length * buzz.max_share / (1 - buzz.max_share))) : 0;
     return [...selected.slice(0, limit - allowed), ...deferred.slice(0, allowed)].slice(0, limit);
   }
+  function frontpageRows(available, preferences, context) {
+    const cfg = preferences.frontpage || {}, leadHours = cfg.lead_hours ?? 72, fallbackHours = cfg.fallback_hours ?? 168;
+    const importance = cfg.importance_boost || {high:24,medium:8,normal:0}, urgency = cfg.priority_boost || {P0:12,P1:6,P2:0,P3:-12};
+    const instant = context?.mode === 'demo' && context.reference_date ? new Date(context.reference_date + 'T12:00:00Z') : new Date();
+    const known = [], undated = [];
+    for (const original of available) {
+      if ((original.is_demo && context?.mode !== 'demo') || original.evidence_status === 'unverified') continue;
+      const rank = priorityOf(original) || {}, published = Date.parse(original.published_at || '');
+      let age = null;
+      if (Number.isFinite(published)) {
+        const elapsed = (instant.getTime() - published) / 3600000;
+        if (elapsed < -2 || elapsed > fallbackHours) continue;
+        age = Math.max(0, elapsed);
+      } else if (!rank.due || !Number.isFinite(rank.due.days) || rank.due.days < 0 || rank.due.days > (cfg.undated_event_days ?? 2)) continue;
+      const score = (importance[rank.importance] || 0) + (urgency[rank.priority] || 0) - (age ?? fallbackHours) / (cfg.freshness_decay_hours ?? 2) - (rank.recommendation_penalty || 0);
+      const row = {...original, frontpage_score:score, frontpage_age_hours:age, frontpage_basis:age === null ? 'confirmed_upcoming_event' : 'published_at'};
+      (age === null ? undated : known).push(row);
+    }
+    const eligible = known.filter(r=>r.kind !== 'industry_buzz' && headlineReady(r)), recent = eligible.filter(r=>r.frontpage_age_hours <= leadHours);
+    const leadPool = recent.length ? recent : eligible.length ? eligible : undated.filter(r=>r.kind !== 'industry_buzz' && headlineReady(r));
+    const tailCompare = (a,b)=>(a.frontpage_age_hours ?? fallbackHours)-(b.frontpage_age_hours ?? fallbackHours) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+    const lead = [...leadPool].sort((a,b)=>b.frontpage_score-a.frontpage_score || tailCompare(a,b))[0];
+    if (!lead) return [];
+    const rows = [lead], seenIds = new Set([lead.id]), seenTitles = new Set([displayTitle(lead)]), counts = {[lead.source_id]:1};
+    for (const [channel,count] of [['film',5],['art',5],['photography',5],['industry_buzz',4]]) {
+      if (channel === 'industry_buzz' && preferences.industry_buzz?.enabled === false) continue;
+      const matches = r=>channel === 'industry_buzz' ? r.kind === 'industry_buzz' : r.kind !== 'industry_buzz' && r.channel === channel;
+      let candidates = known.filter(matches); if (!candidates.length) candidates = undated.filter(matches);
+      for (let i=0;i<count;i++) {
+        candidates = candidates.filter(r=>!seenIds.has(r.id) && !seenTitles.has(displayTitle(r)));
+        const choices=i === 0 && channel !== 'industry_buzz' ? candidates.filter(headlineReady) : candidates;
+        if (!choices.length) break;
+        const adjusted = r=>r.frontpage_score-(counts[r.source_id]||0)*(cfg.source_repeat_penalty ?? 6);
+        const row = choices.sort((a,b)=>adjusted(b)-adjusted(a) || tailCompare(a,b))[0];
+        rows.push(row); seenIds.add(row.id); seenTitles.add(displayTitle(row)); counts[row.source_id]=(counts[row.source_id]||0)+1;
+      }
+    }
+    return rows;
+  }
   const eventInstant = event => event.event_type === 'call_deadline' ? event.deadline_at : event.start_at;
   const timeLabel = event => { const value = eventInstant(event); return value ? new Intl.DateTimeFormat('zh-CN', { timeZone: event.timezone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(value)) + ' · ' + event.timezone : dateLabel(event.start_date) + (event.time_status === 'conflict' ? ' · 时刻有冲突' : ''); };
   function eventState(event, reference, instant = new Date()) {
@@ -198,7 +254,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { frontpageRows, babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, headlineReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

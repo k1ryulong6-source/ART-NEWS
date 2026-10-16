@@ -33,7 +33,7 @@
 | World Photography Organisation | 官方规则 HTML | 组照、单张、学生、青年征集；GMT 截止，费用与条件 |
 | MMCA Seoul | 官方首页精选 HTML | 首尔馆精选展览完整展期；Asia/Seoul |
 
-Natalie 的候选 feed 返回 405，美術手帖的候选 feed 返回 404，因此未启用；Tokyo Art Beat 未核实接口也未启用。不把失败端点猜测为可用来源。
+Natalie 的候选 feed 返回 405，美術手帖的候选 feed 返回 404，因此未启用；Tokyo Art Beat 当时未核实；T067已验证公开最新文章页并启用（不是失效旧RSS），见文末。不把失败端点猜测为可用来源。
 
 优先官方 RSS／公开 API；其次为允许获取的公开页面；无法稳定接入时提供人工粘贴链接方式。不要绕过登录、验证码或付费墙。
 
@@ -88,3 +88,18 @@ BFI 每次采集当前及未来两天、最多三页，并限制在已经核实�
 Sony 2027 组照截止 2027-01-12 16:00 GMT，单张／青年截止 2027-01-05 16:00 GMT。学生组日期 2026-11-27 明确，简介与规则中出现 13:00／16:00 GMT 冲突，保留冲突，不任选一个。单张组前三张免费，不将额外付费名额说成全免费。活动 GLOBAL 表示全球征集，资格仍按官网规则，不能当作“只能在英国参加”。
 
 法国 Diaphana 的法国本土影院发行与四张首页完整上映卡片已核实；只提取完整年月日，不从影片制作年、网页创建年或月份文案补造年。MMCA 是首尔首页精选四项，非全馆目录。Sony Pictures 片页缺上映年、LensCulture 403、若干候选路径 404 均保留核实记录，未猜测或绕过。
+
+## T067 · 用户指定的两站日本艺术媒体（2026-10-15）
+
+| 来源 | 已验证采集入口 | 正文方式 |
+| --- | --- | --- |
+| 美術展ナビ | https://artexhibition.jp/topics/ | 公开HTML；主图、正文/图注、表格展期和票价；移除分享/页脚和有DOM证据的推荐尾块 |
+| Tokyo Art Beat | https://www.tokyoartbeat.com/articles/condId/latest | 最新页ArticleSearch元数据；匿名可见正文，Page nation长文逐页请求公开/pageN |
+
+两站主页均未宣告可用RSS。美術展ナビ/feed/返回404、?feed=rss2返回首页HTML；TAB旧/list/feed/last_added.ja.xml及/rss均404，因此以public_page接入现有每2小时Actions，不把HTML冒充RSS。目前57候选、55启用=44 RSS+11公开网页，2候选未启用。首轮读取列表20+18条，是接入补库而非每天新增量/两站历史全库。列表结构改变报错，保留历史成功内容；正文采集共用原60篇预算和优先级，后台Gemini主路线、原文/暂时机翻和头条先AI规则不变。
+
+美術展ナビ列表只有日历日，published_at暂留未知；取得正文后采用article:published_time的真实带时区时间，不从URL/抓取时间造发布日期，后续无日期的列表更新不能清掉已验证时刻。不从日语/媒体总部推定逐篇展览地点。日本专业编辑来源赋予core关注及较高local_specialist权重，是用户关注偏好的编辑值，不是客观流量排名。
+
+TAB匿名浏览器实际验证公开6页文章及/page2呈现。后续页只转写该次请求选中的paginated_content（核对slug、路径/pageN、current、total及Page nation类型），不读取paginated_contents全页数组、文章嵌入项description或隐藏订阅正文。Index类型的章节数不是分页数。仅支持文本、标题、列表、引文、链接、图片/图注及公开活动卡标题/日期，文章推荐卡不入正文；未知节点、身份/页数变化、失败、超过12页均标public_pagination_incomplete，保留已取部分；显式订阅限制不补取。入口公开结构未来变化仍须逐源监测，不能保证永不漏段。
+
+实际本地与GitHub/上线结果记录在docs/HANDOFF.md和tasks.json T067；来源加入队列不等于全文已经AI翻译。

@@ -1,30 +1,116 @@
 {
-  "status": "partial_failure",
+  "status": "service_wait",
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-14T18:07:28.686518+00:00",
-  "translated": [
-    "live-866889eefca2811385d0780f"
-  ],
-  "failed": [
+  "pool_mode": "parallel_disjoint_articles",
+  "started_at": "2026-10-16T12:08:24.004058+00:00",
+  "finished_at": "2026-10-16T12:09:46.466017+00:00",
+  "projects": [
     {
-      "id": "live-c2367afcd740e86516db8dab",
-      "reason": "Expecting ',' delimiter: line 1 column 2489 (char 2488)"
+      "status": "service_wait",
+      "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
+      "model": "gemini-3.5-flash-lite",
+      "account_mode": "free-project-only",
+      "started_at": "2026-10-16T12:08:24.004717+00:00",
+      "translated": [
+        "live-0eef33eb93234ebf89171da1"
+      ],
+      "failed": [
+        {
+          "id": "live-8da5d55a887e39b3833e6adb",
+          "reason": "ai_numbers_missing:block:3:text:0"
+        }
+      ],
+      "deferred": [
+        "live-990ab7debd4efe4c42994d11",
+        "live-b5b1ef3bbd49bb2e2b2a5f50",
+        "live-79876f3b61f560a76ea60cef",
+        "live-54732d5d5023d76df3aff8a1",
+        "live-b195fd03fcc926008af29226"
+      ],
+      "resumed": [],
+      "stale": [],
+      "requests": 4,
+      "input_tokens": 8090,
+      "output_tokens": 3033,
+      "pending_before": 387,
+      "error": "ai_http_503",
+      "retry_after": "2026-10-16T13:09:46.459421+00:00",
+      "pending_after": 386,
+      "finished_at": "2026-10-16T12:09:46.461416+00:00",
+      "seconds": 82.46,
+      "requests_today": 11,
+      "daily_request_limit": 500,
+      "unknown_usage_requests_today": 4,
+      "id": "primary",
+      "configured": true
+    },
+    {
+      "status": "service_wait",
+      "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
+      "model": "gemini-3.5-flash-lite",
+      "account_mode": "free-project-only",
+      "started_at": "2026-10-16T12:08:24.004838+00:00",
+      "translated": [],
+      "failed": [],
+      "deferred": [
+        "live-80873b0d831a13d97ee39db0",
+        "live-8ea2838c503677499dc470f2",
+        "live-e6595cc49ea67462f695ade2",
+        "live-8183b707fddf5be7d8e4b969"
+      ],
+      "resumed": [],
+      "stale": [],
+      "requests": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "pending_before": 386,
+      "error": "ai_http_503",
+      "retry_after": "2026-10-16T13:08:32.890683+00:00",
+      "pending_after": 386,
+      "finished_at": "2026-10-16T12:08:32.892208+00:00",
+      "seconds": 8.89,
+      "requests_today": 17,
+      "daily_request_limit": 500,
+      "unknown_usage_requests_today": 4,
+      "id": "secondary",
+      "configured": true
     }
   ],
-  "deferred": [],
+  "pending_before": 773,
+  "configured_projects": 2,
+  "translated": [
+    "live-0eef33eb93234ebf89171da1"
+  ],
   "resumed": [],
+  "deferred": [
+    "live-990ab7debd4efe4c42994d11",
+    "live-b5b1ef3bbd49bb2e2b2a5f50",
+    "live-79876f3b61f560a76ea60cef",
+    "live-54732d5d5023d76df3aff8a1",
+    "live-b195fd03fcc926008af29226",
+    "live-80873b0d831a13d97ee39db0",
+    "live-8ea2838c503677499dc470f2",
+    "live-e6595cc49ea67462f695ade2",
+    "live-8183b707fddf5be7d8e4b969"
+  ],
   "stale": [],
-  "requests": 2,
-  "input_tokens": 2301,
-  "output_tokens": 1577,
-  "pending_before": 596,
-  "pending_after": 595,
-  "finished_at": "2026-10-14T18:07:54.126797+00:00",
-  "seconds": 25.44,
-  "requests_today": 4,
-  "daily_request_limit": 100,
-  "unknown_usage_requests_today": 3,
-  "verification_run": true
+  "failed": [
+    {
+      "id": "live-8da5d55a887e39b3833e6adb",
+      "reason": "ai_numbers_missing:block:3:text:0",
+      "project": "primary"
+    }
+  ],
+  "requests": 5,
+  "input_tokens": 8090,
+  "output_tokens": 3033,
+  "requests_today": 28,
+  "unknown_usage_requests_today": 8,
+  "daily_request_limit": 1000,
+  "pending_after": 772,
+  "continue_recommended": false,
+  "seconds": 82.46,
+  "retry_after": "2026-10-16T13:08:32.890683+00:00"
 }

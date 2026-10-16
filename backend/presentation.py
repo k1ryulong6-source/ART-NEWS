@@ -1,12 +1,14 @@
 """Reduce browser transport duplication; the archived source snapshot stays whole."""
 import json
 from .autonomous_translation import machine_ready
+from .frontpage import headline_ready
 
 
 def browser_snapshot(snapshot):
     content = []
     for row in snapshot.get('content', []):
         public = dict(row)
+        public['headline_ready'] = headline_ready(row)
         public['machine_translation_ready'] = bool(machine_ready(row))
         try:
             blocks = json.loads(row.get('article_blocks_json') or '[]')

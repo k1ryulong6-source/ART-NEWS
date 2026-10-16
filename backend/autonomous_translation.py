@@ -8,7 +8,7 @@ from pathlib import Path
 from .storage import ROOT, now
 from .editorial import checked_result, numbers
 from .offline_model import configuration, provider_name
-from .priority import rank_snapshot, priority_key
+from .priority import rank_snapshot, priority_key, translation_batch
 
 
 def digest(row, provider):
@@ -95,23 +95,7 @@ def run_autonomous(store, provider, directory=None, *, seconds=None, articles=No
             deferred.append(row['id'])
         else:
             eligible.append(row)
-    selected = eligible[:max(0, article_limit - min(cfg['backlog_slots'], article_limit // 4))]
-    selected_ids = {row['id'] for row in selected}
-    for row in sorted(eligible, key=lambda row: (row.get('published_at') or '', row['id'])):
-        if len(selected) >= article_limit:
-            break
-        if row['id'] not in selected_ids:
-            selected.append(row)
-            selected_ids.add(row['id'])
-    # Interleave the old share before the time/character budget can stop a run.
-    priority_count = min(len(eligible), max(0, article_limit - min(cfg['backlog_slots'], article_limit // 4)))
-    urgent, backlog = selected[:priority_count], selected[priority_count:]
-    selected = []
-    while urgent or backlog:
-        selected.extend(urgent[:4])
-        urgent = urgent[4:]
-        if backlog:
-            selected.append(backlog.pop(0))
+    selected, _ = translation_batch(eligible, article_limit, cfg['backlog_slots'])
     report = {'provider': provider.name, 'status': 'completed', 'started_at': now(), 'translated': [],
               'resumed': [], 'deferred': deferred, 'failed': [], 'unsupported': [], 'stale': [],
               'characters': 0, 'units': 0, 'pending_before': len(rows)}

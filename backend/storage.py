@@ -167,6 +167,11 @@ class Store:
                     if old["is_demo"]:
                         raise ValueError("真实记录不得覆盖示例")
                     record["id"] = old["id"]
+                    # Public lists may supply only the day, while article
+                    # metadata supplies the exact clock. A later list refresh
+                    # must not erase that verified publication timestamp.
+                    if not record.get('published_at') and old['published_at']:
+                        record['published_at'] = old['published_at']
                     from .reading import READING_FIELDS, TRANSLATION_FIELDS
                     from .originals import ORIGINAL_FIELDS
                     from .articles import ARTICLE_FIELDS

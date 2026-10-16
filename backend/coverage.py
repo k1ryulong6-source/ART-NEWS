@@ -32,7 +32,7 @@ def translation_progress(snapshot):
 
 
 def reconcile_rss(snapshot, source, payload):
-    from .ingestion import rss_records, GEAR, GEAR_MULTILINGUAL
+    from .ingestion import rss_records, GEAR, GEAR_MULTILINGUAL, source_filtered
     records, _, _ = rss_records(source, payload)
     stored = {r['id'] for r in snapshot.get('content', [])}
     accepted = {r['id']: r for r in records}
@@ -47,7 +47,7 @@ def reconcile_rss(snapshot, source, payload):
         labels = title or ''
         labels += ' ' + ' '.join(node.text or '' for node in item.findall('category'))
         if GEAR.search(labels) or GEAR_MULTILINGUAL.search(labels): reason = 'equipment_review'
-        elif source.get('exclude_title_regex') and re.search(source['exclude_title_regex'], title or '', re.I): reason = 'source_config_filter'
+        elif source_filtered(source, title or '', [node.text or '' for node in item.findall('category')]): reason = 'source_config_filter'
         if reason: excluded.append({'title_original': title, 'reason': reason})
     timestamps = sorted(r['published_at'] for r in records if r.get('published_at'))
     return {'scope': 'observed_rss_only', 'status': 'checked', 'observed': len(observed),
@@ -110,6 +110,8 @@ def audit_sources(snapshot, config, fetcher, previous=None):
 
 
 def coverage_report(snapshot, config, audit=None, benchmarks=None):
+    from .editorial_regions import regional_coverage
+    from .attention_units import attention_report
     rows = [r for r in snapshot.get('content', []) if not r.get('is_demo')]
     statuses = {s['id']: s for s in snapshot.get('source_status', [])}
     checks = {s['source_id']: s for s in (audit or {}).get('sources', [])}
@@ -142,6 +144,8 @@ def coverage_report(snapshot, config, audit=None, benchmarks=None):
             'event_regions': dict(Counter(r.get('country') for r in snapshot.get('events', []))),
             'sources': sources, 'source_audit_at': (audit or {}).get('checked_at'),
             'benchmarks': probes, 'global_completeness': 'unknown',
+            'editorial_regions': regional_coverage(snapshot, config, audit),
+            'attention_units': attention_report(snapshot, config, audit),
             'known_gaps': ['来源是有限名单，未覆盖全球全部媒体、片方、美术馆和摄影机构。',
                            '近期RSS会滚动，即使设置每2小时检查仍可能错过高频来源的条目；没有全站历史回补。',
                            '官方活动只覆盖配置页面，日本以外上映、拉美／中东／东南亚展览仍明显不足。',

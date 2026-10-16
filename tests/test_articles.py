@@ -3,13 +3,58 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.error import HTTPError
-from backend.articles import extract_article, collect_articles, allowed_url
+from backend.articles import extract_article, collect_articles, allowed_url, fetch_article, needs_quality_repair
 from backend.article_translation import translate_articles
 from backend.storage import Store
 from backend.ingestion import content_record
 
 
 class ArticleTests(unittest.TestCase):
+    def test_long_public_image_caption_is_not_silently_truncated(self):
+        caption = 'A detailed public caption credits artists and describes the complete installation. ' * 25
+        html = '<div class="entry-content"><p>' + self.body + '</p><figure><img src="/scene.jpg"><figcaption>' + caption + '</figcaption></figure></div>'
+        result = extract_article(html, 'https://thefilmstage.com/story', self.source)
+        image = next(b for b in json.loads(result['article_blocks_json']) if b['type'] == 'image')
+        self.assertEqual(image['caption'], caption.strip())
+
+    def test_new_subscription_curtain_cannot_erase_cached_public_body(self):
+        row = self.seed()
+        collect_articles(self.store, 1, getter=lambda url, source: (self.html, url))
+        original = self.store.dataset('live')['content'][0]
+        short = '<script type="application/ld+json">{"@type":"Article","isAccessibleForFree":false}</script><div class="entry-content"><p>' + self.body[:200] + '</p></div>'
+        collect_articles(self.store, 1, force=True, getter=lambda url, source: (short, url))
+        saved = self.store.dataset('live')['content'][0]
+        self.assertEqual(saved['article_hash'], original['article_hash'])
+        self.assertEqual(saved['article_text'], original['article_text'])
+        self.assertEqual(saved['article_reason'], 'cached_body_after_public_access_reduced')
+
+    def test_public_markup_issue_only_rechecks_the_same_cached_version_once(self):
+        with TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            row = {'id': 'article', 'article_hash': 'same', 'article_checked_at': '2026-10-15T01:00:00Z'}
+            state = {'status': 'issues', 'source_hash': 'same', 'checked_at': '2026-10-15T02:00:00Z',
+                     'issues': ['source_content_changed_since_collection']}
+            (directory / 'article.json').write_text(json.dumps(state))
+            self.assertTrue(needs_quality_repair(row, directory))
+            self.assertFalse(needs_quality_repair({**row, 'article_hash': 'new'}, directory))
+            self.assertFalse(needs_quality_repair({**row, 'article_checked_at': '2026-10-15T03:00:00Z'}, directory))
+
+    def test_verified_public_api_requires_exact_link_published_unprotected_post(self):
+        source = {'homepage_url': 'https://example.org', 'public_wordpress_rest': True}
+        url = 'https://example.org/blog/exact/'
+        def missing(*args): raise HTTPError(url, 404, 'not found', {}, None)
+        wrong = {'id': 1, 'link': 'https://example.org/blog/other/', 'status': 'publish',
+                 'content': {'protected': False, 'rendered': '<p>Wrong article</p>'}}
+        correct = {**wrong, 'id': 2, 'link': url, 'content': {'protected': False, 'rendered': '<p>Public original</p>'}}
+        html, resolved = fetch_article(url, source, missing, lambda *a: [wrong, correct])
+        self.assertIn('Public original', html)
+        self.assertNotIn('Wrong article', html)
+        self.assertEqual(resolved, 'https://example.org/wp-json/wp/v2/posts/2')
+        correct['content']['protected'] = True
+        with self.assertRaisesRegex(ValueError, 'matching_public_unprotected'):
+            fetch_article(url, source, missing, lambda *a: [correct])
+        with self.assertRaises(HTTPError): fetch_article(url, {**source, 'public_wordpress_rest': False}, missing)
+
     def setUp(self):
         self.tmp = TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)

@@ -218,3 +218,15 @@ test('verified offline machine copy is readable separately from AI and stale or 
  const ai={...row,editorial_status:'translated',editorial_title_zh:'AI标题',editorial_blocks_json:'[{"type":"paragraph","text":"AI全文"}]'};
  assert.equal(C.displayTitle(ai),'AI标题');assert.equal(C.articleBlocks(ai,true)[0].text,'AI全文');
 });
+
+test('headline readiness rejects machine/title-only/incomplete bodies and respects server validation',()=>{
+ const original=JSON.stringify([{type:'paragraph',text:'Original 2026'}]);
+ const row={language:'en',article_blocks_json:original,editorial_status:'translated',editorial_title_zh:'中文标题',editorial_blocks_json:JSON.stringify([{type:'paragraph',text:'中文正文2026'}])};
+ assert.equal(C.headlineReady(row),true);
+ assert.equal(C.headlineReady({...row,editorial_status:null,title_zh:'中文标题'}),false);
+ assert.equal(C.headlineReady({...row,editorial_status:null,translation_status:'machine',article_translation_json:row.editorial_blocks_json}),false);
+ assert.equal(C.headlineReady({...row,editorial_blocks_json:'[]'}),false);
+ assert.equal(C.headlineReady({...row,headline_ready:false}),false);
+ assert.equal(C.headlineReady({...row,language:'zh',editorial_status:null,editorial_blocks_json:null}),true);
+ assert.equal(C.headlineReady({...row,article_blocks_json:null}),false);
+});

@@ -1,0 +1,26 @@
+name: Recover displaced collection
+on:
+  workflow_run:
+    workflows: ['Refresh cultural news']
+    types: [completed]
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: cultural-news-collection-recovery
+  cancel-in-progress: false
+jobs:
+  recover:
+    if: github.event.workflow_run.conclusion == 'cancelled'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -S scripts/recover_collection.py
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

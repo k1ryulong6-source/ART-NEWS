@@ -1,3 +1,13 @@
+> T061（2026-10-15）：修正头版选稿，视觉/文章排版不改。重要新闻直接参与；主头条优先72小时内，缺新最多回退7天，栏目也不从7天外旧库填充。重要性高24/中8，P0加12/P1加6/P3减12，每2小时减1分，非日本普通展览原惩罚保留；后续同源减6促进媒体平衡。未知发布时间仅在没有同栏近期报道且有明确2天内活动时后备，不用抓取/翻译时间伪造新鲜度。兴趣筛选留在原selectToday辅助功能，不再截断公共头条。无随机轮换，历史/日历全部保留。Python/JS选稿与API头条优先ID同步，待生产验收。
+
+> T060新增只读运行接口：/reports/operations.json、本地/api/operations、CULTURE_BOOTSTRAP.automation.operations；数据契约为增量，现有视觉不改。可折叠展示进度/失败/配额，但不得把机翻或历史会话计作本轮API、把Actions绿色当AI正常、把未知全球覆盖率当100%。报告包含快照/AI完成/健康检查的分别时间，未满24小时不外推日均。
+
+> T057单元接口就绪：正式名称「一种关注」，ID=a-kind-of-attention。读取/reports/attention-units/a-kind-of-attention.json（索引/reports/attention-units.json），或bootstrap.coverage.attention_units.units；每成员含推荐理由、关注范围/专长、来源独立权重、真实更新/故障/正文/AI数量、最近5篇报道及稳定ID。Claude自行设计放入页面，Codex未改视觉；按ID用CultureCore.readerRoute生成站内阅读，relative reader_path不得拼到reports目录下。细节见ATTENTION_UNITS.md。
+
+> T056新增只读后端契约：正式站/reports/regional-coverage.json（本地/api/editorial-regions亦可）提供领域地区等级、每源独立媒体权重、明确关注地区、国际渠道和优先国家缺口；同内容在bootstrap.coverage.editorial_regions。只需读取即可另做呈现，Codex未改视觉。权重是编辑初值，不是全球读者份额；来源总部不能当报道地点/艺术家国籍，source_focus只表示编辑分配。
+
+> T054后端契约（2026-10-15）：用户要求头条全文先译。原有选稿已原样提取至CultureCore.frontpageRows，backend/frontpage.py镜像默认公共首页主头条和电影／艺术／摄影首篇，供全部翻译队列排序；视觉/排版保持Claude实现。可自由改theme.css/ui.js视觉；若改变头条或栏目选稿，请同步两端并运行tests/test_frontpage.py的浏览器/后端精确ID顺序测试。主域已是https://mujianrest.work/，下方旧域保留跳转。
+
 # Claude 与其他AI的界面接力
 
 仓库：https://github.com/k1ryulong6-source/ART-NEWS
@@ -59,3 +69,5 @@ T039联动入口：文章页「巴别塔阅读」一键导入原文供查词，�
 按用户“报纸样式、不要AI味、不要多余说明和按钮”重排：去掉原创示意图、优先级徽标、口语提示和引导按钮；简讯/头条/焦点/更多报道四区，外文原文衬线、中文黑体。细节见HANDOFF T040与UI_CUSTOMIZATION v4。
 
 T049域名迁移：主站mujianrest.work，状态和设置见CUSTOM_DOMAIN.md。保留相对静态资源、#reader/ID和culture-desk-v1；不要把旧项目路径/域名写回返回链接。巴别塔仍在原/babel/，API新旧地址兼容；自动数据和主题设计保持。
+
+T066必须保留：CultureCore.frontpageRows严格限制外文主头条/各栏首篇为headlineReady，服务端传输字段headline_ready是当前原文/AI全文的程序检查结果。CultureCore.headlineReady已导出；不要把机翻/中文标题当全文通过，不用selectToday替代头条硬门槛。候选headline_order供后台翻译优先，正式头条用frontpage_headline_order，两个池不同；普通短讯/全部资料原文继续开放。此次只改core选稿及后端，没有改theme/ui版式。

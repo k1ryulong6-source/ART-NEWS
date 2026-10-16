@@ -57,5 +57,23 @@
   "notes": "用户确认世界电影、艺术、摄影新闻为主；日本上映／展览保留专题。全球为默认范围，城市是可选关注项。",
   "news_scope": "global",
   "scope_version": 1,
-  "recent_news_days": 30
+  "recent_news_days": 30,
+  "frontpage": {
+    "lead_hours": 72,
+    "fallback_hours": 168,
+    "freshness_decay_hours": 2,
+    "undated_event_days": 2,
+    "importance_boost": {
+      "high": 24,
+      "medium": 8,
+      "normal": 0
+    },
+    "priority_boost": {
+      "P0": 12,
+      "P1": 6,
+      "P2": 0,
+      "P3": -12
+    },
+    "source_repeat_penalty": 6
+  }
 }

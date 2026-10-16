@@ -114,10 +114,10 @@
     "zu"
   ],
   "max_source_tokens": 128,
-  "seconds_per_run": 900,
+  "seconds_per_run": 240,
   "articles_per_run": 40,
   "characters_per_run": 60000,
   "backlog_slots": 8,
   "retry_hours": 6,
-  "notes": "免费离线自动机翻基础稿，不冒称语境AI精译/校译。已有AI全文优先且不覆盖。额度指CPU时长/原文字符，不是付费API调用。"
+  "notes": "免费离线自动机翻基础稿，不冒称语境AI精译/校译。已有AI全文优先且不覆盖。额度指CPU时长/原文字符，不是付费API调用。 T062：离线兜底每轮最多4分钟，逐单元断点保留，尽快释放采集/AI发布写锁；Gemini主线额度与既有译稿不变。"
 }

@@ -861,8 +861,8 @@
       "title": "持续完成全部现存与新增外文文章全文翻译",
       "milestone": "M4",
       "status": "doing",
-      "owner": "Codex / 每日ChatGPT翻译任务",
-      "updated_at": "2026-10-14",
+      "owner": "Codex / GPT-5.6全文初译工作者 / GitHub免费AI后台",
+      "updated_at": "2026-10-15",
       "depends_on": [
         "T027"
       ],
@@ -891,7 +891,10 @@
         "T029同轮继续8篇，共12份gpt-6-luna直接AI译稿，累计44（32旧校译＋12直译）、430待译、49原生中文、2正文缺失；全量目标仍未完成。",
         "T032已接收最新自动新增10条：535资料、44已翻译、49原生中文、440待译、2缺正文；本轮只调整优先级，没有新的翻译模型调用，保持doing。",
         "T034接收最新自动采集后537条，44已译/49原生中文/442待译/2缺正文；没有新增模型翻译，保持doing。",
-        "最新623资料/28源，44AI/49原生中文/528AI待译/2缺正文；机翻29不算AI完成。"
+        "最新623资料/28源，44AI/49原生中文/528AI待译/2缺正文；机翻29不算AI完成。",
+        "2026-10-15本轮起点：main a6d46ef，891资料/198活动/39启用来源；有效AI全文127（旧校译32+直接95），原生中文49，有正文待AI668（其中机翻227），正文缺失47。已核对23份pending_pages共668独立ID和当前next源hash/标题；本轮按头条先译，明确使用gpt-5.6-sol工作者，完成量及发布另记。",
+        "2026-10-15 本会话GPT-5.6批次1：17篇全文初译通过checked_result及临时SQLite import_packs模拟（17 imported/0 invalid/0 stale）；包含3篇当前待译头条、重大新闻、日本上映和旧稿份额。仅程序段落/数字/hash/来源校验，非二次模型校对；提交待真实导入和Pages验收。T028仍doing。",
+        "2026-10-15 批次2：4篇通过程序完整性及临时import_packs模拟（威尼斯双年展、街头霸王、旧稿It Gets Worse、摄影奖Student114块长文）。另2篇本地稿被后台Gemini先完成，保留Gemini并不导入重复稿；1篇数字检查未通过留待接续。6名GPT-5.6工作者实际触及usage limit，不升级模型、不再启动。前批17篇已由38674848357成功导入。尚未完成全量。"
       ]
     },
     {
@@ -1597,24 +1600,647 @@
     },
     {
       "id": "T051",
-      "title": "品牌宣传动画（幕間休息宣傳片）",
+      "title": "幕间休息片头动画：門中見日",
       "milestone": "M6",
       "status": "done",
       "owner": "Claude",
       "updated_at": "2026-10-14",
       "depends_on": [
-        "T048"
+        "T043"
       ],
       "scope": [
-        "promo/"
+        "frontend/index.html",
+        "frontend/theme.css",
+        "docs/UI_CUSTOMIZATION.md",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md"
       ],
       "acceptance": [
-        "36秒1920×1080动画网页与MP4成片，沿用字标/胶片边/扉页/报版视觉",
-        "画面内容取自真实条目，外文标原文·待译，不补造",
-        "不改网站运行代码、数据或工作流"
+        "扉页片头约3.4秒：放映灯闪烁＋颗粒、四字逐帧闪入与对焦、間中日如霓虹点亮并留红晕、光泽扫过；任意输入可跳过",
+        "报头胶片边走片后停下，再点亮間中日；扉页打开期间暂停",
+        "prefers-reduced-motion下无动画、静态终态；扉页可关闭；数据/路由/收藏契约不变"
       ],
       "evidence": [
-        "python promo/build.py 字体子集覆盖全部片中文字；record.cjs逐帧渲染1080帧H.264；关键帧截图逐场检查（扉页按D037改为两段淡出）。"
+        "Playwright录屏1440×900与390×844逐帧检查扉页、翻页、走片与报头点亮；reduced-motion下getAnimations()=0、字可见、点击后扉页移除、无页面错误",
+        "node --test tests/core.test.js tests/ui.test.js：26通过；check_project.py通过；build_static.py构建成功（index与单文件预览均含片头）。Python单测19个错误在未改动的main上同样出现（本容器缺依赖），与本改动无关"
+      ]
+    },
+    {
+      "id": "T052",
+      "title": "手机扉页改为黄金分割宽度并发布片头动画",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-14",
+      "depends_on": [
+        "T051"
+      ],
+      "scope": [
+        "frontend/theme.css",
+        "AGENTS.md",
+        "docs/UI_CUSTOMIZATION.md",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md"
+      ],
+      "acceptance": [
+        "≤700px扉页宽61.8%（黄金分割），书沟阴影随之移动，标题按比例放大",
+        "桌面/平板仍为半屏；无横向溢出",
+        "T051片头动画经PR合并进main并由Pages发布"
+      ],
+      "evidence": [
+        "Playwright 390×844/375×667/430×932：扉页宽241/232/266px（61.8%），标题底558/454/615px高于版权日期747/579/830px；768与1440仍为半屏；均无横向溢出",
+        "node --test tests/core.test.js tests/ui.test.js 26通过；check_project.py与build_static.py通过"
+      ]
+    },
+    {
+      "id": "T053",
+      "title": "片头去掉光泽扫过",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T051"
+      ],
+      "scope": [
+        "frontend/theme.css",
+        "docs/UI_CUSTOMIZATION.md",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md"
+      ],
+      "acceptance": [
+        "片头结束时不再有白色光带斜向扫过扉页；其余片头与报头动画不变"
+      ],
+      "evidence": [
+        "删除.cover-front::after与cover-sheen keyframes；Playwright录屏逐帧确认2.5–5秒间扉页无光带，片头其余部分照常；26项JS测试、check_project与静态构建通过"
+      ]
+    },
+    {
+      "id": "T054",
+      "title": "首页及栏目头条全文优先翻译",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T039"
+      ],
+      "scope": [
+        "backend/priority.py",
+        "backend/frontpage.py",
+        "backend/ai_translation.py",
+        "backend/autonomous_translation.py",
+        "backend/daily_translation.py",
+        "frontend/core.js",
+        "frontend/app.js",
+        "tests/",
+        "config/translation-priority.json",
+        "docs/"
+      ],
+      "acceptance": [
+        "首页主头条和电影/艺术/摄影栏首篇待译全文先处理，不能只有标题先译",
+        "Gemini、机翻兜底和会话队列顺序统一，头条块完成后才插入旧稿份额",
+        "保持原有页面选稿和美术设计；已译不重译，缺正文/失败退避保留",
+        "额度/计费上限不变；原文/收藏/稳定ID不改，验证与交接记录完整"
+      ],
+      "evidence": [
+        "94项Python和26项JavaScript检查通过；真实库存及构造样本的浏览器/后端首页ID顺序完全一致",
+        "静态构建、项目检查、严格资料审计通过，实际队列前四篇与公共首页主头条/三栏首篇一致；上线验证待补",
+        "上线提交697da4a；GitHub CI38663178104和Pages38663178008均success",
+        "生产https://mujianrest.work/在1440/390px验证：主头条与三栏首篇ID精确匹配headline_order，原文切换和巴别塔入口通过，无脚本错误和横向溢出；额度策略未改，未额外发起生成请求"
+      ]
+    },
+    {
+      "id": "T055",
+      "title": "按账号实际免费配额调整自动翻译每日保护上限",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T054"
+      ],
+      "scope": [
+        "config/ai-translation.json",
+        "AGENTS.md",
+        "docs/",
+        "docs/COVERAGE.md"
+      ],
+      "acceptance": [
+        "依据用户提供RPM15/TPM250000/RPD500及不闲置50次的指示，将每日保护上限最终改500",
+        "保持免费模式、15秒请求间隔、40请求/480秒批次、头条先译与全部现有记账/退避",
+        "不清空每日历史用量，不提前重置账本；验证后推送并确认自动工作流使用新上限",
+        "确认实际自动推理开始，并报告最新RSS数量与可证实的覆盖范围和缺口"
+      ],
+      "evidence": [
+        "14项API配额/头条排序相关测试通过，项目检查与diff检查通过",
+        "临时账本验证已用100时可续40、已用440时只预留10、450时为0，历史requests/tokens不清零；无真实推理请求",
+        "最终500配置提交ded64bb，CI38666287639/Pages38666287642均success；首轮450仅历史过渡，不再固定闲置50",
+        "500配置临时账本验证：已用100预留40、490预留10、500预留0；累计requests/tokens保持",
+        "自动工作流38665966593于01:32:31 UTC实际进入AI翻译，4ff47c3已提交4次真实请求与3篇头条翻译单元断点；本地用量100→104，40次预留剩36；主头条一次未译校验失败进入原有退避，不能报为全部头条已完成",
+        "覆盖核对734资讯/198活动：19 RSS＋9官方页＝28启用源；18 RSS的355条范围内列表均已入库，另1 RSS失败/9页全站范围未独立核实，全球覆盖率未知"
+      ]
+    },
+    {
+      "id": "T056",
+      "title": "按领域建立地区编辑关注等级并扩展全球RSS发现来源",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T054",
+        "T055"
+      ],
+      "scope": [
+        "config/",
+        "backend/ingestion.py",
+        "backend/articles.py",
+        "backend/coverage.py",
+        "scripts/",
+        "tests/",
+        "docs/",
+        "AGENTS.md",
+        "backend/app.py",
+        ".github/workflows/pages.yml",
+        ".github/workflows/autotranslate.yml",
+        "data/regional-source-research.json",
+        "backend/workflow_health.py",
+        "scripts/automation_health.py",
+        "tests/test_workflow_health.py"
+      ],
+      "acceptance": [
+        "按电影/艺术/摄影分别配置地区关注等级，日本艺术最高档；所有未单列国家地区也有发现规则，不将国家作为艺术价值评分",
+        "核实后新增日本艺术及其他地区创作者相关RSS，失败候选不冒称接入；保留全球媒体跨地区覆盖而不以总部推定报道地点",
+        "采集覆盖所有启用来源，有限正文采集预算中为发现渠道和来源轮转保留份额，重要消息无地域降级",
+        "地区/领域覆盖矩阵和缺口有真实数据，RSS/官方来源数量及成功失败可核对；保持头条全文先译和500免费请求上限",
+        "适当测试通过并推送，触发真实采集/翻译并核实来源接入结果，不改Claude前端设计",
+        "地区创作关注度与媒体国际/本地专业/发现权重分开，地区内加权、跨地区媒体通道独立，媒体总部不作为报道地；权重明确为编辑设置而非客观全球份额"
+      ],
+      "evidence": [
+        "102项Python+26项JS通过；纯stdlib静态构建、项目检查、严格资料审计及diff检查通过",
+        "8项地区/媒体组合与API测试验证：地区和媒体独立、强国际媒体跨地区补位、地区内媒体加权、小媒体不排除、头条/重大消息先行、旧稿份额、发现/国际通道、未知地理不推断",
+        "11新RSS当次HTTP/解析与逐源1篇公开正文均成功；缓存真实RSS接入临时库存的集成采集11成功/149新增，不覆盖线上自动译文",
+        "配置39启用源=30 RSS+9官方；已生成地区领域矩阵、每源独立权重、14项一级国家/领域专门来源缺口；全球完整率仍unknown",
+        "50fe0bf已上线；CI38667640980/Pages38667640817 success，生产39源JSON/14缺口及1440/390px主头条、原文/巴别塔验证通过",
+        "扩大来源时GitHub并发队列替代pending引起监控误报，新增4项纯逻辑测试：识别旧实际活动任务，成功后恢复健康，保留真正失败/无近期成功报警",
+        "最终规则f9670c0，CI38668140741/Pages38668140811均success；107项Python+26项JS通过，新库存16项区域/首页/监测回归通过",
+        "真实刷新38667702336 success：11个新RSS全部success，首次补库149条；另4条既有来源新增，总资讯887/活动198/39启用源（30 RSS+9官方）",
+        "最新独立RSS核对29源504条全部在库/未入库0，1源Asian Movie Pulse失败；BFI官方故障仍标注；全球覆盖率未知。新149条中56已抓到正文、93待后续预算轮转，不冒称149篇全文均完成",
+        "生产39源报告/14个一级国家-领域专门来源缺口验证通过；1440/390px新库存头条ID与后台一致，无溢出/脚本错误；新ARTnews JAPAN正文阅读及巴别塔入口实测通过",
+        "监测38667920369与后续实际报告issues=[]；采集完成自动触发AI38668063512，实际407de60检查点已产生，继续运行，500请求/太平洋日免费上限及不付费保持"
+      ]
+    },
+    {
+      "id": "T057",
+      "title": "设立「一种关注」地区宝藏媒体关注单元",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T056"
+      ],
+      "scope": [
+        "config/attention-units.json",
+        "backend/attention_units.py",
+        "backend/editorial_regions.py",
+        "backend/coverage.py",
+        "backend/app.py",
+        "scripts/build_static.py",
+        "scripts/check_project.py",
+        "tests/",
+        "docs/",
+        "AGENTS.md",
+        ".github/workflows/"
+      ],
+      "acceptance": [
+        "正式名称固定为一种关注，首批为人工精选的地区艺术/摄影媒体，记录推荐理由与关注范围而非国家艺术价值排行",
+        "复用已验证RSS与稳定来源ID，真实呈现更新/库存/正文/翻译状态，不因被关注而假称已全文完成",
+        "在现有发现预算内保留独立正文采集份额，头条/重大新闻先行、候选不足名额回流，不增加500免费请求上限",
+        "提供公开JSON与本地只读API、Claude展示契约及可维护来源配置，保存品牌/前端设计/来源独立权重",
+        "验证、推送和公开发布成功，记录接力证据"
+      ],
+      "evidence": [
+        "113项Python+26项JavaScript通过；项目检查、纯stdlib构建及diff检查通过",
+        "6项关注单元行为/API测试：独立名额在发现预算内、头条/重大消息优先、空缺回流、暂停成员不占份额、故障/缓存/时间区分、正式名称/API一致及不存在404/非法路径拒绝",
+        "以真实库存干选60正文名额有16个单元来源，未发模型或网络请求；构建的单元含5现有媒体、68资料、37正文，来源最近采集均真实success",
+        "配置及展示契约已记录，不修改Claude前端设计，发布验收待补",
+        "上线提交b7285c0；CI38670550982/Pages38670550944均success",
+        "公开索引与单元JSON一致，名称精确为一种关注；5来源真实success、68篇资料/37正文/3有效AI全文，推荐理由/RSS/更新时间/预算字段核对通过",
+        "生产1440/390px回归头条排序、原文切换、巴别塔入口，无脚本错误/横向溢出；新单元为后端数据与保护名额，Claude展示接口已交接"
+      ]
+    },
+    {
+      "id": "T058",
+      "title": "「一种关注」前端：头版专栏条与单元页",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T057"
+      ],
+      "scope": [
+        "frontend/ui.js",
+        "frontend/app.js",
+        "frontend/core.js（路由attention）",
+        "frontend/theme.css",
+        "frontend/fonts/intermission-sans-tc-v1.woff2",
+        "scripts/build_title_font.py",
+        "backend/app.py（仅字体白名单）",
+        "tests/ui.test.js",
+        "docs/"
+      ],
+      "acceptance": [
+        "按用户要求作为「资讯」页频道行的“一種關注”标签（#attention，导航高亮资讯），正体字显示，数据正式名称一种关注不变",
+        "头版在三栏之后加专栏条：每家媒体的关注地区、名称与最新一篇",
+        "单元页：每家媒体左侧地区/名称/推荐理由/专长与语种/最近发布与故障，右侧最近5篇；来源状态与选择说明折叠；收录/正文/AI数量真实展示",
+        "阅读路径由稳定ID经CultureCore.readerRoute生成；frontpageRows选稿不变"
+      ],
+      "evidence": [
+        "27JS（新增一种关注转义与路由测试）＋全部Python（含头版前后端一致）通过；check_project无失败。",
+        "1440/390截图；320–430九视图（含#attention）无溢出；#attention深链接不弹扉页、导航高亮、报道进入阅读并返回、头版“全部›”到单元页；扉页专项通过（新增Intermission Title SC字体loaded）。",
+        "改正体：导航“一種關注”实测由Intermission Sans＋Intermission Sans TC各2字形渲染，标题4字均为Intermission Title；27JS＋全部Python通过；1440/390截图。",
+        "移入资讯：导航为头版/资讯/日历/剪报；点“一種關注”标签→#attention、导航高亮资讯、5家媒体；再点电影→#explore电影列表；头版“全部›”→#attention；320–430九视图无溢出。",
+        "用户要求去掉标题下说明文字后上线：单元页与头版专栏条不再显示description/选择说明；每家媒体的推荐理由与来源状态（收录/正文/AI数量、最近读取）保留。27JS＋全部Python通过，320–430九视图无溢出。"
+      ]
+    },
+    {
+      "id": "T059",
+      "title": "正文杂项清理与既有译文安全保留；仅后台免费API接续",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex（后端，禁用会话翻译工作者）",
+      "updated_at": "2026-10-15",
+      "depends_on": [],
+      "scope": [
+        "backend/articles.py",
+        "backend/article_cleanup.py",
+        "scripts/clean_article_bodies.py",
+        ".github/workflows/cleanup.yml",
+        ".github/workflows/autotranslate.yml",
+        "tests/test_articles.py",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md",
+        "tasks.json",
+        ".github/workflows/pages.yml",
+        "AGENTS.md",
+        "config/translation.json",
+        "docs/DAILY_TRANSLATION.md",
+        "docs/AUTONOMOUS_WORKFLOW.md"
+      ],
+      "acceptance": [
+        "按已验证DOM结构去除广告、订阅和相关文章模块，不按正文关键词删段",
+        "正文、引文、图片图注、作者和活动日期/规则保留；防误删测试通过",
+        "现存正文只接受可证明的纯删除子序列，匹配的已有译文同步映射并保留模型身份；不确定则保留原文并报告",
+        "停止ChatGPT会话翻译工作者，仅已配置Gemini免费API运行，不开收费",
+        "公开工作流与译文产量以真实运行核对"
+      ],
+      "evidence": [
+        "119Python+27JS测试及check_project/diff检查通过；新增防误删、官方外层form/活动规则、图注/引文保留、严格子序列、发布者改稿时仅投影完整DOM组件、多处相同块歧义不删、AI/机翻身份保留测试。",
+        "真实42篇干跑：42可安全清理/0失败/0延后，178块8946字符；保留9有效AI、14有效机翻并映射7匹配历史pack，不发送模型请求。待远端实际清理与发布验收。",
+        "旧每日会话翻译任务6ace6f72b3dc81919301888a638a327e已实际is_enabled=false；只运行GitHub免费API，不依赖ChatGPT额度。",
+        "远端cleanup38689796131执行成功但报告partial：实际清理28篇120块5407字符，14篇Artnet在GitHub网络HTTP403，未抹除缓存。Pages38689853843 success。",
+        "使用工作区普通公开请求补完这14篇（无模型请求、无认证/付费）：58块3539字符，合计42篇178块8946字符；全部内容仍895条，173篇AI身份不变，保留9AI/14机翻，无重复翻译。",
+        "清理后严格审计0错误；所有历史译稿全量import_packs模拟0新增/0invalid，匹配缓存保持不重导入。恢复原翻译规则配置避免仅会话禁令改变API断点指纹；会话禁令由暂停旧任务及AGENTS最新覆盖规则生效。",
+        "已准备cleanup完成触发API及实际免费API运行验收；T059暂doing，T028仍doing。",
+        "最终提交77bfaec已上线：Project checks38690039734、Pages38690039775/38690067708均success。生产42篇Babel JSON逐篇核对清理后source_hash/完整原文块数与已有中文模型/块数均一致；1440/390px首页头条排序、原文切换、巴别塔无脚本错误/横向溢出。",
+        "后台API38690039638由主链变更自动启动，2026-10-15 06:02UTC起实际处于Translate with contextual AI步骤；独立GitHub runner，未从会话生成译文，paid_activation=false、500/太平洋日上限保持。此批仍in_progress，不计作新发布产量。此前成功API38685372309真实完成11篇，累计Gemini108篇。",
+        "最新已发布快照2026-10-15T06:00:51Z：895资讯，173AI全文=141直接+32历史校译，49原生中文正文，663有正文待AI（其中207有效临时机翻），10正文缺失；总327机翻与AI有重叠。清理失败14已补完，来源采集AMP/BFI故障与欠账仍按原状态保留。"
+      ]
+    },
+    {
+      "id": "T060",
+      "title": "后台API有效段落保留、独立接续与真实运行报告",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex（只后端/API，不启动会话翻译工作者）",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T059"
+      ],
+      "scope": [
+        "backend/ai_translation.py",
+        "backend/operations.py",
+        "backend/app.py",
+        "scripts/build_static.py",
+        ".github/workflows/autotranslate.yml",
+        ".github/workflows/pages.yml",
+        "tests/test_ai_translation.py",
+        "tests/test_operations.py",
+        "docs/AUTONOMOUS_WORKFLOW.md",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md",
+        "tasks.json",
+        "docs/CLAUDE_UI_HANDOFF.md"
+      ],
+      "acceptance": [
+        "同一API返回中仅失败单元进入重试，程序通过单元立即保存；不减弱数字/段落检查、不作第二轮模型校对",
+        "按完整文章语境重试未完成单元，已有效AI不覆盖，日500免费请求/批40/480秒及15秒间隔保持",
+        "小时级备用调度在GitHub独立运行，遇限流/503尊重原退避，不开付费",
+        "公开只读运行报告分别呈现真实AI/机翻/旧会话/待译/缺正文、失败/等待、账本与覆盖缺口，24小时未满不能当日均",
+        "相关测试通过，远端发布/生产报告实际验证"
+      ],
+      "evidence": [
+        "起点：实际API38690039638成功发布7篇后503 service_wait至07:08UTC；5个数字检查失败，当前180AI/656待AI。窗口尚未满24小时。",
+        "126Python+27JS、check_project/diff通过；新增同请求数字坏段保留其他合格输出/等待后仅请求缺失key、组装坏字段定位、真实计数无重叠、服务等待不被绿色隐藏、太平洋配额与预留、首次补库与未满24h、缺失证据未知及API只读/不泄露凭据测试。",
+        "纯stdlib静态构建通过；实况生成180AI=115API+65其他AI，656待AI含212有效机翻、10缺正文；215/500请求、0预留、6请求token未知；200入库中149首次来源补库，51其他新增，观察约12.7h，不作日均。",
+        "所有测试使用fixture provider；本会话未调用真实翻译API、未开启会话翻译工作者。等待远端真实工作流及公开报告验收。",
+        "补充503退避状态持久化：等待后续运行保留service_wait及503原因，不能把服务故障报成免费日额度耗尽；原429仍quota_wait。新增回归后127Python全量通过。",
+        "已上线f0f0107：CI38695109390/Pages38695109367 success（首版a5c9fd2的CI38694943292/Pages38694943318亦success）。生产/reports/operations.json实测180AI=115API+65旧AI、656待AI、215/500请求；service_wait/验证失败与来源缺口为attention，绿色Actions没有覆盖警示。",
+        "公开报告确认hourly备用、paid_activation=false、chatgpt_translation_workers=false；观察约12.7h/full_24_hours_elapsed=false，首次补库单列。自动API38694943268已独立运行；旧503退避尚未到期时没有强行新推理，临时离线兜底按原策略继续。127Python+27JS及纯stdlib构建/项目检查通过。",
+        "用户询问头条久不变化：实际主头条10月8日、摄影栏9月24日，当前无轮换/驻留衰减，主头条先兴趣候选再比较重要性，栏目后备池取全部库存。已记录T061待修；本任务未改Claude视觉或头版选稿。"
+      ]
+    },
+    {
+      "id": "T061",
+      "title": "修正头版新鲜度、旧稿长期占位与栏目后备池时效",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex（选稿逻辑与后端同步，不改版式）",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T060"
+      ],
+      "scope": [
+        "backend/frontpage.py",
+        "frontend/core.js（只选稿逻辑，不改Claude视觉）",
+        "config/preferences.json",
+        "tests/test_frontpage.py",
+        "tests/core.test.js",
+        "docs/",
+        "AGENTS.md",
+        "scripts/check_project.py"
+      ],
+      "acceptance": [
+        "重要新消息可直接竞争头条，避免先被兴趣候选截断；新鲜度可解释",
+        "主头条和栏目首篇限制旧稿长期占位；未知日期不拿抓取时间伪装新消息",
+        "有真实新消息才更新，不通过随机轮换掩盖采集故障；全部原文/历史/日历保留",
+        "Python/JS选稿保持一致，并同步API头条优先翻译ID，不改Claude视觉"
+      ],
+      "evidence": [
+        "132Python+27JS、纯stdlib静态构建/项目检查通过。新增5项针对重要新稿不被兴趣截断、7天旧稿/栏目回灌退出、重要性随时间衰减/稳定无随机、抓取日期及未来日期不冒新鲜、未知日期仅明确活动后备；固定时刻真实库存＋构造/时区样本跨语言ID顺序逐一相同。",
+        "原主头条10月8日/摄影首篇9月24日均退出新头版；当前干选为Sandra Hüller奥斯卡/柏林采访、Gary Waddell讣告、Tammy Nguyen威尼斯双年展及年度野生动物摄影奖（均有真实近72h发布时间）。这是选稿测试，不代表这些新稿本轮已翻译。待发布/实际API接续验收。",
+        "已上线3e940d5；CI38696435261/Pages38696435200均success。生产1440/390px逐个验证主头条/电影/艺术/摄影ID与backend优先及全量队列一致；所有头版有发布时间条目均<=168h、主头条<=72h，原10月8日/9月24日头条已退出，布局无溢出/脚本错误。",
+        "4篇新头条已有Gemini3.5有效AI全文（34/12/15/47块，全部collected），逐篇公开Babel原文hash及中原文块数一致；只复用，不额外调用模型重译。生产中文默认/原文切换/Babel入口验证通过。",
+        "安全rebase自动采集新快照后重新生成派生队列，保留后台新增5条，库存900、待AI661、输入841；未提交旧data/live或覆盖后台译文。新头条frontpage_waiting_ids=[]，有效AI自动跳过；API38696435355 pending，前批38696221501 active，不把排队当完成。T028仍doing，保留完整旧稿/全部分页。"
+      ]
+    },
+    {
+      "id": "T062",
+      "title": "全项持续验收、正文质量巡检及仅完成后通知",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "GitHub Actions 自动执行；Codex 后端接续（无会话翻译）",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T061"
+      ],
+      "scope": [
+        "backend/",
+        "scripts/",
+        "config/",
+        "tests/",
+        ".github/workflows/",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "24小时与实际工作流/产量/失败/配额均有证据，窗口不足保持未完成",
+        "逐源/逐篇正文完整性、杂项和图片图注可核查；有不确定或受限原文不可冒称全量通过",
+        "重要头条/重大及时稿与旧稿积压按API队列接续，待译非零不得说全量完成",
+        "来源故障、地区/领域缺口和一种关注实际更新有报告，不以配置或总来源数替代验收",
+        "用户只在四项真正验收通过后通知；后台独立运行，不启动会话翻译/付费"
+      ],
+      "evidence": [
+        "已实现有断点的逐源公开段落/图注/原文hash程序巡检和四项fail-closed验收；数据积压/缺正文/地区故障未清，不标done。",
+        "新增14来源均实际GET验证RSS与公开正文样本；Fotointern文化类别白名单与逐源漏采核对共用过滤，Matca纳入一种关注且标低频。runner真实采集待发布后验收。",
+        "TAKE on Art同源公开WordPress API回退仅接受精确canonical link、publish及protected=false，失败不擦原文。",
+        "144 Python测试及22 core JS通过，新增验收陈旧证据/24h不足/积压/关注单元过期、正文漏段/图注/hash/网络失败断点和器材过滤回归；新增规则后继续检查。",
+        "原24h通知改为仅全部四项通过才通知，旧会话翻译任务仍暂停；无API额度/免费模式变更。",
+        "在最新后台快照上只补齐9篇缺正文（7 Artnet普通公开GET、2 TAKE官方公开API）；既有AI未覆盖，缺正文10→1。900篇中184有效AI全文（119 Gemini、65历史其他AI）、49原生中文、666外文待AI；尚未清空。144 Python/27 JS、严格数据审计及静态构建通过。53启用来源=44 RSS+9官方页面；新增来源runner实测尚待。",
+        "实测38702089430/38702092297被共享pending槽取消，修复调度链：定期试运行核验并入采集6h去重；手动审计保留；取消的采集事件跳过且不争数据写组。正文复查优先消费明确漏段/图注/版本变化证据；新订阅墙不删旧公开正文/AI，长图注不静默截断。148 Python+27 JS通过。c862643 Pages38702013576/CI38702013747 success，公开operations.json与快照key匹配，仍未全部通过。",
+        "用户报告健康检查邮件，实际失败38702111896为最终断言collection:failed；最新采集38702089430 cancelled，前采集/Pages仍近期success。调整排队取消只记warning，并保留真实失败及6h无成功告警；149 Python（含5健康回归）通过，待真实重跑验收。",
+        "健康检查38703530927/38703522699/38704272234重跑真实success；Pages38703455394 success。9篇补回原文的线上Babel全部blocks/hash逐一一致，公开acceptance=false。08:14延迟翻译定时任务仍能挤掉pending采集，继续增加独立补排短流程，验证待完成；不停止正在执行的API批次。151 Python检查及工作流YAML解析通过。",
+        "补排真实集成检查：只取消pending 38704887311；独立recovery38704925032 success，自动创建采集38704941443并进入in_progress，无手工再dispatch；对应翻译38704924718 skipped。仍待采集结束/来源实绩/24h/全量正文与AI等四门槛，任务doing。",
+        "采集38704941443 success，13/14新来源实取成功、Cineuropa runner403。实际242条新来源回补；总1161、AI182、原生中文52、外文有正文待AI715、缺正文212。自动补排成功未观察到后续workflow_run，改显式dispatch主链；不将配置/采集成功冒充API成功。",
+        "真实翻译保存失败38702099095为两个派生报告rebase冲突，新增有限重试+派生重算+公开成果归档；3个真实Git集成验证保住译文/前端、拒绝覆盖正文、质量冲突重查。154 Python/27 JS通过，工作流YAML和shell语法均通过。后续实际保存/发布仍待验收。",
+        "生产保存38707445676 success，真实冲突后limit0重算并push98bdc451，公开成果副本归档；Pages38708157032/健康38708175452、38708159967 success。API实际3请求0新全文，503退避09:42:28 UTC，仍未清空。",
+        "失败保存38702099095:1实际0生成请求，40未用预留仍挂账；完整JSON日志证据入data/ai-translation-repairs。新增串行admission仅回收精确匹配的已核实0请求预留，156 Python覆盖实际计数不动、未知崩溃不释放、非零/部分用量拒绝退款、幂等。实际后台回收待验收。",
+        "已核实main真实回收38702099095:1的40未用预留并标closed/actual_requests0/证据URL；实际请求13、输入37061、输出12483、unknown2均未减少。新在途批次仍预留40正常。采集38707917530/38708565322、翻译38708476746/38709356774、健康38709960072均success，显式接续已实际运行。Gemini503/正文积压/覆盖与24h门槛仍未完成，T062保持doing。",
+        "用户反馈离线单批1篇及AI Studio RPD222停留：已核实38742150307同批Gemini21请求13篇，离线240秒129单元1篇、3数字/1截断失败；38750152832实际正在API步骤。继续修复数字字面量连接与缩短半小时备用空档，实际发布待验收；不改500日上限或开启付费。",
+        "4ad4043已推送：160 Python及项目检查通过，远端CI38751325540 success（含27 JS/严格审计/静态构建）。半小时UTC05/35备用已入main，既有API38750152832继续执行，未中断；数字片段分隔/M单位保护有4项无模型回归。Pages与本轮API仍待实际结束，未将代码配置当新增翻译产量。"
+      ]
+    },
+    {
+      "id": "T064",
+      "title": "资讯排序替换翻译优先级筛选",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T058"
+      ],
+      "scope": [
+        "frontend/app.js",
+        "frontend/theme.css",
+        "docs/"
+      ],
+      "acceptance": [
+        "筛选里去掉“翻译优先级”选项",
+        "资讯数量旁提供排序：推荐（默认，原重要性与时效顺序）／最新／最早／重要；无读者数据，不提供冒称的“热门”",
+        "切换排序回到第1页，搜索与筛选保持当前排序，缺发布日期的排在最后"
+      ],
+      "evidence": [
+        "27JS＋全部Python通过；Chromium：选项推荐/最新/最早/重要，筛选中无priority-filter；最新首条2026.10.15、最早首条2001.11.02；第3页切换后回到第1页；搜索保持排序；320–430九视图无溢出、无脚本错误。",
+        "用户确认“上线”，经PR #17合并发布。"
+      ]
+    },
+    {
+      "id": "T065",
+      "title": "前端排查修复：检索卡顿、时区显示、日历格、标签页标题、分享卡片",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Claude",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T064"
+      ],
+      "scope": [
+        "frontend/app.js",
+        "frontend/index.html",
+        "frontend/og-image.png",
+        "frontend/apple-touch-icon.png",
+        "scripts/share-card.html",
+        "scripts/build_static.py（复制两张图）",
+        "backend/app.py（仅白名单两张图）",
+        "docs/"
+      ],
+      "acceptance": [
+        "检索每键渲染不再逐条重算筛选",
+        "日期/更新时间按读者时区显示，选稿仍用公共默认",
+        "日历格只标当天放映/开展/闭展/截止",
+        "标签页标题随页面与文章变化",
+        "分享卡片og:image与iPhone主屏图标"
+      ],
+      "evidence": [
+        "检索一次渲染约450ms→25–30ms（输入8字约5秒→0.5秒）；Asia/Shanghai下页脚更新时间15:02（原显示UTC 07:02）；日历10/15点开仍列55项；标题“资讯 · 幕间休息”、文章标题随中文/原文切换；og-image/apple-touch-icon本地200；27JS＋全部Python通过；全页面1440/390无脚本错误、无溢出、无坏图。",
+        "后续：data.js首屏体积（3.6MB gzip）需与Codex协作拆分正文。",
+        "用户确认“上线”，经PR #17合并发布。"
+      ]
+    },
+    {
+      "id": "T063",
+      "title": "Gemini双项目并行翻译、独立额度及故障隔离",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex（后台API，无会话翻译）",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T061"
+      ],
+      "scope": [
+        "backend/ai_translation.py",
+        "backend/ai_pool.py",
+        "backend/operations.py",
+        "scripts/run_ai_translation.py",
+        "scripts/reserve_ai_quota.py",
+        ".github/workflows/autotranslate.yml",
+        "config/ai-translation.json",
+        "tests/",
+        "docs/",
+        "AGENTS.md",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "两个独立项目各500/太平洋日、40请求/480秒及15秒间隔，免费模式；旧主账本/断点不清零",
+        "同一批并行处理互斥文章，复用相同源hash/模型已有断点；保护有效AI和最新原文",
+        "单路429/503或无配置不阻塞另一路，重复密钥拒绝当作独立额度",
+        "主次请求/token/预留/退避/真实产量分别可查，缺密钥不冒称已调用第二路",
+        "针对并行去重、限额、故障、断点与旧账本回归，安全发布；无第二密钥则明确尚未实测双路推理"
+      ],
+      "evidence": [
+        "已实现两线程互斥ID/独立持久预留与退避、共享同源同模型断点；原主账本未改，第二key缺失/相同key不冒充额外配额。",
+        "主503/429与主日额度满时另一接口继续，损坏账本仅隔离本路，合格段跨账号接续不重复；并发短锁保护文件/Git与恢复证据。",
+        "170 Python+27 JS及项目检查/YAML/双secret绑定/shell语法通过；另新增429隔离和并发检查点测试通过，完整最终回归/发布实际结果待补。",
+        "用户已拿到第二密钥，已给GEMINI_API_KEY_SECONDARY配置步骤。GitHub Secrets列表403，不推断是否已配；真实两路调用/产量待远端核验。",
+        "用户已配置第二密钥并授权本配额日连续翻译至额度用尽；增加仅2026-10-15太平洋日有效的有用工作接续、有采集让路、零请求/退避/每日限额防空转与过日自动失效，纯程序回归通过，待远端执行。",
+        "最终173 Python+27 JS、YAML/所有shell语法及远端CI38756879911/38758137779/38758390323 success；主账本/已有译稿未由人工覆盖。",
+        "真实双路38756880105 success：primary23请求完成8篇、secondary23请求完成10篇，共46请求/18完整公开正文译文，21篇程序检查失败保留合格段落/断点；两路均有实际token返回，无会话翻译/校对。",
+        "Pages38758803546 success，线上operations快照15:15:46：227 Gemini；projects逐路23/23请求及8/10产量、quota primary233/500+secondary23/500合计256/1000与主/次账本一致。T028/T062仍有积压不可done。",
+        "continuation实际自动dispatch38758815824（15:16:08 workflow_dispatch）并进入AI步骤，无人工再启动；当日连跑、采集让路/零请求防循环/过期恢复/AI优先暂缓机翻均已发布。只本配额日授权使用可用免费额度，不保证Google错误时耗尽。",
+        "实测估算修正：从双接口启用时剩余790请求，首批46请求完成18；首批结束剩744请求。按首批/累计有效率预计本次到重置新增约300–400篇（含首批18），不是完成保证；当前AI数字/源检查失败率仍需后续改进，不能用长文单一归因。"
+      ]
+    },
+    {
+      "id": "T066",
+      "title": "头条外文先AI全文后上版，候选翻译优先与前后端同步",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex（选稿/队列与前端逻辑镜像，不改版式）",
+      "updated_at": "2026-10-15",
+      "depends_on": [
+        "T061"
+      ],
+      "scope": [
+        "backend/frontpage.py",
+        "backend/priority.py",
+        "backend/presentation.py",
+        "backend/app.py",
+        "backend/daily_translation.py",
+        "frontend/core.js",
+        "tests/test_frontpage.py",
+        "tests/core.test.js",
+        "docs/",
+        "AGENTS.md",
+        "tasks.json",
+        "backend/ai_translation.py",
+        "config/ai-translation.json",
+        "tests/test_ai_translation.py"
+      ],
+      "acceptance": [
+        "主头条及电影/艺术/摄影栏目首篇外文须有程序有效AI全文，标题单译/机翻/缺正文/待译不得上头条；原生中文有正文直接可用",
+        "未译头条候选独立于上版门槛，排在其他译稿与旧稿份额前，不形成已译筛选循环",
+        "原文/全量资讯/原生中文及下方普通报道保留，日期/重要性/日本展览偏好与旧稿配额保持",
+        "Python与JS同时间同候选精确ID一致，硬门槛不能被个人偏好关闭，不做第二轮模型校对",
+        "验证后安全发布，核对公开首页主头条/三栏全文状态与候选队列；已有有效稿复用不重复翻译"
+      ],
+      "evidence": [
+        "178 Python+28 JS、静态构建/项目检查通过；真实档案与固定边界样本Python/JS首篇ID精确相同。",
+        "测试覆盖未译候选优先而正式头条不得展示、AI完成才上版、三栏首篇AI/下方普通原文保留、标题单译/机翻/漏块/数字/hash错误拒绝、原生中文正文例外、30分钟及旧冷却迁移。",
+        "当前本地真实档案366 AI全部通过就地程序检查；可见4头条均translated，原未译主头条候选live-3dc48ee1ae3c5f83b233af8c仍排队最前，不因门槛丢失；未调用会话翻译/二次模型校对。",
+        "仅选稿逻辑和队列，未修改Claude视觉/原文/已有有效稿或后台请求计数。发布及线上验收待补。",
+        "0526b85已上线：Project checks38767577931/Pages38767577934均success。生产Chromium1440/390实际DOM主头条与三栏首篇共4个ID与同刻Python精确一致，全部translated且headline_ready=true；未译候选仍headline_order=0，普通报道/原文未删。"
+      ]
+    },
+    {
+      "id": "T067",
+      "title": "接入用户指定美術展ナビ与Tokyo Art Beat公开新闻",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex（来源/API/正文提取）",
+      "updated_at": "2026-10-15",
+      "depends_on": [],
+      "scope": [
+        "backend/",
+        "config/sources.json",
+        "tests/",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "核实真实RSS或公开页面，不启用失效RSS",
+        "最新文章真实标题/时间/图片，去重并过滤器材，不补造展期",
+        "只抓公开可见正文并保留图注，不绕过订阅或带入推荐杂项",
+        "测试、安全推送、实际采集并核对线上来源"
+      ],
+      "evidence": [
+        "两站首页/最新文章公开页面200；美術展ナビ/feed及TAB旧RSS404，正核实公开网页结构。",
+        "最终本地真实两站列表20+18=38条，38/38取得公开正文（collected），0 partial/失败；38/38精确发布时间齐全，美術展ナビ134/TAB227正文图片，保持原文图注。首次入库不是每日新增统计。",
+        "189 Python+28 JS、项目检查、严格数据核验、静态构建和git diff --check通过；新增11项来源/分页/访问限制/表格/去重/时间回归。",
+        "TAB匿名Chromium公开/page2逐段可见；实际6页长文4627字/14图片含结尾；只取选中页，未渲染all-page数组或订阅内容。",
+        "远端采集/Pages生产验收待核对；没有将本地结果当作已上线或已AI翻译。",
+        "ecdb45c已推送，远端Project checks38769981014 success；Refresh38769994594已自动获得写锁并执行backend.jobs，Pages等待前批部署。生产采集/上线仍待核对。",
+        "新增匿名Chromium对照：TOKAS长文/page6的15个可见段落/图注、MOMAT/page2的3个均在保存原文中（missing=[]），未漏公开段落。",
+        "生产Refresh38769994594 success：2026-10-15 16:38:11快照美術展ナビ20条/TAB18条，二者last_run均success，各inserted20/18；全局正文预算下各取得8篇，共16篇公开正文，其余22篇待采集，不把本地38全文当线上产量。新增38篇当时AI=0，已由采集自动接续后台Gemini38770774545，不冒称已译完。",
+        "Pages38770771630 success；https://mujianrest.work/data.js实际200且16:38:11快照包含两站20/18条及各8正文。生产Chromium逐站直接#reader/ID打开，保存原文均直接可读、图片显示，未要求手动切换。",
+        "57候选/55启用=44RSS+11公开网页；每2小时现有采集/后台API/头条AI硬门槛保持，Claude前端未改；全文积压T028/无人值守全量验收T062仍doing。"
+      ]
+    },
+    {
+      "id": "T068",
+      "title": "清理分享、邮件与打印控件，修复抓取并保留译文",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex（正文提取/存量清理）",
+      "updated_at": "2026-10-16",
+      "depends_on": [],
+      "scope": [
+        "backend/article_cleanup.py",
+        "backend/articles.py",
+        "scripts/clean_article_bodies.py",
+        ".github/workflows/cleanup.yml",
+        "tests/",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "查明用户列举控件的真实来源/DOM，不按Facebook等正文关键词删段",
+        "新增抓取不再包含控件，正文/引文/图注/日期/正常链接保留",
+        "存量按DOM证据纯删块并保留AI/机翻身份与有效正文，不调用翻译API",
+        "程序回归、真实远端清理/发布与线上复核，未处理项如实报告"
+      ],
+      "evidence": [
+        "真实IndieWire DOM确认3处social-media组件，正文中1处9个工具栏块；当前29篇污染（13 AI/8机翻）。",
+        "本地只读dry-run：29篇可纯删261块/3741字；保留13AI/8机翻/5断点89单元；另1篇既存非分享候选未获纯删证据，保留未冒充修复。",
+        "192 Python、项目检查、cleanup YAML/写锁与发布权限、git diff --check通过。新增回归覆盖组件过滤、作品同名/正常社交链接保留、DOM证据、过期断点拒绝与有效断点重映射；未调用翻译API。",
+        "待真实GitHub cleanup、Pages与线上原文/中文正文核对。",
+        "ae15e7d已发布；远端CI38840234045、cleanup38840243963及Pages38840301769均success。GitHub真实apply清理IndieWire29篇261块/3741字，保留13AI/8机翻/5有效断点89单元，无清理失败。",
+        "生产快照2026-10-16T02:24:46.224589+00:00实读data.js 200，原文分享工具栏剩余0。全部29篇保留616原文块与旧块精确一致，13篇AI正文/图注/链接逐项未改。",
+        "生产Chromium核对live-c6d8e356649dfc31afad6be5（AI）与live-eff04157a78f773c85aaf767（待译）默认阅读及原文切换：控件列表均为空，原正文匹配、图片保留。",
+        "报告partial只因1篇既存非分享候选live-c5e12c728af3ac8c9c2359c9无法证明纯删而保留；10个旧候选无需变化。用户指定这组分享控件29篇全部清完。清理工作流未绑定模型密钥/不调用翻译API，原独立自动翻译链继续；T028/T062仍doing。"
       ]
     }
   ]

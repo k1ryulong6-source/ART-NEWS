@@ -37,10 +37,31 @@ def build():
         bundle['automation'] = {'translation': optional_data('auto-translation-status.json'),
                                 'ai': optional_data('ai-translation-status.json'),
                                 'health': optional_data('automation-health.json')}
+        from backend.operations import load_operations
+        bundle['automation']['operations'] = load_operations(bundle['live'])
     # Compute all reporting from the full archive, then compact transport only.
     from backend.babel_export import export_articles, integrations
     output = ROOT / 'dist'
     output.mkdir(exist_ok=True)
+    if bundle.get('automation', {}).get('operations'):
+        (output / 'reports').mkdir(exist_ok=True)
+        (output / 'reports/operations.json').write_text(json.dumps(bundle['automation']['operations'], ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        for filename in ('acceptance.json', 'article-quality-report.json', 'autonomous-trial-report.json'):
+            path = ROOT / 'data' / filename
+            if path.exists(): shutil.copy2(path, output / 'reports' / filename)
+    if bundle.get('coverage', {}).get('editorial_regions'):
+        (output / 'reports').mkdir(exist_ok=True)
+        (output / 'reports/regional-coverage.json').write_text(json.dumps(bundle['coverage']['editorial_regions'], ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    if bundle.get('coverage', {}).get('attention_units'):
+        report = bundle['coverage']['attention_units']
+        (output / 'reports/attention-units').mkdir(parents=True, exist_ok=True)
+        (output / 'reports/attention-units.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        for unit in report['units']:
+            (output / 'reports/attention-units' / (unit['id'] + '.json')).write_text(json.dumps(unit, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        expected = {u['id'] + '.json' for u in report['units']}
+        for path in (output / 'reports/attention-units').glob('*.json'):
+            if path.name not in expected:
+                path.unlink()
     bundle['integrations'] = integrations()
     site_url = bundle['integrations'].get('site_url')
     domain = bundle['integrations'].get('custom_domain')
@@ -58,7 +79,7 @@ def build():
     (ROOT / "frontend/data.js").write_text(text, encoding="utf-8")
     output = ROOT / "dist"
     output.mkdir(exist_ok=True)
-    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "data.js", "core.js", "ui.js", "app.js"):
+    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "data.js", "core.js", "ui.js", "app.js"):
         shutil.copy2(ROOT / "frontend" / name, output / name)
     if (output / 'fonts').exists():
         shutil.rmtree(output / 'fonts')

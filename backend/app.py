@@ -99,12 +99,48 @@ def create_app(db_path=None):
     async def dataset(mode: Literal["demo", "live"] = "live"):
         result = store.dataset(mode)
         result["source_status"] = store.source_status()
+        from .frontpage import headline_ready
+        for row in result['content']:
+            row['headline_ready'] = headline_ready(row)
         return result
 
     @app.get("/api/content")
     async def content(mode: Literal["demo", "live"] = "live", channel: str | None = None, country: str | None = None, city: str | None = None, kind: str | None = None, language: str | None = None, q: str = ""):
         rows = store.dataset(mode)["content"]
         return [r for r in rows if (not channel or r["channel"] == channel) and matches_region(r, country, city) and (not kind or r["kind"] == kind) and (not language or r["language"] == language) and (not q or q.lower() in " ".join(str(r.get(k) or "") for k in ("title_original", "title_zh", "summary_zh")).lower())]
+
+    @app.get('/api/operations')
+    @app.get('/reports/operations.json')
+    async def operations():
+        from .operations import load_operations
+        return load_operations(store.dataset('live'))
+
+    @app.get('/api/editorial-regions')
+    @app.get('/reports/regional-coverage.json')
+    async def editorial_region_report():
+        from .editorial_regions import regional_coverage
+        config = json.loads((ROOT / 'config/sources.json').read_text())
+        path = ROOT / 'data/coverage-audit.json'
+        audit = json.loads(path.read_text()) if path.exists() else None
+        return regional_coverage(store.dataset('live'), config, audit)
+
+    @app.get('/api/attention-units')
+    @app.get('/reports/attention-units.json')
+    async def attention_units():
+        from .attention_units import attention_report
+        config = json.loads((ROOT / 'config/sources.json').read_text())
+        path = ROOT / 'data/coverage-audit.json'
+        audit = json.loads(path.read_text()) if path.exists() else None
+        return attention_report(store.dataset('live'), config, audit)
+
+    @app.get('/api/attention-units/{unit_id}')
+    @app.get('/reports/attention-units/{unit_id}.json')
+    async def attention_unit(unit_id: str):
+        report = await attention_units()
+        unit = next((u for u in report['units'] if u['id'] == unit_id), None)
+        if not unit:
+            raise HTTPException(404, '关注单元不存在')
+        return unit
 
     @app.get("/api/integrations/babel/{content_id}")
     @app.get("/integrations/babel/{content_id}.json")
@@ -208,8 +244,8 @@ def create_app(db_path=None):
 
     # A bounded asset allowlist keeps the small local edition independent of
     # background file-worker threads and never exposes project/runtime files.
-    assets = {"index.html", "styles.css", "theme.css", "favicon.svg", "data.js", "core.js", "ui.js", "app.js"}
-    assets.update({'fonts/intermission-masthead-v1.woff2', 'fonts/intermission-sans-v1.woff2', 'fonts/intermission-title-v1.woff2', 'fonts/notoseriftc-OFL.txt',
+    assets = {"index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "data.js", "core.js", "ui.js", "app.js"}
+    assets.update({'fonts/intermission-masthead-v1.woff2', 'fonts/intermission-sans-v1.woff2', 'fonts/intermission-title-v1.woff2', 'fonts/notoseriftc-OFL.txt', 'fonts/intermission-sans-tc-v1.woff2', 'fonts/notosanstc-OFL.txt',
                    'fonts/intermission-news-v1.woff2', 'fonts/mashanzheng-OFL.txt',
                    'fonts/notosanssc-OFL.txt', 'fonts/newsreader-OFL.txt'})
 

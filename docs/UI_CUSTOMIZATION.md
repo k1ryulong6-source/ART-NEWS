@@ -109,3 +109,11 @@ theme.css已整体重写为v4：令牌在`:root`（新增`--latin`用于外文�
 - 字标symbol `wordmark`（横）与`wordmark-vertical`（竖）由`python scripts/build_wordmark.py`输出，字体子集由`scripts/build_title_font.py --source NotoSerifTC[wght].ttf`生成；扉页/栏目用字若要增减，先改该脚本的`CHARS`再重建。
 - 扉页`#cover`：`.cover-leaf`（正反两面`.cover-front/.cover-back`）、`.cover-veil`、`.cover-film`、`.cover-title`、`.cover-note`、`.cover-turn`。翻页时长与曲线在`.cover-leaf` transition，结束移除时间在index.html脚本（1600ms）。想关闭扉页：删除`#cover`和紧随的脚本即可，其他代码不依赖它。
 - 胶片边`.film-edge`与`#film-edge-print`（app.js nav()按日期写帧号）。
+
+## T051 · 片头动画「門中見日」
+
+- 扉页的`.cover-title`现为一个viewBox为`32 0 936 4486`的SVG：四个`<use class="cover-char" style="--i:N">`各用`#cover-char-N`裁剪出一个字，按`--i`错开逐帧闪入；`.cover-glow`椭圆是間中日的红晕；`.cover-grain`是放映灯＋颗粒层。（T053应用户要求去掉了光泽扫过。）
+- 字标红色改为继承变量：`.wordmark-light{fill:var(--wordmark-light,var(--accent))}`。要单独改某处字标的红色，在该`<svg>`或其祖先上设`--wordmark-light`（选择器无法进入`<use>`影子树）。`.brand:hover`据此变墨色。
+- 报头`.film-edge`走片456px（24个齿孔）后停下，`.brand .wordmark`再点亮；`html.cover-open`期间暂停，扉页移除后才播放。
+- 所有时长/延迟集中在theme.css「Opening sequence」与「Masthead」两段keyframes；`prefers-reduced-motion`全部关闭。去掉片头只需删这两段CSS，扉页本身照常。
+- T052：≤700px时扉页宽为黄金分割61.8%（`.cover-leaf{right:38.2%}`、`.cover-veil{left:61.8%}`），标题高`min(50vh,104vw)`；桌面与平板仍为半屏。改比例只需同时改这两个值。

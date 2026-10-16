@@ -2,6 +2,7 @@
 """Check the handoff bundle, config, demo records and executable SQL contract."""
 
 import json
+import re
 import sqlite3
 import sys
 from datetime import date, datetime
@@ -61,11 +62,32 @@ def check_config():
     require(prefs["daily_selection_limit"] > 0, "Invalid selection limit")
     require(not prefs["industry_buzz"]["include_unverified_in_today"], "Unverified gossip cannot enter today")
     ZoneInfo(prefs["reading_timezone"])
+    frontpage = prefs['frontpage']
+    require(0 < frontpage['lead_hours'] <= frontpage['fallback_hours'] <= 30 * 24, 'Invalid frontpage age windows')
+    require(frontpage['freshness_decay_hours'] > 0 and frontpage['source_repeat_penalty'] >= 0, 'Invalid frontpage decay/diversity penalty')
     sources = read_json("config/sources.json")["sources"]
+    regional = read_json('config/editorial-regions.json')
+    regions = {row['id'] for row in regional['world_regions']}
+    require(0 <= regional['collection']['discovery_share'] <= 1, 'Invalid discovery share')
+    require(0 <= regional['media_weights']['global_lane_share'] <= 1, 'Invalid global gateway share')
     require(len({source["id"] for source in sources}) == len(sources), "Duplicate source IDs")
+    units = read_json('config/attention-units.json')['units']
+    require(len({u['id'] for u in units}) == len(units), 'Duplicate attention unit IDs')
+    require(sum(u['body_share_of_new_slots'] for u in units if u.get('enabled')) <= regional['collection']['discovery_share'], 'Attention units exceed the discovery budget')
+    for unit in units:
+        require(bool(re.fullmatch(r'[a-z][a-z0-9-]{1,63}', unit['id'])), 'Invalid attention unit ID')
+        require(bool(unit.get('name')), 'Attention unit lacks name')
+        require(0 <= unit['body_share_of_new_slots'] <= 1, 'Invalid attention unit share')
+        members = unit['members']
+        require(len({m['source_id'] for m in members}) == len(members), 'Duplicate attention unit sources')
+        require(all(m['source_id'] in {s['id'] for s in sources} and m.get('why') and m.get('focus_label') for m in members), 'Attention unit source or selection reason missing')
     for source in sources:
         require(source["access_status"] in ("unverified", "reviewed"), "Invalid source status")
         if source["enabled"]:
+            focus = source.get('editorial_focus', {})
+            require(bool(focus.get('regions')) and set(focus['regions']) <= regions, 'Enabled source lacks valid regional focus')
+            require(focus.get('role') in ('core', 'global_core', 'discovery'), 'Invalid editorial source role')
+            require(all(type(focus.get('media_weight', {}).get(key)) is int and 0 <= focus['media_weight'][key] <= 100 for key in ('international', 'local_specialist', 'discovery')), 'Invalid independent media weights')
             require(source["access_status"] == "reviewed", "Enabled source is not reviewed")
             require(source["verified_at"] and source["access_method"], "Enabled source lacks verification")
             if source["access_method"] in ("rss", "api"):

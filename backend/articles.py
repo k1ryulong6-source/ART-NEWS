@@ -5,7 +5,7 @@ import re
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from urllib.error import HTTPError
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urlencode
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 from bs4 import BeautifulSoup
 from trafilatura import extract
@@ -54,12 +54,56 @@ def clean_text(value):
     return re.sub(r'\s+', ' ', value).strip()
 
 
+def fetch_public_json(url, source):
+    class VerifiedRedirect(HTTPRedirectHandler):
+        def redirect_request(self, req, fp, code, msg, headers, newurl):
+            if not allowed_url(newurl, source): raise ValueError('unverified_redirect')
+            return super().redirect_request(req, fp, code, msg, headers, newurl)
+    request = Request(url, headers={'User-Agent': 'CultureDesk/0.8 public article reader', 'Accept': 'application/json'})
+    with build_opener(VerifiedRedirect()).open(request, timeout=15) as response:
+        payload = response.read(6_000_001)
+        if len(payload) > 6_000_000: raise ValueError('response_too_large')
+        if response.headers.get_content_type() != 'application/json': raise ValueError('not_json')
+        return json.loads(payload)
+
+
+def fetch_article(url, source, getter=None, json_getter=None):
+    """Only an explicitly verified publisher API can recover a missing permalink."""
+    try:
+        payload, resolved = (getter or fetch_page)(url, source)
+        if source.get('adapter') == 'tokyo_art_beat_news':
+            from .japanese_art import tab_article_pages
+            payload = tab_article_pages(payload, resolved, source, getter or fetch_page)
+        return payload, resolved
+    except HTTPError as error:
+        if error.code != 404 or not source.get('public_wordpress_rest'): raise
+    origin = urlsplit(source['homepage_url'])
+    endpoint = origin.scheme + '://' + origin.netloc + '/wp-json/wp/v2/posts'
+    slug = urlsplit(url).path.rstrip('/').split('/')[-1]
+    records = (json_getter or fetch_public_json)(endpoint + '?' + urlencode({'slug': slug, 'per_page': 10}), source)
+    if not isinstance(records, list): raise ValueError('public_api_not_post_list')
+    for post in records:
+        if not isinstance(post, dict) or post.get('link', '').rstrip('/') != url.rstrip('/'): continue
+        body = post.get('content') or {}
+        if post.get('status') != 'publish' or body.get('protected') is not False: continue
+        if not isinstance(post.get('id'), int) or not isinstance(body.get('rendered'), str): continue
+        return '<div class="entry-content">' + body['rendered'] + '</div>', endpoint + '/' + str(post['id'])
+    raise ValueError('matching_public_unprotected_post_not_found')
+
+
 def extract_article(payload, url, source):
     soup = BeautifulSoup(payload, 'lxml')
+    pagination_incomplete = bool(soup.select_one('[data-public-pagination-incomplete="true"]'))
     author = None
     node = soup.find('meta', attrs={'name': 'author'})
     if node:
         author = node.get('content', '').strip()[:500] or None
+    if source.get('id') == 'mistermotley':
+        byline = soup.select_one('.single-article--active .article-footer a[href*="/authors/"]')
+        if byline: author = clean_text(byline.get_text())[:500] or author
+    if source.get('id') == 'rapadura':
+        byline = soup.select_one('.meta-author-name strong')
+        if byline: author = clean_text(byline.get_text())[:500] or author
     paywall = False
     for script in soup.select('script[type="application/ld+json"]'):
         try:
@@ -83,6 +127,8 @@ def extract_article(payload, url, source):
                 if '@graph' in value: visit(value['@graph'])
         visit(data)
     # Extract rendered public markup only, not hidden subscription text in JSON-LD.
+    from .article_cleanup import remove_widgets
+    remove_widgets(soup, source)
     for node in soup.select(NOISE):
         if node.attrs is not None: node.decompose()
     for node in soup.select('[hidden], [aria-hidden="true"]') if source['source_type'] != 'official' else []:
@@ -105,8 +151,11 @@ def extract_article(payload, url, source):
                 text = clean_text(line)
                 if text: blocks.append({'type': 'paragraph', 'text': text})
 
-        for node in root.find_all(['p', 'h2', 'h3', 'h4', 'li', 'blockquote', 'img']):
-            if node.name != 'img' and any(p.name in ('p', 'li', 'blockquote') for p in node.parents if p is not root):
+        for node in root.find_all(['p', 'h2', 'h3', 'h4', 'li', 'blockquote', 'img', 'td', 'th']):
+            # Image captions are already included with their image block.
+            if node.name != 'img' and node.find_parent('figcaption'):
+                continue
+            if node.name != 'img' and any(p.name in ('p', 'li', 'blockquote', 'td', 'th') for p in node.parents if p is not root):
                 continue
             if node.name == 'img':
                 src = node.get('data-src') or node.get('data-lazy-src') or node.get('src')
@@ -115,8 +164,8 @@ def extract_article(payload, url, source):
                     continue
                 figure = node.find_parent('figure')
                 caption = figure.find('figcaption') if figure else None
-                blocks.append({'type': 'image', 'url': image, 'alt': node.get('alt', '')[:500],
-                               'caption': caption.get_text(' ', strip=True)[:1000] if caption else '', 'credit': source['name']})
+                blocks.append({'type': 'image', 'url': image, 'alt': node.get('alt', ''),
+                               'caption': caption.get_text(' ', strip=True) if caption else '', 'credit': source['name']})
             else:
                 text = clean_text(node.get_text(' ', strip=True))
                 if text:
@@ -156,8 +205,8 @@ def extract_article(payload, url, source):
     if len(text) < 100:
         return {'article_status': 'restricted' if paywall or challenge else 'no_body',
                 'article_reason': 'subscription_required' if paywall else 'access_challenge' if challenge else 'body_not_found'}
-    reason = 'public_visible_body' if paywall else 'public_body_extracted'
-    status = 'partial' if paywall else 'collected'
+    reason = 'public_visible_body' if paywall else 'public_pagination_incomplete' if pagination_incomplete else 'public_body_extracted'
+    status = 'partial' if paywall or pagination_incomplete else 'collected'
     if len(text) > 200_000 or len(blocks) > 2000:
         blocks = blocks[:2000]
         kept, length = [], 0
@@ -168,10 +217,27 @@ def extract_article(payload, url, source):
         blocks = kept
         text = '\n\n'.join(b['text'] for b in blocks if b.get('text'))
         status, reason = 'partial', 'size_limit'
-    return {'article_blocks_json': json.dumps(blocks, ensure_ascii=False), 'article_text': text,
+    fields = {'article_blocks_json': json.dumps(blocks, ensure_ascii=False), 'article_text': text,
             'article_status': status, 'article_reason': reason, 'article_author': author,
             'article_extractor': extractor,
             'article_hash': hashlib.sha256(json.dumps(blocks, ensure_ascii=False).encode()).hexdigest()}
+    if source.get('adapter') == 'artexhibition_news':
+        from .japanese_art import published_instant
+        meta = soup.find('meta', property='article:published_time')
+        published = published_instant(meta.get('content')) if meta else None
+        if published:
+            fields['published_at'] = published
+    return fields
+
+
+def needs_quality_repair(row, directory=None):
+    directory = directory or ROOT / 'data/article-quality'
+    try:
+        state = json.loads((directory / (row['id'] + '.json')).read_text())
+    except (OSError, ValueError): return False
+    return (state.get('status') == 'issues' and state.get('source_hash') == row.get('article_hash')
+            and state.get('checked_at', '') > (row.get('article_checked_at') or '')
+            and any(i == 'source_content_changed_since_collection' or i.startswith(('public_paragraphs_not_extracted:', 'public_image_caption_not_extracted')) for i in state.get('issues', [])))
 
 
 def collect_articles(store, limit=40, getter=None, force=False):
@@ -182,7 +248,8 @@ def collect_articles(store, limit=40, getter=None, force=False):
     with store.connect() as db:
         rows = [dict(r) for r in db.execute('SELECT * FROM content WHERE is_demo=0 ORDER BY article_checked_at ASC,published_at DESC') if r['source_id'] in catalog]
     if not force:
-        rows = [r for r in rows if not r['article_checked_at'] or r['article_checked_at'] < (refresh_cutoff if r['article_status'] in ('collected', 'partial') else cutoff)]
+        for row in rows: row['_quality_recheck'] = needs_quality_repair(row)
+        rows = [r for r in rows if r['_quality_recheck'] or not r['article_checked_at'] or r['article_checked_at'] < (refresh_cutoff if r['article_status'] in ('collected', 'partial') else cutoff)]
     from .priority import rank_snapshot, priority_key
     priorities = rank_snapshot(store.dataset('live'))
     # A large backlog of stale body rechecks must not delay a new major headline.
@@ -191,9 +258,9 @@ def collect_articles(store, limit=40, getter=None, force=False):
         row['translation_priority'] = priorities[row['id']]
     fresh.sort(key=priority_key)
     rechecks = [r for r in rows if r.get('article_blocks_json')]
-    old_slots = min(10, limit // 4)
-    selected = fresh[:max(0, limit - old_slots)]
-    rows = selected + (rechecks + fresh[len(selected):])[:max(0, limit - len(selected))]
+    rechecks.sort(key=lambda row: (not row.get('_quality_recheck'), row.get('article_checked_at') or ''))
+    from .editorial_regions import body_batch
+    rows = body_batch(fresh, rechecks, catalog, limit)
     result = {k: 0 for k in ('attempted', 'collected', 'partial', 'restricted', 'unavailable', 'no_body')}
     per_source = {}
     def collect(row):
@@ -201,25 +268,46 @@ def collect_articles(store, limit=40, getter=None, force=False):
         url = allowed_url(row.get('original_page_url') or row['canonical_url'], source)
         try:
             if not url: raise ValueError('unverified_source_url')
-            payload, resolved = (getter or fetch_page)(url, source)
+            payload, resolved = fetch_article(url, source, getter=getter)
             if not allowed_url(resolved, source): raise ValueError('unverified_redirect')
             fields = extract_article(payload, resolved, source)
             if fields.get('article_blocks_json'):
                 fields.update(article_source_url=resolved, article_fetched_at=stamp)
+                if '/wp-json/wp/v2/posts/' in resolved:
+                    fields['article_reason'] = 'public_publisher_api_after_permalink_404'
         except HTTPError as exc:
             fields = {'article_status': 'restricted' if exc.code in (401, 403, 402) else 'unavailable', 'article_reason': 'http_' + str(exc.code)}
         except Exception as exc:
             fields = {'article_status': 'unavailable', 'article_reason': str(exc) if isinstance(exc, ValueError) else 'network_unavailable'}
+        if (row.get('article_blocks_json') and fields.get('article_blocks_json') and fields.get('article_status') == 'partial'
+                and fields.get('article_reason') == 'public_visible_body'
+                and len(fields.get('article_text') or '') < len(row.get('article_text') or '')):
+            # A new subscription curtain must not erase formerly public prose/AI.
+            fields = {'article_status': row['article_status'], 'article_reason': 'public_access_reduced'}
         fields['article_checked_at'] = stamp
         if row.get('article_blocks_json') and not fields.get('article_blocks_json'):
             # A temporary failure cannot erase a saved body or its translation.
             fields['article_status'] = row['article_status']
             fields['article_reason'] = 'cached_body_after_' + fields['article_reason']
         if fields.get('article_hash') and fields['article_hash'] != row.get('article_hash'):
+            from .article_cleanup import subset_indexes, remap_translations
+            indexes = subset_indexes(json.loads(row.get('article_blocks_json') or '[]'),
+                                     json.loads(fields['article_blocks_json']))
+            try:
+                retained = remap_translations(row, fields, indexes) if indexes is not None else {}
+            except (ValueError, TypeError, KeyError):
+                indexes, retained = None, {}
             for k in ARTICLE_FIELDS:
                 if k.startswith('article_translation_'): fields[k] = None
             from .editorial import EDITORIAL_FIELDS
             for k in EDITORIAL_FIELDS: fields[k] = None
+            if indexes is not None:
+                # Pure widget removal must not erase/retranslate a valid AI body.
+                for k in EDITORIAL_FIELDS:
+                    fields[k] = row.get(k)
+                for k in ARTICLE_FIELDS:
+                    if k.startswith('article_translation_'): fields[k] = row.get(k)
+                fields.update(retained)
         with store.connect() as db:
             db.execute('UPDATE content SET ' + ','.join(k+'=?' for k in fields) + ' WHERE id=?', [*fields.values(), row['id']])
         return row['source_id'], fields['article_status']

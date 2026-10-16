@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from backend.storage import ROOT, now
 from backend.priority import classify, rank_snapshot, priority_key
 from backend.autonomous_translation import write_json
+from backend.editorial_regions import regional_coverage
 
 snapshot = json.loads((ROOT / 'data/live.json').read_text())
 policy = json.loads((ROOT / 'config/news-watch.json').read_text())
@@ -43,6 +44,7 @@ important.sort(key=priority_key)
 report = {'checked_at': now(), 'list_audit_at': audit.get('checked_at'),
           'scope': 'configured_sources_current_lists_only', 'global_completeness': 'unknown',
           'core_source_problems': problems, 'missing_important_items': missing,
+          'editorial_regions': regional_coverage(snapshot, json.loads((ROOT / 'config/sources.json').read_text()), audit),
           'fresh_important_items': important,
           'awaiting_AI_count': sum(row['language'] != 'zh' and row['editorial_status'] not in ('reviewed', 'translated') for row in important),
           'without_original_body_count': sum(not row['has_original_body'] for row in important),

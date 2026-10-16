@@ -528,3 +528,9 @@ Gemini最近已保存14:53–15:01Z批次22请求、5全文、11数字检查失�
 ## 2026-10-16 · 会话直接翻译第三批（Claude Haiku 5.5）
 
 第三批为会话直接翻译，共9篇：NYC 周末观影、Dear William 改编、林肯纪念堂倒影池、Jazmine Hayes 布朗斯维尔委约、Palazzo Grassi 常设展、晨间剧《布拉萨姆》出演、Ferdi 个展、书商摄影图书奖、Infinity 三人展赠票。全部经 checked_result 与数字保留检查后写入，provider 为 claude-session:claude-haiku-5-5，标AI翻译，未标校译。快照仅替换这9条记录。卢浮宫“文艺复兴”赠票一条因数字检查（“15点”被识别为时刻）暂未收录，待另行处理。
+
+## 2026-10-16 · 会话直接翻译第四批（Claude Haiku 5.5）
+
+第四批为会话直接翻译，共4篇：鈴木崇“物之趣”个展、Pocket Review《小小幻想走得远》、Pocket Review《无障碍传送带卡住时》、澳大利亚复古假期图集。均经 checked_result 与数字保留检查后写入，provider 为 claude-session:claude-haiku-5-5，标AI翻译，未标校译。快照仅替换这4条记录。
+
+未收录的候选：多条含“点”作数量词的文章（如雷诺阿画作失窃、东京国立近代美术馆2027年度展览、时间堂画廊），因数字检查把“12点”等识别为时刻，暂未处理，需另行设计。

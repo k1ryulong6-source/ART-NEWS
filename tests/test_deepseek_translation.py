@@ -51,6 +51,12 @@ class DeepSeekProviderTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 translator.translate({}, ['a', 'b'])
 
+    def test_trailing_text_after_json_object_is_ignored(self):
+        content = json.dumps({'outputs': {'a': '甲'}}) + '\n{"outputs": {}}'
+        translator = DeepSeekTranslator('k', cfg=deepseek_configuration(), transport=lambda p: {
+            'choices': [{'finish_reason': 'stop', 'message': {'content': content}}]})
+        self.assertEqual(translator.translate({}, ['a'])[0], {'a': '甲'})
+
     def test_invalid_model_name_is_rejected(self):
         with self.assertRaises(ValueError):
             DeepSeekTranslator('k', cfg={**deepseek_configuration(), 'model': 'gpt-4'})

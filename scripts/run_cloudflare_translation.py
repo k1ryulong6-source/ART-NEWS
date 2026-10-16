@@ -19,7 +19,8 @@ if args.reserve:
 else:
     try:
         report = run_cloudflare(Store(os.getenv('CULTURE_DESK_DB', ROOT / 'runtime/culture-desk.db')),
-                                identity, probe=args.probe)
+                                identity, probe=args.probe,
+                                retry_validation=os.getenv('CF_RETRY_VALIDATION') == 'true')
     except Exception as error:
         report = {'status': 'failed', 'error': type(error).__name__, 'finished_at': now(),
                   'translated': [], 'requests': None}

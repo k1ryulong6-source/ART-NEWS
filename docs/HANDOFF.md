@@ -524,3 +524,7 @@ Gemini最近已保存14:53–15:01Z批次22请求、5全文、11数字检查失�
 ## 2026-10-16 · 会话直接翻译首批（Claude Haiku 5.5）
 
 用户要求在DeepSeek测试结束后，由当前会话的 Haiku 5.5 直接翻译未译文章。本批只写入 live-105fcd48e54a793df3d8a050（“从画架旁看：Allan Wexler”），经 checked_result 与数字保留检查后写入，provider 为 claude-session:claude-haiku-5-5，标AI翻译，未标校译。快照仅替换该条记录，其余与 main 一致。
+
+## 2026-10-16 · 会话直接翻译第三批（Claude Haiku 5.5）
+
+第三批为会话直接翻译，共9篇：NYC 周末观影、Dear William 改编、林肯纪念堂倒影池、Jazmine Hayes 布朗斯维尔委约、Palazzo Grassi 常设展、晨间剧《布拉萨姆》出演、Ferdi 个展、书商摄影图书奖、Infinity 三人展赠票。全部经 checked_result 与数字保留检查后写入，provider 为 claude-session:claude-haiku-5-5，标AI翻译，未标校译。快照仅替换这9条记录。卢浮宫“文艺复兴”赠票一条因数字检查（“15点”被识别为时刻）暂未收录，待另行处理。

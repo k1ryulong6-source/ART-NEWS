@@ -505,3 +505,11 @@ T072已实际接通并发布（最新覆盖前述缺Account ID记录）：用户
 已在真实全文/上线验证后打开verified_enabled=true，原后台Gemini受阻时免费备用；10000 Neurons/UTC日及2000预留、未知上界、原文/有效稿/免费与Gemini计数保持。CF已有合格全文则当批不再加载离线模型，尽早释放写锁，没AI进展仍机翻兜底。T072接入/实测/发布验收done，但首个常规备用批次还须看新实际报告，不能把启用当新产量或24h独立链验收；T028/T062仍doing。
 
 恢复阶段修正：完整CF断点在scripts/import_daily_translations.py或scripts/export_snapshot.py发布阶段恢复并计入实际变化，import_snapshot仅恢复基础快照，避免恢复后changed=false漏发布。全套224 Python+后续CF/operations回归通过，没有会话翻译工作者/二次模型审校/收费开通。
+
+## T073 · 千问常规接替核验与Gemini根因证据（2026-10-17 JST）
+
+用户询问是否自动接入、自动更新及Gemini失败原因。千问T072真实探针/全文/生产验收已通过，启用后的首个常规38921632702已开始，须核对其实际CF报告及后续Pages，不能以配置或旧not_configured报告代替当前证据。
+
+Gemini最近已保存14:53–15:01Z批次22请求、5全文、11数字检查失败、5次503；接口并非完全不可用。生产补充backend/gemini_errors.py，只公开HTTP/API状态及白名单原因短语（如high demand），不发布原始错误正文/metadata/请求。错误分类在批次service_failures.provider_error和最终error_detail中持久化，原退避/请求预算/免费模式保持；不额外发诊断生成请求、不派会话翻译或换模型。
+
+当前待真实常规结果与新诊断代码上线核验；T073 doing，全量T028及四项T062仍未通过，不承诺Google恢复时间或全球完整覆盖。

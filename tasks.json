@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-16",
+  "updated_at": "2026-10-17",
   "status_values": [
     "todo",
     "doing",
@@ -2400,6 +2400,36 @@
         "真实译稿发布38920726685和Pages38921273182 success；生产/integrations/babel/live-2d37b03d3c7fe402485854c6.json HTTP200/kind=ai-direct，源hash、标题、全部8块与main逐项一致，真实模型为@cf/qwen/qwen3-30b-a3b-fp8。",
         "224 Python全套及后续25项CF/operations通过；独立探针不写旧live，普通串行导入/导出阶段无API恢复完整copy并准确触发发布；只有未译单元的显式单次诊断重试，不是第二轮校译。",
         "真实成功/发布后verified_enabled=true，加入Gemini受阻时的独立免费备用；CF有合格全文时跳过当批离线模型加载，释放写锁，未有AI进展仍保留机翻。下一常规批次实际产量以新报告为准，尚未当成已完成；T028/T062仍doing，禁止宣称全量/四项已验收。"
+      ]
+    },
+    {
+      "id": "T073",
+      "title": "核验千问自动接替及Gemini失败诊断",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex（后台/API，不调用会话翻译）",
+      "updated_at": "2026-10-17",
+      "depends_on": [
+        "T072"
+      ],
+      "scope": [
+        "backend/ai_translation.py",
+        "backend/gemini_access.py",
+        "backend/gemini_errors.py",
+        "tests/test_gemini_access.py",
+        "tests/test_ai_retry.py",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "核对启用后的常规Cloudflare批次和发布，不把探针等同无人值守产量",
+        "生产逐次保存经过脱敏的Gemini HTTP状态、API状态和服务信息，区分503、限流、配置和全文数字检查",
+        "真实调用继续原免费预算、持久退避和单轮翻译，不改费用/模型/密钥、不额外派会话模型",
+        "相关程序测试和真实GitHub/线上证据，无法确定的上游根因如实报告"
+      ],
+      "evidence": [
+        "既有千问探针1篇完整8块已发布；首个启用后的常规批次尚待执行验收。",
+        "最近已保存Gemini批次22请求/5完整篇/11数字检查失败/5次503，属于间歇故障，不能称完全不可用或用完额度。"
       ]
     }
   ]

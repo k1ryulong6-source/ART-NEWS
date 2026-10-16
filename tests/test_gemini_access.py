@@ -3,7 +3,7 @@ import json
 import unittest
 from urllib.error import HTTPError
 from backend.gemini_access import inspect_access, DiagnosticGeminiTranslator
-from backend.ai_translation import ServiceError, configuration
+from backend.ai_translation import ServiceError, GeminiTranslator, configuration
 
 
 class GeminiAccessTests(unittest.TestCase):
@@ -47,5 +47,47 @@ class GeminiAccessTests(unittest.TestCase):
         with self.assertRaises(ServiceError):
             provider.request({'contents': []})
         self.assertEqual(provider.error_detail['http_status'], 404)
-        self.assertIn('[redacted]', provider.error_detail['message'])
+        self.assertEqual(provider.error_detail['category'], 'model_not_found')
         self.assertNotIn(key, json.dumps(provider.error_detail))
+
+    def test_production_preserves_capacity_evidence_without_echoing_secrets_or_prompt(self):
+        body = {'error': {'code': 503, 'status': 'UNAVAILABLE',
+                         'message': 'This model is currently experiencing high demand. key=fixture-private-key; prompt=private-source',
+                         'details': [{'metadata': {'project': 'private-account'}}]}}
+        def unavailable(request, timeout):
+            raise HTTPError(request.full_url, 503, '', {'Retry-After': '180'},
+                            io.BytesIO(json.dumps(body).encode()))
+        provider = GeminiTranslator('fixture-private-key', cfg=configuration())
+        provider.opener = unavailable
+        with self.assertRaises(ServiceError) as raised:
+            provider.request({'contents': []})
+        self.assertEqual(raised.exception.retry_seconds, 180)
+        self.assertEqual(raised.exception.detail, {'http_status': 503, 'api_status': 'UNAVAILABLE',
+                                                  'category': 'capacity_unavailable', 'message_evidence': 'high demand'})
+        for secret in ('fixture-private-key', 'private-source', 'private-account'):
+            self.assertNotIn(secret, json.dumps(raised.exception.detail))
+
+    def test_unknown_or_malformed_error_does_not_invent_overload_or_discard_status(self):
+        for body in [b'not-json', b'[]', b'{"error": []}',
+                     b'{"error":{"status":"UNAVAILABLE","message":"internal routing error"}}']:
+            def unavailable(request, timeout):
+                raise HTTPError(request.full_url, 503, '', {}, io.BytesIO(body))
+            provider = DiagnosticGeminiTranslator('fixture', configuration(), unavailable)
+            with self.assertRaises(ServiceError) as raised:
+                provider.request({})
+            self.assertEqual(raised.exception.status, 503)
+            self.assertNotEqual(raised.exception.detail['category'], 'capacity_unavailable')
+            self.assertNotIn('message_evidence', raised.exception.detail)
+
+    def test_quota_key_location_and_model_errors_remain_distinct(self):
+        for code, message, category in [(429, 'You exceeded your current quota', 'quota_exceeded'),
+                                        (403, 'Your API key was reported as leaked.', 'key_reported_leaked'),
+                                        (400, 'API key not valid. Please pass a valid API key.', 'invalid_api_key'),
+                                        (400, 'User location is not supported for the API use.', 'unsupported_location'),
+                                        (404, 'The model is not found for API version v1beta', 'model_not_found')]:
+            def denied(request, timeout):
+                raise HTTPError(request.full_url, code, '', {},
+                                io.BytesIO(json.dumps({'error': {'message': message}}).encode()))
+            provider = DiagnosticGeminiTranslator('fixture', configuration(), denied)
+            with self.assertRaises(ServiceError) as raised: provider.request({})
+            self.assertEqual(raised.exception.detail['category'], category)

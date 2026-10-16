@@ -4,38 +4,15 @@ import re
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-from .ai_translation import GeminiTranslator, ServiceError
+from .ai_translation import GeminiTranslator
 
 
 class DiagnosticGeminiTranslator(GeminiTranslator):
-    """Same real request as production, with a bounded and redacted API error."""
+    """Same production request and public-safe error evidence, with a test opener."""
     def __init__(self, key, cfg, opener=urlopen):
         self.error_detail = None
         self.opener = opener
         super().__init__(key, cfg=cfg)
-
-    def request(self, payload):
-        request = Request('https://generativelanguage.googleapis.com/v1beta/models/' + self.model + ':generateContent',
-                          data=json.dumps(payload, ensure_ascii=False).encode(),
-                          headers={'Content-Type': 'application/json', 'x-goog-api-key': self.key})
-        try:
-            with self.opener(request, timeout=120) as response:
-                raw = response.read(2_000_001)
-            if len(raw) > 2_000_000:
-                raise ValueError('response_too_large')
-            return json.loads(raw)
-        except HTTPError as error:
-            self.error_detail = {'http_status': error.code}
-            try:
-                value = json.loads(error.read(64_000)).get('error', {})
-                message = str(value.get('message', '')).replace(self.key, '[redacted]')
-                message = re.sub(r'AIza[0-9A-Za-z_-]{20,}', '[redacted]', message)
-                self.error_detail['message'] = message[:500]
-            except (ValueError, TypeError):
-                pass
-            retry = (error.headers or {}).get('Retry-After', '')
-            raise ServiceError(error.code, int(retry) if retry.isdigit() else 0) from None
-
 
 def inspect_access(key, configured_model, opener=urlopen):
     report = {'provider': 'gemini', 'configured_model': configured_model,

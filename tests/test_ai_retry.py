@@ -141,3 +141,22 @@ class RetryWorkerTests(unittest.TestCase):
         self.assertEqual(result['requests'], 2)
         self.assertEqual(result['translated'], [self.row['id']])
         self.assertEqual(result['service_failures'][0]['error'], 'URLError')
+
+    def test_safe_service_evidence_survives_inline_recovery_and_final_wait(self):
+        detail = {'http_status': 503, 'api_status': 'UNAVAILABLE', 'category': 'capacity_unavailable',
+                  'message_evidence': 'high demand'}
+        good = self.provider(); calls = [0]
+        def transient(payload):
+            calls[0] += 1
+            if calls[0] == 1: raise ServiceError(503, detail=detail)
+            return good.transport(payload)
+        result, _ = self.execute(GeminiTranslator('fixture', transport=transient))
+        self.assertEqual(result['translated'], [self.row['id']])
+        self.assertEqual(result['service_failures'][0]['provider_error'], detail)
+        self.setUp()  # A fresh untranslated article for the persistent outage case.
+        def down(payload): raise ServiceError(503, detail=detail)
+        result, _ = self.execute(GeminiTranslator('fixture', transport=down), requests_per_run=1)
+        self.assertEqual(result['error_detail'], detail)
+        ledger = json.loads((self.root / 'ledger.json').read_text())
+        self.assertEqual(ledger['service_retry']['provider_error'], detail)
+        self.assertEqual(ledger['last_api_error']['category'], 'capacity_unavailable')

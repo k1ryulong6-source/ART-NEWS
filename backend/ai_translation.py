@@ -14,6 +14,7 @@ from .editorial import checked_result, numbers, publish_translation, rules
 from .autonomous_translation import assemble, write_json, read_checkpoint
 from .priority import rank_snapshot, translation_batch
 from . import ai_retry
+from .gemini_errors import error_detail as gemini_error_detail
 
 
 def configuration():
@@ -21,8 +22,9 @@ def configuration():
 
 
 class ServiceError(Exception):
-    def __init__(self, status, retry_seconds=0):
+    def __init__(self, status, retry_seconds=0, detail=None):
         self.status, self.retry_seconds = status, retry_seconds
+        self.detail = detail
         super().__init__('ai_http_' + str(status))
 
 
@@ -50,14 +52,17 @@ class GeminiTranslator:
         request = Request(url, data=json.dumps(payload, ensure_ascii=False).encode(),
                           headers={'Content-Type': 'application/json', 'x-goog-api-key': self.key})
         try:
-            with urlopen(request, timeout=120) as response:
+            with getattr(self, 'opener', urlopen)(request, timeout=120) as response:
                 raw = response.read(2_000_001)
                 if len(raw) > 2_000_000:
                     raise ValueError('response_too_large')
                 return json.loads(raw)
         except HTTPError as error:
-            retry = error.headers.get('Retry-After', '')
-            raise ServiceError(error.code, ai_retry.retry_after_seconds(retry)) from None
+            retry = (error.headers or {}).get('Retry-After', '')
+            detail = gemini_error_detail(error)
+            if hasattr(self, 'error_detail'):
+                self.error_detail = detail
+            raise ServiceError(error.code, ai_retry.retry_after_seconds(retry), detail) from None
 
     def translate(self, document, keys):
         self.last_usage = None
@@ -342,6 +347,8 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                             reason = str(error) if isinstance(error, ServiceError) else type(error).__name__
                             plan = ai_retry.schedule(ledger, cfg, ledger_path.name, reason,
                                                      getattr(error, 'retry_seconds', 0))
+                            if getattr(error, 'detail', None):
+                                plan['provider_error'] = error.detail
                             error.service_retry_recorded = True
                             quota_remaining = (reservation['remaining'] if reservation else
                                 cfg['requests_per_day'] - usage['requests'] - usage.get('reserved_requests', 0))
@@ -426,6 +433,9 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                     report['status'] = 'quota_wait' if isinstance(error, ServiceError) and error.status == 429 else 'service_wait'
                     ledger['retry_after'] = (datetime.now(timezone.utc) + timedelta(seconds=max(getattr(error, 'retry_seconds', 0), 3600))).isoformat()
                 ledger.update(retry_status=report['status'], retry_error=reason)
+                if getattr(error, 'detail', None):
+                    report['error_detail'] = error.detail
+                    ledger['last_api_error'] = {**error.detail, 'occurred_at': now()}
                 persist(path, state)
                 persist(ledger_path, ledger)
                 report.update(error=reason, retry_after=ledger['retry_after'])

@@ -2470,6 +2470,33 @@
         "235 Python测试通过（新增7项DeepSeek测试），scripts/check_project.py通过；尚未真实调用DeepSeek，草稿PR待用户设置Secret后验收。",
         "2026-10-16真实Actions 38944146695（JST 10-17 03:01–03:09）：DeepSeek deepseek-flash 40请求、144972输入/49816输出tokens，15篇AI全文通过程序检查并经Pages 38945891040发布；20篇待重试（17数字检查、2篇模型JSON后附多余文本、1篇未译段落），无服务错误。后续修复：JSON后附文本只取首个对象。"
       ]
+    },
+    {
+      "id": "T075",
+      "title": "文章阅读页排版优化（行长、对齐、日文字体、机翻标点、中文/原文对段切换）",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Claude（前端）",
+      "updated_at": "2026-10-16",
+      "depends_on": [
+        "T040"
+      ],
+      "scope": [
+        "frontend/theme.css",
+        "frontend/app.js",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "阅读页正文单栏约700px行长，中文不再两端对齐造成字距拉开",
+        "日文原文使用日文字体栈",
+        "自动机翻正文显示时把半角标点改为中文标点并去掉⁇，存储译文不改",
+        "桌面端中文/原文切换条吸顶；切换后停留在同一段",
+        "1440/768/390px无横向溢出，中文/原文/收藏/巴别塔入口保留"
+      ],
+      "evidence": [
+        "235 Python测试与28 JS测试通过，scripts/check_project.py通过；本地dist在1440/768/390px检查4篇（AI译文、机翻、英文原文、日文原文）切换后段落一致、无横向溢出；草稿PR待用户确认后合并"
+      ]
     }
   ]
 }

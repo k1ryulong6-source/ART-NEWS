@@ -24,7 +24,8 @@ def persist_checkpoint():
     # Once a minute, persist accepted chunks independently of the final export.
     # A finished-copy checkpoint restores the temporary DB without another call.
     paths = [p for p in ('data/ai-translation-progress', 'data/ai-translation-ledger.json',
-                        'data/ai-translation-ledger-secondary.json', 'data/ai-translation-projects') if (ROOT / p).exists()]
+                        'data/ai-translation-ledger-secondary.json', 'data/ai-translation-ledger-deepseek.json',
+                        'data/ai-translation-projects') if (ROOT / p).exists()]
     subprocess.run(['git', 'add', *paths], cwd=ROOT, check=True, capture_output=True)
     if subprocess.run(['git', 'diff', '--cached', '--quiet'], cwd=ROOT).returncode:
         for command in (['git', 'commit', '-m', 'Checkpoint accepted AI translation progress'],

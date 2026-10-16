@@ -1,3 +1,5 @@
+> T074进行中（2026-10-16，Claude接手后台）：新增DeepSeek翻译提供方（backend/deepseek_translation.py）。设置GitHub Secret DEEPSEEK_API_KEY后自动翻译默认走DeepSeek（deepseek-flash，关闭thinking），Actions变量AI_TRANSLATION_PROVIDER=gemini切回Gemini，DEEPSEEK_MODEL改模型。独立账本data/ai-translation-ledger-deepseek.json，300请求/太平洋日；402余额不足暂停6小时。235项测试通过，尚无真实DeepSeek调用证据，见D074。
+
 > T061已验收（2026-10-15）：3e940d5已上线，CI38696435261/Pages38696435200 success；132Python+27JS、stdlib构建/项目检查。生产1440/390px主头条与三栏ID精确匹配后台/队列，旧10月8日/9月24日占位稿退出；新头条为Sandra Hüller/Rose访谈、Gary Waddell讣告、Tammy Nguyen威尼斯双年展、野生动物摄影奖，均已有有效Gemini中文全文（34/12/15/47块），公开原文hash/中原文块数及原文/Babel验证通过，无额外重译。正常主头条72h、缺新最多7天，所有栏目不回灌7天外旧库；每2h减1分、重要性/紧急度及既定降权/来源平衡，发布时间未知仅明确2天内活动后备，不以抓取时间伪造新鲜度/随机凑版。Claude视觉不改。已保留并发采集新增5条，最新900资讯/661待AI/841输入；API新批38696435355仍pending、旧批38696221501 active，未称已完成。T028继续doing；API独立接续、免费500/日不变、禁止会话翻译工作者。
 
 > T061（2026-10-15）：修正头版选稿，视觉/文章排版不改。重要新闻直接参与；主头条优先72小时内，缺新最多回退7天，栏目也不从7天外旧库填充。重要性高24/中8，P0加12/P1加6/P3减12，每2小时减1分，非日本普通展览原惩罚保留；后续同源减6促进媒体平衡。未知发布时间仅在没有同栏近期报道且有明确2天内活动时后备，不用抓取/翻译时间伪造新鲜度。兴趣筛选留在原selectToday辅助功能，不再截断公共头条。无随机轮换，历史/日历全部保留。Python/JS选稿与API头条优先ID同步，待生产验收。

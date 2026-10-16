@@ -397,3 +397,7 @@ D072验收：凭据补齐后独立真实探针3请求，前2次日文程序失�
 生产Gemini请求原先只保存HTTP码，无法从503区分Google明确报告容量不足与未说明原因的服务不可用。新增共享安全解析：只保留HTTP码、白名单API状态、分类及匹配到的固定原因短语，不公开原始错误正文、请求内容、链接或账户metadata；诊断器复用同一生产请求。逐次短重试/最终等待都保存证据，后续成功不能抹掉该批故障。未知错误不猜测过载；503不等同429、密钥失效或Google全站故障。
 
 不额外发送诊断生成请求，由原常规免费批次取得真实证据；不改变模型、预算、计数、持久退避或二次校对规则。Google官方状态页显示正常只能作为公开状态，不能否认实际免费项目503；全文数字检查失败单列，现有合格单元照常复用。
+
+## D074 · 用户授权DeepSeek预充值API作为自动翻译主路线
+
+2026-10-16用户因Gemini免费层持续503，要求接入DeepSeek翻译。DeepSeek是预充值付费API，用户明确要求即视为授权；费用以账户余额为硬上限，程序另设300请求/太平洋日保护上限（config/ai-translation.json的deepseek段）。选择规则：Actions变量AI_TRANSLATION_PROVIDER显式指定优先；未指定时，设置了Secret DEEPSEEK_API_KEY就用DeepSeek，否则仍走免费Gemini双项目。默认模型deepseek-flash（DeepSeek-V4.1-Flash；旧名deepseek-chat已于2026-07退役），关闭thinking，JSON输出，单轮直译，提示词与Gemini共用。译稿标contextual-api:deepseek，独立账本，不复用Gemini配额。Cloudflare千问/离线机翻兜底顺序不变。

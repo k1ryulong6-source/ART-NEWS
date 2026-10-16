@@ -2436,6 +2436,39 @@
         "e30aa49已推送，Project checks 38922760198 success；原免费模型/请求/持久退避保持，安全原因证据随常规API请求采集。",
         "补充operations.json逐路error_detail公开接口，便于无需读取Actions全文日志即可排查。"
       ]
+    },
+    {
+      "id": "T074",
+      "title": "接入DeepSeek翻译API（Gemini免费层503期间主路线）",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Claude（用户Codex额度用完，后台改动由Claude接手）",
+      "updated_at": "2026-10-16",
+      "depends_on": [
+        "T072"
+      ],
+      "scope": [
+        "backend/deepseek_translation.py",
+        "backend/ai_pool.py",
+        "backend/ai_translation.py",
+        "backend/operations.py",
+        "config/ai-translation.json",
+        "scripts/run_ai_translation.py",
+        ".github/workflows/autotranslate.yml",
+        "tests/test_deepseek_translation.py",
+        "tests/test_operations.py",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "设置Secret DEEPSEEK_API_KEY后自动翻译默认走DeepSeek；变量AI_TRANSLATION_PROVIDER=gemini可切回Gemini",
+        "DeepSeek独立账本data/ai-translation-ledger-deepseek.json，300请求/太平洋日上限，402余额不足按配置错误等待6小时",
+        "密钥只在GitHub Secret，不进源码、日志、状态文件",
+        "真实Actions批次成功发布DeepSeek译文后才算验收"
+      ],
+      "evidence": [
+        "235 Python测试通过（新增7项DeepSeek测试），scripts/check_project.py通过；尚未真实调用DeepSeek，草稿PR待用户设置Secret后验收。"
+      ]
     }
   ]
 }

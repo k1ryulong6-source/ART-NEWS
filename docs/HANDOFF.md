@@ -488,3 +488,6 @@ T070本次单篇交互补充已验收：4f0619e；CI38904711570、导入38904711
 当前窗口完成4篇紧急上映/活动+1篇backlog，共190块（5篇完整input已读取），execution=interactive，不派工作者/第二轮校对/付费，实际具体型号不可见不冒称5.6/Gemini/最低价。ID与程序证据见data/session-translation-batch-2026-10-16.json。最新main检查全部hash/title匹配、暂无有效AI，临时库全pack模拟只新增5、56 unchanged/6 stale/0 invalid、0旧AI覆盖。正文保存的来源推荐/观众评论未擅删，译稿notes注明来源部分性质；不算正文质量清理完成。
 
 为避免API在写稿后、导入前抢先完成而被会话稿覆盖，import_packs复用headline_ready的完整hash/段落/数字有效性检查，合格AI稿原样保留；无效旧稿仍可修复。6项导入测试通过。T071等待真实导入/Pages；全量T028/T062继续doing。
+
+
+T071本批5篇已实际发布验收：e3c57d1/097fe35，真实导入38909978377 success。生产5份/integrations/babel/ID.json逐篇HTTP200、kind=ai-direct，源hash/中文标题/190块与译稿逐项完全匹配，原图/链接保留；数据实际模型为当前窗口，execution=interactive，非5.6/Gemini。7项导入回归包括保留后台抢先完成稿及相同pack_hash但正文损坏时可修复。本批T071 done，不代表T028全量或T062四项通过；不自动恢复每日会话任务/加派工作者/开启付费。线上逐篇证据见data/session-translation-batch-2026-10-16.json。

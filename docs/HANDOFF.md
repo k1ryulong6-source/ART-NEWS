@@ -518,6 +518,9 @@ Gemini最近已保存14:53–15:01Z批次22请求、5全文、11数字检查失�
 
 当前待真实常规结果与新诊断代码上线核验；T073 doing，全量T028及四项T062仍未通过，不承诺Google恢复时间或全球完整覆盖。
 
+## 2026-10-16 · 会话直接翻译第二批（Claude Haiku 5.5）
+
+第二批仍为会话直接翻译，共2篇：live-014873121c1c7a37a6702140（日文展览发布）与 live-11ba09a36836efc2a784b0ff（英文影视）。两篇均经 checked_result 与数字保留检查后写入，provider 为 claude-session:claude-haiku-5-5，标AI翻译，未标校译。快照仅替换这两条记录，其余记录与 main 保持一致。
 ## 2026-10-16 · 会话直接翻译首批（Claude Haiku 5.5）
 
 用户要求在DeepSeek测试结束后，由当前会话的 Haiku 5.5 直接翻译未译文章。本批只写入 live-105fcd48e54a793df3d8a050（“从画架旁看：Allan Wexler”），经 checked_result 与数字保留检查后写入，provider 为 claude-session:claude-haiku-5-5，标AI翻译，未标校译。快照仅替换该条记录，其余与 main 一致。

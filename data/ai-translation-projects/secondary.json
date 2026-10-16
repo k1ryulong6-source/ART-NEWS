@@ -1,25 +1,53 @@
 {
-  "status": "daily_limit",
+  "status": "service_wait",
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-16T06:56:05.016123+00:00",
+  "started_at": "2026-10-16T07:40:44.199447+00:00",
   "translated": [],
-  "failed": [],
+  "failed": [
+    {
+      "id": "live-54732d5d5023d76df3aff8a1",
+      "reason": "ai_numbers_missing:block:42:text:0"
+    },
+    {
+      "id": "live-b5b1ef3bbd49bb2e2b2a5f50",
+      "reason": "ai_numbers_missing:block:5:text:0"
+    },
+    {
+      "id": "live-e6595cc49ea67462f695ade2",
+      "reason": "ai_numbers_missing:block:41:text:0"
+    },
+    {
+      "id": "live-b195fd03fcc926008af29226",
+      "reason": "ai_numbers_missing:block:8:text:0"
+    },
+    {
+      "id": "live-8183b707fddf5be7d8e4b969",
+      "reason": "ai_numbers_missing:block:8:text:0"
+    }
+  ],
   "deferred": [],
-  "resumed": [],
+  "resumed": [
+    "live-54732d5d5023d76df3aff8a1",
+    "live-b5b1ef3bbd49bb2e2b2a5f50",
+    "live-e6595cc49ea67462f695ade2",
+    "live-b195fd03fcc926008af29226",
+    "live-8183b707fddf5be7d8e4b969"
+  ],
   "stale": [],
-  "requests": 0,
-  "input_tokens": 0,
-  "output_tokens": 0,
-  "pending_before": 0,
-  "pending_after": 0,
-  "finished_at": "2026-10-16T06:56:09.389499+00:00",
-  "seconds": 4.37,
-  "requests_today": 500,
+  "requests": 6,
+  "input_tokens": 11358,
+  "output_tokens": 1158,
+  "pending_before": 369,
+  "error": "ai_http_503",
+  "retry_after": "2026-10-16T08:42:26.341781+00:00",
+  "pending_after": 369,
+  "finished_at": "2026-10-16T07:42:26.343233+00:00",
+  "seconds": 102.14,
+  "requests_today": 6,
   "daily_request_limit": 500,
-  "unknown_usage_requests_today": 2,
-  "retry_after": "2026-10-16T07:15:00+00:00",
+  "unknown_usage_requests_today": 1,
   "id": "secondary",
   "configured": true
 }

@@ -1,31 +1,26 @@
-"""Build the 幕間休息 promo film page.
+"""Build the 幕間休息 promo film page ("一束光").
 
 promo/src/promo.html is the source. This script fills in:
 
-  {{DOTS}}        land dots from Natural Earth 110m land (world-atlas topojson)
   {{WORDMARK}}    the site's wordmark outline (frontend/index.html), split per character
-  {{CURTAIN_*}}   the closing curtain, woven from recent original headlines in data/live.json
+  {{SEATS}}       cinema seat silhouettes for the opening shot
   {{FONT_*}}      subsets of the site's OFL faces, cut to the characters the film uses
 
 and writes promo/index.html (fonts from promo/fonts/), plus an optional single-file
 copy with the fonts embedded.
 
 Usage:
-  python promo/build.py --land land-110m.json
-                        [--serif-source NotoSerifTC[wght].ttf] [--sans-source NotoSansSC[wght].ttf]
+  python promo/build.py [--serif-source NotoSerifTC[wght].ttf] [--sans-source NotoSansSC[wght].ttf]
                         [--inline out.html]
 
-land-110m.json: https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-110m.json (ISC;
-Natural Earth data, public domain). Without --land the committed promo/land-dots.json is
-reused. The upstream font TTFs (google/fonts ofl/notoseriftc, ofl/notosanssc) are needed
-only when the film's text changes; otherwise the committed subsets are reused.
+The upstream font TTFs (google/fonts ofl/notoseriftc, ofl/notosanssc) are needed only
+when the film's text changes; otherwise the committed subsets are reused.
 """
 from __future__ import annotations
 
 import argparse
 import base64
 import html
-import json
 import re
 from pathlib import Path
 
@@ -33,59 +28,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PROMO = ROOT / "promo"
 FONTS = PROMO / "fonts"
 SITE_FONTS = ROOT / "frontend" / "fonts"
-DOTS_FILE = PROMO / "land-dots.json"
 
-STEP = 1.5                      # degrees between dots
-LAT_TOP, LAT_BOTTOM = 80, -56   # crop: Arctic islands to Tierra del Fuego
-
-
-# ── Land dots ──────────────────────────────────────────────────────────────────
-def topo_rings(topo: dict) -> list[list[tuple[float, float]]]:
-    scale, translate = topo["transform"]["scale"], topo["transform"]["translate"]
-    arcs = []
-    for arc in topo["arcs"]:
-        x = y = 0
-        points = []
-        for dx, dy in arc:
-            x += dx
-            y += dy
-            points.append((x * scale[0] + translate[0], y * scale[1] + translate[1]))
-        arcs.append(points)
-
-    def ring(indices: list[int]) -> list[tuple[float, float]]:
-        out: list[tuple[float, float]] = []
-        for index in indices:
-            points = arcs[index] if index >= 0 else arcs[~index][::-1]
-            out.extend(points[1:] if out else points)
-        return out
-
-    rings = []
-    for geometry in topo["objects"]["land"]["geometries"]:
-        polygons = geometry["arcs"] if geometry["type"] == "MultiPolygon" else [geometry["arcs"]]
-        for polygon in polygons:
-            rings.extend(ring(r) for r in polygon)
-    return rings
-
-
-def land_dots(path: Path) -> list[float]:
-    import numpy as np
-
-    rings = topo_rings(json.loads(path.read_text(encoding="utf-8")))
-    lons = np.arange(-180 + STEP / 2, 180, STEP)
-    lats = np.arange(LAT_TOP - STEP / 2, LAT_BOTTOM, -STEP)
-    grid_lon, grid_lat = np.meshgrid(lons, lats)
-    px, py = grid_lon.ravel(), grid_lat.ravel()
-    inside = np.zeros(px.shape, dtype=bool)
-    for ring in rings:                      # even-odd rule over every ring (holes too)
-        pts = np.array(ring)
-        x1, y1 = pts[:-1, 0][:, None], pts[:-1, 1][:, None]
-        x2, y2 = pts[1:, 0][:, None], pts[1:, 1][:, None]
-        crosses = ((y1 > py) != (y2 > py)) & (px < (x2 - x1) * (py - y1) / np.where(y2 == y1, 1e-12, y2 - y1) + x1)
-        inside ^= (crosses.sum(axis=0) % 2).astype(bool)
-    dots: list[float] = []
-    for lon, lat in zip(px[inside], py[inside]):
-        dots += [round(float(lon), 2), round(float(lat), 2)]
-    return dots
 
 
 # ── Wordmark ───────────────────────────────────────────────────────────────────
@@ -113,32 +56,24 @@ def wordmark_svg() -> str:
             f'aria-hidden="true">{"".join(parts)}</svg>')
 
 
-# ── Curtain of headlines ───────────────────────────────────────────────────────
-def curtain(columns: int) -> tuple[str, str]:
-    data = json.loads((ROOT / "data" / "live.json").read_text(encoding="utf-8"))
-    sources = json.loads((ROOT / "config" / "sources.json").read_text(encoding="utf-8"))
-    language = {s["id"]: s.get("language") for s in (sources["sources"] if isinstance(sources, dict) else sources)}
-    rows = sorted((r for r in data["content"] if r.get("title_original") and not r.get("is_demo")),
-                  key=lambda r: r.get("published_at") or "", reverse=True)
-    by_source: dict[str, list[dict]] = {}
-    for row in rows:
-        by_source.setdefault(row["source_id"], []).append(row)
-    picked: list[tuple[str, str]] = []
-    depth = 0
-    while len(picked) < columns * 2 and depth < 12:      # round-robin across sources
-        for source_id, items in by_source.items():
-            if depth < len(items) and len(picked) < columns * 2:
-                picked.append((items[depth]["title_original"].strip(), language.get(source_id) or "en"))
-        depth += 1
-
-    def column(title: str, lang: str) -> str:
-        text = html.escape(title)
-        attr = "" if lang in ("zh", "ja") else f' lang="{lang}"'
-        return f"<p{attr}>{text}　{text}</p>"
-
-    left = "".join(column(*item) for item in picked[0::2])
-    right = "".join(column(*item) for item in picked[1::2])
-    return left, right
+# ── Cinema seats ───────────────────────────────────────────────────────────────
+def seats() -> str:
+    """Three rows of seat backs, darker and larger towards the camera, rim-lit from the
+    screen on the left."""
+    rows = [(150, 64, 54, 92, "#0d0b0a"), (205, 84, 70, 118, "#080706"), (268, 110, 92, 150, "#050404")]
+    out = ['<defs><linearGradient id="rim" x1="0" x2="1"><stop offset="0" stop-color="#e9e2d3" stop-opacity=".28"/>'
+           '<stop offset=".6" stop-color="#e9e2d3" stop-opacity=".06"/><stop offset="1" stop-color="#e9e2d3" stop-opacity="0"/></linearGradient></defs>']
+    for index, (base, height, width, gap, fill) in enumerate(rows):
+        x = -width / 2 + (index * 37) % gap
+        while x < 1920 + width:
+            top = base - height
+            path = (f"M{x:.0f} 300V{top + 18:.0f}Q{x:.0f} {top:.0f} {x + 18:.0f} {top:.0f}"
+                    f"H{x + width - 18:.0f}Q{x + width:.0f} {top:.0f} {x + width:.0f} {top + 18:.0f}V300Z")
+            out.append(f'<path d="{path}" fill="{fill}"/>')
+            out.append(f'<path d="M{x + 4:.0f} {top + 14:.0f}Q{x + 4:.0f} {top + 2:.0f} {x + 18:.0f} {top + 2:.0f}H{x + width * .6:.0f}" '
+                       f'fill="none" stroke="url(#rim)" stroke-width="2"/>')
+            x += gap
+    return "".join(out)
 
 
 # ── Fonts ──────────────────────────────────────────────────────────────────────
@@ -175,23 +110,15 @@ def not_covered(font_path: Path, text: str) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--land", type=Path, help="world-atlas land-110m.json")
     parser.add_argument("--serif-source", type=Path, help="upstream NotoSerifTC[wght].ttf")
     parser.add_argument("--sans-source", type=Path, help="upstream NotoSansSC[wght].ttf")
     parser.add_argument("--inline", type=Path, help="also write a single-file copy with embedded fonts")
     args = parser.parse_args()
 
-    if args.land:
-        DOTS_FILE.write_text(json.dumps(land_dots(args.land), separators=(",", ":")) + "\n", encoding="utf-8")
-    dots = DOTS_FILE.read_text(encoding="utf-8").strip()
-    print(f"land dots: {dots.count(',') // 2 + 1}")
-
-    left, right = curtain(22)
     page = (PROMO / "src" / "promo.html").read_text(encoding="utf-8")
-    page = (page.replace("{{DOTS}}", dots).replace("{{WORDMARK}}", wordmark_svg())
-            .replace("{{CURTAIN_L}}", left).replace("{{CURTAIN_R}}", right))
+    page = page.replace("{{WORDMARK}}", wordmark_svg()).replace("{{SEATS}}", seats())
 
-    text = used_text(page.replace(dots, ""))
+    text = used_text(page)
     FONTS.mkdir(exist_ok=True)
     fonts = {
         "FONT_TITLE": FONTS / "promo-title.woff2",

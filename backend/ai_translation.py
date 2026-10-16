@@ -26,6 +26,12 @@ class ServiceError(Exception):
         super().__init__('ai_http_' + str(status))
 
 
+class ProviderBudgetError(Exception):
+    def __init__(self, reason, retry_after, status='daily_limit'):
+        self.retry_after, self.status = retry_after, status
+        super().__init__(reason)
+
+
 class GeminiTranslator:
     def __init__(self, key, transport=None, cfg=None):
         self.cfg = cfg or configuration()
@@ -148,8 +154,8 @@ def selected_rows(rows, snapshot, limit):
     return translation_batch(rows, limit)[0]
 
 
-def next_quota_day():
-    local = datetime.now(ZoneInfo('America/Los_Angeles'))
+def next_quota_day(quota_timezone='America/Los_Angeles'):
+    local = datetime.now(ZoneInfo(quota_timezone))
     return (local.replace(hour=0, minute=15, second=0, microsecond=0) + timedelta(days=1)).astimezone(timezone.utc).isoformat()
 
 
@@ -160,7 +166,7 @@ def reserve_requests(path, reservation_id, cfg=None):
     ledger = json.loads(path.read_text()) if path.exists() else {'schema_version': 1, 'days': {}}
     if not isinstance(ledger, dict) or not isinstance(ledger.get('days'), dict):
         raise ValueError('invalid_ai_quota_ledger')
-    day = datetime.now(ZoneInfo('America/Los_Angeles')).date().isoformat()
+    day = datetime.now(ZoneInfo(cfg.get('quota_timezone', 'America/Los_Angeles'))).date().isoformat()
     usage = ledger['days'].setdefault(day, {'requests': 0, 'input_tokens': 0, 'output_tokens': 0})
     reserved = usage.setdefault('reserved_requests', 0)
     if type(usage.get('requests')) is not int or usage['requests'] < 0 or type(reserved) is not int or reserved < 0:
@@ -204,7 +210,7 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
     if not isinstance(ledger, dict) or not isinstance(ledger.get('days'), dict):
         # Fail closed: a damaged ledger must not reset a quota and spend again.
         raise ValueError('invalid_ai_quota_ledger')
-    day = datetime.now(ZoneInfo('America/Los_Angeles')).date().isoformat()
+    day = datetime.now(ZoneInfo(cfg.get('quota_timezone', 'America/Los_Angeles'))).date().isoformat()
     usage = ledger['days'].setdefault(day, {'requests': 0, 'input_tokens': 0, 'output_tokens': 0})
     if any(type(usage.get(field)) is not int or usage[field] < 0 for field in ('requests', 'input_tokens', 'output_tokens')):
         raise ValueError('invalid_ai_quota_ledger')
@@ -284,7 +290,7 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                     pending = [(key, text) for key, text in units if key not in state['outputs']]
                     if not pending:
                         break
-                    actual_day = datetime.now(ZoneInfo('America/Los_Angeles')).date().isoformat()
+                    actual_day = datetime.now(ZoneInfo(cfg.get('quota_timezone', 'America/Los_Angeles'))).date().isoformat()
                     if reservation and actual_day != reservation['day']:
                         report['status'] = 'run_limit'
                         exhausted = True
@@ -294,7 +300,7 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                         usage = ledger['days'].setdefault(day, {'requests': 0, 'input_tokens': 0, 'output_tokens': 0})
                     quota_exhausted = reservation['remaining'] <= 0 if reservation else usage['requests'] + usage.get('reserved_requests', 0) >= cfg['requests_per_day']
                     if quota_exhausted:
-                        report.update(status='daily_limit', retry_after=next_quota_day())
+                        report.update(status='daily_limit', retry_after=next_quota_day(cfg.get('quota_timezone', 'America/Los_Angeles')))
                         exhausted = True
                         break
                     if report['requests'] >= cfg['requests_per_run'] or clock() - start >= cfg['seconds_per_run']:
@@ -314,6 +320,8 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                         chunk.append((key, text))
                         size += len(text)
                     # Reserve before calling: timeout/crash/cancelled requests still consume quota.
+                    if hasattr(provider, 'prepare_request'):
+                        provider.prepare_request(document, [key for key, _ in chunk])
                     usage['requests'] += 1
                     usage['unknown_usage_requests'] = usage.get('unknown_usage_requests', 0) + 1
                     if reservation:
@@ -403,6 +411,10 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                 if not reservation:
                     with io_lock if io_lock is not None else nullcontext():
                         path.unlink(missing_ok=True)
+            except ProviderBudgetError as error:
+                persist(path, state)
+                report.update(status=error.status, error=str(error), retry_after=error.retry_after)
+                break
             except (ServiceError, URLError, TimeoutError, ConnectionError) as error:
                 reason = str(error) if isinstance(error, ServiceError) else type(error).__name__
                 if getattr(error, 'service_retry_recorded', False):

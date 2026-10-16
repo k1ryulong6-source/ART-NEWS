@@ -491,3 +491,9 @@ T070本次单篇交互补充已验收：4f0619e；CI38904711570、导入38904711
 
 
 T071本批5篇已实际发布验收：e3c57d1/097fe35，真实导入38909978377 success。生产5份/integrations/babel/ID.json逐篇HTTP200、kind=ai-direct，源hash/中文标题/190块与译稿逐项完全匹配，原图/链接保留；数据实际模型为当前窗口，execution=interactive，非5.6/Gemini。7项导入回归包括保留后台抢先完成稿及相同pack_hash但正文损坏时可修复。本批T071 done，不代表T028全量或T062四项通过；不自动恢复每日会话任务/加派工作者/开启付费。线上逐篇证据见data/session-translation-batch-2026-10-16.json。
+
+## T072 · 接入用户已配置Cloudflare千问（2026-10-16）
+
+正在接入真实API，无会话翻译工作者/额外校对/付费。新CloudflareTranslator使用固定Qwen3-30B-A3B、全原文语境与缺失单元，run_ai仅增加通用provider预检/预算停止及可选quota_timezone，Gemini默认太平洋日不变。Cloudflare独立UTC请求及Neurons账本，批次预留在HTTP前先提交，未知调用按输入字节上界+输出max保守占用，已知usage估算后释放差额；10000/日、2000/批、正常8请求/360秒，32k保守完整上下文超出留给Gemini/原队列不截文。配置verified_enabled=false，只允许手动probe最多2请求/1篇代表正文；成功后再开无人值守备用，不能因Secrets已配置称调用成功。
+
+已补autotranslate备用步骤/保存/artifact、cloudflare-verify手动真实探针、operations独立状态与提供商计数，原Gemini配额/断点和Claude视觉保持。首轮218 Python通过，后补UTC/Gemini日界隔离及operations不混账测试21通过；初次真实Actions/API/正文与Pages验收待执行。T072 doing；全量T028/T062未完成。

@@ -2354,6 +2354,41 @@
         "e3c57d1/097fe35已推送；真实译稿导入38909978377 success。线上5篇独立JSON逐篇HTTP200/kind=ai-direct，源hash、中文标题、全部190块与pack逐项一致，5篇均确认当前窗口模型身份与interactive，原图/链接保留。",
         "只完成本批5篇，API报告3篇不计入本窗口；全量T028/T062仍doing，不恢复每日会话任务或自动费用。"
       ]
+    },
+    {
+      "id": "T072",
+      "title": "Cloudflare免费千问备用API：接入、独立额度保护和真实试译发布",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex（后台/API，无会话翻译工作者）",
+      "updated_at": "2026-10-16",
+      "depends_on": [
+        "T063",
+        "T069"
+      ],
+      "scope": [
+        "backend/cloudflare_translation.py",
+        "backend/ai_translation.py",
+        "backend/operations.py",
+        "scripts/run_cloudflare_translation.py",
+        ".github/workflows/autotranslate.yml",
+        ".github/workflows/cloudflare-verify.yml",
+        "config/cloudflare-translation.json",
+        "tests/",
+        "docs/",
+        "AGENTS.md",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "实际使用用户GitHub Secrets，不读/打印密钥，固定免费可用Qwen型号、不启用付费",
+        "独立UTC日免费Neurons保守预留账本，失败/未知用量保留，400/401/403/429/503退避；Gemini账本/断点不变",
+        "全文语境、原文hash/全部块/数字检查及断点复用；已有AI稿跳过，不进行二次模型校对",
+        "真实GitHub试译、实际请求/token/估算Neurons/完成/失败分别报告，合格全文导入后发布并核对线上",
+        "Gemini受阻时后台自动备用，ChatGPT离线仍工作，不改Claude前端或全量验收状态"
+      ],
+      "evidence": [
+        "用户已按CLOUDFLARE_API_TOKEN与CLOUDFLARE_ACCOUNT_ID配置Secrets并明确要求实际试跑。"
+      ]
     }
   ]
 }

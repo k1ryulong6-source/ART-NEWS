@@ -12,6 +12,7 @@ on:
       - '.github/workflows/autotranslate.yml'
       - 'config/automation.json'
       - 'config/ai-translation.json'
+      - 'config/cloudflare-translation.json'
       - 'config/translation-priority.json'
       - 'config/editorial-regions.json'
       - 'config/attention-units.json'
@@ -21,6 +22,8 @@ on:
       - 'backend/attention_units.py'
       - 'backend/ai_translation.py'
       - 'backend/ai_retry.py'
+      - 'backend/cloudflare_translation.py'
+      - 'scripts/run_cloudflare_translation.py'
       - 'backend/ai_pool.py'
       - 'scripts/run_ai_translation.py'
       - 'scripts/reserve_ai_quota.py'
@@ -58,11 +61,14 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_API_KEY_SECONDARY: ${{ secrets.GEMINI_API_KEY_SECONDARY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           python scripts/reserve_ai_quota.py
+          python scripts/run_cloudflare_translation.py --reserve
           git config user.name 'Intermission automatic translator'
           git config user.email 'updater@users.noreply.github.com'
-          for path in data/ai-translation-ledger.json data/ai-translation-ledger-secondary.json; do
+          for path in data/ai-translation-ledger.json data/ai-translation-ledger-secondary.json data/cloudflare-translation-ledger.json data/cloudflare-neurons-ledger.json; do
             if [ -f "$path" ]; then git add "$path"; fi
           done
           if ! git diff --cached --quiet; then
@@ -80,6 +86,12 @@ jobs:
           if jq -e '.continue_recommended == true' data/ai-translation-status.json >/dev/null; then
             echo 'continue_ai=true' >> "$GITHUB_OUTPUT"
           fi
+      - name: Free Cloudflare Qwen fallback after a blocked Gemini batch
+        if: success() || failure()
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: python scripts/run_cloudflare_translation.py
       - uses: actions/cache@v4
         if: (success() || failure()) && steps.ai.outputs.continue_ai != 'true'
         with:
@@ -127,6 +139,9 @@ jobs:
           if [ -f data/ai-translation-ledger.json ]; then git add data/ai-translation-ledger.json; fi
           if [ -f data/ai-translation-ledger-secondary.json ]; then git add data/ai-translation-ledger-secondary.json; fi
           if [ -d data/ai-translation-projects ]; then git add data/ai-translation-projects; fi
+          for path in data/cloudflare-translation-ledger.json data/cloudflare-neurons-ledger.json data/cloudflare-translation-status.json data/cloudflare-translation-progress; do
+            if [ -e "$path" ]; then git add "$path"; fi
+          done
           git add data/article-quality data/article-quality-report.json data/acceptance.json
           if ! git diff --cached --quiet; then
             git commit -m 'Save automatic AI translations and temporary machine fallback progress'
@@ -159,5 +174,9 @@ jobs:
             data/ai-translation-ledger.json
             data/ai-translation-ledger-secondary.json
             data/ai-translation-projects/
+            data/cloudflare-translation-ledger.json
+            data/cloudflare-neurons-ledger.json
+            data/cloudflare-translation-status.json
+            data/cloudflare-translation-progress/
             runtime/public-update-evidence/
           retention-days: 7

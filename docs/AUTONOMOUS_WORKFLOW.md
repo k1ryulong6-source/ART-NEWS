@@ -91,3 +91,13 @@ T063用户追加授权：第二密钥已配置，要求本次重置前充分使�
 批内最多2次短故障重试，需要还有请求/日额度/足够时间预算；等待仍计入480秒窗口，并留出HTTP120秒超时预算。每一次重试都先消耗原请求预留，40/批及500/项目/太平洋日保持。持续错误退出保存断点，由原半小时计划接续；不保证Google服务异常时仍能耗尽额度。旧已记录等待保留，不猜测旧Retry-After来源、不清零或绕过现存限流。
 
 /reports/operations.json的api新增service_retry_policy、inline_service_retries、service_failures；projects逐路给service_retry（连续次数、delay_seconds/server_retry_seconds/retry_after），区分已恢复/仍在等待与已发表译稿，不以Actions绿色表示服务已恢复。
+
+## T072 · Cloudflare千问免费备用（2026-10-16）
+
+用户将Cloudflare Workers AI Token与Account ID放GitHub Actions Secrets：CLOUDFLARE_API_TOKEN、CLOUDFLARE_ACCOUNT_ID；只在后台env使用，不进入前端/公共JSON。固定模型@cf/qwen/qwen3-30b-a3b-fp8，完整原文单元语境+本次缺失单元直译，无第二轮模型审校。成功HTTP/全文/程序检查/Pages必须分别验证；初始config/cloudflare-translation.json的verified_enabled=false，仅手动cloudflare-verify.yml探针可运行，最多2请求，选可完整取得的短正文代表样本。探针成功且发布核对后才能打开常规备用。
+
+常规autotranslate在首个推理前同时保存独立Cloudflare请求与Neurons批次预留；Gemini受阻(service_wait/quota_wait/retry_wait/daily_limit/configuration_error/failed/partial_failure等)后，Cloudflare接续同一临时数据库，跳过既有AI。Gemini正常时释放未用预留，不额外译第二遍；两个Gemini项目的原500/太平洋日保护和断点不变。Cloudflare独立断点data/cloudflare-translation-progress、请求账本data/cloudflare-translation-ledger.json、Neurons账本data/cloudflare-neurons-ledger.json及实际报告data/cloudflare-translation-status.json，最终always保存并发布；未知中断预留不凭猜测清零。
+
+免费保护为10000 Neurons/UTC日（东京09:00重置）；每批最多预留2000、8请求/360秒。每次请求在HTTP前按完整输入JSON UTF8字节+4096模板余量、最大输出4096，保守占用Neurons；每百万输入4625、输出30475 Neurons。已知usage按实际token估计消耗、退回预留差额；HTTP失败/未知usage保留上界，不伪称零消耗。仅本仓库估计，不是Cloudflare账单或其他应用用量；不自动启用付费。超过保守32,768上下文的完整长稿仍留给Gemini，不能裁掉原文来适配。原重要头条/日期与旧稿份额继续，完整中文copy优先，未成功仍有原文/临时机翻。
+
+公开/reports/operations.json新增cloudflare状态/实际完成/失败/Neurons估计，translation.api_provider_counts分提供商；Gemini quota字段不混入Cloudflare。暂无真实试译成功证据，不以已添加Secrets或测试mock宣称调用成功。

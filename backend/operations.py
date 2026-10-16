@@ -17,11 +17,15 @@ def operations_report(snapshot, evidence, instant=None):
     completed = [r for r in rows if r.get('editorial_status') in ('reviewed', 'translated')
                  and r.get('editorial_blocks_json') and r.get('editorial_title_zh')]
     api = [r for r in completed if str(r.get('editorial_provider') or '').startswith('contextual-api:')]
+    cloudflare = evidence.get('cloudflare') or {}
+    cf_cfg = evidence.get('cloudflare_config') or {}
     warnings = []
     if ai.get('status') in ('service_wait', 'quota_wait', 'retry_wait', 'daily_limit', 'configuration_error', 'failed'):
         warnings.append('ai:' + ai['status'])
     if ai.get('failed'): warnings.append('ai:validation_failures')
     if machine.get('failed'): warnings.append('machine:validation_failures')
+    if cloudflare.get('configured') and cloudflare.get('status') in ('failed', 'configuration_error', 'service_wait', 'quota_wait'):
+        warnings.append('cloudflare:' + cloudflare['status'])
     core = important.get('core_source_problems') or []
     states = {s['id']: s for s in snapshot.get('source_status', [])}
     enabled_problems = []
@@ -96,6 +100,8 @@ def operations_report(snapshot, evidence, instant=None):
     return {'schema_version': 1, 'generated_at': instant.isoformat(), 'snapshot_at': snapshot.get('snapshot_at'), 'snapshot_key': snapshot_key(snapshot, evidence.get('catalog')),
             'status': 'attention' if warnings else 'ok', 'warnings': warnings,
             'translation': {**progress, 'api_completed': len(api), 'other_ai_completed': len(completed) - len(api),
+                            'api_provider_counts': {name: sum(str(r.get('editorial_provider') or '').startswith('contextual-api:' + name + ':') for r in api)
+                                                    for name in ('gemini', 'cloudflare')},
                             'api_source_characters': sum(len(r.get('article_text') or '') for r in api),
                             'machine_count_scope': 'pending_AI_only; overlaps_pending_not_AI_completion'},
             'api': {**{key: ai.get(key) for key in ('status', 'model', 'error', 'started_at', 'finished_at', 'retry_after')},
@@ -112,6 +118,11 @@ def operations_report(snapshot, evidence, instant=None):
                     'last_run_completed': len(ai.get('translated') or []), 'last_run_failed': ai.get('failed') or []},
             'machine': {'status': machine.get('status'), 'last_run_completed': len(machine.get('translated') or []),
                         'last_run_failed': machine.get('failed') or [], 'finished_at': machine.get('finished_at')},
+            'cloudflare': {**{k: cloudflare.get(k) for k in ('status', 'model', 'configured', 'error', 'started_at', 'finished_at', 'retry_after', 'verification_run')},
+                          'last_run_requests': cloudflare.get('requests'),
+                          'last_run_completed': len(cloudflare.get('translated') or []),
+                          'last_run_failed': cloudflare.get('failed') or [],
+                          'neurons': cloudflare.get('neurons'), 'verified_enabled': cf_cfg.get('verified_enabled', False)},
             'quota': quota, 'policy': {'execution': 'github-actions-only', 'chatgpt_translation_workers': False,
                                      'account_mode': cfg.get('account_mode'), 'paid_activation': cfg.get('paid_activation'),
                                      'backup_schedule': 'every_30_minutes_at_UTC_minutes_5_and_35; GitHub scheduling may be delayed',
@@ -150,6 +161,16 @@ def load_operations(snapshot, root=ROOT, instant=None):
     except (OSError, ValueError):
         evidence['ledger_secondary'] = None
         unreadable.append('ledger_secondary')
+    for key, path in [('cloudflare', 'data/cloudflare-translation-status.json'),
+                      ('cloudflare_config', 'config/cloudflare-translation.json')]:
+        try:
+            file = root / path
+            evidence[key] = json.loads(file.read_text()) if file.exists() else None
+            if evidence[key] is not None and not isinstance(evidence[key], dict):
+                raise ValueError('expected_report_object')
+        except (OSError, ValueError):
+            evidence[key] = None
+            unreadable.append(key)
     report = operations_report(snapshot, evidence, instant)
     if unreadable:
         report['status'] = 'attention'

@@ -1,0 +1,80 @@
+name: Verify Cloudflare Qwen full-text translation
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: cultural-news-data-write
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      AI_RUN_RESERVATION: cloudflare-${{ github.run_id }}:${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - id: restore
+        run: python scripts/import_snapshot.py
+      - name: Commit free budget reservation before any inference
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python scripts/run_cloudflare_translation.py --reserve --probe
+          git config user.name 'Intermission Cloudflare translator'
+          git config user.email 'updater@users.noreply.github.com'
+          for path in data/cloudflare-translation-ledger.json data/cloudflare-neurons-ledger.json; do
+            if [ -f "$path" ]; then git add "$path"; fi
+          done
+          if ! git diff --cached --quiet; then
+            git commit -m 'Reserve bounded free Cloudflare verification budget'
+            python scripts/push_public_update.py
+          fi
+      - name: Translate one complete pending article with at most two requests
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: python scripts/run_cloudflare_translation.py --probe
+      - name: Save actual accepted work and checkpoints
+        if: always() && steps.restore.outcome == 'success'
+        run: |
+          python scripts/export_snapshot.py
+          python scripts/audit_data.py --output data/quality.json --strict
+          python scripts/prepare_translation_queue.py
+          python scripts/audit_important_news.py
+          python scripts/update_acceptance.py
+          git config user.name 'Intermission Cloudflare translator'
+          git config user.email 'updater@users.noreply.github.com'
+          git add data/live.json data/quality.json data/translation-queue.json data/translation-queue data/translation-input data/important-news-audit.json data/acceptance.json
+          for path in data/cloudflare-translation-ledger.json data/cloudflare-neurons-ledger.json data/cloudflare-translation-status.json data/cloudflare-translation-progress; do
+            if [ -e "$path" ]; then git add "$path"; fi
+          done
+          if ! git diff --cached --quiet; then
+            git commit -m 'Save actual Cloudflare verification translations and usage'
+            python scripts/push_public_update.py
+          fi
+      - name: Publish saved public results
+        if: always() && steps.restore.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main --repo "$GITHUB_REPOSITORY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cloudflare-verification-evidence
+          path: |
+            data/cloudflare-translation-ledger.json
+            data/cloudflare-neurons-ledger.json
+            data/cloudflare-translation-status.json
+            data/cloudflare-translation-progress/
+            runtime/public-update-evidence/
+          retention-days: 7

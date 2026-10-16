@@ -47,6 +47,17 @@ class OperationsTests(unittest.TestCase):
         self.assertEqual(report['api']['last_run_completed'], 1)
         self.assertFalse(report['policy']['chatgpt_translation_workers'])
 
+    def test_cloudflare_usage_is_separate_from_gemini_quota(self):
+        self.snapshot['content'].append({**self.snapshot['content'][0],
+            'editorial_provider':'contextual-api:cloudflare:qwen:direct-v1'})
+        self.evidence['cloudflare']={'status':'completed','configured':True,'translated':['cf'],
+            'requests':1,'neurons':{'estimated_neurons':42,'timezone':'UTC'}}
+        report=operations_report(self.snapshot,self.evidence,self.instant)
+        self.assertEqual(report['translation']['api_provider_counts'],{'gemini':1,'cloudflare':1})
+        self.assertEqual(report['cloudflare']['last_run_completed'],1)
+        self.assertEqual(report['cloudflare']['neurons']['estimated_neurons'],42)
+        self.assertEqual(report['quota']['combined']['requests'],100)
+
     def test_green_actions_does_not_hide_service_wait_or_source_gaps(self):
         report = operations_report(self.snapshot, self.evidence, self.instant)
         self.assertEqual(report['workflow_health']['stages']['translation']['status'], 'healthy')

@@ -23,7 +23,8 @@ else:
     except Exception as error:
         report = {'status': 'failed', 'error': type(error).__name__, 'finished_at': now(),
                   'translated': [], 'requests': None}
-    write_json(ROOT / 'data/cloudflare-translation-status.json', report)
+    name = 'cloudflare-verification-report.json' if args.probe else 'cloudflare-translation-status.json'
+    write_json(ROOT / 'data' / name, report)
 print(json.dumps(report, ensure_ascii=False, indent=2))
 if report['status'] in ('failed', 'configuration_error'):
     raise SystemExit(1)

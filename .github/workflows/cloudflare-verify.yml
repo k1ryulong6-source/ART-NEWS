@@ -5,7 +5,9 @@ permissions:
   contents: write
   actions: write
 concurrency:
-  group: cultural-news-data-write
+  # The probe commits only its own ledgers/checkpoints. It never exports a
+  # stale live snapshot; the next serialized data writer imports the copy.
+  group: cloudflare-free-api-verification
   cancel-in-progress: false
 jobs:
   verify:
@@ -47,26 +49,15 @@ jobs:
       - name: Save actual accepted work and checkpoints
         if: always() && steps.restore.outcome == 'success'
         run: |
-          python scripts/export_snapshot.py
-          python scripts/audit_data.py --output data/quality.json --strict
-          python scripts/prepare_translation_queue.py
-          python scripts/audit_important_news.py
-          python scripts/update_acceptance.py
           git config user.name 'Intermission Cloudflare translator'
           git config user.email 'updater@users.noreply.github.com'
-          git add data/live.json data/quality.json data/translation-queue.json data/translation-queue data/translation-input data/important-news-audit.json data/acceptance.json
-          for path in data/cloudflare-translation-ledger.json data/cloudflare-neurons-ledger.json data/cloudflare-translation-status.json data/cloudflare-translation-progress; do
+          for path in data/cloudflare-translation-ledger.json data/cloudflare-neurons-ledger.json data/cloudflare-verification-report.json data/cloudflare-translation-progress; do
             if [ -e "$path" ]; then git add "$path"; fi
           done
           if ! git diff --cached --quiet; then
             git commit -m 'Save actual Cloudflare verification translations and usage'
             python scripts/push_public_update.py
           fi
-      - name: Publish saved public results
-        if: always() && steps.restore.outcome == 'success'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run pages.yml --ref main --repo "$GITHUB_REPOSITORY"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -74,7 +65,7 @@ jobs:
           path: |
             data/cloudflare-translation-ledger.json
             data/cloudflare-neurons-ledger.json
-            data/cloudflare-translation-status.json
+            data/cloudflare-verification-report.json
             data/cloudflare-translation-progress/
             runtime/public-update-evidence/
           retention-days: 7

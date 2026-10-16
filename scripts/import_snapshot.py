@@ -12,3 +12,6 @@ if not path.exists():
 store = Store(os.getenv("CULTURE_DESK_DB", ROOT / "runtime/culture-desk.db"))
 count = store.restore_public_snapshot(path)
 print(f"Restored {count} public records; existing data and daily budget retained")
+from backend.cloudflare_translation import restore_completed
+recovered = restore_completed(store)
+print(f"Restored {len(recovered['restored'])} complete Cloudflare copies without API requests")

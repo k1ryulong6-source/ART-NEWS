@@ -300,3 +300,41 @@ def run_cloudflare(store, identity, *, root=ROOT, environ=None, probe=False, tra
         budget.close()
         status['neurons'] = budget.summary()
         status['finished_at'] = now()
+
+
+def restore_completed(store, root=ROOT):
+    """Publish only complete source-bound saved copies; never make an API call.
+
+    A standalone probe writes isolated checkpoints, not a live snapshot. Normal
+    serialized collection/translation jobs import those copies into fresh data.
+    """
+    from .ai_translation import input_hash, source_units
+    from .autonomous_translation import assemble
+    from .editorial import checked_result, publish_translation
+    cfg, root = configuration(), Path(root)
+    provider = 'contextual-api:cloudflare:' + MODEL + ':direct-v1'
+    rows = {r['id']: r for r in store.dataset('live')['content']}
+    restored, skipped = [], []
+    for path in (root / 'data/cloudflare-translation-progress').glob('live-*.json'):
+        row = rows.get(path.stem)
+        if not row or row.get('editorial_status') in ('reviewed', 'translated') or not row.get('article_blocks_json'):
+            continue
+        try:
+            state = json.loads(path.read_text())
+            if (state.get('id') != row['id'] or state.get('provider') != provider
+                    or state.get('source_hash') != row['article_hash']
+                    or state.get('input_hash') != input_hash(row, provider, cfg)):
+                skipped.append(row['id']); continue
+            original, units, keys = source_units(row, cfg['source_characters_per_unit'])
+            if set(state.get('outputs') or {}) != {k for k, _ in units}:
+                continue
+            translation = assemble(original, keys, state['outputs'])
+            checked_result(row, translation)
+            if publish_translation(store, row, translation, provider, MODEL, None,
+                    {'status': 'not_requested', 'approved': False, 'issues': [],
+                     'method': 'Direct API translation; program checks only; recovered saved complete copy.'},
+                    state['input_hash'], protect_existing=True):
+                restored.append(row['id'])
+        except (ValueError, TypeError, KeyError, AttributeError):
+            skipped.append(row['id'])
+    return {'restored': restored, 'stale_or_invalid': skipped}

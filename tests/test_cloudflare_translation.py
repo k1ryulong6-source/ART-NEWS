@@ -7,6 +7,8 @@ from backend.cloudflare_translation import (MODEL, SCALE, CloudflareTranslator, 
     configuration, load_budget, reserve_neurons, reserve_cloudflare, run_cloudflare, utc_day)
 from backend.ai_translation import ProviderBudgetError, ServiceError
 from backend.autonomous_translation import write_json
+from backend.storage import Store
+from backend.cloudflare_translation import restore_completed
 from tests import test_ai_translation as fixtures
 
 
@@ -152,3 +154,19 @@ class CloudflareTests(unittest.TestCase):
                              transport=lambda _:self.fail('unreserved request'))
         self.assertEqual(r['status'],'awaiting_reservation')
         self.assertEqual(r['requests'],0)
+
+    def test_isolated_probe_checkpoint_recovers_without_overwriting_new_sources(self):
+        snapshot=self.store.dataset('live')
+        r=self.run_worker()
+        self.assertEqual(r['translated'],[self.row['id']])
+        path=self.root/'before.json';write_json(path,snapshot)
+        restored=Store(self.root/'restored.db');restored.restore_public_snapshot(path)
+        report=restore_completed(restored,self.root)
+        self.assertEqual(report['restored'],[self.row['id']])
+        row=restored.dataset('live')['content'][0]
+        self.assertEqual(row['editorial_model'],MODEL)
+        self.assertEqual(restore_completed(restored,self.root)['restored'],[])
+        checkpoint=self.root/'data/cloudflare-translation-progress'/(self.row['id']+'.json')
+        state=json.loads(checkpoint.read_text());state['source_hash']='outdated';write_json(checkpoint,state)
+        other=Store(self.root/'other.db');other.restore_public_snapshot(path)
+        self.assertEqual(restore_completed(other,self.root)['restored'],[])

@@ -326,17 +326,29 @@ def load(path: Path) -> np.ndarray:
 
 
 def radio(x: np.ndarray) -> np.ndarray:
-    """A 1950s broadcast voice: narrow band, a forward presence peak, tube saturation and a
-    small studio."""
-    x = butter(x, [280, 4300], "band", order=4)
-    x = x + .35 * butter(x, [1800, 3200], "band")
-    x = np.tanh(x * 3.0) / np.tanh(3.0)
-    n = int(.4 * SR)
-    t = np.arange(n) / SR
-    ir = rng.normal(0, 1, n) * np.exp(-t / .08)
+    """A worn 1950s broadcast voice: narrow band, tape wow and flutter, a coarse sample-and-
+    hold grain, tube saturation, a small studio, hiss and faint surface noise."""
+    t = np.arange(len(x)) / SR
+    warp = t + .0028 * np.sin(2 * np.pi * .55 * t) + .0007 * np.sin(2 * np.pi * 6.5 * t)
+    x = np.interp(np.clip(warp, 0, t[-1]), t, x)                      # wow and flutter
+    x = butter(x, [360, 3300], "band", order=4)
+    x = x + .4 * butter(x, [1600, 2800], "band")                      # boxy presence
+    hold = 5                                                            # ~9.6 kHz sample-and-hold grit
+    x = np.repeat(x[::hold], hold)[:len(t)]
+    x = butter(x, 3900, order=4)
+    x = np.tanh(x * 4.2) / np.tanh(4.2)
+    n = int(.35 * SR)
+    tt = np.arange(n) / SR
+    ir = rng.normal(0, 1, n) * np.exp(-tt / .07)
     ir[:int(.01 * SR)] = 0
     ir /= np.sqrt((ir ** 2).sum())
-    return x + .18 * signal.fftconvolve(x, ir)[:len(x)]
+    x = x + .2 * signal.fftconvolve(x, ir)[:len(x)]
+    x = x / np.abs(x).max()
+    hiss = butter(rng.normal(0, 1, len(x)), [1500, 5000], "band") * .035
+    pops = np.zeros(len(x))
+    pops[rng.random(len(x)) < 1.6 / SR] = 1                           # ~1.6 soft pops a second
+    pops = butter(pops * rng.uniform(.3, 1, len(x)), 1800) * 2.2
+    return x + hiss + pops
 
 
 def voice() -> tuple:
@@ -360,7 +372,11 @@ def master(bus: np.ndarray) -> np.ndarray:
     ir /= np.sqrt((ir ** 2).sum(axis=1, keepdims=True))
     wet = np.stack([signal.fftconvolve(bus[c], ir[c])[:N] for c in range(2)])
     mix = bus * .8 + wet * .35
-    mix = butter(mix, [55, 11000], "band")                    # warm, slightly vintage
+    t = np.arange(N) / SR                                       # a worn record: wow, narrow band, hiss
+    warp = np.clip(t + .002 * np.sin(2 * np.pi * .5 * t), 0, t[-1])
+    mix = np.stack([np.interp(warp, t, mix[c]) for c in range(2)])
+    mix = butter(mix, [90, 6500], "band", order=3)
+    mix += butter(rng.normal(0, 1, (2, N)), [1500, 6000], "band") * .006
     mix *= envelope([0, .05, 45.95, 46.3], [0, 1, 1, 0])
     mix = mix / np.abs(mix).max() * .95
     mix = np.tanh(mix * 1.1) / np.tanh(1.1)

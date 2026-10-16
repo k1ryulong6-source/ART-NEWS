@@ -36,11 +36,10 @@ body{margin:0;background:#000;color:var(--ink);overflow:hidden;padding-left:max(
 #viewport{position:relative;width:100%;height:100%;overflow:hidden}
 #stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;margin:-540px 0 0 -960px;overflow:hidden;background:#000;
   transform-origin:50% 50%;font-family:var(--sans);-webkit-font-smoothing:antialiased;font-synthesis:none}
-#film{position:absolute;inset:0;filter:grayscale(1) contrast(1.06)}
+#film{position:absolute;inset:0;filter:url(#boil) grayscale(1) contrast(1.08) blur(.6px)}
+.paper-tex{position:absolute;inset:0;z-index:25;pointer-events:none;mix-blend-mode:multiply;opacity:.32;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.004 .09' numOctaves='3' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .52 0 0 0 0 .48 0 0 0 1.6 -.45'/%3E%3C/filter%3E%3Crect width='600' height='600' filter='url(%23f)'/%3E%3C/svg%3E")}
 .layer,.scene{position:absolute;inset:0}
 svg{display:block;overflow:visible}
-#clock{position:absolute;width:0;height:0;animation:clock 46.5s linear both}
-@keyframes clock{to{opacity:1}}
 @keyframes in{from{opacity:0}}
 @keyframes out{to{opacity:0}}
 @keyframes pop{0%{opacity:0;transform:scale(.3)}70%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
@@ -57,7 +56,7 @@ svg{display:block;overflow:visible}
 .host-box .bob{animation:bob .6s ease-in-out infinite alternate}
 
 /* Subtitles: Chinese, as on a dubbed broadcast. */
-.sub{position:absolute;left:180px;right:180px;bottom:64px;margin:0;z-index:30;text-align:center;font-weight:700;font-size:40px;line-height:1.4;color:#fff;
+.sub{position:absolute;left:180px;right:180px;bottom:64px;filter:blur(.4px);margin:0;z-index:30;text-align:center;font-weight:700;font-size:40px;line-height:1.4;color:#fff;
   text-shadow:0 0 2px #000,0 0 2px #000,0 3px 0 #000,3px 0 0 #000,-3px 0 0 #000,0 -3px 0 #000,0 4px 14px #000a}
 .s1{animation:in .15s .9s both,out .2s 6.2s forwards}
 .s2{animation:in .15s 7.1s both,out .2s 14.05s forwards}
@@ -119,11 +118,17 @@ svg{display:block;overflow:visible}
 /* ── 3 · Headlines from everywhere meet ── */
 #cards-scene{background:var(--pale);animation:in .01s 14.6s both,out .01s 21.4s forwards}
 #cards-scene .burst{background:repeating-conic-gradient(#d2cdc1 0 6deg,var(--pale) 6deg 12deg)}
-.card{position:absolute;width:430px;height:268px;border-radius:14px;background:var(--paper);box-shadow:0 0 0 5px var(--ink),9px 11px 0 5px var(--ink);overflow:hidden;box-sizing:border-box}
-.card header{display:flex;justify-content:space-between;align-items:baseline;padding:12px 20px;color:var(--paper);font-family:var(--retro);font-size:34px;background:var(--ink)}
-.card header small{font-family:var(--latin);font-size:16px;letter-spacing:.08em}
-.card p{margin:14px 20px 0;font-weight:700;font-size:23px;line-height:1.42;color:var(--ink);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.card footer{position:absolute;left:20px;bottom:12px;font-family:var(--latin);font-size:15px;letter-spacing:.08em;color:var(--dark)}
+.card{position:absolute;width:440px;height:300px;box-sizing:border-box;padding:16px 20px 0;color:var(--ink);
+  background:radial-gradient(circle at 20% 30%,#d9d2bf66 0 40px,transparent 80px),radial-gradient(circle at 80% 75%,#cfc7b266 0 50px,transparent 100px),linear-gradient(170deg,#ece6d6,#ddd5c1);
+  box-shadow:inset 0 0 22px #8a83705c}
+.card .mast{display:flex;justify-content:space-between;align-items:baseline;border-bottom:4px double var(--ink);padding-bottom:4px;font-family:var(--title);font-weight:700;font-size:20px;letter-spacing:.2em}
+.card .mast small{font-family:var(--news);font-weight:400;font-size:13px;letter-spacing:.06em}
+.card .dl{display:block;margin-top:8px;font-family:var(--retro);font-size:24px}
+.card p{margin:4px 0 0;font-weight:900;font-size:22px;line-height:1.34;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card .cols{display:grid;grid-template-columns:120px 1fr 1fr;gap:12px;margin-top:10px;border-top:1px solid var(--ink);padding-top:8px}
+.card .cols i{height:70px;background:radial-gradient(circle,#141414 36%,transparent 40%) 0 0/6px 6px;-webkit-mask:linear-gradient(150deg,#000,#0005);mask:linear-gradient(150deg,#000,#0005)}
+.card .cols b{display:block;height:70px;background:repeating-linear-gradient(#5c5a55 0 3px,transparent 3px 9px)}
+.card footer{position:absolute;right:20px;bottom:10px;font-family:var(--news);font-style:italic;font-size:14px;color:var(--deep)}
 .card.k1{left:110px;top:90px;--r:-7deg;animation:fly-l .7s cubic-bezier(.3,1.25,.5,1) 15.2s both}
 .card.k2{left:1380px;top:90px;--r:6deg;animation:fly-r .7s cubic-bezier(.3,1.25,.5,1) 15.8s both}
 .card.k3{left:90px;top:470px;--r:5deg;animation:fly-l .7s cubic-bezier(.3,1.25,.5,1) 16.4s both}
@@ -216,9 +221,9 @@ svg{display:block;overflow:visible}
 
 /* ── Film wear and the old television frame ── */
 #wear{z-index:40;pointer-events:none}
-#grain{z-index:41;inset:-120px;pointer-events:none;opacity:.5;mix-blend-mode:overlay;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.4 -.2'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain .4s steps(4) infinite}
+#grain{z-index:41;inset:-120px;pointer-events:none;opacity:.75;mix-blend-mode:overlay;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.6 -.25'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain .4s steps(4) infinite}
 @keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-61px,37px)}50%{transform:translate(43px,-83px)}75%{transform:translate(-97px,-29px)}}
-#frame{z-index:43;pointer-events:none;inset:14px;border-radius:64px/56px;box-shadow:0 0 0 80px #0b0b0b,inset 0 0 140px 30px #00000080}
+#frame{z-index:43;pointer-events:none;inset:14px;border-radius:64px/56px;box-shadow:0 0 0 80px #0b0b0b,inset 0 0 180px 50px #000000a6,inset 0 0 40px 6px #00000080}
 #blackout{z-index:60;background:#000;opacity:0;animation:blackout .01s 46.3s both}
 @keyframes blackout{to{opacity:1}}
 
@@ -235,7 +240,7 @@ svg{display:block;overflow:visible}
 
 <div id="viewport">
 <div id="stage" role="img" aria-label="幕間休息宣傳片「明日新聞台」：黑白五十年代卡通。主持人幕間先生在老電視旁招手；新聞機用雷達從地球各地接收電影、攝影、藝術新聞；東京、釜山、倫敦、紐約、威尼斯的頭條卡片飛到他身邊；他坐單軌列車經過世博會的電影館、攝影館、藝術館，招牌上是溫哥華電影節、InCadaqués攝影節與Tate Modern的消息；掛著一種關注旗幟的火箭飛向南方，六家地區媒體亮成星星；原子標誌與字標幕間休息，他眨眼豎起大拇指，網址 mujianrest.work。英文旁白，中文字幕。">
-  <i id="clock"></i>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="boil" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence id="boil-noise" type="fractalNoise" baseFrequency=".021" numOctaves="2" seed="1"/><feDisplacementMap in="SourceGraphic" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
   <div id="film">
 
   <div class="scene" id="tv-scene">
@@ -274,11 +279,11 @@ svg{display:block;overflow:visible}
   <div class="scene" id="cards-scene">
     <div class="burst"></div>
     <div class="host-box"><svg viewBox="0 0 400 520" aria-hidden="true"><g class="host"><path d="M184 290 H216 V330 H184 Z" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><path d="M92 520 C92 392 134 336 200 334 C266 336 308 392 308 520 Z" fill="#8c8a84" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><path d="M200 336 L164 344 L188 420 L200 380 L212 420 L236 344 Z" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><path d="M164 344 L140 360 L180 470 L198 400 Z M236 344 L260 360 L220 470 L202 400 Z" fill="#55534f" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><path d="M200 352 L170 334 L170 370 Z M200 352 L230 334 L230 370 Z" fill="#141414" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="200" cy="352" r="9" fill="#141414" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="252" cy="410" r="20" fill="#141414" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><text x="252" y="418" text-anchor="middle" font-family="Promo Title, Noto Serif TC, serif" font-weight="700" font-size="22" fill="#f4f1e8">日</text><ellipse cx="126" cy="196" rx="17" ry="24" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><ellipse cx="274" cy="196" rx="17" ry="24" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><path d="M132 150 C132 92 268 92 268 150 L268 204 C268 268 236 302 200 302 C164 302 132 268 132 204 Z" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><path d="M128 182 C114 104 166 56 226 60 C276 64 298 104 284 156 C280 138 270 124 256 116 L178 112 C156 120 140 140 134 182 Z" fill="#141414" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><path d="M178 112 C200 92 244 92 270 112" fill="none" stroke="#141414" stroke-width="10"/><path d="M176 112 L172 80" fill="none" stroke="#6b6b6b" stroke-width="5" stroke-linecap="round"/><path d="M196 104 Q232 76 266 96 M204 90 Q236 70 262 84" fill="none" stroke="#6b6b6b" stroke-width="5" stroke-linecap="round"/><path d="M154 140 Q172 126 190 136" fill="none" stroke="#141414" stroke-width="8" stroke-linecap="round"/><path d="M210 136 Q228 126 246 140" fill="none" stroke="#141414" stroke-width="8" stroke-linecap="round"/><ellipse cx="174" cy="174" rx="12" ry="17" fill="#fff" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="174" cy="176" r="6" fill="#141414"/><ellipse cx="226" cy="174" rx="12" ry="17" fill="#fff" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="226" cy="176" r="6" fill="#141414"/><path d="M200 186 Q210 204 198 210" fill="none" stroke="#141414" stroke-width="5" stroke-linecap="round"/><ellipse cx="160" cy="220" rx="14" ry="8" fill="#cfcabe" opacity=".6"/><ellipse cx="240" cy="220" rx="14" ry="8" fill="#cfcabe" opacity=".6"/><ellipse cx="200" cy="240" rx="18" ry="22" fill="#141414" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><path d="M290 380 Q340 330 330 260" fill="none" stroke="#141414" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M290 380 Q340 330 330 260" fill="none" stroke="#8c8a84" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/><g transform="translate(330 246) rotate(14)"><rect x="-30" y="-44" width="14" height="40" rx="7" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" transform="rotate(-12 -23 -4)"/><rect x="-15" y="-44" width="14" height="40" rx="7" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" transform="rotate(-4 -8 -4)"/><rect x="0" y="-44" width="14" height="40" rx="7" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" transform="rotate(4 7 -4)"/><rect x="15" y="-44" width="14" height="40" rx="7" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" transform="rotate(12 22 -4)"/><rect x="-34" y="-14" width="66" height="46" rx="20" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><rect x="-62" y="-2" width="34" height="16" rx="8" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" transform="rotate(28 -28 6)"/></g><path d="M110 380 Q60 330 70 260" fill="none" stroke="#141414" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M110 380 Q60 330 70 260" fill="none" stroke="#8c8a84" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/><g transform="translate(70 246) rotate(-14)"><rect x="-30" y="-44" width="14" height="40" rx="7" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" transform="rotate(-12 -23 -4)"/><rect x="-15" y="-44" width="14" height="40" rx="7" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" transform="rotate(-4 -8 -4)"/><rect x="0" y="-44" width="14" height="40" rx="7" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" transform="rotate(4 7 -4)"/><rect x="15" y="-44" width="14" height="40" rx="7" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" transform="rotate(12 22 -4)"/><rect x="-34" y="-14" width="66" height="46" rx="20" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><rect x="-62" y="-2" width="34" height="16" rx="8" fill="#f4f1e8" stroke="#141414" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" transform="rotate(28 -28 6)"/></g></g></svg></div>
-    <article class="card k1"><header>東京<small>10.09</small></header><p>中野道通过摄影展“Meimetsu”告别青春，代官山开展</p><footer>IMA</footer></article>
-    <article class="card k2"><header>釜山<small>10.15</small></header><p>马吉德·马吉迪的《Midday Meal》斩获釜山奖，电影节迎来2015年以来最高观众人数</p><footer>SCREEN DAILY</footer></article>
-    <article class="card k3"><header>倫敦<small>10.15</small></header><p>邪典影院“查尔斯王子电影院”在签署租约续签后“得救”</p><footer>THE GUARDIAN</footer></article>
-    <article class="card k4"><header>紐約<small>10.15</small></header><p>大都会艺术博物馆即将举办的展览将以全新视角呈现伦勃朗对古代艺术的痴迷</p><footer>HYPERALLERGIC</footer></article>
-    <article class="card k5"><header>威尼斯<small>10.15</small></header><p>法国收藏家弗朗索瓦·皮诺计划在威尼斯博物馆举办常设展</p><footer>ARTNEWS</footer></article>
+    <article class="card k1"><header class="mast">幕間休息<small>2026.10.09</small></header><span class="dl">東京電 ——</span><p>中野道通过摄影展“Meimetsu”告别青春，代官山开展</p><div class="cols"><i></i><b></b><b></b></div><footer>Ima</footer></article>
+    <article class="card k2"><header class="mast">幕間休息<small>2026.10.15</small></header><span class="dl">釜山電 ——</span><p>马吉德·马吉迪的《Midday Meal》斩获釜山奖，电影节迎来2015年以来最高观众人数</p><div class="cols"><i></i><b></b><b></b></div><footer>Screen Daily</footer></article>
+    <article class="card k3"><header class="mast">幕間休息<small>2026.10.15</small></header><span class="dl">倫敦電 ——</span><p>邪典影院“查尔斯王子电影院”在签署租约续签后“得救”</p><div class="cols"><i></i><b></b><b></b></div><footer>The Guardian</footer></article>
+    <article class="card k4"><header class="mast">幕間休息<small>2026.10.15</small></header><span class="dl">紐約電 ——</span><p>大都会艺术博物馆即将举办的展览将以全新视角呈现伦勃朗对古代艺术的痴迷</p><div class="cols"><i></i><b></b><b></b></div><footer>Hyperallergic</footer></article>
+    <article class="card k5"><header class="mast">幕間休息<small>2026.10.15</small></header><span class="dl">威尼斯電 ——</span><p>法国收藏家弗朗索瓦·皮诺计划在威尼斯博物馆举办常设展</p><div class="cols"><i></i><b></b><b></b></div><footer>Artnews</footer></article>
   </div>
 
   <div class="scene" id="fair-scene">
@@ -337,6 +342,7 @@ svg{display:block;overflow:visible}
     <i class="star4" style="left:1260px;top:200px;background:var(--mid);animation-delay:.4s"></i>
   </div>
 
+  <div class="paper-tex"></div>
   </div>
 
   <p class="sub s1">各位明日世界的公民，晚上好！您正在收看幕間休息電視台！</p>
@@ -412,6 +418,16 @@ svg{display:block;overflow:visible}
     }
   }
 
+  /* ── Torn edges for the newspaper clippings ── */
+  Array.prototype.forEach.call(document.querySelectorAll('.card'), function (card, k) {
+    var pts = [], n = 18, j = function (i) { return (hash(k * 31 + i * 7.3) * 2.4).toFixed(2); };
+    for (var i = 0; i <= n; i++) pts.push((i / n * 100).toFixed(2) + '% ' + j(i) + '%');
+    for (i = 1; i <= n; i++) pts.push((100 - j(i + 40)) + '% ' + (i / n * 100).toFixed(2) + '%');
+    for (i = n - 1; i >= 0; i--) pts.push((i / n * 100).toFixed(2) + '% ' + (100 - j(i + 80)) + '%');
+    for (i = n - 1; i > 0; i--) pts.push(j(i + 120) + '% ' + (i / n * 100).toFixed(2) + '%');
+    card.style.clipPath = 'polygon(' + pts.join(',') + ')';
+  });
+
   /* ── Electrons on the three orbits ── */
   var electrons = [document.getElementById('e1'), document.getElementById('e2'), document.getElementById('e3')];
   function drawAtom(t) {
@@ -424,77 +440,87 @@ svg{display:block;overflow:visible}
     });
   }
 
-  /* ── Film wear: flicker, scratches, dust, gate weave ── */
+  /* ── Film wear: flicker, scratches, dust, gate weave, line boil ── */
   var wear = document.getElementById('wear'), w = wear.getContext('2d'), film = document.getElementById('film');
+  var boil = document.getElementById('boil-noise');
   function drawWear(t) {
     var f = Math.floor(t * 24);
     w.clearRect(0, 0, 1920, 1080);
-    w.fillStyle = 'rgba(255,255,255,' + (.04 * hash(f * 1.7)) + ')'; w.fillRect(0, 0, 1920, 1080);
-    w.fillStyle = 'rgba(0,0,0,' + (.06 * hash(f * 2.3)) + ')'; w.fillRect(0, 0, 1920, 1080);
-    w.strokeStyle = 'rgba(20,20,20,.35)'; w.lineWidth = 1.4;
-    for (var s = 0; s < 3; s++) {
-      if (hash(f * 3.1 + s) > .4) continue;
-      var x = 120 + hash(f * 5.7 + s * 9) * 1680;
-      w.beginPath(); w.moveTo(x, 0); w.lineTo(x + (hash(f + s) - .5) * 14, 1080); w.stroke();
+    w.fillStyle = 'rgba(255,255,255,' + (.08 * hash(f * 1.7)) + ')'; w.fillRect(0, 0, 1920, 1080);
+    w.fillStyle = 'rgba(0,0,0,' + (.1 * hash(f * 2.3)) + ')'; w.fillRect(0, 0, 1920, 1080);
+    for (var s = 0; s < 4; s++) {
+      if (hash(f * 3.1 + s) > .5) continue;
+      var x = 100 + hash(f * 5.7 + s * 9) * 1720;
+      w.strokeStyle = hash(f + s * 4) > .5 ? 'rgba(20,20,20,.45)' : 'rgba(255,255,255,.35)'; w.lineWidth = 1 + hash(f * 9.1 + s) * 2;
+      w.beginPath(); w.moveTo(x, 0); w.lineTo(x + (hash(f + s) - .5) * 18, 1080); w.stroke();
     }
-    for (var d = 0; d < 8; d++) {
-      var dx = hash(f * 11.3 + d) * 1920, dy = hash(f * 13.7 + d * 3) * 1080, r = .8 + hash(f * 17.1 + d) * 2.8;
-      w.fillStyle = hash(f + d * 7) > .5 ? 'rgba(0,0,0,.55)' : 'rgba(255,255,255,.5)';
+    for (var d = 0; d < 18; d++) {
+      var dx = hash(f * 11.3 + d) * 1920, dy = hash(f * 13.7 + d * 3) * 1080, r = .8 + hash(f * 17.1 + d) * 3.4;
+      w.fillStyle = hash(f + d * 7) > .45 ? 'rgba(0,0,0,.6)' : 'rgba(255,255,255,.55)';
       w.beginPath(); w.arc(dx, dy, r, 0, 6.2832); w.fill();
     }
-    var jx = (hash(f * 1.31) - .5) * 2.4, jy = (hash(f * 2.77) - .5) * 2.8;
+    if (hash(f * 7.77) > .93) {                              // a hair across the gate
+      var hx = hash(f * 2.2) * 1700 + 100, hy = hash(f * 3.3) * 900 + 90;
+      w.strokeStyle = 'rgba(10,10,10,.6)'; w.lineWidth = 1.6; w.beginPath(); w.moveTo(hx, hy);
+      w.bezierCurveTo(hx + 40, hy - 60, hx + 90, hy + 50, hx + 150, hy - 10); w.stroke();
+    }
+    var slip = hash(Math.floor(t * 2) * 5.1) > .9 && hash(f * 1.9) > .6 ? 14 : 0;
+    var jx = (hash(f * 1.31) - .5) * 5, jy = (hash(f * 2.77) - .5) * 5 + slip;
     film.style.transform = 'translate(' + jx.toFixed(2) + 'px,' + jy.toFixed(2) + 'px)';
+    boil.setAttribute('seed', String(Math.floor(t * 8) % 97));   // hand-drawn lines "boil" 8 times a second
   }
 
-  function render(ms) { var t = ms / 1000; drawGlobe(t); drawAtom(t); drawWear(t); }
+  function render(ms) { var t = ms / 1000; drawGlobe(t); drawAtom(t); }
 
-  /* ── Clock, seeking, playback and sound ── */
-  var all = null;
+  /* ── Timing: the cartoon moves "on twos" (12 drawings a second); the film wear runs at
+     24. Every CSS animation is paused and positioned from one clock — the recorder's
+     seek, or in the browser the soundtrack (when on) or a timer. The sound is never
+     seeked while it plays. ── */
+  var FPS = 12, all = null, lastFrame = -1;
   function animations() { return all || (all = document.getAnimations()); }
-  function clock() { return animations().filter(function (a) { return a.animationName === 'clock'; })[0]; }
-  function seek(ms) { animations().forEach(function (a) { a.pause(); a.currentTime = ms; }); render(ms); }
-  window.seekPromo = seek;
+  function seek(ms) {
+    var q = Math.floor(ms / 1000 * FPS);
+    if (q !== lastFrame) { animations().forEach(function (a) { a.pause(); a.currentTime = q / FPS * 1000; }); lastFrame = q; render(q / FPS * 1000); }
+    drawWear(ms / 1000);
+  }
+  window.seekPromo = function (ms) { lastFrame = -1; seek(ms); };
   window.promoDuration = DURATION;
-  var pauseButton = document.getElementById('pause'), paused = false;
+
+  var pauseButton = document.getElementById('pause'), paused = false, started = performance.now(), held = 0;
+  var audio = document.getElementById('score'), soundButton = document.getElementById('sound'), soundOn = false;
+  function now() {
+    if (paused) return held;
+    if (soundOn && !audio.paused && !audio.seeking && audio.readyState >= 3) return audio.currentTime * 1000;
+    return performance.now() - started;
+  }
   function setPaused(value) {
-    paused = value;
-    animations().forEach(function (a) { value ? a.pause() : a.play(); });
+    if (value === paused) return;
+    if (value) { held = now(); paused = true; audio.pause(); }
+    else { paused = false; started = performance.now() - held; if (soundOn) { audio.currentTime = held / 1000; audio.play().catch(function () {}); } }
     pauseButton.textContent = value ? '播放' : '暫停';
   }
-  /* The soundtrack (voice and music) is the master clock while it plays: it is never
-     seeked mid-play; if the picture drifts, the picture moves to the sound. */
-  var audio = document.getElementById('score'), soundButton = document.getElementById('sound'), soundOn = false;
-  function syncAudio(ms) {
-    if (!soundOn) return;
-    var target = ms / 1000;
-    if (paused || target >= DURATION / 1000) { if (!audio.paused) audio.pause(); return; }
-    if (audio.paused) { audio.currentTime = target; audio.play().catch(function () {}); return; }
-    if (audio.seeking || audio.readyState < 3) return;
-    var heard = audio.currentTime;
-    if (Math.abs(heard - target) > .15) animations().forEach(function (a) { a.currentTime = heard * 1000; });
-  }
+  function replay() { started = performance.now(); held = 0; lastFrame = -1; if (soundOn) { audio.currentTime = 0; audio.play().catch(function () {}); } paused = false; pauseButton.textContent = '暫停'; }
   soundButton.addEventListener('click', function (event) {
     event.stopPropagation();
+    var t = now();
     soundOn = !soundOn;
     soundButton.setAttribute('aria-pressed', String(soundOn));
     soundButton.textContent = soundOn ? '關聲音' : '開聲音';
-    if (!soundOn) audio.pause();
+    if (soundOn && !paused) { audio.currentTime = t / 1000; audio.play().catch(function () {}); }
+    if (!soundOn) { audio.pause(); started = performance.now() - t; }
   });
-  function replay() { seek(0); if (soundOn) { audio.pause(); audio.currentTime = 0; } setPaused(false); }
   pauseButton.addEventListener('click', function () { setPaused(!paused); });
   document.getElementById('replay').addEventListener('click', replay);
   stage.addEventListener('click', function () { setPaused(!paused); });
+  audio.addEventListener('ended', function () { if (soundOn) started = performance.now() - DURATION; });
 
-  if (recording) { seek(0); return; }
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { seek(43000); setPaused(true); return; }
+  animations().forEach(function (a) { a.pause(); });
+  if (recording) { window.seekPromo(0); return; }
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { window.seekPromo(43000); paused = true; held = 43000; pauseButton.textContent = '播放'; return; }
   (function loop() {
-    var c = clock();
-    if (c) {
-      var ms = c.currentTime || 0;
-      if (!paused && c.playState === 'finished') { replay(); ms = 0; }
-      render(Math.min(ms, DURATION));
-      syncAudio(ms);
-    }
+    var ms = now();
+    if (!paused && ms >= DURATION + 800) { replay(); ms = 0; }
+    seek(Math.min(ms, DURATION));
     requestAnimationFrame(loop);
   })();
 })();

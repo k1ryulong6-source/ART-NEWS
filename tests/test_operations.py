@@ -53,7 +53,7 @@ class OperationsTests(unittest.TestCase):
         self.evidence['cloudflare']={'status':'completed','configured':True,'translated':['cf'],
             'requests':1,'neurons':{'estimated_neurons':42,'timezone':'UTC'}}
         report=operations_report(self.snapshot,self.evidence,self.instant)
-        self.assertEqual(report['translation']['api_provider_counts'],{'gemini':1,'cloudflare':1})
+        self.assertEqual(report['translation']['api_provider_counts'],{'gemini':1,'deepseek':0,'cloudflare':1})
         self.assertEqual(report['cloudflare']['last_run_completed'],1)
         self.assertEqual(report['cloudflare']['neurons']['estimated_neurons'],42)
         self.assertEqual(report['quota']['combined']['requests'],100)

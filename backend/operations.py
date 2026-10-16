@@ -60,9 +60,16 @@ def operations_report(snapshot, evidence, instant=None):
     project_reports = ai.get('projects') or []
     project_limits = cfg.get('project_daily_limits') or {'primary': limit, 'secondary': 500}
     quota['projects'] = []
-    for identity, project_ledger in (('primary', ledger), ('secondary', evidence.get('ledger_secondary'))):
+    deepseek_lane = any(r.get('id') == 'deepseek' for r in project_reports)
+    if deepseek_lane:
+        project_limits = {**project_limits, 'deepseek': (cfg.get('deepseek') or {}).get('requests_per_day')}
+    lanes = (('primary', ledger), ('secondary', evidence.get('ledger_secondary')))
+    if deepseek_lane:
+        lanes += (('deepseek', evidence.get('ledger_deepseek')),)
+    for identity, project_ledger in lanes:
         lane = next((r for r in project_reports if r.get('id') == identity), {})
-        configured = lane.get('configured', identity == 'primary') and lane.get('status') != 'duplicate_key'
+        configured = (lane.get('configured', identity == 'primary' and not deepseek_lane)
+                      and lane.get('status') != 'duplicate_key')
         values = (project_ledger or {}).get('days', {}).get(day) or {}
         counts = {key: values.get(key, 0) if project_ledger is not None else None for key in
                   ('requests', 'reserved_requests', 'input_tokens', 'output_tokens', 'unknown_usage_requests')}
@@ -102,7 +109,7 @@ def operations_report(snapshot, evidence, instant=None):
             'status': 'attention' if warnings else 'ok', 'warnings': warnings,
             'translation': {**progress, 'api_completed': len(api), 'other_ai_completed': len(completed) - len(api),
                             'api_provider_counts': {name: sum(str(r.get('editorial_provider') or '').startswith('contextual-api:' + name + ':') for r in api)
-                                                    for name in ('gemini', 'cloudflare')},
+                                                    for name in ('gemini', 'deepseek', 'cloudflare')},
                             'api_source_characters': sum(len(r.get('article_text') or '') for r in api),
                             'machine_count_scope': 'pending_AI_only; overlaps_pending_not_AI_completion'},
             'api': {**{key: ai.get(key) for key in ('status', 'model', 'error', 'error_detail', 'started_at', 'finished_at', 'retry_after')},
@@ -157,6 +164,11 @@ def load_operations(snapshot, root=ROOT, instant=None):
         except (OSError, ValueError):
             evidence[key] = None
             unreadable.append(key)
+    try:
+        deepseek = root / 'data/ai-translation-ledger-deepseek.json'
+        evidence['ledger_deepseek'] = json.loads(deepseek.read_text()) if deepseek.exists() else None
+    except (OSError, ValueError):
+        evidence['ledger_deepseek'] = None
     try:
         secondary = root / 'data/ai-translation-ledger-secondary.json'
         evidence['ledger_secondary'] = json.loads(secondary.read_text()) if secondary.exists() else None

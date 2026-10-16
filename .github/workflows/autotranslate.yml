@@ -26,6 +26,7 @@ on:
       - 'backend/cloudflare_translation.py'
       - 'scripts/run_cloudflare_translation.py'
       - 'backend/ai_pool.py'
+      - 'backend/deepseek_translation.py'
       - 'scripts/run_ai_translation.py'
       - 'scripts/reserve_ai_quota.py'
       - 'backend/offline_model.py'
@@ -62,6 +63,9 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_API_KEY_SECONDARY: ${{ secrets.GEMINI_API_KEY_SECONDARY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          AI_TRANSLATION_PROVIDER: ${{ vars.AI_TRANSLATION_PROVIDER }}
+          DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFLARE_AUTH_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
         run: |
@@ -69,7 +73,7 @@ jobs:
           python scripts/run_cloudflare_translation.py --reserve
           git config user.name 'Intermission automatic translator'
           git config user.email 'updater@users.noreply.github.com'
-          for path in data/ai-translation-ledger.json data/ai-translation-ledger-secondary.json data/cloudflare-translation-ledger.json data/cloudflare-neurons-ledger.json; do
+          for path in data/ai-translation-ledger.json data/ai-translation-ledger-secondary.json data/ai-translation-ledger-deepseek.json data/cloudflare-translation-ledger.json data/cloudflare-neurons-ledger.json; do
             if [ -f "$path" ]; then git add "$path"; fi
           done
           if ! git diff --cached --quiet; then
@@ -77,11 +81,14 @@ jobs:
             git pull --rebase origin main
             git push origin HEAD:main
           fi
-      - name: Translate with contextual AI when the free-project key is configured
+      - name: Translate with contextual AI (DeepSeek when its key is set, otherwise free Gemini)
         id: ai
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_API_KEY_SECONDARY: ${{ secrets.GEMINI_API_KEY_SECONDARY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          AI_TRANSLATION_PROVIDER: ${{ vars.AI_TRANSLATION_PROVIDER }}
+          DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL }}
         run: |
           python scripts/run_ai_translation.py
           if jq -e '.continue_recommended == true' data/ai-translation-status.json >/dev/null; then
@@ -144,6 +151,7 @@ jobs:
           git add data/live.json data/quality.json data/important-news-audit.json data/translation-queue.json data/translation-queue data/translation-input data/auto-translation-progress data/auto-translation-status.json data/ai-translation-progress data/ai-translation-status.json
           if [ -f data/ai-translation-ledger.json ]; then git add data/ai-translation-ledger.json; fi
           if [ -f data/ai-translation-ledger-secondary.json ]; then git add data/ai-translation-ledger-secondary.json; fi
+          if [ -f data/ai-translation-ledger-deepseek.json ]; then git add data/ai-translation-ledger-deepseek.json; fi
           if [ -d data/ai-translation-projects ]; then git add data/ai-translation-projects; fi
           for path in data/cloudflare-translation-ledger.json data/cloudflare-neurons-ledger.json data/cloudflare-translation-status.json data/cloudflare-translation-progress; do
             if [ -e "$path" ]; then git add "$path"; fi
@@ -179,6 +187,7 @@ jobs:
             data/ai-translation-status.json
             data/ai-translation-ledger.json
             data/ai-translation-ledger-secondary.json
+            data/ai-translation-ledger-deepseek.json
             data/ai-translation-projects/
             data/cloudflare-translation-ledger.json
             data/cloudflare-neurons-ledger.json

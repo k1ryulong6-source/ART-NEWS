@@ -24,6 +24,16 @@
     "output": 2.5
   },
   "notes": "用户选择免费项目试跑一天；2.5 Flash-Lite实际404不再向新用户开放，按Google返回建议改3.5 Flash-Lite，官方Standard仍有Free Tier。保持free-project-only、paid_activation=false、500请求/太平洋日保护上限（2026-10-15用户提供AI Studio账号RPM15、TPM250000、RPD500；用户要求不固定闲置50次，每日余量不累积）；真实账号配额以Google为准，不能由key判断计费状态。单轮全文直译，MINIMAL thinking，机翻仅临时兜底。",
+  "deepseek": {
+    "model": "deepseek-flash",
+    "base_url": "https://api.deepseek.com",
+    "account_mode": "user-authorized-prepaid",
+    "requests_per_day": 300,
+    "requests_per_run": 40,
+    "request_interval_seconds": 3,
+    "max_output_tokens": 16384,
+    "notes": "2026-10-16用户因Gemini免费层503要求接入DeepSeek翻译。DeepSeek为预充值付费API，用户授权；程序上限300请求/太平洋日，实际花费以DeepSeek账户余额为准。设置GitHub Secret DEEPSEEK_API_KEY后默认使用；Actions变量AI_TRANSLATION_PROVIDER=gemini可切回Gemini，DEEPSEEK_MODEL可改模型。"
+  },
   "transient_retry": {
     "initial_seconds": 60,
     "maximum_seconds": 1800,

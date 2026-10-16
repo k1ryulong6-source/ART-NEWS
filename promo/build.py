@@ -5,6 +5,7 @@ promo/src/promo.html is the source. This script fills in:
   {{WORDMARK}}    the site's wordmark outline (frontend/index.html), split per character
   {{SEATS}}       cinema seat silhouettes for the opening shot
   {{FONT_*}}      subsets of the site's OFL faces, cut to the characters the film uses
+  {{SCORE}}       the score (promo/score.mp3, made by promo/score.py)
 
 and writes promo/index.html (fonts from promo/fonts/), plus an optional single-file
 copy with the fonts embedded.
@@ -134,7 +135,8 @@ def main() -> None:
     print(f"{fonts['FONT_SANS'].name}: not covered {not_covered(fonts['FONT_SANS'], text) or 'none'}")
     print(f"{fonts['FONT_NEWS'].name}: Latin not covered {not_covered(fonts['FONT_NEWS'], latin) or 'none'}")
 
-    standalone = page
+    score = PROMO / "score.mp3"
+    standalone = page.replace("{{SCORE}}", score.name)
     for key, path in fonts.items():
         standalone = standalone.replace("{{%s}}" % key, f"fonts/{path.name}")
     head = ('<!doctype html>\n<html lang="zh-Hant">\n<head>\n<meta charset="utf-8">\n'
@@ -143,7 +145,7 @@ def main() -> None:
     print("wrote promo/index.html")
 
     if args.inline:
-        inline = page
+        inline = page.replace("{{SCORE}}", "data:audio/mpeg;base64," + base64.b64encode(score.read_bytes()).decode("ascii"))
         for key, path in fonts.items():
             data = base64.b64encode(path.read_bytes()).decode("ascii")
             inline = inline.replace("{{%s}}" % key, f"data:font/woff2;base64,{data}")

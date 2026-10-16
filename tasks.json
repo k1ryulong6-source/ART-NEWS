@@ -2467,7 +2467,8 @@
         "真实Actions批次成功发布DeepSeek译文后才算验收"
       ],
       "evidence": [
-        "235 Python测试通过（新增7项DeepSeek测试），scripts/check_project.py通过；尚未真实调用DeepSeek，草稿PR待用户设置Secret后验收。"
+        "235 Python测试通过（新增7项DeepSeek测试），scripts/check_project.py通过；尚未真实调用DeepSeek，草稿PR待用户设置Secret后验收。",
+        "2026-10-16真实Actions 38944146695（JST 10-17 03:01–03:09）：DeepSeek deepseek-flash 40请求、144972输入/49816输出tokens，15篇AI全文通过程序检查并经Pages 38945891040发布；20篇待重试（17数字检查、2篇模型JSON后附多余文本、1篇未译段落），无服务错误。后续修复：JSON后附文本只取首个对象。"
       ]
     }
   ]

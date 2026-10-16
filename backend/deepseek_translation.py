@@ -75,7 +75,9 @@ class DeepSeekTranslator:
         choices = response.get('choices') or []
         if not choices or choices[0].get('finish_reason') != 'stop':
             raise ValueError('ai_output_incomplete')
-        value = json.loads((choices[0].get('message') or {}).get('content') or '')
+        # JSON mode occasionally appends text after the object; keep only the first object.
+        content = ((choices[0].get('message') or {}).get('content') or '').strip()
+        value = json.JSONDecoder().raw_decode(content)[0]
         outputs = value.get('outputs') if isinstance(value, dict) else None
         if not isinstance(outputs, dict) or not set(keys) <= set(outputs):
             raise ValueError('ai_unit_coverage_mismatch')

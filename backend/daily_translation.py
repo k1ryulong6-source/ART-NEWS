@@ -7,6 +7,7 @@ from pathlib import Path
 from .storage import ROOT, now
 from .editorial import checked_result, publish_translation
 from .headlines import load_headlines
+from .frontpage import headline_ready
 from .priority import rank_snapshot, priority_key, policy, translation_batch
 
 PROVIDER = 'chatgpt-direct:context-review-v1'
@@ -39,6 +40,10 @@ def import_packs(store, directory=None):
                 raise ValueError('invalid_ai_provenance')
             digest = hashlib.sha256(json.dumps(pack, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
             previous = json.loads(row.get('editorial_review_json') or '{}')
+            # An API batch may finish after a session pack was authored. Keep
+            # its valid full copy and provenance instead of importing a duplicate.
+            if headline_ready(row):
+                report['unchanged'].append(id); continue
             if row.get('editorial_status') in ('reviewed','translated') and previous.get('pack_hash') == digest:
                 report['unchanged'].append(id); continue
             review = {**review, 'pack_hash': digest, 'execution': pack['execution'], 'ai_not_human': True}

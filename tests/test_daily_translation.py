@@ -6,6 +6,7 @@ from backend.daily_translation import import_packs, prepare_queue
 from backend.articles import collect_articles
 from backend.ingestion import content_record
 from backend.storage import Store
+from backend.editorial import publish_translation
 
 
 class DailyTranslationTests(unittest.TestCase):
@@ -57,3 +58,22 @@ class DailyTranslationTests(unittest.TestCase):
         self.assertEqual(row['editorial_model'],'gpt-6-luna (session worker)')
         self.assertEqual(import_packs(self.store,self.directory)['unchanged'],[self.row['id']])
         self.assertEqual(prepare_queue(self.store.dataset('live'),self.root/'public')['pending'],0)
+
+    def test_api_completion_after_pack_creation_is_preserved(self):
+        self.pack.update(quality_mode='direct-ai', draft_model='current conversation')
+        self.pack['review']={'approved':False,'status':'not_requested','issues':[],'method':'Direct translation'}
+        self.write()
+        publish_translation(self.store, self.row, self.pack['translation'],
+                            'contextual-api:gemini:test', 'gemini-test', None, self.pack['review'])
+        before=self.store.dataset('live')['content'][0]
+        report=import_packs(self.store,self.directory)
+        self.assertEqual(report['imported'],[])
+        self.assertEqual(report['unchanged'],[self.row['id']])
+        self.assertEqual(self.store.dataset('live')['content'][0],before)
+
+    def test_invalid_existing_copy_does_not_block_valid_pack(self):
+        with self.store.connect() as db:
+            db.execute("UPDATE content SET editorial_status='translated',editorial_title_zh='不完整译文',editorial_blocks_json='[]' WHERE id=?", (self.row['id'],))
+        self.write()
+        self.assertEqual(import_packs(self.store,self.directory)['imported'],[self.row['id']])
+        self.assertEqual(self.store.dataset('live')['content'][0]['editorial_status'],'reviewed')

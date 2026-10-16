@@ -479,3 +479,12 @@ T070后续用户询问当前窗口能否直接翻译，本次不再调用工作�
 
 
 T070本次单篇交互补充已验收：4f0619e；CI38904711570、导入38904711478 success。生产/integrations/babel/live-8da5d55a887e39b3833e6adb.json HTTP200，kind=ai-direct、源hash匹配，中文标题及全部11块与pack精确一致、保留2原图。实际当前窗口全文1篇，5.6仍0，不计作Gemini。T070仅本次有限补充done，不自动恢复任务/加派模型/批量；T028/T062与API恢复T069仍未完成。
+
+
+## T071 · 当前窗口继续补译（2026-10-16 JST）
+
+用户要求API未修好先帮翻译；22:36检查后台最新22:17–22:23批次16请求/报告3篇，但6次503/4次短重试，仍service_wait，不能称稳定恢复。T069的有界恢复已真实验收done，仅指程序逻辑；Google故障仍在。
+
+当前窗口完成4篇紧急上映/活动+1篇backlog，共190块（5篇完整input已读取），execution=interactive，不派工作者/第二轮校对/付费，实际具体型号不可见不冒称5.6/Gemini/最低价。ID与程序证据见data/session-translation-batch-2026-10-16.json。最新main检查全部hash/title匹配、暂无有效AI，临时库全pack模拟只新增5、56 unchanged/6 stale/0 invalid、0旧AI覆盖。正文保存的来源推荐/观众评论未擅删，译稿notes注明来源部分性质；不算正文质量清理完成。
+
+为避免API在写稿后、导入前抢先完成而被会话稿覆盖，import_packs复用headline_ready的完整hash/段落/数字有效性检查，合格AI稿原样保留；无效旧稿仍可修复。6项导入测试通过。T071等待真实导入/Pages；全量T028/T062继续doing。

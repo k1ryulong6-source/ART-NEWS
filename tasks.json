@@ -2247,7 +2247,7 @@
       "id": "T069",
       "title": "修复Gemini临时服务错误一律等待一小时，增加有界恢复",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex（API/独立退避与断点）",
       "updated_at": "2026-10-16",
       "depends_on": [
@@ -2277,7 +2277,8 @@
         "204 Python回归/项目检查/diff检查通过；新增持久指数退避、HTTP-date/秒Retry-After、同批503两次后恢复、持续故障停机、有效段不重译、逐次预留/40请求/500日/480秒预算、网络错误、429/鉴权/旧冷却不绕过及双项目隔离测试。",
         "配置60/120/240/480/960/1800秒+0–15秒抖动（总上限1800），同批短重试最多2次；原模型、每日额度、有效断点及半小时计划保持。",
         "尚待GitHub发布/真实API结果。旧已记录未知来源等待不提前清掉；不得把CI通过或策略字段当Google已恢复。",
-        "873b7be已推送；Project checks38901732914、Pages38901732873及后续38902320671 success。真实后台38901732798结束，报告2026-10-16T12:36:59Z（21:36:59 JST）已使用bounded-exponential-v1，但仍尊重旧等待，0新请求/0新全文；不是Google恢复证据，T069仍doing。"
+        "873b7be已推送；Project checks38901732914、Pages38901732873及后续38902320671 success。真实后台38901732798结束，报告2026-10-16T12:36:59Z（21:36:59 JST）已使用bounded-exponential-v1，但仍尊重旧等待，0新请求/0新全文；不是Google恢复证据，T069仍doing。",
+        "真实后台22:17–22:23 JST运行新策略：双路各8次、共16请求，报告完成3篇；6次503事件及4次短重试持久记录，72/75/122秒等待及成功响应后失败计数复位可核对。Google仍间歇503并结束service_wait，修复验收只指后端有界恢复逻辑已实跑，不代表供应商稳定。"
       ]
     },
     {
@@ -2314,6 +2315,41 @@
         "checked_result程序结构/数字检查通过；临时数据库对当前全部pack导入模拟仅新增本篇，55 unchanged/6 stale/0 invalid，0既有AI稿被覆盖。尚待GitHub导入与Pages真实验收。",
         "4f0619e已发布；Project checks38904711570、译稿导入38904711478 success。线上独立JSON HTTP200确认kind=ai-direct，标题/全部11块与pack逐项一致，原文hash匹配，2张原图保留。本次实际1篇当前窗口全文；5.6失败仍为0，Gemini产量不冒领。",
         "只验收本次单篇交互补充；不恢复每日会话任务、不自动继续批量、不启动新模型或付费。全量T028、四项T062及API恢复T069仍未完成。"
+      ]
+    },
+    {
+      "id": "T071",
+      "title": "Gemini间歇503期间由当前窗口补译紧急稿及旧稿",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex（当前窗口直接翻译，无子工作者）",
+      "updated_at": "2026-10-16",
+      "depends_on": [
+        "T070"
+      ],
+      "scope": [
+        "data/translations/",
+        "data/session-translation-batch-2026-10-16.json",
+        "AGENTS.md",
+        "docs/DAILY_TRANSLATION.md",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md",
+        "tasks.json",
+        "backend/daily_translation.py",
+        "tests/test_daily_translation.py"
+      ],
+      "acceptance": [
+        "用户本次明确继续直接翻译，无子工作者/额外模型校对/费用变更",
+        "完整读取5篇现存input，4篇上映/活动优先及1篇backlog，全部块/来源/数字/hash程序检查",
+        "提交前复查最新main，后台API已有效完成则复用，不覆盖新采集",
+        "核对真实导入/Pages/线上全文，当前窗口与Gemini实际产量分开记录；API恢复稳定后停止新的会话补译"
+      ],
+      "evidence": [
+        "东京22:36查看真实最新API批：22:17至22:23合计16请求/3篇全文，但6次503事件、4次短重试，结束仍service_wait。新退避实际生效，不能称稳定恢复。",
+        "本批完整输入5篇共190块，4篇P0上映及1篇backlog；不调用5.6/Luna或其他工作者、不更改API免费保护。",
+        "当前窗口实际生成5篇/190块，全部checked_result通过；最新main逐篇hash/title匹配且无已有有效AI，临时数据库全pack模拟新增5、56 unchanged/6 stale/0 invalid、0既有AI覆盖。",
+        "导入器补充复用已通过完整程序检查的AI全文：若API在会话写稿后抢先完成，保留原模型/正文/时间/审核身份；无效旧稿仍可修复。6项导入测试通过，含真实后到API完成与不完整旧稿两个场景。",
+        "尚待真实导入和Pages/线上核对；不把临时译稿或后台3篇算成当前窗口已发布。"
       ]
     }
   ]

@@ -4,20 +4,17 @@
   "configured": true,
   "requests": 8,
   "translated": [
-    "live-0eef33eb93234ebf89171da1"
+    "live-fd4ffdd10e9ffe5d91ed1747",
+    "live-cdf005a3ce990ee4ec2b4325"
   ],
   "failed": [
     {
-      "id": "live-9e9810c158e92625fd5fbdeb",
+      "id": "live-8da5d55a887e39b3833e6adb",
+      "reason": "ai_paragraph_not_translated:block:4:text:0"
+    },
+    {
+      "id": "live-d4393418baa160e650fd5017",
       "reason": "ai_unit_coverage_mismatch"
-    },
-    {
-      "id": "live-096d6e12b7c9c03e30d2197e",
-      "reason": "ai_numbers_missing:block:24:text:0"
-    },
-    {
-      "id": "live-7d50f83138777c6466ca66de",
-      "reason": "ai_paragraph_not_translated:block:2:text:0"
     }
   ],
   "credential_checks": {
@@ -25,7 +22,7 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-16T22:43:54.555358+00:00",
+  "started_at": "2026-10-16T23:28:56.594839+00:00",
   "verification_run": false,
   "status": "daily_limit",
   "account_mode": "free-project-only",
@@ -33,10 +30,11 @@
     "live-f776ee39970722cd17292801",
     "live-3b33d44280b9b1cb6a3f47dd",
     "live-42b74b665f7aca9833fa33fa",
+    "live-9e9810c158e92625fd5fbdeb",
+    "live-096d6e12b7c9c03e30d2197e",
     "live-9cabb7f507d8fa011a73bb5b",
     "live-a1245d0a7e9bc7cd87940813",
     "live-36a9755e4f1e706986cf877e",
-    "live-d4393418baa160e650fd5017",
     "live-bb95bd737c647c280accc532",
     "live-e6b2861769f2fc3c48cd61e1",
     "live-5576b23645db29ab559e9db5",
@@ -51,7 +49,6 @@
     "live-8a89aaa89ba1313f436dc386",
     "live-69c47a1a48da9a5526fc9eda",
     "live-7ee74a6c1eb39aae2c014956",
-    "live-8da5d55a887e39b3833e6adb",
     "live-80873b0d831a13d97ee39db0",
     "live-9b8a2f96c53d4364b079bad6",
     "live-27d7769fc624bc2120a69717",
@@ -64,6 +61,7 @@
     "live-1c5789e645c1311841bde1f1",
     "live-2fffa00114d351962185348b",
     "live-990ab7debd4efe4c42994d11",
+    "live-7d50f83138777c6466ca66de",
     "live-5658bf82373513a1a328ff86",
     "live-020e0824e0e35861648f56d9",
     "live-a1ccdfd37000b2c88bccb687",
@@ -73,36 +71,38 @@
     "live-6b65e6ae46fd1cc17d1ec27e",
     "live-bec7ecaa39ce323f0e73eea5",
     "live-ee482fa2d66fc5faf589af9b",
-    "live-8ea2838c503677499dc470f2",
-    "live-363d3b735faef18a83eefd8b",
     "live-b195fd03fcc926008af29226",
+    "live-363d3b735faef18a83eefd8b",
+    "live-8ea2838c503677499dc470f2"
+  ],
+  "resumed": [
+    "live-8da5d55a887e39b3833e6adb",
     "live-fd4ffdd10e9ffe5d91ed1747"
   ],
-  "resumed": [],
   "stale": [],
-  "input_tokens": 22849,
-  "output_tokens": 6384,
+  "input_tokens": 23884,
+  "output_tokens": 4328,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 709,
+  "pending_before": 708,
   "retry_after": "2026-10-17T00:15:00+00:00",
-  "pending_after": 708,
-  "finished_at": "2026-10-16T22:45:13.536591+00:00",
-  "seconds": 78.98,
-  "requests_today": 134,
+  "pending_after": 706,
+  "finished_at": "2026-10-16T23:30:02.599750+00:00",
+  "seconds": 66.0,
+  "requests_today": 142,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
     "day": "2026-10-16",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 4700.2572,
+    "estimated_neurons": 4942.6165,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 4000.0,
-    "requests": 134,
-    "input_tokens": 416906,
-    "output_tokens": 90962,
+    "requests": 142,
+    "input_tokens": 440790,
+    "output_tokens": 95290,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

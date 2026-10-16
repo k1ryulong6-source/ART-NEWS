@@ -77,3 +77,11 @@ class DailyTranslationTests(unittest.TestCase):
         self.write()
         self.assertEqual(import_packs(self.store,self.directory)['imported'],[self.row['id']])
         self.assertEqual(self.store.dataset('live')['content'][0]['editorial_status'],'reviewed')
+
+    def test_matching_pack_hash_does_not_hide_broken_saved_blocks(self):
+        self.write()
+        import_packs(self.store,self.directory)
+        with self.store.connect() as db:
+            db.execute("UPDATE content SET editorial_blocks_json='[]' WHERE id=?", (self.row['id'],))
+        self.assertEqual(import_packs(self.store,self.directory)['imported'],[self.row['id']])
+        self.assertEqual(len(json.loads(self.store.dataset('live')['content'][0]['editorial_blocks_json'])),1)

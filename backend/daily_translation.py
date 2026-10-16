@@ -39,12 +39,9 @@ def import_packs(store, directory=None):
             if pack.get('execution') not in ('interactive', 'scheduled'):
                 raise ValueError('invalid_ai_provenance')
             digest = hashlib.sha256(json.dumps(pack, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
-            previous = json.loads(row.get('editorial_review_json') or '{}')
             # An API batch may finish after a session pack was authored. Keep
             # its valid full copy and provenance instead of importing a duplicate.
             if headline_ready(row):
-                report['unchanged'].append(id); continue
-            if row.get('editorial_status') in ('reviewed','translated') and previous.get('pack_hash') == digest:
                 report['unchanged'].append(id); continue
             review = {**review, 'pack_hash': digest, 'execution': pack['execution'], 'ai_not_human': True}
             changed = publish_translation(store, row, pack['translation'], PROVIDER,

@@ -1,4 +1,6 @@
-> 2026-10-15用户最新覆盖：仅运行GitHub后台Gemini免费API，不启动任何会话翻译工作者；旧每日ChatGPT翻译任务已暂停。本文下方及config/translation.json中会话分工/5.6默认是历史，不再执行；该旧配置保留以免API断点指纹无谓失效，最新禁令以AGENTS和本段为准。有效既有译稿复用；API不足按后台断点/退避等待，不能自动付费或改用ChatGPT额度。详见AUTONOMOUS_WORKFLOW.md。
+> 2026-10-16本次临时备用尝试结果：用户允许Gemini故障时先用便宜会话模型、API恢复即回归API。唯一gpt-5.6-sol工作者实际返回“Selected model is at capacity”，0篇译稿。没有其他型号更便宜的可靠当前费率，不自动改型号；没有恢复每日会话任务或建立长期fallback。尝试已结束，T070 blocked，后台免费API继续独立运行。执行证据见data/session-fallback-attempt-2026-10-16.json；不能将计划中的5篇计入完成量。
+
+> 2026-10-15历史覆盖：仅运行GitHub后台Gemini免费API，不启动任何会话翻译工作者；旧每日ChatGPT翻译任务已暂停。本文下方及config/translation.json中会话分工/5.6默认是历史；该旧配置保留以免API断点指纹无谓失效。有效既有译稿复用；不能自动付费。详见AUTONOMOUS_WORKFLOW.md。
 
 > T054最新顺序（2026-10-15）：先完成公共首页主头条，再完成电影／艺术／摄影各栏首篇全文。队列frontpage_priority_ids是本期全部头条，frontpage_waiting_ids是其中仍有外文正文待译的ID；next将它们放最前，之后才交错重要／及时稿与旧稿。pending_headlines/headlines_next仍仅代表标题待译，不能与全文头条混淆。队列随下一次导出重新生成；读最新main，不沿用旧排序或旧head缓存，不提高费用／请求上限。
 

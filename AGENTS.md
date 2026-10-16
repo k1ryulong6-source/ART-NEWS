@@ -1,5 +1,7 @@
 # AI 与开发者工作约定
 
+> 2026-10-16临时备用尝试已结束：用户允许Gemini故障期间先用便宜会话模型、API恢复即回归API。本次仅尝试一个此前用户指定的gpt-5.6-sol工作者，实际返回“Selected model is at capacity”，0篇译稿、未执行文章翻译。其他型号实时会话费率不可见，不能声称最便宜或自动升级替代。未恢复每日会话任务，未建立长期会话fallback，后台双路免费Gemini继续独立重试，费用/密钥/配额/旧断点不变。具体证据见data/session-fallback-attempt-2026-10-16.json；T070 blocked，不自动重复启动工作者。
+
 本文件适用于整个项目。先读本文件，再读 `docs/HANDOFF.md`、`docs/PRODUCT.md`、`docs/DECISIONS.md` 和 `tasks.json`。
 
 > 2026-10-15最新覆盖指令：用户明确只运行GitHub后台API翻译，不启动GPT-5.6或任何ChatGPT会话翻译工作者。已暂停旧“每日翻译文化资讯”会话任务；下文所有会话模型选择/分工均为被覆盖的历史要求。主链必须在ChatGPT无额度/离线时独立运行：Actions采集→已配置Gemini免费API→临时离线机翻→断点→发布，费用上限和退避保持。历史译稿模型身份不改，已完成有效稿复用。不得因API额度不足改为会话翻译或开启付费。

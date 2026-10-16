@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-14",
+  "updated_at": "2026-10-16",
   "status_values": [
     "todo",
     "doing",
@@ -2276,7 +2276,40 @@
         "真实API最新批次主4请求完成1篇后503、次1请求503；两路皆固定至少3600秒退避，当日仅28/1000请求。代码明确max(retry_seconds,3600)，短故障可造成过长停顿。",
         "204 Python回归/项目检查/diff检查通过；新增持久指数退避、HTTP-date/秒Retry-After、同批503两次后恢复、持续故障停机、有效段不重译、逐次预留/40请求/500日/480秒预算、网络错误、429/鉴权/旧冷却不绕过及双项目隔离测试。",
         "配置60/120/240/480/960/1800秒+0–15秒抖动（总上限1800），同批短重试最多2次；原模型、每日额度、有效断点及半小时计划保持。",
-        "尚待GitHub发布/真实API结果。旧已记录未知来源等待不提前清掉；不得把CI通过或策略字段当Google已恢复。"
+        "尚待GitHub发布/真实API结果。旧已记录未知来源等待不提前清掉；不得把CI通过或策略字段当Google已恢复。",
+        "873b7be已推送；Project checks38901732914、Pages38901732873及后续38902320671 success。真实后台38901732798结束，报告2026-10-16T12:36:59Z（21:36:59 JST）已使用bounded-exponential-v1，但仍尊重旧等待，0新请求/0新全文；不是Google恢复证据，T069仍doing。"
+      ]
+    },
+    {
+      "id": "T070",
+      "title": "API故障期间临时便宜会话模型补译，恢复后回归API",
+      "milestone": "M6",
+      "status": "blocked",
+      "owner": "Codex（临时备用尝试）",
+      "updated_at": "2026-10-16",
+      "depends_on": [
+        "T063"
+      ],
+      "scope": [
+        "data/translations/",
+        "data/session-fallback-attempt-2026-10-16.json",
+        "docs/DAILY_TRANSLATION.md",
+        "docs/HANDOFF.md",
+        "docs/DECISIONS.md",
+        "AGENTS.md",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "仅用户本次授权的单个便宜会话工作者，不能无价格依据宣称最便宜或自动升级",
+        "重要头条/时效与旧稿份额，完整语境全文及程序检查，无第二轮模型校对",
+        "已有有效API稿复用，实际Gemini新请求恢复后停止分配新会话文章，后台不依赖聊天",
+        "真实可用性/译稿数量/导入和发布逐项报告，不启动旧每日任务或付费"
+      ],
+      "evidence": [
+        "沿用用户此前指定默认gpt-5.6-sol，明确实时会话费率不可见；仅启动一个工作者，请求低推理强度，未启动其他型号。",
+        "工作者实际返回Selected model is at capacity；未读写文章译稿，完成0篇/0译稿，无发布译文可验收。",
+        "后台最新21:36:59 JST报告仍service_wait并尊重旧退避，0新请求；保留772待AI/8缺正文，API独立链未变。",
+        "记录data/session-fallback-attempt-2026-10-16.json；任务blocked，未自动重试/升级型号/恢复每日任务/改变收费。"
       ]
     }
   ]

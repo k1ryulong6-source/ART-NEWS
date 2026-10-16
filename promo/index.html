@@ -378,15 +378,18 @@ svg{display:block;overflow:visible}
     animations().forEach(function (a) { value ? a.pause() : a.play(); });
     pauseButton.textContent = value ? '播放' : '暫停';
   }
-  /* Score: browsers only start sound after a tap, so it begins muted behind a button and
-     follows the film's clock (re-synced whenever it drifts). */
+  /* Score: browsers only start sound after a tap, so it begins muted behind a button.
+     While it plays, the music is the master clock: it is never seeked mid-play (that is
+     what makes sound stutter); if the picture drifts, the picture is moved to the music. */
   var audio = document.getElementById('score'), soundButton = document.getElementById('sound'), soundOn = false;
   function syncAudio(ms) {
     if (!soundOn) return;
     var target = ms / 1000;
     if (paused || target >= DURATION / 1000) { if (!audio.paused) audio.pause(); return; }
-    if (Math.abs(audio.currentTime - target) > .12) audio.currentTime = target;
-    if (audio.paused) audio.play().catch(function () {});
+    if (audio.paused) { audio.currentTime = target; audio.play().catch(function () {}); return; }
+    if (audio.seeking || audio.readyState < 3) return;
+    var heard = audio.currentTime;
+    if (Math.abs(heard - target) > .15) animations().forEach(function (a) { a.currentTime = heard * 1000; });
   }
   soundButton.addEventListener('click', function (event) {
     event.stopPropagation();
@@ -396,7 +399,7 @@ svg{display:block;overflow:visible}
     if (!soundOn) audio.pause();
     else { var c = clock(); audio.currentTime = c ? (c.currentTime || 0) / 1000 : 0; if (!paused) audio.play().catch(function () {}); }
   });
-  function replay() { seek(0); setPaused(false); }
+  function replay() { seek(0); if (soundOn) { audio.pause(); audio.currentTime = 0; } setPaused(false); }
   pauseButton.addEventListener('click', function () { setPaused(!paused); });
   document.getElementById('replay').addEventListener('click', replay);
   stage.addEventListener('click', function () { setPaused(!paused); });

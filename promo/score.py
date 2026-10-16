@@ -109,15 +109,7 @@ def bell(freq: float, length: float = 5.0) -> np.ndarray:
     out = np.zeros(n)
     for ratio, amp, decay in ((1, 1, 3.2), (2.76, .45, 1.6), (5.4, .25, .9), (8.93, .12, .5)):
         out += amp * np.sin(2 * np.pi * freq * ratio * t) * np.exp(-t / decay)
-    return out * np.minimum(1, t / 0.002) * 0.18
-
-
-def click(length: float = .06, tone: float = 2400, gain: float = 1.0) -> np.ndarray:
-    n = int(length * SR)
-    t = np.arange(n) / SR
-    burst = rng.normal(0, 1, n) * np.exp(-t / 0.004)
-    body = np.sin(2 * np.pi * tone * t) * np.exp(-t / 0.01) * .4
-    return butter(burst + body, [500, 7000], "band") * gain
+    return butter(out * np.minimum(1, t / 0.006), 5000) * 0.18
 
 
 def thump(length: float = 1.2, freq: float = 55) -> np.ndarray:
@@ -188,65 +180,63 @@ def music() -> np.ndarray:
 
 
 def effects() -> np.ndarray:
+    """Sound tied to the picture. Everything is shaped with soft attacks: no sharp clicks
+    or stuttering gates, which read as glitches in playback."""
     bus = buffer()
     t = np.arange(N) / SR
 
-    # Projector: lamp switch, then a 24 fps shutter rattle and motor hum.
-    place(bus, 1.1, click(.08, 1800, 1.2), gain=.5, pan=.5)
-    place(bus, 1.1, thump(.6, 70), gain=.25, pan=.5)
-    rattle = np.zeros(N)
-    for frame in np.arange(1.25, 10.5, 1 / 24):
-        i = at(frame + rng.normal(0, .0015))
-        burst = click(.02, 2600 + rng.normal(0, 80), 1)
-        rattle[i:i + len(burst)] += burst[:max(0, N - i)]
+    def soft_thud(start: float, freq: float, gain: float, pan: float = 0.0) -> None:
+        place(bus, start, butter(thump(1.0, freq), 400), gain=gain, pan=pan)
+
+    # Projector: the lamp comes on with a low thud, then a soft whirr (motor and film
+    # running at 24 fps, as a smooth flutter rather than individual clicks).
+    soft_thud(1.1, 70, .3, .5)
+    flutter = 0.7 + 0.3 * np.sin(2 * np.pi * 24 * t)
+    whirr = butter(rng.normal(0, 1, N), [300, 1400], "band") * flutter
     motor = np.sin(2 * np.pi * 48 * t) * .5 + np.sin(2 * np.pi * 96 * t) * .25
-    projector = (rattle * .35 + motor * .02) * envelope([0, 1.2, 1.6, 9.2, 10.4, 10.5, 40], [0, 0, 1, 1, .6, 0, 0])
-    place(bus, 0, butter(projector, 6000), gain=.55, pan=.55)
+    projector = (whirr * .5 + motor * .08) * envelope([0, 1.2, 2.2, 9.2, 10.3, 10.6, 40], [0, 0, 1, 1, .4, 0, 0])
+    place(bus, 0, projector, gain=.12, pan=.5)
 
-    # Push into the screen: an airy riser.
-    riser = butter(rng.normal(0, 1, N), [1500, 9000], "band") * envelope([0, 9.0, 10.45, 10.9, 40], [0, 0, .5, 0, 0])
-    place(bus, 0, riser, gain=.25)
+    # Push into the screen: a soft rush of air.
+    rush = butter(rng.normal(0, 1, N), [400, 4500], "band") * envelope([0, 9.2, 10.4, 11.2, 40], [0, 0, 1, 0, 0])
+    place(bus, 0, rush, gain=.07)
 
-    # Enlarger: switch on, lamp hum, switch off with the timer's beep.
-    place(bus, 10.6, click(.05, 2000, 1), gain=.45, pan=-.2)
-    hum = (np.sin(2 * np.pi * 100 * t) + .4 * np.sin(2 * np.pi * 200 * t)) * envelope([0, 10.6, 10.7, 12.05, 12.15, 40], [0, 0, 1, 1, 0, 0])
-    place(bus, 0, hum, gain=.03)
-    place(bus, 12.12, click(.05, 1600, 1), gain=.45, pan=-.2)
-    beep = np.sin(2 * np.pi * 2093 * t[:int(.18 * SR)]) * np.minimum(1, np.minimum(t[:int(.18 * SR)] / .005, (.18 - t[:int(.18 * SR)]) / .02))
-    place(bus, 12.18, beep, gain=.06, pan=.3)
+    # Enlarger: muffled switch on, lamp hum, switch off, and a soft round tone.
+    soft_thud(10.6, 110, .18, -.2)
+    hum = (np.sin(2 * np.pi * 100 * t) + .4 * np.sin(2 * np.pi * 200 * t)) * envelope([0, 10.6, 10.9, 11.9, 12.15, 40], [0, 0, 1, 1, 0, 0])
+    place(bus, 0, hum, gain=.025)
+    soft_thud(12.12, 110, .16, -.2)
+    tone_len = int(.6 * SR)
+    tone_t = t[:tone_len]
+    tone = np.sin(2 * np.pi * 1046.5 * tone_t) * np.minimum(1, tone_t / .03) * np.exp(-tone_t / .18)
+    place(bus, 12.2, tone, gain=.05, pan=.3)
 
     # Developer tray: liquid moving with each rock of the tray.
     rock = np.cos((t - 12.4) * 2.4)
     slosh_env = np.abs(rock) ** 3 * envelope([0, 12.4, 13.2, 18.2, 19.2, 40], [0, 0, 1, 1, 0, 0])
-    water = butter(rng.normal(0, 1, N), [250, 1800], "band")
-    water = water * (0.6 + 0.4 * np.sin(2 * np.pi * 7 * t + np.sin(2 * np.pi * .9 * t)))
+    water = butter(rng.normal(0, 1, N), [250, 1600], "band")
+    water = water * (0.7 + 0.3 * np.sin(2 * np.pi * 5 * t + np.sin(2 * np.pi * .9 * t)))
     for c, pan in ((0, -.4), (1, .4)):
         side = slosh_env * (0.5 + 0.5 * np.sign(rock) * (1 if c else -1))
-        place(bus, 0, water * side, gain=.09, pan=pan)
+        side = butter(side, 8)                      # no hard switching between sides
+        place(bus, 0, water * side, gain=.08, pan=pan)
 
-    # Safelight turns into the gallery lamp: a big switch, felt more than heard.
-    place(bus, 19.25, click(.08, 1200, 1), gain=.5)
-    place(bus, 19.25, thump(1.4, 48), gain=.45)
+    # Safelight turns into the gallery lamp: felt more than heard.
+    soft_thud(19.25, 48, .4)
 
     # The door: air moving through the gap.
-    air = butter(rng.normal(0, 1, N), [180, 2400], "band") * envelope([0, 28.8, 29.8, 30.8, 31.6, 40], [0, 0, .7, .5, 0, 0])
-    place(bus, 0, air, gain=.16)
+    air = butter(rng.normal(0, 1, N), [180, 2000], "band") * envelope([0, 28.8, 29.8, 30.8, 31.6, 40], [0, 0, .7, .5, 0, 0])
+    place(bus, 0, air, gain=.12)
 
-    # Neon 日: hum that stutters with the flicker keyframes (31.5s + % of 1.6s).
-    start, dur = 31.5, 1.6
-    on = envelope([0, start, start + .08 * dur, start + .12 * dur, start + .22 * dur, start + .27 * dur,
-                   start + .42 * dur, start + dur, 33.3, 34.6, 40],
-                  [0, 0, 1, 0, 1, 0, .7, .45, .35, 0, 0])
-    buzz = signal.sawtooth(2 * np.pi * 120 * t) * .4 + np.sin(2 * np.pi * 60 * t)
-    buzz = butter(buzz, [80, 3200], "band") * on
-    place(bus, 0, buzz, gain=.05)
-    for k in (.08, .22, .42):
-        place(bus, start + k * dur, click(.03, 3000, 1), gain=.35)
+    # Neon 日: a warm hum that swells in and fades with the zoom out.
+    glow = envelope([0, 31.5, 32.2, 33.3, 34.8, 40], [0, 0, 1, .7, 0, 0])
+    buzz = np.sin(2 * np.pi * 120 * t) + .35 * np.sin(2 * np.pi * 240 * t) + .15 * np.sin(2 * np.pi * 360 * t)
+    place(bus, 0, buzz * glow, gain=.025)
 
     # Room tone under everything.
     room = butter(rng.normal(0, 1, (2, N)), 900) * envelope([0, .4, 38.8, 40], [0, 1, 1, 0])
     bus += room * .006
-    return bus
+    return butter(bus, 7000)
 
 
 def master(bus: np.ndarray) -> np.ndarray:

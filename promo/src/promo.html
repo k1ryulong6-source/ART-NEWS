@@ -1,5 +1,5 @@
 <title>幕間休息 宣傳片</title>
-<meta name="description" content="幕間休息宣傳片「一束光」：放映機的光、放大機的光、展廳裡的光，最後成為門縫裡的光——間。">
+<meta name="description" content="幕間休息宣傳片「幕間新聞片」：一期復古黑白新聞片，報導全球電影、攝影、藝術新聞。">
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Licensed webfonts: subsets of the site's own OFL faces (see promo/README.md). */
@@ -7,181 +7,290 @@
 @font-face{font-family:'Promo Sans';src:url("{{FONT_SANS}}") format('woff2');font-weight:200 900;font-display:block}
 @font-face{font-family:'Promo News';src:url("{{FONT_NEWS}}") format('woff2');font-weight:200 800;font-display:block}
 
-/* Layout: one 1920×1080 stage, four rooms joined by one beam of light — the cinema,
-   the darkroom, the gallery, the door. A 40-second clock drives CSS delays and the JS
-   render(t) that draws the beams, dust and moving light (same seconds in both). */
+/* Layout: a 1920×1080 stage playing one issue of a black-and-white cinema newsreel —
+   the kind once shown in the interval (幕間) before the feature. Monochrome silver with
+   the brand's red as the only colour. A 46-second clock drives CSS delays and the JS
+   render(t) (globe, searchlights, film wear, gate weave, clock hand). */
 :root{
-  --black:#0b0908; --cream:#efe6d2; --dim:#8d8676; --amber:#d99a3d; --sun:#e0412b;
-  --safe:#c3200f; --title:'Promo Title','Noto Serif TC','PMingLiU',serif;
+  --black:#0d0d0c; --silver:#ece8df; --grey:#9b978e; --dark:#1b1a18; --red:#d1361f;
+  --title:'Promo Title','Noto Serif TC','PMingLiU',serif;
   --sans:'Promo Sans','Promo News','Noto Sans SC','PingFang SC',sans-serif;
   --news:'Promo News',Georgia,'Times New Roman',serif;
   color-scheme:dark;
 }
 html,body{height:100%}
-body{margin:0;background:#000;color:var(--cream);overflow:hidden;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body{margin:0;background:#000;color:var(--silver);overflow:hidden;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .recording body{padding:0}
 #viewport{position:relative;width:100%;height:100%;overflow:hidden}
 #stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;margin:-540px 0 0 -960px;overflow:hidden;background:var(--black);
   transform-origin:50% 50%;font-family:var(--sans);-webkit-font-smoothing:antialiased;font-synthesis:none}
-.layer{position:absolute;inset:0}
+#film{position:absolute;inset:0}
+.layer,.scene{position:absolute;inset:0}
 svg{display:block;overflow:visible}
-#clock{position:absolute;width:0;height:0;animation:clock 41s linear both}
+#clock{position:absolute;width:0;height:0;animation:clock 46s linear both}
 @keyframes clock{to{opacity:1}}
 @keyframes in{from{opacity:0}}
 @keyframes out{to{opacity:0}}
-@keyframes ink{from{opacity:0;filter:blur(8px)}}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes wipe-out{from{clip-path:inset(0 0 0 0)}to{clip-path:inset(0 0 0 100%)}}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}}
+@keyframes type{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 
-/* Captions: one sentence across the film — 放映機的光，放大機的光，展廳裡的光，在光與光之間。 */
-.line{position:absolute;left:120px;bottom:92px;margin:0;z-index:40;font-family:var(--title);font-weight:300;font-size:40px;letter-spacing:.32em;color:var(--cream);text-shadow:0 0 24px #000}
-.medium{position:absolute;right:104px;top:120px;margin:0;z-index:40;writing-mode:vertical-rl;font-family:var(--title);font-weight:400;font-size:28px;letter-spacing:.7em;color:#efe6d2b3}
-.l1{animation:ink 1.2s steps(8,end) 4.6s both,out .6s 9.3s forwards}
-.m1{animation:in 1s 3.6s both,out .6s 9.4s forwards}
-.l2{animation:ink 1.2s steps(8,end) 14.4s both,out .6s 18.6s forwards}
-.m2{animation:in 1s 13.6s both,out .6s 18.7s forwards}
-.l3{animation:ink 1.2s steps(8,end) 22.6s both,out .6s 28.2s forwards}
-.m3{animation:in 1s 21.4s both,out .6s 28.3s forwards}
+/* ── 0 · The intermission slide ── */
+#slide{background:radial-gradient(70% 70% at 50% 46%,#26231f,#0c0b0a 78%);animation:out .01s 4.2s forwards}
+.slide-card{position:absolute;left:340px;top:190px;width:1240px;height:700px;box-sizing:border-box;border:2px solid #ece8dfcc;outline:1px solid #ece8df66;outline-offset:10px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;animation:lamp 1.1s steps(7,end) .25s both}
+@keyframes lamp{0%{opacity:0}20%{opacity:.7}35%{opacity:.15}55%{opacity:.85}70%{opacity:.5}100%{opacity:1}}
+.slide-card .en{margin:0;font-family:var(--news);font-size:40px;letter-spacing:.62em;text-indent:.62em;font-weight:400}
+.slide-card .mark{height:132px;width:auto}
+.slide-card .rule{width:120px;height:2px;background:var(--red)}
+.slide-card .next{margin:0;font-family:var(--title);font-weight:400;font-size:38px;letter-spacing:.5em;text-indent:.5em;text-align:center}
+.slide-card .next small{display:block;margin-top:16px;font-family:var(--news);font-size:18px;letter-spacing:.42em;color:var(--grey)}
+.corner{position:absolute;width:26px;height:26px;border-color:#ece8dfcc;border-style:solid}
+.corner.a{left:22px;top:22px;border-width:2px 0 0 2px}.corner.b{right:22px;top:22px;border-width:2px 2px 0 0}
+.corner.c{left:22px;bottom:22px;border-width:0 0 2px 2px}.corner.d{right:22px;bottom:22px;border-width:0 2px 2px 0}
+.mark path{fill:var(--silver)}
+.mark .light{fill:var(--red)}
+#dim{background:#000;opacity:0;animation:dim 1s ease-in 3.2s both,out .01s 4.25s forwards}
+@keyframes dim{to{opacity:1}}
 
-/* ── 1 · Cinema ── */
-#cinema{transform-origin:505px 455px;animation:out .01s 10.5s forwards}
-#cinema .room{position:absolute;inset:0;background:radial-gradient(70% 80% at 25% 45%,#1a1613 0,#0b0908 70%)}
-.port{position:absolute;left:1626px;top:142px;width:30px;height:18px;background:#fff6e0;box-shadow:0 0 30px 10px #fff2d088,0 0 4px #fff;animation:lamp 1s steps(6,end) 1.1s both}
-@keyframes lamp{0%{opacity:0}25%{opacity:.8}40%{opacity:.1}60%{opacity:.9}75%{opacity:.4}100%{opacity:1}}
-.screen{position:absolute;left:0;top:0;width:1000px;height:520px;transform-origin:0 0;background:#000;overflow:hidden}
-.screen-light{position:absolute;inset:0;background:radial-gradient(80% 90% at 50% 50%,#efe8da,#cfc5b2);animation:lamp 1s steps(6,end) 1.4s both}
-.intertitle{position:absolute;inset:44px 70px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:22px;margin:0;background:#0d0c0b;border:3px double #e8e0cfaa;text-align:center;color:#f3ecdc;animation:in .12s 3.8s both,out .12s 9.2s forwards}
-.intertitle b{display:block;font-weight:500;font-size:38px;line-height:1.5;letter-spacing:.03em}
-.intertitle small{font-family:var(--news);font-size:20px;letter-spacing:.12em;color:#c9bfa9}
-.seats{position:absolute;left:0;right:0;bottom:0;height:300px}
-#whiteout{z-index:30;background:#f6efe2;opacity:0;animation:whiteout 1.3s ease-in-out 9.9s both}
-@keyframes whiteout{0%{opacity:0}46%{opacity:1}100%{opacity:0}}
+/* ── 1 · Opening titles: globe, searchlights, 幕間新聞 ── */
+#opener{background:radial-gradient(60% 70% at 50% 55%,#1e1d1b,#0b0b0a 75%);animation:in .5s 4.2s both,iris .5s cubic-bezier(.6,0,.9,.4) 9.45s forwards}
+@keyframes iris{from{clip-path:circle(80% at 50% 50%)}to{clip-path:circle(0% at 50% 50%)}}
+#opener canvas{position:absolute;inset:0}
+.headline-title{position:absolute;left:0;right:0;top:360px;margin:0;text-align:center;z-index:3}
+.headline-title strong{display:block;font-family:var(--title);font-weight:900;font-size:176px;line-height:1;letter-spacing:.12em;text-indent:.12em;color:var(--silver);
+  text-shadow:0 6px 0 #000,0 0 40px #0009;animation:slam .32s cubic-bezier(.2,.9,.3,1.2) 5.6s both}
+@keyframes slam{from{opacity:0;transform:scale(2.4);filter:blur(10px)}to{opacity:1;transform:scale(1);filter:blur(0)}}
+.headline-title .bar{display:block;width:520px;height:8px;margin:34px auto 0;background:var(--red);transform-origin:center;animation:bar .4s cubic-bezier(.3,.7,.2,1) 5.95s both}
+@keyframes bar{from{transform:scaleX(0)}}
+.headline-title span{display:block;margin-top:30px;font-family:var(--title);font-weight:400;font-size:38px;letter-spacing:.5em;text-indent:.5em;animation:rise .6s ease-out 6.25s both}
+.headline-title small{display:block;margin-top:18px;font-family:var(--title);font-size:24px;letter-spacing:.4em;text-indent:.4em;color:var(--grey);animation:rise .6s ease-out 6.6s both}
 
-/* ── 2 · Darkroom ── */
-#darkroom{transform-origin:960px 540px;animation:in .01s 10.5s both,settle 1.8s cubic-bezier(.2,.7,.2,1) 10.5s both,out .9s 18.8s forwards}
-@keyframes settle{from{transform:scale(1.22)}}
-.board{position:absolute;inset:0;background:#15120f}
-.expose{position:absolute;inset:0;animation:out .7s 12.1s forwards}
-.easel{position:absolute;left:340px;top:180px;width:1240px;height:720px;background:#2c2b29;box-shadow:inset 0 0 0 14px #4a4945,inset 0 0 0 16px #6a6863}
-.projected{position:absolute;left:356px;top:196px;width:1208px;height:688px;background:radial-gradient(70% 70% at 50% 50%,#6f6556,#4a4339 80%,#2b2620);box-shadow:0 0 120px #fff3d61a}
-.negative{position:absolute;inset:44px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:26px;color:#fff6df;text-shadow:0 0 10px #fff3d6aa,0 0 30px #fff3d655;filter:blur(1.2px)}
-.timer{position:absolute;right:120px;top:84px;font-family:var(--news);font-size:30px;letter-spacing:.1em;color:#ff4a2c;text-shadow:0 0 12px #ff4a2c99;font-variant-numeric:tabular-nums}
-.develop{position:absolute;inset:0;animation:in 1s 12.15s both}
-.safewash{position:absolute;inset:0;background:radial-gradient(70% 60% at 50% 4%,#4a0c06,#160403 60%,#0d0302)}
-.tray{position:absolute;left:260px;top:120px;width:1400px;height:840px;border-radius:18px;background:#2a0907;box-shadow:inset 0 0 0 10px #3a0f0b,inset 0 0 40px #000,0 20px 60px #000c}
-.liquid{position:absolute;inset:22px;border-radius:10px;overflow:hidden;background:#3a0e0a}
-.paper{position:absolute;left:84px;top:64px;width:1188px;height:668px;background:#d79a88;box-shadow:0 2px 0 #00000055}
-.print{position:absolute;inset:34px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:26px;color:#2a0806}
-.print .zh,.negative .zh{margin:0;font-weight:300;font-size:54px;line-height:1.45;text-align:center;letter-spacing:.02em}
-.print .ja,.negative .ja{margin:0;font-weight:300;font-size:25px;letter-spacing:.04em}
-.print small,.negative small{font-family:var(--news);font-size:21px;letter-spacing:.16em}
-.sheen{position:absolute;top:-20%;bottom:-20%;width:46%;background:linear-gradient(100deg,#ffffff00,#ff8a6a1f 45%,#ffd2c42e 50%,#ff8a6a1f 55%,#ffffff00);mix-blend-mode:screen}
+/* ── Section cards ── */
+.section{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#0d0d0c;z-index:6}
+.section strong{font-family:var(--title);font-weight:900;font-size:230px;line-height:1;letter-spacing:.2em;text-indent:.2em}
+.section i{display:block;width:180px;height:6px;background:var(--red);margin:26px 0 14px}
+.section span{font-family:var(--news);font-size:30px;letter-spacing:.7em;text-indent:.7em}
 
-/* ── 3 · Gallery ── */
-#gallery{animation:in 1s 19.3s both}
-.wall{position:absolute;inset:0;background:linear-gradient(#141210,#100e0c 80%,#090807 80.2%,#0c0a09);animation:out 1s 28.6s forwards}
-.lettering{position:absolute;left:0;right:0;top:330px;margin:0;text-align:center;color:#211d18;z-index:3;animation:in 1.2s 20.5s both,out .7s 28.4s forwards}
-.lettering b{display:block;font-weight:300;font-size:58px;letter-spacing:.06em}
-.lettering i{display:block;margin-top:18px;font-family:var(--news);font-size:34px;font-style:italic}
-.lettering small{display:block;margin-top:26px;font-size:19px;letter-spacing:.14em;color:#4b443b}
-#pool{position:absolute;border-radius:50%;z-index:2}
-.spill{position:absolute;left:0;right:0;top:864px;height:216px;z-index:2}
+/* ── Dateline cards (shared) ── */
+.card{position:absolute;left:260px;right:260px;top:340px;margin:0}
+.card .dl{display:block;font-family:var(--title);font-weight:600;font-size:34px;letter-spacing:.24em;color:var(--silver)}
+.card .dl em{font-style:normal;color:var(--red)}
+.card b{display:block;margin-top:26px;font-weight:800;font-size:60px;line-height:1.32;text-wrap:balance}
+.card i{display:block;margin-top:22px;font-family:var(--news);font-style:italic;font-size:28px;line-height:1.35;color:#ece8dfb3}
+.card i[lang=ja]{font-family:var(--sans);font-style:normal;font-size:26px}
+.card small{display:block;margin-top:24px;font-family:var(--news);font-size:20px;letter-spacing:.28em;color:var(--grey)}
+.card .dl{animation:type .5s steps(10,end) both}
+.card b{animation:wipe .45s cubic-bezier(.3,.6,.2,1) both}
+.card i,.card small{animation:in .5s both}
 
-/* ── 4 · The door: 間 → 幕間休息 ── */
-#finale{z-index:20;animation:in .01s 30s both,fade-black .8s 39.2s forwards}
-@keyframes fade-black{to{opacity:0}}
-.mark{position:absolute;left:603.5px;top:380px;height:150px;width:auto;transform-origin:258.9px 75px;
-  animation:zoom-out 1.6s cubic-bezier(.65,0,.25,1) 33.3s both}
-@keyframes zoom-out{from{transform:translate(97.6px,45px) scale(3.6)}to{transform:none}}
-.mark path{fill:var(--cream)}
-.mark .c1 .ink{animation:in 1s 30.7s both}
-.mark .c0,.mark .c2,.mark .c3{animation:in .7s both}
-.mark .c0{animation-delay:34.2s}.mark .c2{animation-delay:34.4s}.mark .c3{animation-delay:34.6s}
-.mark .light{animation:neon 1.6s linear 31.5s both}
-@keyframes neon{
-  0%{fill:#2a1a14;filter:none}
-  8%{fill:#ff5a3c;filter:drop-shadow(0 0 30px #ff4a2ccc)}
-  12%{fill:#3a1410;filter:none}
-  22%{fill:#ff5a3c;filter:drop-shadow(0 0 40px #ff4a2ccc)}
-  27%{fill:#5a1a13;filter:none}
-  42%,100%{fill:#e0412b;filter:drop-shadow(0 0 22px #ff4a2c99)}
-}
-.end-line{position:absolute;left:0;right:0;margin:0;text-align:center}
-.end-line.t1{top:600px;font-family:var(--title);font-weight:300;font-size:44px;letter-spacing:.5em;text-indent:.5em;animation:ink 1.2s steps(8,end) 35.2s both}
-.end-line.t2{top:688px;font-size:18px;letter-spacing:.4em;text-indent:.4em;color:var(--dim);animation:in .9s 35.9s both}
-.end-line.url{top:760px;font-family:var(--news);font-size:32px;letter-spacing:.1em;color:var(--amber);animation:in .9s 36.4s both}
-.end-rule{position:absolute;left:930px;top:572px;width:60px;height:2px;background:var(--sun);box-shadow:0 0 12px var(--sun);animation:rule .6s ease-out 35s both}
-@keyframes rule{from{transform:scaleX(0)}}
+/* ── 2 · 電影 ── */
+#film-seg{animation:in .01s 9.95s both,out .01s 18.5s forwards}
+#film-seg .section{animation:wipe .3s cubic-bezier(.3,.6,.2,1) 10s both,wipe-out .3s cubic-bezier(.6,0,.8,.4) 10.75s forwards}
+.spin{position:absolute;left:370px;top:150px;width:1180px;height:780px;box-sizing:border-box;padding:34px 48px;background:#e8e3d7;color:#141312;
+  box-shadow:0 30px 80px #000;animation:spin 1.15s cubic-bezier(.15,.65,.25,1) 10.85s both,push 1.6s linear 12s forwards,out .2s 13.55s forwards}
+@keyframes spin{from{transform:rotate(-1080deg) scale(.04)}to{transform:rotate(-3deg) scale(1)}}
+@keyframes push{from{transform:rotate(-3deg) scale(1)}to{transform:rotate(-3deg) scale(1.07)}}
+.spin .mast{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;border-bottom:5px double #141312;padding-bottom:12px}
+.spin .mast .mark{height:76px}
+.spin .mast .mark path{fill:#141312}.spin .mast .mark .light{fill:var(--red)}
+.spin .mast span{font-family:var(--title);font-size:17px;letter-spacing:.2em}
+.spin .mast span:last-child{text-align:right}
+.spin h2{margin:26px 0 0;font-weight:900;font-size:62px;line-height:1.24}
+.spin h3{margin:14px 0 0;font-family:var(--news);font-style:italic;font-weight:400;font-size:24px;color:#3b3833}
+.spin .cols{display:grid;grid-template-columns:330px 1fr 1fr;gap:30px;margin-top:26px;padding-top:18px;border-top:1px solid #141312}
+.spin .halftone{height:250px;background:radial-gradient(circle,#141312 38%,transparent 41%) 0 0/9px 9px;
+  -webkit-mask:linear-gradient(160deg,#000 10%,#0008 45%,#0003 75%);mask:linear-gradient(160deg,#000 10%,#0008 45%,#0003 75%)}
+.spin .cols p{margin:0 0 14px;font-weight:700;font-size:19px;line-height:1.45}
+.spin .cols p small{display:block;font-weight:400;font-family:var(--news);font-size:14px;color:#55514a}
+.marquee{position:absolute;left:150px;top:170px;width:1620px;height:740px;
+  --bulb:radial-gradient(circle,#fff6dc 0 5px,#fff1c866 7px,transparent 11px);
+  background:var(--bulb) 0 0/36px 36px repeat-x,var(--bulb) 0 100%/36px 36px repeat-x,var(--bulb) 0 0/36px 36px repeat-y,var(--bulb) 100% 0/36px 36px repeat-y;
+  animation:in .3s 13.6s both,chase .48s steps(3) 13.6s infinite}
+@keyframes chase{from{background-position:0 0,0 100%,0 0,100% 0}to{background-position:36px 0,-36px 100%,0 -36px,100% 36px}}
+#film-seg .k1{animation:in .01s 13.7s both,out .25s 15.95s forwards}
+#film-seg .k1 .dl{animation-delay:13.75s}#film-seg .k1 b{animation-delay:14.2s}#film-seg .k1 i,#film-seg .k1 small{animation-delay:14.6s}
+#film-seg .k2{animation:in .01s 16.2s both,out .25s 18.25s forwards}
+#film-seg .k2 .dl{animation-delay:16.25s}#film-seg .k2 b{animation-delay:16.7s}#film-seg .k2 i,#film-seg .k2 small{animation-delay:17.05s}
 
-/* ── Light, grain, vignette ── */
-#beams{z-index:25;pointer-events:none}
-#grain{z-index:50;inset:-120px;pointer-events:none;opacity:.45;mix-blend-mode:overlay;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.4 -.2'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain .4s steps(4) infinite}
+/* ── 3 · 攝影 ── */
+#photo-seg{animation:in .01s 18.5s both,out .01s 26.5s forwards}
+#photo-seg .section{animation:wipe .3s cubic-bezier(.3,.6,.2,1) 18.5s both,wipe-out .3s cubic-bezier(.6,0,.8,.4) 19.15s forwards}
+.finder{position:absolute;left:150px;top:150px;width:1620px;height:780px;animation:in .3s 19.4s both;--c:#ece8dfb3;--m:60px;
+  background:linear-gradient(var(--c),var(--c)) left top/var(--m) 3px no-repeat,linear-gradient(var(--c),var(--c)) left top/3px var(--m) no-repeat,linear-gradient(var(--c),var(--c)) right top/var(--m) 3px no-repeat,linear-gradient(var(--c),var(--c)) right top/3px var(--m) no-repeat,linear-gradient(var(--c),var(--c)) left bottom/var(--m) 3px no-repeat,linear-gradient(var(--c),var(--c)) left bottom/3px var(--m) no-repeat,linear-gradient(var(--c),var(--c)) right bottom/var(--m) 3px no-repeat,linear-gradient(var(--c),var(--c)) right bottom/3px var(--m) no-repeat}
+.finder span{position:absolute;right:40px;bottom:30px;font-family:var(--news);font-size:22px;letter-spacing:.2em;color:var(--red)}
+.flash{position:absolute;inset:0;z-index:8;background:radial-gradient(circle at 50% 46%,#fff 0,#fffaf0 30%,#fffaf0aa 60%,#fffaf000 100%);opacity:0}
+.flash.f1{animation:flash .5s ease-out 19.3s both}.flash.f2{animation:flash .5s ease-out 21.85s both}.flash.f3{animation:flash .5s ease-out 24.2s both}
+@keyframes flash{0%{opacity:0}8%{opacity:1}100%{opacity:0}}
+#photo-seg .k1{animation:in .01s 19.4s both,out .2s 21.8s forwards}
+#photo-seg .k1 .dl{animation-delay:19.5s}#photo-seg .k1 b{animation-delay:19.9s}#photo-seg .k1 i,#photo-seg .k1 small{animation-delay:20.3s}
+#photo-seg .k2{animation:in .01s 21.95s both,out .2s 24.15s forwards}
+#photo-seg .k2 .dl{animation-delay:22.05s}#photo-seg .k2 b{animation-delay:22.45s}#photo-seg .k2 i,#photo-seg .k2 small{animation-delay:22.8s}
+#photo-seg .k3{animation:in .01s 24.3s both,out .25s 26.25s forwards}
+#photo-seg .k3 .dl{animation-delay:24.4s}#photo-seg .k3 b{animation-delay:24.8s}#photo-seg .k3 i,#photo-seg .k3 small{animation-delay:25.15s}
+
+/* ── 4 · 藝術 ── */
+#art-seg{animation:in .01s 26.5s both,out .01s 34.8s forwards}
+#art-seg .section{animation:wipe .3s cubic-bezier(.3,.6,.2,1) 26.5s both,wipe-out .3s cubic-bezier(.6,0,.8,.4) 27.15s forwards}
+.frame{position:absolute;left:170px;top:170px;width:1580px;height:740px;box-sizing:border-box;border:2px solid #ece8df99;outline:1px solid #ece8df4d;outline-offset:12px;animation:in .4s 27.3s both}
+#art-seg .k1{animation:in .01s 27.4s both,iris-card .45s cubic-bezier(.6,0,.9,.4) 29.6s forwards}
+@keyframes iris-card{from{clip-path:circle(120% at 50% 40%)}to{clip-path:circle(0 at 50% 40%)}}
+#art-seg .k1 .dl{animation-delay:27.5s}#art-seg .k1 b{animation-delay:27.9s}#art-seg .k1 i,#art-seg .k1 small{animation-delay:28.3s}
+#art-seg .k2{animation:in .01s 30.05s both,out .25s 32.05s forwards}
+#art-seg .k2 .dl{animation-delay:30.15s}#art-seg .k2 b{animation-delay:30.55s}#art-seg .k2 i,#art-seg .k2 small{animation-delay:30.9s}
+#art-seg .k3{animation:in .01s 32.3s both,out .3s 34.5s forwards}
+#art-seg .k3 .dl{animation-delay:32.4s}#art-seg .k3 b{animation-delay:32.8s}#art-seg .k3 i,#art-seg .k3 small{animation-delay:33.15s}
+.stamp{position:absolute;right:300px;top:250px;margin:0;padding:14px 26px;border:5px solid var(--red);color:var(--red);font-family:var(--title);font-weight:900;font-size:44px;letter-spacing:.24em;
+  transform:rotate(-8deg);animation:stamp .28s cubic-bezier(.2,.9,.3,1.3) 33.35s both,out .3s 34.5s forwards}
+.stamp small{display:block;font-family:var(--sans);font-weight:500;font-size:16px;letter-spacing:.1em;text-align:center;margin-top:4px}
+@keyframes stamp{from{opacity:0;transform:rotate(-8deg) scale(2.2)}to{transform:rotate(-8deg) scale(1)}}
+
+/* ── 5 · Recap: the wire never stops ── */
+#recap{background:#0d0d0c;animation:in .3s 34.8s both,out .3s 38.6s forwards}
+.recap-top{position:absolute;left:0;right:0;top:150px;margin:0;text-align:center;font-family:var(--title);font-weight:700;font-size:52px;letter-spacing:.42em;text-indent:.42em;animation:rise .5s ease-out 35s both}
+.ticker{position:absolute;left:0;right:0;height:84px;overflow:hidden;border-top:1px solid #ece8df33;border-bottom:1px solid #ece8df33}
+.ticker.t1{top:330px}.ticker.t2{top:470px}.ticker.t3{top:610px}
+.ticker b{position:absolute;left:0;top:0;bottom:0;z-index:2;width:150px;display:grid;place-items:center;background:var(--red);color:#fff;font-family:var(--title);font-weight:900;font-size:34px;letter-spacing:.2em;text-indent:.2em}
+.ticker .run{position:absolute;left:170px;top:0;line-height:84px;white-space:nowrap;font-weight:600;font-size:32px}
+.ticker .run span{color:var(--red);margin:0 26px}
+.t1 .run{animation:tick1 4s linear 34.8s both}.t2 .run{animation:tick2 4s linear 34.8s both}.t3 .run{animation:tick3 4s linear 34.8s both}
+@keyframes tick1{from{transform:translateX(0)}to{transform:translateX(-2600px)}}
+@keyframes tick2{from{transform:translateX(-2400px)}to{transform:translateX(0)}}
+@keyframes tick3{from{transform:translateX(-200px)}to{transform:translateX(-3000px)}}
+.recap-bottom{position:absolute;left:0;right:0;top:780px;margin:0;text-align:center;font-family:var(--title);font-weight:400;font-size:34px;letter-spacing:.5em;text-indent:.5em;color:var(--grey);animation:rise .5s ease-out 35.6s both}
+
+/* ── 6 · 完 · next issue · wordmark ── */
+#fin{background:radial-gradient(60% 70% at 50% 50%,#1c1b19,#0b0b0a 75%);animation:in .2s 38.7s both,iris .5s cubic-bezier(.6,0,.9,.4) 40.3s forwards}
+.fin-mark{position:absolute;left:760px;top:240px;width:400px;height:400px;box-sizing:border-box;border-radius:50%;border:3px solid var(--silver);outline:1px solid #ece8df66;outline-offset:12px;display:grid;place-items:center}
+.fin-mark strong{font-family:var(--title);font-weight:900;font-size:220px;line-height:1;animation:slam .3s cubic-bezier(.2,.9,.3,1.2) 38.85s both}
+.fin-sub{position:absolute;left:0;right:0;top:720px;margin:0;text-align:center;font-family:var(--title);font-size:30px;letter-spacing:.6em;text-indent:.6em;color:var(--grey);animation:in .5s 39.2s both}
+#next{background:#0b0b0a;animation:in .3s 40.7s both,out .4s 42.6s forwards}
+.clockface{position:absolute;left:810px;top:220px;width:300px;height:300px}
+.clockface circle{fill:none;stroke:var(--silver);stroke-width:3}
+.clockface line{stroke:var(--silver);stroke-linecap:round}
+.clockface .tick{stroke-width:3}
+.clockface .min{stroke-width:5}.clockface .hour{stroke-width:8}
+.next-line{position:absolute;left:0;right:0;top:600px;margin:0;text-align:center}
+.next-line strong{display:block;font-family:var(--title);font-weight:700;font-size:62px;letter-spacing:.4em;text-indent:.4em}
+.next-line span{display:block;margin-top:22px;font-family:var(--title);font-size:26px;letter-spacing:.5em;text-indent:.5em;color:var(--grey)}
+#brand{background:radial-gradient(60% 70% at 50% 45%,#1c1b19,#0b0b0a 75%);animation:in .7s 42.8s both}
+.brand-mark{position:absolute;left:543px;top:330px;height:175px;width:auto}
+.brand-mark path{fill:var(--silver)}.brand-mark .light{fill:var(--red);filter:drop-shadow(0 0 18px #d1361f88)}
+.brand-line{position:absolute;left:0;right:0;margin:0;text-align:center}
+.brand-line.l1{top:590px;font-family:var(--title);font-weight:400;font-size:44px;letter-spacing:.42em;text-indent:.42em;animation:rise .7s ease-out 43.3s both}
+.brand-line.l2{top:672px;font-size:20px;letter-spacing:.4em;text-indent:.4em;color:var(--grey);animation:in .7s 43.7s both}
+.brand-line.l3{top:740px;font-family:var(--news);font-size:34px;letter-spacing:.1em;color:var(--red);animation:in .7s 44s both}
+#blackout{z-index:60;background:#000;opacity:0;animation:blackout .7s 45.2s both}
+@keyframes blackout{to{opacity:1}}
+
+/* ── Film wear ── */
+#wear{z-index:40;pointer-events:none}
+#grain{z-index:41;inset:-120px;pointer-events:none;opacity:.55;mix-blend-mode:overlay;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.5 -.25'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain .4s steps(4) infinite}
 @keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-61px,37px)}50%{transform:translate(43px,-83px)}75%{transform:translate(-97px,-29px)}}
-#vignette{z-index:49;pointer-events:none;background:radial-gradient(130% 120% at 50% 45%,#0000 48%,#0000004d 80%,#000000b3 100%)}
+#vignette{z-index:42;pointer-events:none;background:radial-gradient(120% 110% at 50% 48%,#0000 46%,#00000059 78%,#000000c7 100%)}
 
 /* ── Player chrome (hidden while recording) ── */
 .controls{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:100;display:flex;gap:8px;font-family:var(--sans)}
-.controls button{appearance:none;border:1px solid #efe6d255;background:#0b0908cc;color:var(--cream);font:inherit;font-size:13px;letter-spacing:.1em;padding:7px 14px;cursor:pointer}
-.controls button:hover{border-color:var(--amber);color:var(--amber)}
-.controls button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.controls button{appearance:none;border:1px solid #ece8df55;background:#0d0d0ccc;color:var(--silver);font:inherit;font-size:13px;letter-spacing:.1em;padding:7px 14px;cursor:pointer}
+.controls button:hover{border-color:var(--red);color:#fff}
+.controls button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
 .progress{position:fixed;left:0;right:0;bottom:0;height:3px;z-index:99;background:#ffffff14}
-.progress i{display:block;height:100%;background:var(--sun);transform-origin:left;animation:progress 40s linear both}
+.progress i{display:block;height:100%;background:var(--red);transform-origin:left;animation:progress 46s linear both}
 @keyframes progress{from{transform:scaleX(0)}}
 .recording .controls,.recording .progress{display:none}
 </style>
 
 <div id="viewport">
-<div id="stage" role="img" aria-label="幕間休息宣傳片「一束光」：影院裡放映機的光打在銀幕上，字幕卡寫著路易·馬勒《通往絞刑架的電梯》4K版與《貝蒂·藍》重返大銀幕；銀幕化作相紙，暗房紅燈下顯影出中野道攝影展「めいめつ」的消息；安全燈變成展廳射燈，照亮牆上的展名「光影幻境：藝術攝影的誕生」；光收成門縫，成為「間」中的日；片尾字標幕間休息，在光與光之間，mujianrest.work。">
+<div id="stage" role="img" aria-label="幕間休息宣傳片「幕間新聞片」：電影院的幕間幻燈片寫著新聞片即將開始；黑白新聞片片頭，旋轉地球與探照燈，片名幕間新聞；電影版：旋轉報紙飛入，頭條為倫敦查爾斯王子電影院獲救，釜山、溫哥華電影節消息；攝影版：記者閃光燈下，東京代官山、卡達克斯、Aperture攝影書獎消息；藝術版：倫敦Tate Modern展覽、威尼斯皮諾常設展、一種關注的ART AFRICA；全球新聞電報條滾動，每兩小時更新；完；下一期兩小時後；幕間休息 mujianrest.work。">
   <i id="clock"></i>
+  <div id="film">
 
-  <div class="layer" id="cinema">
-    <div class="room"></div>
-    <span class="port"></span>
-    <div class="screen" id="screen">
-      <div class="screen-light"></div>
-      <p class="intertitle"><b>路易·马勒《通往绞刑架的电梯》<br>将推出70周年4K版；<br>《贝蒂·蓝》时隔35年重返大银幕</b><small>VARIETY · 2026.10.13</small></p>
+    <div class="scene" id="opener">
+      <canvas id="globe" width="1920" height="1080"></canvas>
+      <p class="headline-title"><strong>幕間新聞</strong><i class="bar"></i><span>全球藝術・電影・攝影</span><small>二〇二六年十月十六日</small></p>
     </div>
-    <svg class="seats" viewBox="0 0 1920 300" preserveAspectRatio="none" aria-hidden="true">{{SEATS}}</svg>
-  </div>
 
-  <div class="layer" id="darkroom">
-    <div class="board"></div>
-    <div class="expose">
-      <div class="easel"></div>
-      <div class="projected"><div class="negative"><p class="zh">中野道通过摄影展“Meimetsu”告别青春，<br>代官山开展</p><p class="ja">中野道が「自分の青春にさよならする」。写真展「めいめつ」が代官山で開催</p><small>IMA · 2026.10.09</small></div></div>
-      <span class="timer" id="timer">08.0</span>
+    <div class="scene" id="film-seg">
+      <div class="section"><strong>電影</strong><i></i><span>FILM</span></div>
+      <article class="spin">
+        <div class="mast"><span>二〇二六年十月十五日</span>{{WORDMARK:mark}}<span>電影版</span></div>
+        <h2>邪典影院“查尔斯王子电影院”在签署租约续签后“得救”</h2>
+        <h3 lang="en">Cult venue Prince Charles cinema ‘saved’ after lease renewal signed — The Guardian</h3>
+        <div class="cols">
+          <div class="halftone"></div>
+          <div><p>乔安娜·霍格将担任埃尔古纳电影节评审团主席<small>Variety · 10.14</small></p><p>马吉德·马吉迪的《Midday Meal》斩获釜山奖<small>Screen Daily · 10.15</small></p></div>
+          <div><p>温哥华电影节观众奖揭晓：《我拍洛奇》与《仪式》获重要奖项<small>Variety · 10.13</small></p></div>
+        </div>
+      </article>
+      <div class="marquee"></div>
+      <p class="card k1"><span class="dl">釜山 · 十月十五日 <em>——</em></span><b>马吉德·马吉迪的《Midday Meal》斩获釜山奖，电影节迎来2015年以来最高观众人数</b><i lang="en">Majid Majidi’s ‘Midday Meal’ wins Busan Award as festival hits biggest audience since 2015</i><small>SCREEN DAILY</small></p>
+      <p class="card k2"><span class="dl">溫哥華 · 十月十三日 <em>——</em></span><b>温哥华电影节观众奖揭晓：《我拍洛奇》与《仪式》获重要奖项</b><i lang="en">Vancouver Film Festival Audience Award Winners: ’I Play Rocky,’ ‘Ceremony’ Among Big Wins</i><small>VARIETY</small></p>
     </div>
-    <div class="develop">
-      <div class="safewash"></div>
-      <div class="tray"><div class="liquid" id="liquid">
-        <div class="paper" id="paper"><div class="print" id="print"><p class="zh">中野道通过摄影展“Meimetsu”告别青春，<br>代官山开展</p><p class="ja">中野道が「自分の青春にさよならする」。写真展「めいめつ」が代官山で開催</p><small>IMA · 2026.10.09</small></div></div>
-        <span class="sheen" id="sheen"></span>
-      </div></div>
+
+    <div class="scene" id="photo-seg">
+      <div class="section"><strong>攝影</strong><i></i><span>PHOTOGRAPHY</span></div>
+      <div class="finder"><span>12A</span></div>
+      <p class="card k1"><span class="dl">東京・代官山 · 十月九日 <em>——</em></span><b>中野道通过摄影展“Meimetsu”告别青春，代官山开展</b><i lang="ja">中野道が「自分の青春にさよならする」。写真展「めいめつ」が代官山で開催</i><small>IMA</small></p>
+      <p class="card k2"><span class="dl">卡達克斯 · 十月十日 <em>——</em></span><b>InCadaqués 摄影节：Julie Peiffer 获2026年女性摄影奖</b><i lang="fr">InCadaqués Festival : Julie Peiffer remporte le Premi Fotografia Femenina 2026</i><small>FISHEYE</small></p>
+      <p class="card k3"><span class="dl">APERTURE · 十月八日 <em>——</em></span><b>公布2026年PhotoBook Awards入围名单</b><i lang="en">Announcing the 2026 PhotoBook Awards Shortlist</i><small>APERTURE</small></p>
+      <i class="flash f1"></i><i class="flash f2"></i><i class="flash f3"></i>
     </div>
+
+    <div class="scene" id="art-seg">
+      <div class="section"><strong>藝術</strong><i></i><span>ART</span></div>
+      <div class="frame"></div>
+      <p class="card k1"><span class="dl">倫敦 · TATE MODERN <em>——</em></span><b>光影幻境：艺术摄影的诞生</b><i lang="en">Light and Magic: The Birth of Art Photography</i><small>展期 2026.10.14 — 2027.02.21</small></p>
+      <p class="card k2"><span class="dl">威尼斯 · 十月十五日 <em>——</em></span><b>法国收藏家弗朗索瓦·皮诺计划在威尼斯博物馆举办常设展</b><i lang="en">French Collector François Pinault Plans Permanent Hang in Venice Museum</i><small>ARTNEWS</small></p>
+      <p class="card k3"><span class="dl">ART AFRICA · 十月十四日 <em>——</em></span><b>当城市成为舞台</b><i lang="en">When the City Becomes the Stage</i><small>非洲與全球南方</small></p>
+      <p class="stamp">一種關注<small>本站精選地區媒體</small></p>
+    </div>
+
+    <div class="scene" id="recap">
+      <p class="recap-top">全球來源　中文閱讀　原文對照</p>
+      <div class="ticker t1"><b>電影</b><div class="run">{{TICKER:film}}</div></div>
+      <div class="ticker t2"><b>攝影</b><div class="run">{{TICKER:photography}}</div></div>
+      <div class="ticker t3"><b>藝術</b><div class="run">{{TICKER:art}}</div></div>
+      <p class="recap-bottom">每兩小時更新</p>
+    </div>
+
+    <div class="scene" id="fin">
+      <div class="fin-mark"><strong>完</strong></div>
+      <p class="fin-sub">幕間新聞 · 本期</p>
+    </div>
+
+    <div class="scene" id="next">
+      <svg class="clockface" viewBox="-150 -150 300 300" aria-hidden="true">
+        <circle r="140"/>{{CLOCK_TICKS}}
+        <line class="hour" id="hand-h" x1="0" y1="0" x2="0" y2="-70"/>
+        <line class="min" id="hand-m" x1="0" y1="0" x2="0" y2="-112"/>
+      </svg>
+      <p class="next-line"><strong>下一期　兩小時後</strong><span>幕間新聞每兩小時更新</span></p>
+    </div>
+
+    <div class="scene" id="brand">
+      {{WORDMARK:brand-mark}}
+      <p class="brand-line l1">正片開始前，先看看世界。</p>
+      <p class="brand-line l2">全球藝術・電影・攝影新聞　中文閱讀</p>
+      <p class="brand-line l3">mujianrest.work</p>
+    </div>
+
+    <div class="scene" id="slide">
+      <div class="slide-card">
+        <i class="corner a"></i><i class="corner b"></i><i class="corner c"></i><i class="corner d"></i>
+        <p class="en">INTERMISSION</p>
+        {{WORDMARK:mark}}
+        <span class="rule"></span>
+        <p class="next">新聞片即將開始<small>NEWSREEL TO FOLLOW</small></p>
+      </div>
+    </div>
+    <div class="layer" id="dim"></div>
   </div>
 
-  <div class="layer" id="gallery">
-    <div class="wall"></div>
-    <div id="pool"></div>
-    <div class="spill" id="spill"></div>
-    <p class="lettering"><b>光影幻境：艺术摄影的诞生</b><i>Light and Magic: The Birth of Art Photography</i><small>TATE MODERN · 倫敦 · 2026.10.14 — 2027.02.21</small></p>
-  </div>
-
-  <div class="layer" id="finale">
-    {{WORDMARK}}
-    <span class="end-rule"></span>
-    <p class="end-line t1">在光與光之間。</p>
-    <p class="end-line t2">藝術・電影・攝影　全球新聞　中文閱讀</p>
-    <p class="end-line url">mujianrest.work</p>
-  </div>
-
-  <canvas class="layer" id="beams" width="1920" height="1080"></canvas>
-  <div class="layer" id="whiteout"></div>
-
-  <p class="line l1">放映機的光，</p><p class="medium m1">電影</p>
-  <p class="line l2">放大機的光，</p><p class="medium m2">攝影</p>
-  <p class="line l3">展廳裡的光，</p><p class="medium m3">藝術</p>
-
-  <div class="layer" id="vignette"></div>
+  <canvas class="layer" id="wear" width="1920" height="1080"></canvas>
   <div class="layer" id="grain"></div>
+  <div class="layer" id="vignette"></div>
+  <div class="layer" id="blackout"></div>
 </div>
 </div>
 <div class="progress" aria-hidden="true"><i></i></div>
@@ -190,174 +299,105 @@ svg{display:block;overflow:visible}
 
 <script>
 (function () {
-  var DURATION = 40000;
-  var stage = document.getElementById('stage');
-  var viewport = document.getElementById('viewport');
+  var DURATION = 46000;
+  var DOTS = {{DOTS}};               // land dots [lon, lat, …], Natural Earth 110m
+  var stage = document.getElementById('stage'), viewport = document.getElementById('viewport');
   var root = document.documentElement;
   var recording = /[?&]record\b/.test(location.search);
   if (recording) root.classList.add('recording');
-  function fit() {
-    var s = Math.min(viewport.clientWidth / 1920, viewport.clientHeight / 1080);
-    stage.style.transform = 'scale(' + s + ')';
-  }
-  fit();
-  window.addEventListener('resize', fit);
+  function fit() { var s = Math.min(viewport.clientWidth / 1920, viewport.clientHeight / 1080); stage.style.transform = 'scale(' + s + ')'; }
+  fit(); window.addEventListener('resize', fit);
 
   function clamp(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
   function ramp(t, a, b) { return clamp((t - a) / (b - a)); }
   function smooth(x) { x = clamp(x); return x * x * (3 - 2 * x); }
-  function lerp(a, b, k) { return a + (b - a) * k; }
   function hash(n) { n = Math.sin(n * 127.1 + 311.7) * 43758.5453; return n - Math.floor(n); }
 
-  /* ── The cinema screen, seen from the side: map a 1000×520 box onto a quad. ── */
-  var QUAD = [[150, 190], [860, 268], [860, 640], [150, 722]];   // TL, TR, BR, BL
-  function adj(m) { return [m[4] * m[8] - m[5] * m[7], m[2] * m[7] - m[1] * m[8], m[1] * m[5] - m[2] * m[4], m[5] * m[6] - m[3] * m[8], m[0] * m[8] - m[2] * m[6], m[2] * m[3] - m[0] * m[5], m[3] * m[7] - m[4] * m[6], m[1] * m[6] - m[0] * m[7], m[0] * m[4] - m[1] * m[3]]; }
-  function mm(a, b) { var c = []; for (var i = 0; i < 3; i++) for (var j = 0; j < 3; j++) { var s = 0; for (var k = 0; k < 3; k++) s += a[3 * i + k] * b[3 * k + j]; c.push(s); } return c; }
-  function mv(m, v) { return [m[0] * v[0] + m[1] * v[1] + m[2] * v[2], m[3] * v[0] + m[4] * v[1] + m[5] * v[2], m[6] * v[0] + m[7] * v[1] + m[8] * v[2]]; }
-  function basis(p) { var m = [p[0][0], p[1][0], p[2][0], p[0][1], p[1][1], p[2][1], 1, 1, 1]; var v = mv(adj(m), [p[3][0], p[3][1], 1]); return mm(m, [v[0], 0, 0, 0, v[1], 0, 0, 0, v[2]]); }
-  (function placeScreen() {
-    var src = basis([[0, 0], [1000, 0], [1000, 520], [0, 520]]);
-    var dst = basis([QUAD[0], QUAD[1], QUAD[2], QUAD[3]]);
-    var t = mm(dst, adj(src));
-    for (var i = 0; i < 9; i++) t[i] /= t[8];
-    document.getElementById('screen').style.transform = 'matrix3d(' + [t[0], t[3], 0, t[6], t[1], t[4], 0, t[7], 0, 0, 1, 0, t[2], t[5], 0, t[8]].join(',') + ')';
-  })();
-
-  /* ── Beams: projector (cinema) and ceiling spot (gallery), with drifting dust. ── */
-  var canvas = document.getElementById('beams'), ctx = canvas.getContext('2d');
-  var DUST = 360, dust = [];
-  for (var i = 0; i < DUST; i++) dust.push({ u: hash(i * 1.3), v: hash(i * 2.7) * 2 - 1, s: .6 + hash(i * 3.1) * 1.8, p: hash(i * 4.9) * 6.283, w: .3 + hash(i * 5.3) * .9 });
-
-  function flicker(t) { return .93 + .07 * hash(Math.floor(t * 24) * 1.7); }
-
-  function drawCone(apex, left, right, far, intensity, colour, t, seed, hole) {
-    // left/right: the two far extremes the light reaches; far: centre of the lit surface;
-    // hole: an optional polygon (the screen) the light stops at.
-    ctx.save();
-    if (hole) {
-      ctx.beginPath(); ctx.rect(0, 0, 1920, 1080);
-      ctx.moveTo(hole[0][0], hole[0][1]); for (var h = hole.length - 1; h > 0; h--) ctx.lineTo(hole[h][0], hole[h][1]); ctx.closePath();
-      ctx.clip();
+  /* ── Globe and searchlights (opening titles) ── */
+  var globe = document.getElementById('globe'), g = globe.getContext('2d');
+  var R = 300, CX = 960, CY = 520, TILT = 18 * Math.PI / 180;
+  function project(lon, lat, rot) {
+    var l = (lon + rot) * Math.PI / 180, p = lat * Math.PI / 180;
+    var x = Math.cos(p) * Math.sin(l), y = Math.sin(p), z = Math.cos(p) * Math.cos(l);
+    var y2 = y * Math.cos(TILT) - z * Math.sin(TILT), z2 = y * Math.sin(TILT) + z * Math.cos(TILT);
+    return [CX + R * x, CY - R * y2, z2];
+  }
+  function drawGlobe(t) {
+    g.clearRect(0, 0, 1920, 1080);
+    if (t < 4 || t > 10.2) return;
+    var rot = -40 + (t - 4) * 22;
+    var dim = 1 - .62 * smooth(ramp(t, 5.5, 6.0));
+    g.save(); g.globalCompositeOperation = 'lighter';
+    [[520, 1090, -.55, 1.3], [1400, 1090, .5, 1.05]].forEach(function (s, i) {
+      var a = s[2] + Math.sin((t - 4) * s[3] + i) * .38, len = 1500, w = .085;
+      var grad = g.createLinearGradient(s[0], s[1], s[0] + Math.sin(a) * len, s[1] - Math.cos(a) * len);
+      grad.addColorStop(0, 'rgba(236,232,223,.30)'); grad.addColorStop(1, 'rgba(236,232,223,0)');
+      g.fillStyle = grad; g.beginPath(); g.moveTo(s[0], s[1]);
+      g.lineTo(s[0] + Math.sin(a - w) * len, s[1] - Math.cos(a - w) * len);
+      g.lineTo(s[0] + Math.sin(a + w) * len, s[1] - Math.cos(a + w) * len); g.closePath(); g.fill();
+    });
+    g.restore();
+    var body = g.createRadialGradient(CX - 90, CY - 110, 20, CX, CY, R);
+    body.addColorStop(0, '#2c2b28'); body.addColorStop(1, '#121211');
+    g.globalAlpha = dim;
+    g.fillStyle = body; g.beginPath(); g.arc(CX, CY, R, 0, 6.2832); g.fill();
+    g.strokeStyle = 'rgba(236,232,223,.5)'; g.lineWidth = 2; g.stroke();
+    g.strokeStyle = 'rgba(236,232,223,.16)'; g.lineWidth = 1.2;
+    for (var lon = -180; lon < 180; lon += 30) {
+      g.beginPath(); var first = true;
+      for (var lat = -90; lat <= 90; lat += 5) { var q = project(lon, lat, rot); if (q[2] < 0) { first = true; continue; } if (first) g.moveTo(q[0], q[1]); else g.lineTo(q[0], q[1]); first = false; }
+      g.stroke();
     }
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.beginPath(); ctx.moveTo(apex[0], apex[1]); ctx.lineTo(left[0], left[1]); ctx.lineTo(right[0], right[1]); ctx.closePath();
-    var g = ctx.createLinearGradient(apex[0], apex[1], far[0], far[1]);
-    g.addColorStop(0, 'rgba(' + colour + ',' + (.30 * intensity) + ')');
-    g.addColorStop(.35, 'rgba(' + colour + ',' + (.12 * intensity) + ')');
-    g.addColorStop(1, 'rgba(' + colour + ',' + (.05 * intensity) + ')');
-    ctx.fillStyle = g; ctx.fill();
-    ctx.clip();
-    // smoke: slow soft blobs inside the cone
-    for (var k = 0; k < 6; k++) {
-      var u = (hash(k + seed) + t * .025 * (1 + hash(k * 2 + seed))) % 1;
-      var x = lerp(apex[0], far[0], u) + Math.sin(t * .4 + k) * 40, y = lerp(apex[1], far[1], u) + Math.cos(t * .33 + k * 2) * 30;
-      var r = 120 + 220 * u;
-      var sg = ctx.createRadialGradient(x, y, 0, x, y, r);
-      sg.addColorStop(0, 'rgba(' + colour + ',' + (.06 * intensity) + ')'); sg.addColorStop(1, 'rgba(' + colour + ',0)');
-      ctx.fillStyle = sg; ctx.fillRect(x - r, y - r, 2 * r, 2 * r);
+    for (var la = -60; la <= 60; la += 30) {
+      g.beginPath(); var f2 = true;
+      for (var lo = -180; lo <= 180; lo += 5) { var q2 = project(lo, la, rot); if (q2[2] < 0) { f2 = true; continue; } if (f2) g.moveTo(q2[0], q2[1]); else g.lineTo(q2[0], q2[1]); f2 = false; }
+      g.stroke();
     }
-    // dust
-    ctx.fillStyle = 'rgba(' + colour + ',1)';
-    for (var d = 0; d < DUST; d++) {
-      var q = dust[d];
-      var uu = (q.u + .012 * Math.sin(t * .31 * q.w + q.p)) % 1;
-      var vv = q.v + .18 * Math.sin(t * .23 * q.w + q.p * 1.7);
-      if (vv > 1) vv = 2 - vv; if (vv < -1) vv = -2 - vv;
-      var cx = lerp(apex[0], far[0], uu), cy = lerp(apex[1], far[1], uu) - (t * 3 * q.w) % 40;
-      var lx = lerp(apex[0], left[0], uu), ly = lerp(apex[1], left[1], uu), rx = lerp(apex[0], right[0], uu), ry = lerp(apex[1], right[1], uu);
-      var x2 = lerp(cx, vv < 0 ? lx : rx, Math.abs(vv)), y2 = lerp(cy, vv < 0 ? ly : ry, Math.abs(vv));
-      var tw = .35 + .65 * Math.pow(Math.sin(t * 1.3 * q.w + q.p), 2);
-      ctx.globalAlpha = clamp(tw * intensity * (.25 + .75 * (1 - uu)));
-      ctx.beginPath(); ctx.arc(x2, y2, q.s, 0, 6.283); ctx.fill();
+    for (var i = 0; i < DOTS.length; i += 2) {
+      var p = project(DOTS[i], DOTS[i + 1], rot);
+      if (p[2] <= 0) continue;
+      g.fillStyle = 'rgba(236,232,223,' + (.35 + .6 * p[2]) + ')';
+      g.beginPath(); g.arc(p[0], p[1], 1.6 + 1.6 * p[2], 0, 6.2832); g.fill();
     }
-    ctx.restore();
+    g.globalAlpha = 1;
   }
 
-  var PORT = [1641, 151];
-  function cinemaIntensity(t) {
-    var on = t < 1.1 ? 0 : t < 2.1 ? [0, .8, .1, .9, .4, 1][Math.min(5, Math.floor((t - 1.1) * 6))] : 1;
-    return on * flicker(t) * (1 + .8 * smooth(ramp(t, 9.3, 10.3))) * (1 - ramp(t, 10.3, 10.5));
+  /* ── Film wear: flicker, scratches, dust; gate weave and the title slam shake. ── */
+  var wear = document.getElementById('wear'), w = wear.getContext('2d'), film = document.getElementById('film');
+  function drawWear(t) {
+    var f = Math.floor(t * 24);
+    w.clearRect(0, 0, 1920, 1080);
+    var k = t > 4 && t < 42.8 ? 1 : .35;              // the newsreel itself is worn film
+    w.fillStyle = 'rgba(255,250,235,' + (.035 * k * hash(f * 1.7)) + ')'; w.fillRect(0, 0, 1920, 1080);
+    w.fillStyle = 'rgba(0,0,0,' + (.05 * k * hash(f * 2.3)) + ')'; w.fillRect(0, 0, 1920, 1080);
+    w.strokeStyle = 'rgba(236,232,223,' + (.22 * k) + ')'; w.lineWidth = 1.2;
+    for (var s = 0; s < 3; s++) {
+      if (hash(f * 3.1 + s) > .45) continue;
+      var x = 120 + hash(f * 5.7 + s * 9) * 1680;
+      w.beginPath(); w.moveTo(x, 0); w.lineTo(x + (hash(f + s) - .5) * 14, 1080); w.stroke();
+    }
+    for (var d = 0; d < 7 * k; d++) {
+      var dx = hash(f * 11.3 + d) * 1920, dy = hash(f * 13.7 + d * 3) * 1080, r = .8 + hash(f * 17.1 + d) * 2.6;
+      w.fillStyle = hash(f + d * 7) > .5 ? 'rgba(0,0,0,.55)' : 'rgba(236,232,223,.45)';
+      w.beginPath(); w.arc(dx, dy, r, 0, 6.2832); w.fill();
+    }
+    var shake = t > 5.6 && t < 6.1 ? (1 - ramp(t, 5.6, 6.1)) * 14 : 0;
+    var jx = (hash(f * 1.31) - .5) * 2.2 * k + (hash(f * 4.1) - .5) * shake;
+    var jy = (hash(f * 2.77) - .5) * 2.6 * k + (hash(f * 6.3) - .5) * shake;
+    film.style.transform = 'translate(' + jx.toFixed(2) + 'px,' + jy.toFixed(2) + 'px)';
   }
 
-  /* Gallery light pool: grows on the wall, then narrows into a door gap, then becomes 日. */
-  function poolGeom(t) {
-    var grow = smooth(ramp(t, 19.5, 21.0)), slit = smooth(ramp(t, 28.6, 29.8)), open = smooth(ramp(t, 30.2, 31.2));
-    var cx = lerp(960, 965, slit), cy = lerp(lerp(480, 470, grow), 602, slit);
-    var w = lerp(lerp(160, 1000, grow), 18, slit), h = lerp(lerp(120, 640, grow), 300, slit);
-    w = lerp(w, 236, open); h = lerp(h, 240, open);
-    var on = smooth(ramp(t, 19.3, 20.0));
-    var fade = 1 - smooth(ramp(t, 31.0, 31.8));
-    return { cx: cx, cy: cy, w: w, h: h, a: on * fade, slit: slit, open: open };
+  /* ── Next issue: two hours pass on the clock. ── */
+  var hourHand = document.getElementById('hand-h'), minHand = document.getElementById('hand-m');
+  function drawClock(t) {
+    var k = smooth(ramp(t, 40.9, 42.4));
+    minHand.setAttribute('transform', 'rotate(' + (720 * k) + ')');
+    hourHand.setAttribute('transform', 'rotate(' + (300 + 60 * k) + ')');
   }
 
-  var timer = document.getElementById('timer'), print = document.getElementById('print'), sheen = document.getElementById('sheen');
-  var paper = document.getElementById('paper'), pool = document.getElementById('pool'), spill = document.getElementById('spill');
-  var cinema = document.getElementById('cinema');
-  var LAMP = [960, 40];   // the darkroom safelight, later the gallery spotlight's lens
+  function render(ms) { var t = ms / 1000; drawGlobe(t); drawWear(t); drawClock(t); }
 
-  function render(ms) {
-    var t = ms / 1000;
-    ctx.clearRect(0, 0, 1920, 1080);
-
-    // Cinema: projector beam onto the screen quad; at the end the camera pushes into the screen.
-    var k = ramp(t, 9.3, 10.5), zoom = 1 + 3.4 * k * k * k;
-    cinema.style.transform = zoom > 1 ? 'scale(' + zoom.toFixed(4) + ')' : '';
-    var ci = cinemaIntensity(t);
-    if (ci > 0) {
-      ctx.setTransform(zoom, 0, 0, zoom, 505 * (1 - zoom), 455 * (1 - zoom));
-      drawCone(PORT, QUAD[0], QUAD[3], [505, 455], ci, '255,240,214', t, 1, QUAD);
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-    }
-
-    // Darkroom: enlarger timer, development, agitation, safelight → white.
-    var left = Math.max(0, 8 - (t - 10.6) / 1.6 * 8);
-    timer.textContent = (left < 10 ? '0' : '') + left.toFixed(1);
-    var dev = ramp(t, 13.0, 17.6);
-    print.style.opacity = Math.pow(dev, 1.8);
-    print.style.filter = 'blur(' + (1.6 * (1 - dev)).toFixed(2) + 'px)';
-    var rock = Math.sin((t - 12.4) * 2.4);
-    sheen.style.left = (30 + 32 * rock) + '%';
-    paper.style.transform = 'translate(' + (3 * rock).toFixed(2) + 'px,' + (2 * Math.cos((t - 12.4) * 2.4)).toFixed(2) + 'px)';
-    // The lamp: red safelight over the tray, turning white into the gallery spotlight.
-    var white = smooth(ramp(t, 18.2, 19.3));
-    var lampA = smooth(ramp(t, 12.2, 13.0)) * (1 - smooth(ramp(t, 28.2, 29.2)));
-    if (lampA > 0) {
-      var lr = 255, lg = Math.round(lerp(58, 236, white)), lb = Math.round(lerp(30, 206, white));
-      var rad = 46 + 70 * smooth(ramp(t, 18.6, 19.3)) * (1 - .45 * smooth(ramp(t, 19.3, 20.4)));
-      var lgrad = ctx.createRadialGradient(LAMP[0], LAMP[1], 0, LAMP[0], LAMP[1], rad);
-      lgrad.addColorStop(0, 'rgba(' + lr + ',' + lg + ',' + lb + ',' + lampA + ')');
-      lgrad.addColorStop(.3, 'rgba(' + lr + ',' + lg + ',' + lb + ',' + (.35 * lampA) + ')');
-      lgrad.addColorStop(1, 'rgba(' + lr + ',' + lg + ',' + lb + ',0)');
-      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = lgrad;
-      ctx.fillRect(LAMP[0] - rad, LAMP[1] - rad, 2 * rad, 2 * rad); ctx.restore();
-    }
-
-    // Gallery and door: one pool of light, its beam and floor spill.
-    var p = poolGeom(t);
-    pool.style.left = (p.cx - p.w / 2) + 'px'; pool.style.top = (p.cy - p.h / 2) + 'px';
-    pool.style.width = p.w + 'px'; pool.style.height = p.h + 'px';
-    var hot = lerp(.85, 1, p.slit);
-    pool.style.background = 'radial-gradient(closest-side,rgba(246,232,206,' + hot + ') 0,rgba(240,224,196,' + (.92 * hot) + ') ' + lerp(55, 70, p.slit) + '%,rgba(235,215,180,0) 100%)';
-    pool.style.opacity = p.a;
-    pool.style.boxShadow = p.slit > 0 ? '0 0 ' + (60 * p.slit) + 'px ' + (10 * p.slit) + 'px rgba(255,214,150,' + (.35 * p.slit * p.a) + ')' : 'none';
-    spill.style.opacity = p.a * (1 - p.slit) * .9;
-    spill.style.background = 'radial-gradient(' + (p.w * .45) + 'px 120px at 50% 0,rgba(240,224,196,.16),rgba(240,224,196,0))';
-    var beamA = p.a * (1 - smooth(ramp(t, 28.2, 29.2)));
-    if (beamA > 0) drawCone([LAMP[0], LAMP[1]], [p.cx - p.w / 2, p.cy], [p.cx + p.w / 2, p.cy], [p.cx, p.cy], beamA * .75, '255,236,206', t, 9);
-    // Door-gap light spilling on the floor, before it becomes 日.
-    var gap = smooth(ramp(t, 29.4, 30.2)) * (1 - smooth(ramp(t, 30.5, 31.2)));
-    if (gap > 0) {
-      ctx.save(); ctx.globalCompositeOperation = 'lighter';
-      var fg = ctx.createLinearGradient(0, 752, 0, 1080);
-      fg.addColorStop(0, 'rgba(255,220,170,' + (.35 * gap) + ')'); fg.addColorStop(1, 'rgba(255,220,170,0)');
-      ctx.fillStyle = fg; ctx.beginPath();
-      var half = p.w / 2;
-      ctx.moveTo(p.cx - half, 752); ctx.lineTo(p.cx + half, 752); ctx.lineTo(p.cx + half * 4 + 70, 1080); ctx.lineTo(p.cx - half * 2 - 20, 1080); ctx.closePath(); ctx.fill();
-      ctx.restore();
-    }
-  }
-
-  /* ── Clock, seeking and playback ── */
+  /* ── Clock, seeking, playback and sound ── */
   var all = null;
   function animations() { return all || (all = document.getAnimations()); }
   function clock() { return animations().filter(function (a) { return a.animationName === 'clock'; })[0]; }
@@ -371,9 +411,8 @@ svg{display:block;overflow:visible}
     animations().forEach(function (a) { value ? a.pause() : a.play(); });
     pauseButton.textContent = value ? '播放' : '暫停';
   }
-  /* Score: browsers only start sound after a tap, so it begins muted behind a button.
-     While it plays, the music is the master clock: it is never seeked mid-play (that is
-     what makes sound stutter); if the picture drifts, the picture is moved to the music. */
+  /* The score is the master clock while it plays: it is never seeked mid-play; if the
+     picture drifts, the picture moves to the music. */
   var audio = document.getElementById('score'), soundButton = document.getElementById('sound'), soundOn = false;
   function syncAudio(ms) {
     if (!soundOn) return;
@@ -390,7 +429,6 @@ svg{display:block;overflow:visible}
     soundButton.setAttribute('aria-pressed', String(soundOn));
     soundButton.textContent = soundOn ? '關聲音' : '開聲音';
     if (!soundOn) audio.pause();
-    else { var c = clock(); audio.currentTime = c ? (c.currentTime || 0) / 1000 : 0; if (!paused) audio.play().catch(function () {}); }
   });
   function replay() { seek(0); if (soundOn) { audio.pause(); audio.currentTime = 0; } setPaused(false); }
   pauseButton.addEventListener('click', function () { setPaused(!paused); });
@@ -398,7 +436,7 @@ svg{display:block;overflow:visible}
   stage.addEventListener('click', function () { setPaused(!paused); });
 
   if (recording) { seek(0); return; }
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { seek(38000); setPaused(true); return; }
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { seek(44500); setPaused(true); return; }
   (function loop() {
     var c = clock();
     if (c) {

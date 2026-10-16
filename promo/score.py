@@ -1,13 +1,13 @@
-"""Synthesise the score for the 幕間休息 promo film 「一束光」.
+"""Synthesise the score for the 幕間休息 promo film 「幕間新聞片」 (a cinema newsreel).
 
-Everything is generated here (no samples, no third-party recordings): a felt-piano
-voice, a slow string-like pad, and sound effects tied to the picture — the projector,
-the enlarger, the developing tray, the gallery lamp, the door and the neon 日. The cue
-times below are the same seconds as the film's timeline in src/promo.html.
+Everything is generated here — no samples, no third-party recordings: an intermission
+piano waltz, then the newsreel: snare and timpani rolls, a brass fanfare on the title,
+a march under each section (film in B♭, photography in C, art in D, rising), soft
+flash-bulb pops, a stamp, a final cadence on 「完」, a music-box clock and a closing
+chord. The master is band-limited like an old optical soundtrack. Cue times are the
+film's timeline seconds (src/promo.html).
 
   python promo/score.py promo/score.wav        (needs numpy and scipy)
-
-The film is in D minor and resolves to D major when 日 lights up.
 """
 from __future__ import annotations
 
@@ -19,30 +19,23 @@ import numpy as np
 from scipy import signal
 
 SR = 48000
-LENGTH = 40.0
+LENGTH = 46.0
 N = int(SR * LENGTH)
-rng = np.random.default_rng(1013)
+rng = np.random.default_rng(1016)
 
 
-def midi(note: str) -> float:
+def hz(note: str) -> float:
     names = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
-    pitch = names[note[0]]
-    rest = note[1:]
+    pitch, rest = names[note[0]], note[1:]
     if rest.startswith("#"):
-        pitch += 1
-        rest = rest[1:]
+        pitch, rest = pitch + 1, rest[1:]
     elif rest.startswith("b"):
-        pitch -= 1
-        rest = rest[1:]
+        pitch, rest = pitch - 1, rest[1:]
     return 440.0 * 2 ** ((pitch + 12 * (int(rest) + 1) - 69) / 12)
 
 
 def at(t: float) -> int:
-    return max(0, min(N, int(t * SR)))
-
-
-def buffer() -> np.ndarray:
-    return np.zeros((2, N))
+    return max(0, min(N, int(round(t * SR))))
 
 
 def place(bus: np.ndarray, start: float, sound: np.ndarray, gain: float = 1.0, pan: float = 0.0) -> None:
@@ -50,202 +43,253 @@ def place(bus: np.ndarray, start: float, sound: np.ndarray, gain: float = 1.0, p
     n = min(len(sound), N - i)
     if n <= 0:
         return
-    left, right = np.cos((pan + 1) * np.pi / 4), np.sin((pan + 1) * np.pi / 4)
-    bus[0, i:i + n] += sound[:n] * gain * left
-    bus[1, i:i + n] += sound[:n] * gain * right
+    bus[0, i:i + n] += sound[:n] * gain * np.cos((pan + 1) * np.pi / 4)
+    bus[1, i:i + n] += sound[:n] * gain * np.sin((pan + 1) * np.pi / 4)
 
 
-def butter(sound: np.ndarray, cutoff, kind: str = "low", order: int = 2) -> np.ndarray:
-    sos = signal.butter(order, cutoff, btype=kind, fs=SR, output="sos")
-    return signal.sosfilt(sos, sound, axis=-1)
+def butter(x: np.ndarray, cutoff, kind: str = "low", order: int = 2) -> np.ndarray:
+    return signal.sosfilt(signal.butter(order, cutoff, btype=kind, fs=SR, output="sos"), x, axis=-1)
 
 
-def envelope(times: list[float], levels: list[float], length: int = N) -> np.ndarray:
-    t = np.arange(length) / SR
-    return np.interp(t, times, levels)
+def envelope(times: list, levels: list, length: int = N) -> np.ndarray:
+    return np.interp(np.arange(length) / SR, times, levels)
 
 
-# ── Voices ─────────────────────────────────────────────────────────────────────
-def piano(freq: float, velocity: float = .7, length: float = 4.5) -> np.ndarray:
-    """Soft felt piano: inharmonic partials with per-partial decay and a muted hammer."""
+def fade(x: np.ndarray, attack: float = .005, release: float = .05) -> np.ndarray:
+    n = len(x)
+    t = np.arange(n) / SR
+    return x * np.minimum(1, t / max(attack, 1e-4)) * np.minimum(1, (n / SR - t) / max(release, 1e-4))
+
+
+# ── Instruments ────────────────────────────────────────────────────────────────
+def brass(freq: float, length: float, level: float = 1.0) -> np.ndarray:
+    """Additive brass: upper harmonics bloom with loudness, a small pitch scoop on the
+    attack and a late vibrato."""
+    n = int(length * SR)
+    t = np.arange(n) / SR
+    env = np.minimum(1, t / .035) * (0.78 + 0.22 * np.exp(-t / .12))
+    env *= np.clip((length - t) / .08, 0, 1)
+    scoop = 1 - 0.018 * np.exp(-t / .03)
+    vib = 1 + 0.004 * np.sin(2 * np.pi * 5.4 * t) * np.minimum(1, np.maximum(0, t - .25) / .3)
+    phase = 2 * np.pi * np.cumsum(freq * scoop * vib) / SR
+    out = np.zeros(n)
+    for k in range(1, 14):
+        if k * freq > 9000:
+            break
+        out += (1 / k) * env ** (1 + 0.45 * (k - 1)) * np.sin(k * phase)
+    return out * level * 0.22
+
+
+def chord(notes: list, length: float, level: float = 1.0, spread: float = .006) -> np.ndarray:
+    n = int(length * SR)
+    parts = [np.pad(brass(hz(note), length, level), (int(i * spread * SR), 0))[:n] for i, note in enumerate(notes)]
+    return sum(parts) / np.sqrt(len(notes))
+
+
+def tuba(freq: float, length: float = .32) -> np.ndarray:
+    return butter(brass(freq, length, 1.0), 700) * 1.6
+
+
+def piano(freq: float, velocity: float = .6, length: float = 3.0) -> np.ndarray:
     n = int(length * SR)
     t = np.arange(n) / SR
     out = np.zeros(n)
-    inharm = 0.00035
-    base_decay = 3.2 * (220 / freq) ** 0.35
-    for k in range(1, 11):
-        f = k * freq * np.sqrt(1 + inharm * k * k)
+    decay0 = 2.6 * (220 / freq) ** 0.35
+    for k in range(1, 9):
+        f = k * freq * np.sqrt(1 + 0.00035 * k * k)
         if f > SR / 2.2:
             break
-        amp = (1 / k ** 1.5) * (velocity ** (0.6 * (k - 1)))
-        decay = base_decay / (1 + 0.35 * (k - 1))
-        phase = rng.uniform(0, 2 * np.pi)
-        out += amp * np.sin(2 * np.pi * f * t + phase) * np.exp(-t / decay)
-    attack = np.minimum(1, t / 0.004)
-    hammer = butter(rng.normal(0, 1, n), 1800) * np.exp(-t / 0.012) * 0.05
-    release = np.minimum(1, (length - t) / 0.4)
-    return (out * attack + hammer) * release * velocity * 0.35
+        out += (1 / k ** 1.5) * velocity ** (0.6 * (k - 1)) * np.sin(2 * np.pi * f * t + rng.uniform(0, 6)) * np.exp(-t / (decay0 / (1 + .35 * (k - 1))))
+    return fade(out, .004, .3) * velocity * .35
 
 
-def pad(freqs: list[float], length: float, cutoff: float = 1400) -> np.ndarray:
-    """Slow strings: three detuned saws per note, filtered, with gentle vibrato."""
+def celesta(freq: float, length: float = 1.4) -> np.ndarray:
     n = int(length * SR)
     t = np.arange(n) / SR
-    out = np.zeros(n)
-    for freq in freqs:
-        for cents in (-7, 0, 6):
-            f = freq * 2 ** (cents / 1200)
-            vib = 1 + 0.0025 * np.sin(2 * np.pi * (4.6 + rng.uniform(-.4, .4)) * t + rng.uniform(0, 6))
-            phase = np.cumsum(f * vib) / SR + rng.uniform(0, 1)
-            out += signal.sawtooth(2 * np.pi * phase) / 3
-    out = butter(out, cutoff, order=2)
-    out = butter(out, 90, "high")
-    return out / max(1, len(freqs)) * 0.28
+    out = np.sin(2 * np.pi * freq * t) * np.exp(-t / .5) + .35 * np.sin(2 * np.pi * freq * 4 * t) * np.exp(-t / .12)
+    return fade(out, .003, .2) * .2
 
 
-def bell(freq: float, length: float = 5.0) -> np.ndarray:
+def snare(level: float = 1.0) -> np.ndarray:
+    n = int(.25 * SR)
+    t = np.arange(n) / SR
+    noise = butter(rng.normal(0, 1, n), [1500, 8500], "band") * np.exp(-t / .07)
+    tone = np.sin(2 * np.pi * 190 * t) * np.exp(-t / .03) * .6
+    return fade(noise + tone, .0015, .03) * level * .5
+
+
+def timpani(freq: float, level: float = 1.0, length: float = 1.8) -> np.ndarray:
     n = int(length * SR)
     t = np.arange(n) / SR
-    out = np.zeros(n)
-    for ratio, amp, decay in ((1, 1, 3.2), (2.76, .45, 1.6), (5.4, .25, .9), (8.93, .12, .5)):
-        out += amp * np.sin(2 * np.pi * freq * ratio * t) * np.exp(-t / decay)
-    return butter(out * np.minimum(1, t / 0.006), 5000) * 0.18
+    f = freq * (1 + .03 * np.exp(-t / .05))
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / .55) + .3 * np.sin(2 * np.pi * np.cumsum(f * 1.5) / SR) * np.exp(-t / .3)
+    thud = butter(rng.normal(0, 1, n), 300) * np.exp(-t / .03) * .6
+    return fade(body + thud, .002, .2) * level * .7
 
 
-def thump(length: float = 1.2, freq: float = 55) -> np.ndarray:
+def cymbal(length: float = 2.6, level: float = 1.0) -> np.ndarray:
     n = int(length * SR)
     t = np.arange(n) / SR
-    sweep = freq * (1 + 1.5 * np.exp(-t / 0.03))
-    return np.sin(2 * np.pi * np.cumsum(sweep) / SR) * np.exp(-t / 0.25) * 0.8
+    x = butter(rng.normal(0, 1, n), [3500, 12000], "band") * np.exp(-t / .9)
+    return fade(x, .002, .3) * level * .35
 
 
-def reverb(bus: np.ndarray, seconds: float = 3.4, mix: float = .32) -> np.ndarray:
-    n = int(seconds * SR)
+def roll(bus, start: float, end: float, maker, rate: float, levels=(.15, 1.0), pan: float = 0.0) -> None:
+    times = np.arange(start, end, 1 / rate)
+    for i, t0 in enumerate(times):
+        k = i / max(1, len(times) - 1)
+        level = (levels[0] + (levels[1] - levels[0]) * k) * (0.85 + 0.3 * rng.random())
+        place(bus, t0 + rng.normal(0, .003), maker(level), pan=pan + rng.normal(0, .05))
+
+
+def whoosh(length: float, rising: bool = True) -> np.ndarray:
+    n = int(length * SR)
     t = np.arange(n) / SR
-    ir = np.stack([rng.normal(0, 1, n), rng.normal(0, 1, n)]) * np.exp(-6.9 * t / seconds)
-    ir = butter(ir, 5200)
-    ir[:, :int(.018 * SR)] = 0
-    ir /= np.sqrt((ir ** 2).sum(axis=1, keepdims=True))
-    wet = np.stack([signal.fftconvolve(bus[c], ir[c])[:N] for c in range(2)])
-    return bus * (1 - mix) + wet * mix * 1.6
+    x = rng.normal(0, 1, n)
+    lo, hi = butter(x, 600), butter(x, [1200, 6000], "band")
+    k = t / length if rising else 1 - t / length
+    env = np.sin(np.pi * np.clip(t / length, 0, 1)) ** 1.5
+    return (lo * (1 - k) + hi * k) * env * .5
+
+
+def pop() -> np.ndarray:
+    """A flash bulb: a soft low pop and a short bright sizzle, no sharp click."""
+    n = int(.8 * SR)
+    t = np.arange(n) / SR
+    low = np.sin(2 * np.pi * 90 * t) * np.exp(-t / .06)
+    fizz = butter(rng.normal(0, 1, n), [2500, 7000], "band") * np.exp(-t / .18) * .35
+    return fade(low + fizz, .004, .1) * .6
 
 
 # ── Score ──────────────────────────────────────────────────────────────────────
+TRIADS = {"Bb": ["Bb", "D", "F"], "C": ["C", "E", "G"], "D": ["D", "F#", "A"], "Eb": ["Eb", "G", "Bb"],
+          "F": ["F", "A", "C"], "G": ["G", "B", "D"], "A": ["A", "C#", "E"]}
+CADENCE = {"Bb": ("Bb", "Eb", "F"), "C": ("C", "F", "G"), "D": ("D", "G", "A")}
+
+
+def voicing(root: str, octave: int = 4) -> list:
+    return [tone + str(octave) for tone in TRIADS[root]]
+
+
+def march(bus, start: float, end: float, key: str, intensity: float = 1.0) -> None:
+    """Newsreel march at 120 bpm: I – IV – V – I in two-second bars; tuba on 1 and 3,
+    snare on 2 and 4, brass chords on the off-beats."""
+    bars = [CADENCE[key][0], CADENCE[key][1], CADENCE[key][2], CADENCE[key][0]]
+    beat, t, b = .5, start, 0
+    while t < end - .05:
+        root = bars[(b // 4) % 4]
+        tones = TRIADS[root]
+        if b % 2 == 0:
+            place(bus, t, tuba(hz((tones[0] if b % 4 == 0 else tones[2]) + "2")), gain=.85 * intensity, pan=-.1)
+        else:
+            place(bus, t, snare(.7), gain=.7 * intensity, pan=.15)
+        place(bus, t + beat / 2, chord(voicing(root, 4), .16, .7), gain=.55 * intensity, pan=.2)
+        if intensity > 1.05:
+            place(bus, t + beat / 2, snare(.35), gain=.4, pan=.15)
+        t += beat
+        b += 1
+
+
 def music() -> np.ndarray:
-    bus = buffer()
+    bus = np.zeros((2, N))
 
-    # Pad: Dm9 (cinema) → Bbmaj7 → Gm9 (darkroom) → Fmaj7 → C/E → Dm9 (gallery)
-    # → A sus4 (the door) → D major add9 when 日 lights.
-    chords = [
-        (1.0, 10.8, ["D3", "A3", "C4", "E4", "F4"], 1100),
-        (10.0, 15.6, ["Bb2", "F3", "A3", "D4"], 900),
-        (15.0, 19.6, ["G2", "D3", "F3", "A3", "Bb3"], 900),
-        (19.0, 23.6, ["F2", "C3", "E3", "A3", "C4"], 1500),
-        (23.0, 26.4, ["E2", "C3", "G3", "C4", "D4"], 1500),
-        (25.8, 29.6, ["D2", "A2", "F3", "C4", "E4"], 1300),
-        (29.0, 32.0, ["A2", "E3", "A3", "D4"], 1000),
-        (31.4, 40.0, ["D2", "A2", "F#3", "A3", "E4", "F#4"], 1700),
-    ]
-    for start, end, notes, cutoff in chords:
-        length = end - start
-        sound = pad([midi(n) for n in notes], length, cutoff)
-        env = envelope([0, 1.2, length - 1.2, length], [0, 1, 1, 0], len(sound))
-        place(bus, start, sound * env, gain=1.0)
-    # Swell through the push into the screen and when the lamp turns white.
-    swell = envelope([0, 9.2, 10.4, 11.2, 18.2, 19.3, 20.4, 40], [1, 1, 1.8, 1, 1, 1.6, 1, 1])
-    bus *= swell
+    # 0 · Intermission: a quiet piano waltz in B♭ (3/4) while the slide is up.
+    waltz = [("Bb2", "D4", "F4"), ("F2", "C4", "Eb4"), ("Bb2", "D4", "F4"), ("Eb2", "Eb4", "G4")]
+    for bar, (bass, a, b) in enumerate(waltz):
+        t0 = .35 + bar * .9
+        place(bus, t0, piano(hz(bass), .5, 2.0), pan=-.2)
+        for off, vel in ((.3, .4), (.6, .35)):
+            place(bus, t0 + off, piano(hz(a), vel, 1.5), pan=.1)
+            place(bus, t0 + off, piano(hz(b), vel, 1.5), pan=.2)
+    bus *= envelope([0, 3.2, 4.1, 46], [.5, .5, 0, 0])
 
-    # Felt piano, three phrases and a resolution.
-    phrases = [
-        # cinema: D minor, mid register
-        (2.4, "A4", .55), (3.6, "D5", .6), (4.8, "E5", .55), (6.0, "F5", .65), (7.4, "E5", .5),
-        (8.2, "C5", .45), (9.0, "D5", .55),
-        # darkroom: lower, slower
-        (12.8, "D4", .5), (14.0, "F4", .5), (15.2, "A4", .55), (16.6, "G4", .5), (17.8, "Bb4", .5),
-        # gallery: brighter
-        (20.6, "C5", .55), (21.8, "A5", .6), (23.0, "G5", .55), (24.2, "E5", .5), (25.4, "F5", .55),
-        (26.6, "D5", .5), (27.6, "E5", .45),
-        # door: one held note
-        (29.4, "A4", .4),
-        # 日: D major arpeggio, then the tagline bell
-        (33.3, "D4", .5), (33.55, "A4", .5), (33.8, "F#5", .55), (34.05, "E5", .5), (34.4, "A5", .55),
-    ]
-    for start, note, velocity in phrases:
-        f = midi(note)
-        pan = np.clip((np.log2(f / 440)) * 0.5, -.6, .6)
-        place(bus, start, piano(f, velocity, 5.5), pan=pan)
-    place(bus, 35.2, bell(midi("D6"), 4.6), pan=.15)
-    place(bus, 35.2, bell(midi("A5"), 4.6), gain=.5, pan=-.2)
+    # 1 · Opening titles: drum roll → fanfare on the title slam.
+    roll(bus, 4.2, 5.55, snare, 22, (.08, .9), .1)
+    roll(bus, 4.6, 5.55, lambda v: timpani(hz("F2"), v, .5), 12, (.1, .7), -.2)
+    place(bus, 5.6, cymbal(3.2, 1.0))
+    place(bus, 5.6, timpani(hz("Bb1"), 1.0, 2.0))
+    fanfare = [(5.6, ["Bb3", "D4", "F4", "Bb4"], .55), (6.15, ["Bb3", "D4", "F4", "Bb4"], .18), (6.35, ["Bb3", "D4", "F4", "Bb4"], .18),
+               (6.55, ["C4", "Eb4", "F4", "A4"], .4), (7.0, ["D4", "F4", "Bb4", "D5"], .9), (7.95, ["Eb4", "G4", "Bb4", "Eb5"], .45),
+               (8.45, ["F4", "A4", "C5", "F5"], .45), (8.95, ["D4", "F4", "Bb4", "D5"], .55)]
+    for t0, notes, length in fanfare:
+        place(bus, t0, chord(notes, length, 1.0), gain=.9)
+        place(bus, t0, tuba(hz(notes[0][:-1] + "2"), min(length, .5)), gain=.5)
+    roll(bus, 8.95, 9.5, lambda v: timpani(hz("Bb1"), v, .4), 14, (.4, .9))
+
+    # Section hits and marches: 電影 (B♭), 攝影 (C), 藝術 (D) — each a step higher.
+    for t0, key, low in ((10.0, "Bb", "Bb1"), (18.5, "C", "C2"), (26.5, "D", "D2")):
+        place(bus, t0, cymbal(2.4, .8))
+        place(bus, t0, timpani(hz(low), 1.0))
+        place(bus, t0, chord(voicing(key, 4) + [key + "5"], .7, 1.0), gain=.8)
+    march(bus, 10.85, 18.4, "Bb", .85)
+    march(bus, 19.3, 26.4, "C", .9)
+    march(bus, 27.3, 34.7, "D", .95)
+    place(bus, 12.0, timpani(hz("F2"), .8))                       # the newspaper lands
+
+    # A short brass line over each march, one phrase per section.
+    for t0, notes in ((14.0, ["F4", "Bb4", "D5", "C5", "Bb4"]), (20.0, ["G4", "C5", "E5", "D5", "C5"]),
+                      (28.0, ["A4", "D5", "F#5", "E5", "D5"])):
+        for j, n in enumerate(notes):
+            place(bus, t0 + j * .5, brass(hz(n), .45 if j < len(notes) - 1 else 1.2, .9), gain=.7, pan=-.25)
+
+    # 5 · Recap: the march builds.
+    march(bus, 34.8, 38.4, "D", 1.15)
+    roll(bus, 37.6, 38.5, snare, 22, (.2, 1.0), .1)
+    place(bus, 38.35, chord(["A3", "C#4", "E4", "G4"], .45, 1.0), gain=.9)
+
+    # 6 · 完: the final cadence.
+    place(bus, 38.85, cymbal(3.5, 1.1))
+    place(bus, 38.85, timpani(hz("D2"), 1.1, 2.2))
+    place(bus, 38.85, chord(["D3", "A3", "D4", "F#4", "A4", "D5"], 1.6, 1.0), gain=1.0)
+    roll(bus, 39.2, 40.25, lambda v: timpani(hz("D2"), v, .4), 14, (.9, .3))
+
+    # Next issue: a music box ticking through two hours.
+    box = ["D6", "A5", "F#5", "A5"]
+    for j, t0 in enumerate(np.arange(40.8, 42.5, .25)):
+        place(bus, t0, celesta(hz(box[j % 4])), pan=.3 if j % 2 else -.3)
+
+    # Wordmark: a warm closing chord.
+    for n in ("D3", "A3", "F#4", "A4"):
+        place(bus, 42.8, brass(hz(n), 3.0, .55), gain=.35)
+    place(bus, 42.8, piano(hz("D4"), .55, 3.5))
+    place(bus, 43.3, celesta(hz("D6"), 2.5), gain=1.2)
     return bus
 
 
 def effects() -> np.ndarray:
-    """Sound tied to the picture. Everything is shaped with soft attacks: no sharp clicks
-    or stuttering gates, which read as glitches in playback."""
-    bus = buffer()
+    bus = np.zeros((2, N))
     t = np.arange(N) / SR
-
-    def soft_thud(start: float, freq: float, gain: float, pan: float = 0.0) -> None:
-        place(bus, start, butter(thump(1.0, freq), 400), gain=gain, pan=pan)
-
-    # Projector: the lamp comes on with a low thud, then a soft whirr (motor and film
-    # running at 24 fps, as a smooth flutter rather than individual clicks).
-    soft_thud(1.1, 70, .3, .5)
-    flutter = 0.7 + 0.3 * np.sin(2 * np.pi * 24 * t)
-    whirr = butter(rng.normal(0, 1, N), [300, 1400], "band") * flutter
-    motor = np.sin(2 * np.pi * 48 * t) * .5 + np.sin(2 * np.pi * 96 * t) * .25
-    projector = (whirr * .5 + motor * .08) * envelope([0, 1.2, 2.2, 9.2, 10.3, 10.6, 40], [0, 0, 1, 1, .4, 0, 0])
-    place(bus, 0, projector, gain=.12, pan=.5)
-
-    # Push into the screen: a soft rush of air.
-    rush = butter(rng.normal(0, 1, N), [400, 4500], "band") * envelope([0, 9.2, 10.4, 11.2, 40], [0, 0, 1, 0, 0])
-    place(bus, 0, rush, gain=.07)
-
-    # Enlarger: muffled switch on, lamp hum, switch off, and a soft round tone.
-    soft_thud(10.6, 110, .18, -.2)
-    hum = (np.sin(2 * np.pi * 100 * t) + .4 * np.sin(2 * np.pi * 200 * t)) * envelope([0, 10.6, 10.9, 11.9, 12.15, 40], [0, 0, 1, 1, 0, 0])
-    place(bus, 0, hum, gain=.025)
-    soft_thud(12.12, 110, .16, -.2)
-    tone_len = int(.6 * SR)
-    tone_t = t[:tone_len]
-    tone = np.sin(2 * np.pi * 1046.5 * tone_t) * np.minimum(1, tone_t / .03) * np.exp(-tone_t / .18)
-    place(bus, 12.2, tone, gain=.05, pan=.3)
-
-    # Developer tray: liquid moving with each rock of the tray.
-    rock = np.cos((t - 12.4) * 2.4)
-    slosh_env = np.abs(rock) ** 3 * envelope([0, 12.4, 13.2, 18.2, 19.2, 40], [0, 0, 1, 1, 0, 0])
-    water = butter(rng.normal(0, 1, N), [250, 1600], "band")
-    water = water * (0.7 + 0.3 * np.sin(2 * np.pi * 5 * t + np.sin(2 * np.pi * .9 * t)))
-    for c, pan in ((0, -.4), (1, .4)):
-        side = slosh_env * (0.5 + 0.5 * np.sign(rock) * (1 if c else -1))
-        side = butter(side, 8)                      # no hard switching between sides
-        place(bus, 0, water * side, gain=.08, pan=pan)
-
-    # Safelight turns into the gallery lamp: felt more than heard.
-    soft_thud(19.25, 48, .4)
-
-    # The door: air moving through the gap.
-    air = butter(rng.normal(0, 1, N), [180, 2000], "band") * envelope([0, 28.8, 29.8, 30.8, 31.6, 40], [0, 0, .7, .5, 0, 0])
-    place(bus, 0, air, gain=.12)
-
-    # Neon 日: a warm hum that swells in and fades with the zoom out.
-    glow = envelope([0, 31.5, 32.2, 33.3, 34.8, 40], [0, 0, 1, .7, 0, 0])
-    buzz = np.sin(2 * np.pi * 120 * t) + .35 * np.sin(2 * np.pi * 240 * t) + .15 * np.sin(2 * np.pi * 360 * t)
-    place(bus, 0, buzz * glow, gain=.025)
-
-    # Room tone under everything.
-    room = butter(rng.normal(0, 1, (2, N)), 900) * envelope([0, .4, 38.8, 40], [0, 1, 1, 0])
-    bus += room * .006
-    return butter(bus, 7000)
+    # Projector running under everything, as a soft whirr.
+    whirr = butter(rng.normal(0, 1, N), [300, 1300], "band") * (0.75 + 0.25 * np.sin(2 * np.pi * 24 * t))
+    place(bus, 0, whirr * envelope([0, .3, 1.0, 45, 46], [0, 0, 1, 1, 0]), gain=.018)
+    # The newspaper spins in; section wipes; iris closes.
+    place(bus, 10.85, whoosh(1.15, True), gain=.35)
+    for t0 in (9.98, 18.48, 26.48):
+        place(bus, t0, whoosh(.3, True), gain=.2)
+    for t0 in (9.45, 29.6, 40.3):
+        place(bus, t0, whoosh(.45, False), gain=.15)
+    # Flash bulbs.
+    for t0 in (19.3, 21.85, 24.2):
+        place(bus, t0, pop(), gain=.5, pan=rng.uniform(-.3, .3))
+    # The 一種關注 stamp.
+    place(bus, 33.35, timpani(hz("G2"), .5, .5), gain=.6)
+    return bus
 
 
 def master(bus: np.ndarray) -> np.ndarray:
-    bus = butter(bus, 28, "high")
-    bus *= envelope([0, .3, 39.0, 40], [0, 1, 1, 0])
-    peak = np.abs(bus).max()
-    bus = bus / peak * 0.95
-    bus = np.tanh(bus * 1.15) / np.tanh(1.15)     # gentle saturation, never clips
-    return bus * 10 ** (-1 / 20)
+    hall_len = int(2.2 * SR)
+    t = np.arange(hall_len) / SR
+    ir = np.stack([rng.normal(0, 1, hall_len), rng.normal(0, 1, hall_len)]) * np.exp(-6.9 * t / 2.2)
+    ir = butter(ir, 4500)
+    ir /= np.sqrt((ir ** 2).sum(axis=1, keepdims=True))
+    wet = np.stack([signal.fftconvolve(bus[c], ir[c])[:N] for c in range(2)])
+    mix = bus * .78 + wet * .4
+    mix = butter(mix, [85, 8000], "band")                   # old optical soundtrack
+    mix += butter(rng.normal(0, 1, (2, N)), [2000, 7000], "band") * .0025 * envelope([0, .3, 45.3, 46], [0, 1, 1, 0])
+    mix *= envelope([0, .2, 45.2, 46], [0, 1, 1, 0])
+    mix = mix / np.abs(mix).max() * .95
+    mix = np.tanh(mix * 1.2) / np.tanh(1.2)
+    return mix * 10 ** (-1 / 20)
 
 
 def write(path: Path, bus: np.ndarray) -> None:
@@ -259,8 +303,7 @@ def write(path: Path, bus: np.ndarray) -> None:
 
 def main() -> None:
     target = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).with_name("score.wav")
-    mix = reverb(music(), 3.6, .38) + reverb(effects(), 1.8, .2)
-    write(target, master(mix))
+    write(target, master(music() + effects()))
     print(f"wrote {target}")
 
 

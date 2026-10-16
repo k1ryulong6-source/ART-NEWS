@@ -1,9 +1,11 @@
-"""Build the 幕間休息 promo film page ("一束光").
+"""Build the 幕間休息 promo film page ("幕間新聞片", a cinema newsreel).
 
 promo/src/promo.html is the source. This script fills in:
 
-  {{WORDMARK}}    the site's wordmark outline (frontend/index.html), split per character
-  {{SEATS}}       cinema seat silhouettes for the opening shot
+  {{WORDMARK:cls}} the site's wordmark outline (frontend/index.html), split per character
+  {{DOTS}}        land dots for the opening globe, from Natural Earth 110m (world-atlas)
+  {{TICKER:chan}} the wire ticker: recent AI-translated headlines per channel, data/live.json
+  {{CLOCK_TICKS}} hour marks for the "next issue" clock
   {{FONT_*}}      subsets of the site's OFL faces, cut to the characters the film uses
   {{SCORE}}       the score (promo/score.mp3, made by promo/score.py)
 
@@ -11,8 +13,12 @@ and writes promo/index.html (fonts from promo/fonts/), plus an optional single-f
 copy with the fonts embedded.
 
 Usage:
-  python promo/build.py [--serif-source NotoSerifTC[wght].ttf] [--sans-source NotoSansSC[wght].ttf]
+  python promo/build.py [--land land-110m.json]
+                        [--serif-source NotoSerifTC[wght].ttf] [--sans-source NotoSansSC[wght].ttf]
                         [--inline out.html]
+
+land-110m.json: https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-110m.json (ISC; Natural
+Earth data, public domain); without it the committed promo/land-dots.json is reused.
 
 The upstream font TTFs (google/fonts ofl/notoseriftc, ofl/notosanssc) are needed only
 when the film's text changes; otherwise the committed subsets are reused.
@@ -22,6 +28,7 @@ from __future__ import annotations
 import argparse
 import base64
 import html
+import json
 import re
 from pathlib import Path
 
@@ -33,7 +40,7 @@ SITE_FONTS = ROOT / "frontend" / "fonts"
 
 
 # ── Wordmark ───────────────────────────────────────────────────────────────────
-def wordmark_svg() -> str:
+def wordmark_svg(css_class: str = "mark") -> str:
     page = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
     match = re.search(r'<symbol id="wordmark" viewBox="([^"]+)">(.*?)</symbol>', page, re.S)
     if not match:
@@ -53,28 +60,88 @@ def wordmark_svg() -> str:
             inner += f'<path class="light" d="{paths["wordmark-light"]}"/>'
         parts.append(f'<g class="c{i}">{inner}</g>')
     _, _, width, height = (float(v) for v in view_box.split())
-    return (f'<svg class="mark" viewBox="{view_box}" style="aspect-ratio:{width:g}/{height:g}" '
+    return (f'<svg class="{css_class}" viewBox="{view_box}" style="aspect-ratio:{width:g}/{height:g}" '
             f'aria-hidden="true">{"".join(parts)}</svg>')
 
 
-# ── Cinema seats ───────────────────────────────────────────────────────────────
-def seats() -> str:
-    """Three rows of seat backs, darker and larger towards the camera, rim-lit from the
-    screen on the left."""
-    rows = [(150, 64, 54, 92, "#0d0b0a"), (205, 84, 70, 118, "#080706"), (268, 110, 92, 150, "#050404")]
-    out = ['<defs><linearGradient id="rim" x1="0" x2="1"><stop offset="0" stop-color="#e9e2d3" stop-opacity=".28"/>'
-           '<stop offset=".6" stop-color="#e9e2d3" stop-opacity=".06"/><stop offset="1" stop-color="#e9e2d3" stop-opacity="0"/></linearGradient></defs>']
-    for index, (base, height, width, gap, fill) in enumerate(rows):
-        x = -width / 2 + (index * 37) % gap
-        while x < 1920 + width:
-            top = base - height
-            path = (f"M{x:.0f} 300V{top + 18:.0f}Q{x:.0f} {top:.0f} {x + 18:.0f} {top:.0f}"
-                    f"H{x + width - 18:.0f}Q{x + width:.0f} {top:.0f} {x + width:.0f} {top + 18:.0f}V300Z")
-            out.append(f'<path d="{path}" fill="{fill}"/>')
-            out.append(f'<path d="M{x + 4:.0f} {top + 14:.0f}Q{x + 4:.0f} {top + 2:.0f} {x + 18:.0f} {top + 2:.0f}H{x + width * .6:.0f}" '
-                       f'fill="none" stroke="url(#rim)" stroke-width="2"/>')
-            x += gap
-    return "".join(out)
+# ── Land dots for the globe ──────────────────────────────────────────────────────
+DOTS_FILE = PROMO / "land-dots.json"
+STEP = 2.0
+
+
+def topo_rings(topo: dict) -> list:
+    scale, translate = topo["transform"]["scale"], topo["transform"]["translate"]
+    arcs = []
+    for arc in topo["arcs"]:
+        x = y = 0
+        points = []
+        for dx, dy in arc:
+            x += dx
+            y += dy
+            points.append((x * scale[0] + translate[0], y * scale[1] + translate[1]))
+        arcs.append(points)
+
+    def ring(indices: list) -> list:
+        out: list = []
+        for index in indices:
+            points = arcs[index] if index >= 0 else arcs[~index][::-1]
+            out.extend(points[1:] if out else points)
+        return out
+
+    rings = []
+    for geometry in topo["objects"]["land"]["geometries"]:
+        polygons = geometry["arcs"] if geometry["type"] == "MultiPolygon" else [geometry["arcs"]]
+        for polygon in polygons:
+            rings.extend(ring(r) for r in polygon)
+    return rings
+
+
+def land_dots(path: Path) -> list:
+    import numpy as np
+
+    rings = topo_rings(json.loads(path.read_text(encoding="utf-8")))
+    lons = np.arange(-180 + STEP / 2, 180, STEP)
+    lats = np.arange(84 - STEP / 2, -60, -STEP)
+    grid_lon, grid_lat = np.meshgrid(lons, lats)
+    px, py = grid_lon.ravel(), grid_lat.ravel()
+    inside = np.zeros(px.shape, dtype=bool)
+    for ring in rings:                          # even-odd rule over every ring
+        pts = np.array(ring)
+        x1, y1 = pts[:-1, 0][:, None], pts[:-1, 1][:, None]
+        x2, y2 = pts[1:, 0][:, None], pts[1:, 1][:, None]
+        crosses = ((y1 > py) != (y2 > py)) & (px < (x2 - x1) * (py - y1) / np.where(y2 == y1, 1e-12, y2 - y1) + x1)
+        inside ^= (crosses.sum(axis=0) % 2).astype(bool)
+    dots: list = []
+    for lon, lat in zip(px[inside], py[inside]):
+        dots += [round(float(lon), 1), round(float(lat), 1)]
+    return dots
+
+
+# ── Wire ticker ────────────────────────────────────────────────────────────────
+def ticker(channel: str, count: int = 12) -> str:
+    """Recent headlines that have the site's AI full-text translation, newest first."""
+    data = json.loads((ROOT / "data" / "live.json").read_text(encoding="utf-8"))
+    rows = [r for r in data["content"]
+            if r.get("channel") == channel and not r.get("is_demo") and r.get("editorial_title_zh")
+            and r.get("editorial_status") in ("translated", "reviewed") and r.get("published_at")]
+    rows.sort(key=lambda r: r["published_at"], reverse=True)
+    titles, seen = [], set()
+    for row in rows:
+        title = row["editorial_title_zh"].strip()
+        if title not in seen and len(title) <= 40:
+            seen.add(title)
+            titles.append(html.escape(title))
+        if len(titles) == count:
+            break
+    return "<span>◆</span>".join(titles)
+
+
+def clock_ticks() -> str:
+    marks = []
+    for hour in range(12):
+        angle = hour * 30
+        marks.append(f'<line class="tick" x1="0" y1="-128" x2="0" y2="{-112 if hour % 3 == 0 else -120}" transform="rotate({angle})"/>')
+    return "".join(marks)
 
 
 # ── Fonts ──────────────────────────────────────────────────────────────────────
@@ -111,15 +178,22 @@ def not_covered(font_path: Path, text: str) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--land", type=Path, help="world-atlas land-110m.json")
     parser.add_argument("--serif-source", type=Path, help="upstream NotoSerifTC[wght].ttf")
     parser.add_argument("--sans-source", type=Path, help="upstream NotoSansSC[wght].ttf")
     parser.add_argument("--inline", type=Path, help="also write a single-file copy with embedded fonts")
     args = parser.parse_args()
 
-    page = (PROMO / "src" / "promo.html").read_text(encoding="utf-8")
-    page = page.replace("{{WORDMARK}}", wordmark_svg()).replace("{{SEATS}}", seats())
+    if args.land:
+        DOTS_FILE.write_text(json.dumps(land_dots(args.land), separators=(",", ":")) + "\n", encoding="utf-8")
+    dots = DOTS_FILE.read_text(encoding="utf-8").strip()
 
-    text = used_text(page)
+    page = (PROMO / "src" / "promo.html").read_text(encoding="utf-8")
+    page = re.sub(r"\{\{WORDMARK:([\w-]+)\}\}", lambda m: wordmark_svg(m.group(1)), page)
+    page = re.sub(r"\{\{TICKER:(\w+)\}\}", lambda m: ticker(m.group(1)), page)
+    page = page.replace("{{CLOCK_TICKS}}", clock_ticks()).replace("{{DOTS}}", dots)
+
+    text = used_text(page.replace(dots, ""))
     FONTS.mkdir(exist_ok=True)
     fonts = {
         "FONT_TITLE": FONTS / "promo-title.woff2",

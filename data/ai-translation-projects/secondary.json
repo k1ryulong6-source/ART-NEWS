@@ -3,22 +3,51 @@
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-16T14:43:51.856678+00:00",
-  "translated": [],
-  "failed": [],
+  "started_at": "2026-10-16T14:53:18.558606+00:00",
+  "translated": [
+    "live-17e7995990f1f82be01b52ee"
+  ],
+  "failed": [
+    {
+      "id": "live-80873b0d831a13d97ee39db0",
+      "reason": "ai_numbers_missing:block:10:text:0"
+    },
+    {
+      "id": "live-27d7769fc624bc2120a69717",
+      "reason": "ai_numbers_missing:block:17:text:0"
+    },
+    {
+      "id": "live-5980f4877e8edcc5f8ef2105",
+      "reason": "ai_numbers_missing:title:0"
+    },
+    {
+      "id": "live-cb5dc9c4958aecfcabb1c088",
+      "reason": "ai_numbers_missing:block:10:text:0"
+    },
+    {
+      "id": "live-6f0a1eb86cc46a6bfc894714",
+      "reason": "ai_numbers_missing:block:9:text:0"
+    }
+  ],
   "deferred": [
-    "live-80873b0d831a13d97ee39db0",
     "live-baf6f8171a2e101c19b6a6fb",
     "live-c61443f7d79124b9b9faaffa",
     "live-990ab7debd4efe4c42994d11",
-    "live-363d3b735faef18a83eefd8b",
-    "live-94bdc03c725bc72a385bf0bd"
+    "live-94bdc03c725bc72a385bf0bd",
+    "live-363d3b735faef18a83eefd8b"
   ],
-  "resumed": [],
+  "resumed": [
+    "live-80873b0d831a13d97ee39db0",
+    "live-17e7995990f1f82be01b52ee",
+    "live-27d7769fc624bc2120a69717",
+    "live-5980f4877e8edcc5f8ef2105",
+    "live-cb5dc9c4958aecfcabb1c088",
+    "live-6f0a1eb86cc46a6bfc894714"
+  ],
   "stale": [],
-  "requests": 4,
-  "input_tokens": 3917,
-  "output_tokens": 1907,
+  "requests": 9,
+  "input_tokens": 23068,
+  "output_tokens": 2627,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 2,
   "service_failures": [
@@ -28,8 +57,8 @@
       "delay_seconds": 75,
       "server_retry_seconds": 0,
       "error": "ai_http_503",
-      "failed_at": "2026-10-16T14:44:19.230725+00:00",
-      "retry_after": "2026-10-16T14:45:34.230725+00:00",
+      "failed_at": "2026-10-16T14:54:45.478307+00:00",
+      "retry_after": "2026-10-16T14:56:00.478307+00:00",
       "inline_retry": true
     },
     {
@@ -38,38 +67,38 @@
       "delay_seconds": 122,
       "server_retry_seconds": 0,
       "error": "ai_http_503",
-      "failed_at": "2026-10-16T14:45:54.950340+00:00",
-      "retry_after": "2026-10-16T14:47:56.950340+00:00",
+      "failed_at": "2026-10-16T14:56:15.995324+00:00",
+      "retry_after": "2026-10-16T14:58:17.995324+00:00",
       "inline_retry": true
     },
     {
       "policy": "bounded-exponential-v1",
-      "consecutive_failures": 3,
-      "delay_seconds": 242,
+      "consecutive_failures": 1,
+      "delay_seconds": 75,
       "server_retry_seconds": 0,
       "error": "ai_http_503",
-      "failed_at": "2026-10-16T14:48:14.077000+00:00",
-      "retry_after": "2026-10-16T14:52:16.077000+00:00",
+      "failed_at": "2026-10-16T14:59:48.322064+00:00",
+      "retry_after": "2026-10-16T15:01:03.322064+00:00",
       "inline_retry": false
     }
   ],
   "pending_before": 389,
   "error": "ai_http_503",
-  "retry_after": "2026-10-16T14:52:16.077000+00:00",
-  "pending_after": 389,
-  "finished_at": "2026-10-16T14:48:15.671417+00:00",
-  "seconds": 263.81,
-  "requests_today": 36,
+  "retry_after": "2026-10-16T15:01:03.322064+00:00",
+  "pending_after": 388,
+  "finished_at": "2026-10-16T14:59:48.324769+00:00",
+  "seconds": 389.77,
+  "requests_today": 45,
   "daily_request_limit": 500,
-  "unknown_usage_requests_today": 13,
+  "unknown_usage_requests_today": 16,
   "service_retry": {
     "policy": "bounded-exponential-v1",
-    "consecutive_failures": 3,
-    "delay_seconds": 242,
+    "consecutive_failures": 1,
+    "delay_seconds": 75,
     "server_retry_seconds": 0,
     "error": "ai_http_503",
-    "failed_at": "2026-10-16T14:48:14.077000+00:00",
-    "retry_after": "2026-10-16T14:52:16.077000+00:00"
+    "failed_at": "2026-10-16T14:59:48.322064+00:00",
+    "retry_after": "2026-10-16T15:01:03.322064+00:00"
   },
   "id": "secondary",
   "configured": true

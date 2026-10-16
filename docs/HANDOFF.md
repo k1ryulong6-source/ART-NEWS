@@ -1,3 +1,5 @@
+> T078草稿（2026-10-17，Claude前端）：站点体检后的小修。①开场页（index.html内联脚本）打开期间把`.skip-link`和`.paper-shell`设为inert，键盘监听改挂document，翻开后焦点移到`main`——此前Tab会进入被盖住的导航，Enter触发看不见的导航而开场页关不掉。②`render()`在页面（视图或文章）变化时把焦点移到`main`，搜索框输入时不动。③开场页“翻頁”提示#9b9892→#6d6a64（原对比度约2.9:1）。体检里需用户决定、本次未改：单篇文章分享卡片/sitemap（要改构建）、报头日期是否按上海时区（现按浏览器时区，app.js displayZone）。清单：/mnt/project-files/audit/site-audit-2026-10-16.md。
+
 > T075待合并（2026-10-16，Claude前端）：文章阅读页排版优化，只改theme.css与app.js的阅读部分。正文单栏行长改为--reader-measure（700px），--article-size改18px；中文正文取消两端对齐（含长英文名的行会被拉开字距）；日文原文改用日文字体栈；自动机翻正文在显示时把半角,.;:?!改为中文标点并去掉⁇（仅展示，存储不变）；桌面端中文/原文切换条吸顶，切换后按段落序号停在同一段；标题行显示约读时长。数据、选稿、收藏和接口均未改。
 
 > T074进行中（2026-10-16，Claude接手后台）：新增DeepSeek翻译提供方（backend/deepseek_translation.py）。设置GitHub Secret DEEPSEEK_API_KEY后自动翻译默认走DeepSeek（deepseek-flash，关闭thinking），Actions变量AI_TRANSLATION_PROVIDER=gemini切回Gemini，DEEPSEEK_MODEL改模型。独立账本data/ai-translation-ledger-deepseek.json，300请求/太平洋日；402余额不足暂停6小时。235项测试通过，尚无真实DeepSeek调用证据，见D074。

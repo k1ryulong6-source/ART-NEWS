@@ -62,6 +62,9 @@
     var route = location.hash.replace(/^#/, '');
     if (seen || (route && route !== 'today' && route !== 'main')) { cover.remove(); return; }
     root.classList.add('cover-open');
+    // The page behind the cover is inert so Tab and Enter cannot act on hidden controls.
+    function setBehind(inert) { ['.skip-link', '.paper-shell'].forEach(function (selector) { var el = document.querySelector(selector); if (el) el.inert = inert; }); }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { if (!done) setBehind(true); }); else setBehind(true);
     var now = new Date(), digits = '〇一二三四五六七八九';
     var number = function (n) { return n < 10 ? digits[n] : (n >= 20 ? digits[Math.floor(n / 10)] : '') + '十' + (n % 10 ? digits[n % 10] : ''); };
     document.getElementById('cover-date').textContent = String(now.getFullYear()).replace(/\d/g, function (d) { return digits[d]; }) + '年' + number(now.getMonth() + 1) + '月' + number(now.getDate()) + '日';
@@ -71,12 +74,13 @@
       try { sessionStorage.setItem('intermission-cover', 'turned'); } catch (error) {}
       cover.classList.add('turning');
       var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      setTimeout(function () { cover.remove(); root.classList.remove('cover-open'); }, still ? 350 : 1100);
+      setBehind(false);
+      setTimeout(function () { cover.remove(); root.classList.remove('cover-open'); var main = document.getElementById('main'); if (main) main.focus({ preventScroll: true }); }, still ? 350 : 1100);
     }
     cover.addEventListener('click', turn);
     cover.addEventListener('wheel', turn, { passive: true });
     cover.addEventListener('touchmove', turn, { passive: true });
-    cover.addEventListener('keydown', function (event) { if (['Enter', ' ', 'Escape', 'ArrowLeft', 'ArrowRight', 'PageDown'].indexOf(event.key) > -1) { event.preventDefault(); turn(); } });
+    document.addEventListener('keydown', function (event) { if (done) return; if (['Enter', ' ', 'Escape', 'ArrowLeft', 'ArrowRight', 'PageDown'].indexOf(event.key) > -1) { event.preventDefault(); turn(); } });
     leaf.focus({ preventScroll: true });
   })();
   </script>

@@ -274,11 +274,16 @@
     if (route) history.pushState(null, '', C.readerRoute(id));
     render(); window.scrollTo({ top: 0 });
   }
+  let lastSpot = '';
   function render() {
     const advanced = $('advanced-filters');
     if (advanced) state.advancedOpen = advanced.open;
     document.body.dataset.page = state.view;
     nav(); $('edition-note').textContent = state.mode === 'demo' ? '所有示例均为虚构。' : '原文与 AI 译文分开标注；配图注明来源。'; $('main').innerHTML = ({ today, explore, calendar, bookmarks: bookmarkPage, settings, coverage: coveragePage, attention: attentionPage, reader: readerPage }[state.view] || today)();
+    // A new page moves focus to <main>, so keyboard and screen-reader users start at the top of it.
+    const spot = state.view + (state.view === 'reader' ? ':' + state.readerId : '');
+    if (lastSpot && spot !== lastSpot && document.activeElement !== $('search')) $('main').focus({ preventScroll: true });
+    lastSpot = spot;
     // Tab titles name the page (and the story when reading), so history, bookmarks and shared tabs differ.
     const pageTitles = { explore: '资讯', attention: '一種關注', calendar: '上映与展期', bookmarks: '剪报', settings: '阅读设置', coverage: '收录与译文' };
     const story = state.view === 'reader' && dataset.content.find(item => item.id === state.readerId);

@@ -17,12 +17,15 @@
   --latin:'Intermission News',Georgia,'Times New Roman',serif;
   --display:'Intermission Sans','Intermission Sans TC','Noto Sans CJK SC',sans-serif;
   --sans:'Intermission Apostrophe','Intermission Sans','Intermission Sans TC','Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif;
-  --paper-width:1320px; --paper-gutter:32px; --headline-size:46px; --article-size:17px;
+  --paper-width:1320px; --paper-gutter:32px; --headline-size:46px; --article-size:18px; --reader-measure:700px;
   --rule:1px solid var(--line); --rule-ink:1px solid var(--ink);
 }
 html{background:var(--canvas)}
 body{background:var(--paper);color:var(--ink);font-family:var(--serif);font-kerning:normal;font-synthesis:none;-webkit-font-smoothing:antialiased}
 [lang]:not([lang^=zh]):not([lang=ja]):not([lang=ko]){font-family:var(--latin);hyphens:auto}
+/* Japanese originals take a Japanese face where the reader has one, so kana and kanji such as
+   発/価/競 come from one font instead of mixing with the Simplified Chinese subset. */
+[lang=ja]{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic UI','Yu Gothic','Meiryo','Noto Sans JP','Noto Sans CJK JP',var(--sans)}
 ::selection{background:#dcdad3}
 /* Glossy coated stock: a faint fixed reflection band and a soft fall-off, behind the text. */
 body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(118deg,#fff0 20%,#ffffffa6 36%,#ffffff33 44%,#fff0 58%),linear-gradient(180deg,#fff0 55%,#0000000a 100%)}
@@ -240,29 +243,34 @@ figure.card-art,figure.feature-art{margin:0 0 10px}
 /* Reader */
 .reader-page{max-width:1040px;margin:0 auto;padding-top:18px}
 .reader-toolbar{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px}
-.reader-page .eyebrow{display:flex;flex-wrap:wrap;gap:10px;font-family:var(--sans);font-size:12px;color:var(--muted);padding-top:12px;border-top:3px solid var(--ink)}
+.reader-page .eyebrow{display:flex;flex-wrap:wrap;gap:4px 10px;font-family:var(--sans);font-size:12px;color:var(--muted);padding-top:12px;border-top:3px solid var(--ink)}
 .reader-page h1{font-size:44px;font-weight:900;line-height:1.2;letter-spacing:0;margin:10px 0 16px;overflow-wrap:anywhere;text-wrap:pretty}
 .reader-page h1:not([lang^=zh]){text-wrap:balance;font-weight:700;letter-spacing:-.015em;line-height:1.1;font-size:48px}
-.reader-tabs{display:flex;gap:0;border-top:var(--rule-ink);border-bottom:var(--rule-ink);font-family:var(--sans);font-size:13px}
+.reader-tabs{display:flex;gap:0;border-top:var(--rule-ink);border-bottom:var(--rule-ink);font-family:var(--sans);font-size:13px;background:var(--paper)}
+/* On desktop the 中文/原文 switch rides along at the top of the window while reading. */
+@media(min-width:861px){.reader-tabs{position:sticky;top:0;z-index:5}}
+.reading-time{margin-left:auto;font-variant-numeric:lining-nums tabular-nums}
 .reader-tabs button{padding:6px 14px;color:var(--muted)}
 .reader-tabs button:first-child{padding-left:0}
 .reader-tabs button+button{border-left:var(--rule)}
 .reader-tabs button[aria-selected=true]{color:var(--ink);font-weight:800}
-.reader-document{font-size:var(--article-size);line-height:1.85;padding:16px 0 0;overflow-wrap:anywhere}
-.reader-document:not([lang^=zh]){font-size:18px;line-height:1.6}
+.reader-document{font-size:var(--article-size);line-height:1.9;padding:18px 0 0;overflow-wrap:anywhere;line-break:strict;text-autospace:normal;text-spacing-trim:space-first}
+.reader-document:not([lang^=zh]){font-size:19px;line-height:1.62;font-variant-numeric:oldstyle-nums proportional-nums}
+.reader-document[lang=ja]{font-size:var(--article-size);line-height:1.9;font-variant-numeric:normal}
 .reading-note,.reader-document>.reading-note{font-family:var(--sans);font-size:12px;line-height:1.7;color:var(--muted);margin-bottom:8px}
 .article-status,.original-pending{font-family:var(--sans);font-size:12.5px;line-height:1.7;padding:6px 0;border-top:var(--rule);border-bottom:var(--rule);margin:10px 0}
 .original-pending{margin-top:16px;font-weight:600}
 .article-columns{column-count:2;column-gap:36px;column-rule:var(--rule);margin:16px 0 24px;text-align:justify;orphans:3;widows:3}
 .reader-document:not([lang^=zh]) .article-columns{text-align:left}
-.reader-document p{margin:0 0 1em}
-.reader-document h2,.article-heading{font-size:21px;font-weight:800;line-height:1.35;margin:1em 0 .5em;break-after:avoid}
-.reader-document blockquote{margin:1em 0;padding:4px 0 4px 14px;border-left:3px solid var(--ink);font-weight:600}
+.reader-document p{margin:0 0 1.1em}
+.reader-document h2,.article-heading{font-size:21px;font-weight:800;line-height:1.35;margin:1.7em 0 .6em;break-after:avoid;text-wrap:balance}
+.article-columns>.article-heading:first-child{margin-top:.4em}
+.reader-document blockquote{margin:1.4em 0;padding:2px 0 2px 18px;border-left:3px solid var(--accent);font-size:1.06em;font-weight:600;line-height:1.75}
 .article-list_item{padding-left:1em;text-indent:-1em}
 .article-list_item::before{content:'· '}
-.article-image{break-inside:avoid;margin:6px 0 16px}
-.article-image img{display:block;max-width:100%;max-height:420px;height:auto;margin:0 auto}
-.article-image figcaption{font-family:var(--sans);font-size:11.5px;line-height:1.6;color:var(--muted);padding-top:5px;text-align:left}
+.article-image{break-inside:avoid;margin:1.4em 0 1.6em}
+.article-image img{display:block;max-width:100%;max-height:min(640px,78vh);height:auto;margin:0 auto}
+.article-image figcaption{font-family:var(--sans);font-size:12px;line-height:1.6;color:var(--muted);padding:6px 0 0;margin-top:6px;border-top:var(--rule);text-align:left}
 .article-references{font-family:var(--sans);font-size:11.5px;line-height:1.6;margin:-6px 0 12px;text-align:left}
 .article-references a{border-bottom:var(--rule)}
 .translation-pending{border-left:2px solid var(--line);padding-left:10px}
@@ -396,12 +404,12 @@ footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
   .reader-tabs{font-size:15px}
   .reader-tabs button{padding:9px 16px}
   .original-pending{margin-top:12px}
-  .reader-document{font-size:18px;line-height:1.85;padding-top:10px}
+  .reader-document{font-size:17.5px;line-height:1.85;padding-top:12px}
   .reader-document:not([lang^=zh]){font-size:18.5px;line-height:1.58}
+  .reader-document[lang=ja]{font-size:17.5px;line-height:1.85}
   .reader-document p{margin-bottom:1.05em}
   .reader-document h2,.article-heading{font-size:20px}
   .article-columns{column-count:1;margin:10px 0 0;text-align:left}
-  .reader-document[lang^=zh] .article-columns{text-align:justify}
   .article-image{margin:4px -16px 18px}
   .article-image img{max-height:none;width:100%}
   .article-image figcaption{padding:5px 16px 0}
@@ -469,9 +477,10 @@ footer{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
 #edition-updated{font-family:var(--sans);font-size:12px;color:var(--muted)}
 @media(hover:none){body:not([data-page=bookmarks]) .content-card .save-button:not(.saved){display:none}}
 /* Reader: one comfortable column. */
-.reader-page{max-width:760px}
-.article-columns{column-count:1;margin:12px 0 0;text-align:left}
-.reader-document[lang^=zh] .article-columns{text-align:justify}
+/* One column at a comfortable measure (~38 Chinese characters, ~70 Latin characters a line). Justified
+   CJK text is avoided: lines that hold a long Latin name were stretched into spaced-out characters. */
+.reader-page{max-width:var(--reader-measure)}
+.article-columns{column-count:1;margin:12px 0 0;text-align:start}
 @media(max-width:1100px){.desk{padding:0 18px}.feature{column-gap:24px}}
 @media(max-width:860px){
   .feature{grid-template-columns:1fr;grid-template-areas:"head" "art" "text"}

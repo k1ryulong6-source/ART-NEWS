@@ -3,6 +3,8 @@
 promo/src/promo.html is the source. This script fills in:
 
   {{WORDMARK:cls}} the site's wordmark outline (frontend/index.html), split per character
+  {{HOST:pose}}   the host 幕間先生 (promo/src/host.py), black and white
+  {{REEL}}        the cinema pavilion's film reel
   {{DOTS}}        land dots for the opening globe, from Natural Earth 110m (world-atlas)
   {{FONT_*}}      subsets of the site's OFL faces, cut to the characters the film uses
   {{SCORE}}       the score (promo/score.mp3, made by promo/score.py)
@@ -119,6 +121,21 @@ def land_dots(path: Path) -> list:
     return dots
 
 
+# ── Host and props ─────────────────────────────────────────────────────────────
+def host_svg(pose: str) -> str:
+    import sys
+    sys.path.insert(0, str(PROMO / "src"))
+    import host
+    return f'<svg viewBox="0 0 400 520" aria-hidden="true">{host.host(pose, badge=host.INK)}</svg>'
+
+
+def reel_svg() -> str:
+    import math
+    holes = "".join(f'<circle cx="{92 * math.cos(i * 2 * math.pi / 5):.1f}" cy="{92 * math.sin(i * 2 * math.pi / 5):.1f}" r="38" fill="#f2efe6"/>' for i in range(5))
+    return (f'<svg class="disc" viewBox="-160 -160 320 320" aria-hidden="true"><circle r="158" fill="#5c5a55"/>'
+            f'<circle r="150" fill="none" stroke="#141414" stroke-width="8"/>{holes}<circle r="26" fill="#141414"/><circle r="9" fill="#f2efe6"/></svg>')
+
+
 # ── Fonts ──────────────────────────────────────────────────────────────────────
 def used_text(page: str) -> str:
     text = re.sub(r"<style.*?</style>", " ", page, flags=re.S)
@@ -167,7 +184,8 @@ def main() -> None:
 
     page = (PROMO / "src" / "promo.html").read_text(encoding="utf-8")
     page = re.sub(r"\{\{WORDMARK:([\w-]+)\}\}", lambda m: wordmark_svg(m.group(1)), page)
-    page = page.replace("{{DOTS}}", dots)
+    page = page.replace("{{DOTS}}", dots).replace("{{REEL}}", reel_svg())
+    page = re.sub(r"\{\{HOST:(\w+)\}\}", lambda m: host_svg(m.group(1)), page)
 
     text = used_text(page.replace(dots, ""))
     FONTS.mkdir(exist_ok=True)

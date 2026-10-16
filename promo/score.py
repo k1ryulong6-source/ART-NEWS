@@ -1,12 +1,13 @@
-"""Synthesise the score for the 幕間休息 promo film 「明日新聞台」 (an atompunk
-television advert).
+"""Synthesise the soundtrack for the 幕間休息 promo film 「明日新聞台」 (a black-and-white
+1950s television cartoon in the manner of the Fallout series' shorts).
 
 Everything is generated here — no samples, no third-party recordings — as 1950s
 space-age lounge music: vibraphone, a theremin-like lead with glides, walking bass,
 brushed drums and bright brass stabs, a weightless "space" passage for 一種關注, and a
 short jingle on the atom and wordmark. Effects: the television switching on and off,
-the zoom into the screen, the rocket. Cue times are the film's timeline seconds
-(src/promo.html).
+the zoom into the screen, the rocket. The English voiceover (promo/voice/l1–l6.mp3, see
+voice.py) is given an old-radio colour and the music ducks under it. Cue times are the
+film's timeline seconds (src/promo.html).
 
   python promo/score.py promo/score.wav        (needs numpy and scipy)
 """
@@ -258,48 +259,50 @@ def stab(bus, t0: float, notes: list, length: float = .3, gain: float = .8) -> N
     place(bus, t0, chord(notes, length, 1.0), gain=gain)
 
 
+VOICE_AT = [0.9, 7.1, 15.0, 21.8, 30.4, 36.6]       # when each line starts (subtitles match)
+
+
 def music() -> np.ndarray:
     bus = np.zeros((2, N))
 
-    # 1 · Television on: a theremin swoops up as the test card appears; a vibes chord.
+    # 1 · Television on: a theremin swoops up as the test card appears; a stab as the host pops in.
     theremin(bus, .9, [(1.2, "C4"), (1.4, "F5"), (1.2, "E5"), (.8, None)], gain=.5)
     for note in CHORDS["F69"]:
         place(bus, 1.05, vibes(hz(note[:-1] + str(int(note[-1]) + 1)), 3.0), gain=.8, pan=.2)
-    stab(bus, 2.2, ["F4", "A4", "C5", "F5"], .35, .7)
-    stab(bus, 2.45, ["F4", "A4", "C5", "F5"], .6, .7)
+    stab(bus, 1.7, ["F4", "A4", "C5", "F5"], .3, .7)
+    stab(bus, 1.95, ["F4", "A4", "C5", "F5"], .6, .7)
 
     # 2–4 · The groove, with a theremin tune over it.
-    groove(bus, 5.3, 31.0, 1.0)
+    groove(bus, 6.6, 30.0, 1.0)
     tune_a = [(1, "C5"), (1, "A4"), (1, "F4"), (1, "A4"), (2, "C5"), (2, "D5"), (1, "C5"), (1, "Bb4"), (1, "A4"), (1, "G4"), (4, "A4"), (2, None)]
     tune_b = [(1, "F5"), (1, "E5"), (1, "D5"), (1, "C5"), (2, "D5"), (2, "Bb4"), (1, "A4"), (1, "G4"), (1, "F4"), (1, "E4"), (4, "F4"), (2, None)]
-    for t0, tune in ((5.8, tune_a), (13.3, tune_b), (20.8, tune_a), (24.6, tune_b)):
-        theremin(bus, t0, tune, gain=.55)
-    for t0 in (12.05, 19.05):                                    # scene changes
+    for t0, tune in ((7.1, tune_a), (14.6, tune_b), (21.6, tune_a), (25.4, tune_b)):
+        theremin(bus, t0, tune, gain=.5)
+    for t0 in (14.6, 21.4):                                      # scene changes
         stab(bus, t0, ["C4", "E4", "G4", "Bb4"], .25, .75)
         stab(bus, t0 + BEAT * 2 / 3, ["F4", "A4", "C5", "F5"], .55, .8)
         place(bus, t0, cymbal(1.8, .5))
-    for t0 in (22.6, 26.6):                                      # the monorail moves on
+    for t0 in (23.65, 26.7):                                     # the monorail moves on
         stab(bus, t0, ["Bb3", "D4", "F4", "A4"], .4, .45)
 
     # 5 · 一種關注: weightless — drums and bass drop, the theremin floats, stars chime.
-    theremin(bus, 31.6, [(3, "C5"), (2, "F5"), (3, "E5"), (2, "C5"), (4, "D5")], gain=.6)
+    theremin(bus, 30.5, [(3, "C5"), (2, "F5"), (3, "E5"), (2, "C5"), (4, "D5")], gain=.55)
     for j, note in enumerate(["F5", "A5", "C6", "E6", "G6", "A6"]):
-        place(bus, 33.7 + .3 * j, celesta(hz(note), 1.6), gain=1.1, pan=-.5 + .2 * j)
-    for note in CHORDS["Bbmaj7"]:
-        place(bus, 31.1, vibes(hz(note[:-1] + str(int(note[-1]) + 1)), 3.2, .7), gain=.7, pan=.2)
-    for note in CHORDS["Gm7"]:
-        place(bus, 34.1, vibes(hz(note[:-1] + str(int(note[-1]) + 1)), 3.2, .7), gain=.7, pan=.2)
+        place(bus, 32.4 + .3 * j, celesta(hz(note), 1.6), gain=1.1, pan=-.5 + .2 * j)
+    for t0, name in ((30.0, "Bbmaj7"), (33.0, "Gm7")):
+        for note in CHORDS[name]:
+            place(bus, t0, vibes(hz(note[:-1] + str(int(note[-1]) + 1)), 3.2, .7), gain=.7, pan=.2)
 
-    # 6 · The atom and the wordmark: the jingle, then the groove's last bars.
-    jingle = [(37.7, "C5"), (38.0, "A4"), (38.3, "F4"), (38.6, "C5"), (38.9, "F5")]
+    # 6 · The atom and the wordmark: the jingle, the groove's last bars, the closing chord.
+    jingle = [(39.4, "C5"), (39.7, "A4"), (40.0, "F4"), (40.3, "C5"), (40.6, "F5")]
     for t0, note in jingle:
         place(bus, t0, brass(hz(note), .26 if note != "F5" else 1.1, 1.0), gain=.8)
         place(bus, t0, vibes(hz(note), 1.2), gain=.8)
-    place(bus, 38.9, cymbal(2.2, .6))
-    groove(bus, 40.1, 44.6, .8)
-    stab(bus, 44.6, ["F3", "A3", "D4", "G4", "C5"], 1.2, .6)
-    for note in CHORDS["F69"]:
-        place(bus, 44.6, vibes(hz(note[:-1] + str(int(note[-1]) + 1)), 2.0), gain=.8, pan=.2)
+    place(bus, 40.6, cymbal(2.2, .6))
+    for note in CHORDS["Fmaj7"]:
+        place(bus, 36.4, vibes(hz(note[:-1] + str(int(note[-1]) + 1)), 2.6), gain=.8, pan=.2)
+    groove(bus, 41.4, 45.4, .8)
+    stab(bus, 45.4, ["F3", "A3", "D4", "G4", "C5"], .9, .6)
     return bus
 
 
@@ -307,12 +310,46 @@ def effects() -> np.ndarray:
     bus = np.zeros((2, N))
     place(bus, .1, timpani(hz("G2"), .25, .3), gain=.6)                # the switch
     place(bus, .45, sweep(.7, 180, 1400), gain=.35)                     # tube warm-up
-    place(bus, 4.55, whoosh(.8, True), gain=.4)                         # zoom into the screen
-    place(bus, 31.2, whoosh(2.6, False), gain=.3, pan=.3)               # the rocket
-    for t0 in (32.8, 33.4, 34.0):                                       # the view widens
+    place(bus, 5.9, whoosh(.8, True), gain=.4)                          # zoom into the screen
+    place(bus, 30.3, whoosh(2.6, False), gain=.3, pan=.3)               # the rocket
+    for t0 in (31.9, 32.5, 33.1):                                       # the view widens
         place(bus, t0, sweep(1.2, 300, 600) * .5, gain=.25)
-    place(bus, 45.3, sweep(.55, 2200, 120), gain=.45)                   # television off
+    place(bus, 45.6, sweep(.55, 2200, 120), gain=.45)                   # television off
     return bus
+
+
+def load(path: Path) -> np.ndarray:
+    import subprocess
+    raw = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(path), "-f", "s16le", "-ac", "1", "-ar", str(SR), "-"],
+                         capture_output=True, check=True).stdout
+    return np.frombuffer(raw, "<i2").astype(float) / 32768
+
+
+def radio(x: np.ndarray) -> np.ndarray:
+    """A 1950s broadcast voice: narrow band, a forward presence peak, tube saturation and a
+    small studio."""
+    x = butter(x, [280, 4300], "band", order=4)
+    x = x + .35 * butter(x, [1800, 3200], "band")
+    x = np.tanh(x * 3.0) / np.tanh(3.0)
+    n = int(.4 * SR)
+    t = np.arange(n) / SR
+    ir = rng.normal(0, 1, n) * np.exp(-t / .08)
+    ir[:int(.01 * SR)] = 0
+    ir /= np.sqrt((ir ** 2).sum())
+    return x + .18 * signal.fftconvolve(x, ir)[:len(x)]
+
+
+def voice() -> tuple:
+    track, spans = np.zeros(N), []
+    folder = Path(__file__).with_name("voice")
+    for i, start in enumerate(VOICE_AT, 1):
+        line = radio(load(folder / f"l{i}.mp3"))
+        line = line / np.abs(line).max()
+        a = at(start)
+        n = min(len(line), N - a)
+        track[a:a + n] += line[:n]
+        spans.append((start, start + n / SR))
+    return track, spans
 
 
 def master(bus: np.ndarray) -> np.ndarray:
@@ -341,7 +378,17 @@ def write(path: Path, bus: np.ndarray) -> None:
 
 def main() -> None:
     target = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).with_name("score.wav")
-    write(target, master(music() + effects()))
+    bed = master(music() + effects())
+    vo, spans = voice()
+    # Duck the music for the whole of each line (about −14 dB), easing in and out, so it
+    # does not swell back between words.
+    window = np.zeros(N)
+    for start, end in spans:
+        window[at(start - .12):at(end + .2)] = 1
+    duck = 1 - .8 * np.clip(butter(window, 3), 0, 1)
+    mix = bed * duck + np.stack([vo, vo]) * .95
+    mix = mix / np.abs(mix).max() * .9
+    write(target, mix)
     print(f"wrote {target}")
 
 

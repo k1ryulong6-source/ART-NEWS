@@ -58,6 +58,15 @@ class OperationsTests(unittest.TestCase):
         self.assertEqual(report['cloudflare']['neurons']['estimated_neurons'],42)
         self.assertEqual(report['quota']['combined']['requests'],100)
 
+    def test_cloudflare_probe_configuration_is_not_a_successful_api_call(self):
+        self.evidence['cloudflare_verification']={'status':'not_configured','configured':False,
+            'requests':0,'translated':[],'credential_checks':{'api_token_present':True,'account_id_present':False}}
+        r=operations_report(self.snapshot,self.evidence,self.instant)['cloudflare']['verification']
+        self.assertEqual(r['status'],'not_configured')
+        self.assertEqual((r['requests'],r['completed']),(0,0))
+        self.assertTrue(r['credential_checks']['api_token_present'])
+        self.assertFalse(r['credential_checks']['account_id_present'])
+
     def test_green_actions_does_not_hide_service_wait_or_source_gaps(self):
         report = operations_report(self.snapshot, self.evidence, self.instant)
         self.assertEqual(report['workflow_health']['stages']['translation']['status'], 'healthy')

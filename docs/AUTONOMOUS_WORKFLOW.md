@@ -101,3 +101,5 @@ T063用户追加授权：第二密钥已配置，要求本次重置前充分使�
 免费保护为10000 Neurons/UTC日（东京09:00重置）；每批最多预留2000、8请求/360秒。每次请求在HTTP前按完整输入JSON UTF8字节+4096模板余量、最大输出4096，保守占用Neurons；每百万输入4625、输出30475 Neurons。已知usage按实际token估计消耗、退回预留差额；HTTP失败/未知usage保留上界，不伪称零消耗。仅本仓库估计，不是Cloudflare账单或其他应用用量；不自动启用付费。超过保守32,768上下文的完整长稿仍留给Gemini，不能裁掉原文来适配。原重要头条/日期与旧稿份额继续，完整中文copy优先，未成功仍有原文/临时机翻。
 
 公开/reports/operations.json新增cloudflare状态/实际完成/失败/Neurons估计，translation.api_provider_counts分提供商；Gemini quota字段不混入Cloudflare。暂无真实试译成功证据，不以已添加Secrets或测试mock宣称调用成功。
+
+T072探针隔离修正：独立cloudflare-free-api-verification组只提交Cloudflare自身账本/断点/verification-report，不写旧live；普通串行采集/翻译的import_snapshot经hash与完整单元/数字检查，无API恢复已完成copy。避免共享pending槽被采集恢复反复替换，又不覆盖新采集。2026-10-16 23:50 JST实测仅Token传入、Account ID缺失，0请求/0篇；verified_enabled仍false，详情CLOUDFLARE_SETUP.md。

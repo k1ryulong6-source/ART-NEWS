@@ -19,6 +19,7 @@ def operations_report(snapshot, evidence, instant=None):
     api = [r for r in completed if str(r.get('editorial_provider') or '').startswith('contextual-api:')]
     cloudflare = evidence.get('cloudflare') or {}
     cf_cfg = evidence.get('cloudflare_config') or {}
+    cf_verification = evidence.get('cloudflare_verification') or {}
     warnings = []
     if ai.get('status') in ('service_wait', 'quota_wait', 'retry_wait', 'daily_limit', 'configuration_error', 'failed'):
         warnings.append('ai:' + ai['status'])
@@ -122,7 +123,9 @@ def operations_report(snapshot, evidence, instant=None):
                           'last_run_requests': cloudflare.get('requests'),
                           'last_run_completed': len(cloudflare.get('translated') or []),
                           'last_run_failed': cloudflare.get('failed') or [],
-                          'neurons': cloudflare.get('neurons'), 'verified_enabled': cf_cfg.get('verified_enabled', False)},
+                          'neurons': cloudflare.get('neurons'), 'verified_enabled': cf_cfg.get('verified_enabled', False),
+                          'verification': {**{k: cf_verification.get(k) for k in ('status', 'finished_at', 'configured', 'credential_checks', 'requests', 'error')},
+                                           'completed': len(cf_verification.get('translated') or [])}},
             'quota': quota, 'policy': {'execution': 'github-actions-only', 'chatgpt_translation_workers': False,
                                      'account_mode': cfg.get('account_mode'), 'paid_activation': cfg.get('paid_activation'),
                                      'backup_schedule': 'every_30_minutes_at_UTC_minutes_5_and_35; GitHub scheduling may be delayed',
@@ -162,6 +165,7 @@ def load_operations(snapshot, root=ROOT, instant=None):
         evidence['ledger_secondary'] = None
         unreadable.append('ledger_secondary')
     for key, path in [('cloudflare', 'data/cloudflare-translation-status.json'),
+                      ('cloudflare_verification', 'data/cloudflare-verification-report.json'),
                       ('cloudflare_config', 'config/cloudflare-translation.json')]:
         try:
             file = root / path

@@ -230,3 +230,17 @@ test('headline readiness rejects machine/title-only/incomplete bodies and respec
  assert.equal(C.headlineReady({...row,language:'zh',editorial_status:null,editorial_blocks_json:null}),true);
  assert.equal(C.headlineReady({...row,article_blocks_json:null}),false);
 });
+
+test('static rows without bodies keep readiness, preview and search until the body is attached', () => {
+  const row = { id: 'live-' + 'c'.repeat(24), article_hash: 'd'.repeat(64), language: 'en', title_original: 'Title', body_ref: 'abc', has_original_body: true, has_editorial_body: true, editorial_status: 'translated', editorial_title_zh: '标题', body_preview: 'Preview text' };
+  assert.ok(C.bodyPending(row)); assert.ok(C.editorialReady(row)); assert.ok(C.babelReaderUrl(row));
+  assert.equal(C.readingSummary(row), 'Preview text');
+  assert.equal(C.needBody(row), false); assert.deepEqual(C.takeWantedBodies(), [row]); assert.deepEqual(C.takeWantedBodies(), []);
+  assert.ok(!C.matches(row, { query: 'needle' }));
+  C.setSearchTexts({ [row.id]: 'A body with the Needle inside' });
+  assert.ok(C.matches(row, { query: 'needle' }));
+  C.attachBody(row, { article_blocks_json: '[{"type":"paragraph","text":"Body"}]', editorial_blocks_json: '[{"type":"paragraph","text":"正文"}]' });
+  assert.ok(!C.bodyPending(row)); assert.equal(C.needBody(row), true);
+  assert.equal(C.articleBlocks(row, true)[0].text, '正文');
+  assert.ok(C.matches(row, { query: '正文' }));
+});

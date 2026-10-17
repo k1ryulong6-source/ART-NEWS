@@ -2498,6 +2498,37 @@
       "evidence": [
         "235 Python测试与28 JS测试通过，scripts/check_project.py通过；本地dist在1440/768/390px检查4篇（AI译文、机翻、英文原文、日文原文）切换后段落一致、无横向溢出；草稿PR待用户确认后合并"
       ]
+    },
+    {
+      "id": "T076",
+      "title": "网页数据减负：首屏只发文章索引，正文按篇加载，全文检索索引按需加载",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Claude（前端＋发布构建）",
+      "updated_at": "2026-10-17",
+      "depends_on": [
+        "T065"
+      ],
+      "scope": [
+        "scripts/build_static.py",
+        "backend/presentation.py",
+        "frontend/core.js",
+        "frontend/ui.js",
+        "frontend/app.js",
+        "tests/",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "data/live.json结构与译文字段不改，只改发布产物",
+        "dist/data.js不再含正文三字段及流水线记账字段，正文进dist/bodies/<id>.json",
+        "阅读页、头版主头条按需取正文；列表摘要、可读性判定、巴别塔入口在正文未取时不变",
+        "全文检索首次输入时取search-index.json，结果与原内联正文一致",
+        "本地app与单文件预览仍内联全部正文"
+      ],
+      "evidence": [
+        "data.js gzip 7.44MB→1.04MB（原文25.5MB→5.1MB）；单篇正文gzip中位4KB；检索索引5.3MB仅在首次搜索时下载。Python与JS测试、check_project通过；本地dist浏览器检查头版/阅读页/正文独有词检索正常。草稿PR待用户确认"
+      ]
     }
   ]
 }

@@ -1,11 +1,55 @@
 {
-  "status": "completed",
+  "status": "partial_failure",
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-17T15:29:58.525417+00:00",
-  "translated": [],
-  "failed": [],
+  "started_at": "2026-10-17T15:58:35.844536+00:00",
+  "translated": [
+    "live-0183e731877b84cc36824dfd",
+    "live-9e289877bc8c0617559ca592"
+  ],
+  "failed": [
+    {
+      "id": "live-e00ea2022c2c0cc8772d34d4",
+      "reason": "ai_numbers_missing:block:1:text:0"
+    },
+    {
+      "id": "live-a1245d0a7e9bc7cd87940813",
+      "reason": "ai_numbers_missing:block:1:text:0"
+    },
+    {
+      "id": "live-ec936dfd7ff12c7d25a4f336",
+      "reason": "ai_paragraph_not_translated:block:22:text:0"
+    },
+    {
+      "id": "live-7ee74a6c1eb39aae2c014956",
+      "reason": "ai_numbers_missing:block:6:text:0"
+    },
+    {
+      "id": "live-fb8b11aa08aa4af49df8b355",
+      "reason": "ai_numbers_missing:block:4:text:0"
+    },
+    {
+      "id": "live-61ad094274dadd7365d0f3ad",
+      "reason": "ai_numbers_missing:block:67:text:0"
+    },
+    {
+      "id": "live-c435164712024b7b03eb989d",
+      "reason": "ai_numbers_missing:title:0"
+    },
+    {
+      "id": "live-faaf652115fe48c41e4cd2a8",
+      "reason": "block_not_chinese"
+    },
+    {
+      "id": "live-eacef680e6ccb361beff812e",
+      "reason": "ai_paragraph_not_translated:block:5:text:0"
+    },
+    {
+      "id": "live-5690c9fa5fedbedd6f909850",
+      "reason": "block_not_chinese"
+    }
+  ],
   "deferred": [
     "live-c9a1edae85b0ebb26b4ae997",
     "live-8eb71ea53f39341eca1426fd",
@@ -13,12 +57,8 @@
     "live-78e480bf529419e8b2d8faaf",
     "live-93f2cf9c7239d004b8c9b76b",
     "live-c9d98f5e001e5f8352184118",
-    "live-a1245d0a7e9bc7cd87940813",
     "live-e80bac66f7280ff56c018b0b",
-    "live-ec936dfd7ff12c7d25a4f336",
-    "live-7ee74a6c1eb39aae2c014956",
     "live-2c94d357b4bd47e73a2973a9",
-    "live-fb8b11aa08aa4af49df8b355",
     "live-98664313fbd636147a00d8de",
     "live-1aa41fc2c93bc743de81e824",
     "live-04b91c2d0422a31e1049946d",
@@ -37,17 +77,13 @@
     "live-5f55cf3f708711f753dcc75d",
     "live-b6e27879fe36476484b9b20c",
     "live-d51e410b4c16de24ca72fc07",
-    "live-61ad094274dadd7365d0f3ad",
     "live-621ad835eb28513282aa34e2",
     "live-b712814601f4b2a120036cfb",
-    "live-c435164712024b7b03eb989d",
     "live-2a4be9c4cad9b8c7a0bab070",
     "live-d0f7860adf4fc2772b0f7192",
     "live-4de400a0a50c1b2e41b0dbef",
-    "live-faaf652115fe48c41e4cd2a8",
     "live-58137dbc09668a9b677a4bbd",
     "live-9474327fade22295786c9872",
-    "live-e00ea2022c2c0cc8772d34d4",
     "live-937002820b2028e12beda239",
     "live-d1db04a81d7ea99c5e4f6d29",
     "live-74f17f1aa8a80cdbfebbbf5e",
@@ -59,11 +95,7 @@
     "live-f0d6e12f6c193c13ca3f31fd",
     "live-2e7e419f79d45c6461752414",
     "live-118ddc9f8ce2720bd5c04bd3",
-    "live-0183e731877b84cc36824dfd",
-    "live-eacef680e6ccb361beff812e",
-    "live-9e289877bc8c0617559ca592",
     "live-7df6f37a887a91dc6896867c",
-    "live-5690c9fa5fedbedd6f909850",
     "live-56133e1bff6dd7abceadb8cf",
     "live-1b83a291211c4a38bc383871",
     "live-cc9814f33986399b99df1c2b",
@@ -91,19 +123,32 @@
     "live-bec7ecaa39ce323f0e73eea5",
     "live-ee482fa2d66fc5faf589af9b"
   ],
-  "resumed": [],
+  "resumed": [
+    "live-e00ea2022c2c0cc8772d34d4",
+    "live-a1245d0a7e9bc7cd87940813",
+    "live-ec936dfd7ff12c7d25a4f336",
+    "live-7ee74a6c1eb39aae2c014956",
+    "live-fb8b11aa08aa4af49df8b355",
+    "live-61ad094274dadd7365d0f3ad",
+    "live-c435164712024b7b03eb989d",
+    "live-faaf652115fe48c41e4cd2a8",
+    "live-0183e731877b84cc36824dfd",
+    "live-eacef680e6ccb361beff812e",
+    "live-9e289877bc8c0617559ca592",
+    "live-5690c9fa5fedbedd6f909850"
+  ],
   "stale": [],
-  "requests": 0,
-  "input_tokens": 0,
-  "output_tokens": 0,
+  "requests": 13,
+  "input_tokens": 48041,
+  "output_tokens": 8133,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
   "pending_before": 83,
-  "pending_after": 83,
-  "finished_at": "2026-10-17T15:30:07.796287+00:00",
-  "seconds": 9.27,
-  "requests_today": 333,
+  "pending_after": 81,
+  "finished_at": "2026-10-17T16:03:04.537914+00:00",
+  "seconds": 268.69,
+  "requests_today": 346,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "id": "primary",

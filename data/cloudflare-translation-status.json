@@ -3,35 +3,15 @@
   "model": "@cf/qwen/qwen3-30b-a3b-fp8",
   "configured": true,
   "requests": 8,
-  "translated": [],
+  "translated": [
+    "live-7c0c631a4f5d759c9e326771",
+    "live-5ec93f550c6aef0ba89ef25d",
+    "live-0df7921d57937cb2f886aa2a"
+  ],
   "failed": [
     {
-      "id": "live-3e033d2772e468224f0970b1",
-      "reason": "ai_unit_coverage_mismatch"
-    },
-    {
-      "id": "live-e80bac66f7280ff56c018b0b",
-      "reason": "ai_numbers_missing:block:2:text:0"
-    },
-    {
-      "id": "live-5b3aa53732b1f77927c59cac",
-      "reason": "ai_unit_coverage_mismatch"
-    },
-    {
-      "id": "live-61270b82651ee15b55293180",
-      "reason": "ai_unit_coverage_mismatch"
-    },
-    {
-      "id": "live-a446c44efc0ae05a31d1173d",
-      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
-    },
-    {
-      "id": "live-6b2b9e1012e9182d6f61bd11",
-      "reason": "ai_numbers_missing:title:0"
-    },
-    {
-      "id": "live-7cac4c3af986fd65fd8e2830",
-      "reason": "ai_numbers_missing:block:5:text:0"
+      "id": "live-42b74b665f7aca9833fa33fa",
+      "reason": "ai_numbers_missing:block:31:text:0"
     }
   ],
   "credential_checks": {
@@ -39,17 +19,15 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-17T02:13:42.356649+00:00",
+  "started_at": "2026-10-17T02:51:59.777178+00:00",
   "verification_run": false,
   "status": "daily_limit",
   "account_mode": "free-project-only",
   "deferred": [
     "live-847b4ad4555b9ecd2025b3fd",
     "live-d7b82cb2eca0cb96d2575c81",
-    "live-0df7921d57937cb2f886aa2a",
     "live-547aa2a04604e88a79cc35a3",
     "live-faef0bf90e784d4f00b0106b",
-    "live-42b74b665f7aca9833fa33fa",
     "live-cee4f85176bcfc09843d09a4",
     "live-9e9810c158e92625fd5fbdeb",
     "live-270b66ecfd334745663119f0",
@@ -58,9 +36,12 @@
     "live-bb95bd737c647c280accc532",
     "live-e6b2861769f2fc3c48cd61e1",
     "live-5576b23645db29ab559e9db5",
-    "live-ec936dfd7ff12c7d25a4f336",
-    "live-69c47a1a48da9a5526fc9eda",
-    "live-7ee74a6c1eb39aae2c014956",
+    "live-3e033d2772e468224f0970b1",
+    "live-e80bac66f7280ff56c018b0b",
+    "live-5b3aa53732b1f77927c59cac",
+    "live-61270b82651ee15b55293180",
+    "live-6b2b9e1012e9182d6f61bd11",
+    "live-7cac4c3af986fd65fd8e2830",
     "live-80873b0d831a13d97ee39db0",
     "live-27d7769fc624bc2120a69717",
     "live-5980f4877e8edcc5f8ef2105",
@@ -69,6 +50,7 @@
     "live-1c5789e645c1311841bde1f1",
     "live-990ab7debd4efe4c42994d11",
     "live-7d50f83138777c6466ca66de",
+    "live-a446c44efc0ae05a31d1173d",
     "live-0fc0e30b64abe4a622695e4d",
     "live-d3b5605aa050a1e4480af998",
     "live-bec7ecaa39ce323f0e73eea5",
@@ -77,34 +59,33 @@
     "live-be3faf114081a9260191b2ed"
   ],
   "resumed": [
-    "live-e80bac66f7280ff56c018b0b",
-    "live-6b2b9e1012e9182d6f61bd11",
-    "live-7cac4c3af986fd65fd8e2830"
+    "live-42b74b665f7aca9833fa33fa",
+    "live-699f79893ff2374f17845d9c"
   ],
   "stale": [],
-  "input_tokens": 30419,
-  "output_tokens": 4109,
+  "input_tokens": 19156,
+  "output_tokens": 2808,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 614,
+  "pending_before": 608,
   "retry_after": "2026-10-18T00:15:00+00:00",
-  "pending_after": 614,
-  "finished_at": "2026-10-17T02:14:55.229506+00:00",
-  "seconds": 72.87,
-  "requests_today": 39,
+  "pending_after": 605,
+  "finished_at": "2026-10-17T02:52:56.603834+00:00",
+  "seconds": 56.82,
+  "requests_today": 47,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
     "day": "2026-10-17",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 1444.489475,
+    "estimated_neurons": 1618.659775,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 0.0,
-    "requests": 39,
-    "input_tokens": 132793,
-    "output_tokens": 27246,
+    "requests": 47,
+    "input_tokens": 151949,
+    "output_tokens": 30054,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

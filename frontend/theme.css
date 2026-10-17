@@ -658,7 +658,7 @@ html.cover-open{overflow:hidden}
 .cover-note{position:absolute;top:22vh;left:calc(50% - 50vh * .1044 - 4.2em);writing-mode:vertical-rl;white-space:nowrap;font-family:'Intermission Title',var(--serif);font-size:13px;font-weight:300;letter-spacing:.62em;line-height:1;color:#57534d}
 .cover-colophon{position:absolute;left:0;right:0;bottom:calc(7vh + 34px);text-align:center;font-family:'Intermission Title',var(--serif);font-size:12px;font-weight:300;letter-spacing:.38em;color:#57534d}
 .cover-colophon::before{content:'';display:block;width:22px;height:1px;margin:0 auto 16px;background:#b3261e}
-.cover-turn{position:absolute;left:calc(7% + 7px + var(--mark) + 10px);bottom:calc(7vh - 6px);font-family:'Intermission Title',var(--serif);font-size:11px;letter-spacing:.5em;color:#9b9892}
+.cover-turn{position:absolute;left:calc(7% + 7px + var(--mark) + 10px);bottom:calc(7vh - 6px);font-family:'Intermission Title',var(--serif);font-size:11px;letter-spacing:.5em;color:#6d6a64}
 .cover-title,.cover-note,.cover-colophon,.cover-turn,.cover-marks{transition:opacity .4s ease}
 .cover.turning{opacity:0;pointer-events:none;transition-delay:.15s}
 .cover.turning :is(.cover-title,.cover-note,.cover-colophon,.cover-turn,.cover-marks){opacity:0}
@@ -703,7 +703,7 @@ html.cover-open{overflow:hidden}
 @keyframes cover-ignite{0%,8%,16%,29%,40%{--wordmark-light:#121110}4%,12%,22%,34%,100%{--wordmark-light:#b3261e}}
 @keyframes cover-glow{0%,8%,16%,29%{opacity:0;transform:scale(.7)}4%{opacity:.7}12%{opacity:.85}22%{opacity:.6}34%{opacity:1;transform:scale(1.08)}100%{opacity:.8;transform:none}}
 @keyframes cover-breathe{to{opacity:.5;transform:scale(.94)}}
-@keyframes cover-hint{to{opacity:.35}}
+@keyframes cover-hint{to{opacity:.6}}
 @keyframes cover-flare{to{opacity:1;transform:scale(1.9)}}
 
 /* Masthead: once the leaf is gone (or straight away on a deep link) the 35mm strip runs

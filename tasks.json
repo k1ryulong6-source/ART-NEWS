@@ -2559,6 +2559,61 @@
       "evidence": [
         "黑体下载量：首页2.06MB→0.97MB（26个切片），中文译文阅读页→0.63MB，日文原文页→1.26MB（Linux无系统日文字体时）；1280/390px改前改后截图除报头动画外逐像素一致，document.fonts.check全部通过。草稿PR待用户确认"
       ]
+    },
+    {
+      "id": "T078",
+      "title": "站点体检修复：开场页键盘陷阱、换页焦点、开场页提示对比度",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Claude（前端）",
+      "updated_at": "2026-10-17",
+      "depends_on": [
+        "T065"
+      ],
+      "scope": [
+        "frontend/index.html",
+        "frontend/app.js",
+        "frontend/theme.css",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "开场页打开时背景（.paper-shell与跳转链接）为inert，Tab/Enter不会作用到被盖住的控件；Enter/空格/Esc等键在任何焦点位置都能翻开；翻开后焦点交给main",
+        "换页（头版/资讯/日历/剪报/设置/阅读页）后焦点移到main；在搜索框输入时不抢焦点",
+        "开场页“翻頁”提示颜色#6d6a64，闪烁下限opacity .6",
+        "数据、选稿、路由、收藏和接口不变"
+      ],
+      "evidence": [
+        "本地dist在Chromium中验证：开场页打开时Tab不进入背景，翻开后焦点在main；导航切换后焦点在main，搜索输入保持在搜索框；JS 23项测试和check_project通过。完整体检清单见/mnt/project-files/audit/site-audit-2026-10-16.md；草稿PR待用户确认"
+      ]
+    },
+    {
+      "id": "T079",
+      "title": "每篇文章生成独立分享页（标题/摘要/配图/canonical）与sitemap",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Claude（前端＋发布构建）",
+      "updated_at": "2026-10-17",
+      "depends_on": [
+        "T065"
+      ],
+      "scope": [
+        "backend/share_pages.py",
+        "scripts/build_static.py",
+        "frontend/app.js",
+        "tests/test_share_pages.py",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "dist/a/<id>/index.html带该篇标题、摘要、配图、og/twitter与canonical，打开后进入站内#reader/<id>",
+        "sitemap.xml与robots.txt随发布生成",
+        "阅读页“分享”按钮给出单篇链接",
+        "页面数上限5000（按发布时间取最新），data/live.json不改"
+      ],
+      "evidence": [
+        "当前1552页，生成1.4秒、约30MB；本地dist在1280/390px打开分享页直达文章、返回到头版，无脚本错误；4个新Python测试通过。草稿PR待用户确认是否要单篇分享页"
+      ]
     }
   ]
 }

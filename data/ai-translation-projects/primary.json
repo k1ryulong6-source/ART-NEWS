@@ -1,14 +1,24 @@
 {
-  "status": "completed",
+  "status": "partial_failure",
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-17T19:30:58.652459+00:00",
-  "translated": [],
-  "failed": [],
+  "started_at": "2026-10-17T19:56:37.990276+00:00",
+  "translated": [
+    "live-10e642650780a9a90c5cd67f"
+  ],
+  "failed": [
+    {
+      "id": "live-c9a1edae85b0ebb26b4ae997",
+      "reason": "ai_numbers_missing:block:30:text:0"
+    },
+    {
+      "id": "live-ee482fa2d66fc5faf589af9b",
+      "reason": "ai_paragraph_not_translated:block:32:text:0"
+    }
+  ],
   "deferred": [
     "live-fc34527bd1f1aed999a01e8e",
-    "live-c9a1edae85b0ebb26b4ae997",
     "live-060658cea0eefb38036b7f47",
     "live-0428e6f0bd99130fd69cf9fc",
     "live-5576b23645db29ab559e9db5",
@@ -46,7 +56,6 @@
     "live-9c530cb3bdaff5c03c6c048b",
     "live-6955a2b3a19247dff6c35efd",
     "live-cf4c4832c6a1baaa04af5541",
-    "live-10e642650780a9a90c5cd67f",
     "live-e073be9f377d63cfdb0c3882",
     "live-619c71add8da12c1b4973032",
     "live-2e7e419f79d45c6461752414",
@@ -73,22 +82,25 @@
     "live-4b231ebbfd3d7c4ffc9c1dce",
     "live-76c8ed316d62d29f25a90d15",
     "live-bec7ecaa39ce323f0e73eea5",
-    "live-ee482fa2d66fc5faf589af9b",
     "live-53e5d31021e8ac55442c3aa0"
   ],
-  "resumed": [],
+  "resumed": [
+    "live-c9a1edae85b0ebb26b4ae997",
+    "live-10e642650780a9a90c5cd67f",
+    "live-ee482fa2d66fc5faf589af9b"
+  ],
   "stale": [],
-  "requests": 0,
-  "input_tokens": 0,
-  "output_tokens": 0,
+  "requests": 3,
+  "input_tokens": 13667,
+  "output_tokens": 1494,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
   "pending_before": 68,
-  "pending_after": 68,
-  "finished_at": "2026-10-17T19:31:04.533115+00:00",
-  "seconds": 5.88,
-  "requests_today": 439,
+  "pending_after": 67,
+  "finished_at": "2026-10-17T19:57:26.434594+00:00",
+  "seconds": 48.44,
+  "requests_today": 442,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "id": "primary",

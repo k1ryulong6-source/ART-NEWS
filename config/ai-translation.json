@@ -32,7 +32,7 @@
     "requests_per_run": 40,
     "request_interval_seconds": 3,
     "max_output_tokens": 16384,
-    "notes": "2026-10-16用户因Gemini免费层503要求接入DeepSeek翻译。DeepSeek为预充值付费API，用户授权；程序上限300请求/太平洋日，实际花费以DeepSeek账户余额为准。设置GitHub Secret DEEPSEEK_API_KEY后默认使用；Actions变量AI_TRANSLATION_PROVIDER=gemini可切回Gemini，DEEPSEEK_MODEL可改模型。"
+    "notes": "2026-10-16用户因Gemini免费层503要求接入DeepSeek翻译。DeepSeek为预充值付费API，用户授权；程序上限300请求/太平洋日，实际花费以DeepSeek账户余额为准。2026-10-17用户要求交给DeepSeek和Gemini：设置DEEPSEEK_API_KEY后DeepSeek与两路免费Gemini并行分担互斥文章；Actions变量AI_TRANSLATION_PROVIDER=deepseek或gemini可只用一家，DEEPSEEK_MODEL可改模型。"
   },
   "transient_retry": {
     "initial_seconds": 60,

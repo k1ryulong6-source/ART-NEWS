@@ -1,3 +1,5 @@
+> T074更新（2026-10-17，Claude）：自动翻译默认DeepSeek+两路免费Gemini并行（ai_pool三路互斥分配，Gemini 503只影响本路），AI_TRANSLATION_PROVIDER=deepseek/gemini可只用一家。见D080。
+
 > T078草稿（2026-10-17，Claude前端）：站点体检后的小修。①开场页（index.html内联脚本）打开期间把`.skip-link`和`.paper-shell`设为inert，键盘监听改挂document，翻开后焦点移到`main`——此前Tab会进入被盖住的导航，Enter触发看不见的导航而开场页关不掉。②`render()`在页面（视图或文章）变化时把焦点移到`main`，搜索框输入时不动。③开场页“翻頁”提示#9b9892→#6d6a64（原对比度约2.9:1）。体检里需用户决定、本次未改：单篇文章分享卡片/sitemap（要改构建）、报头日期是否按上海时区（现按浏览器时区，app.js displayZone）。清单：/mnt/project-files/audit/site-audit-2026-10-16.md。
 
 > T076草稿（2026-10-17，Claude）：网页数据减负，只改发布构建与前端，data/live.json不动。`scripts/build_static.py`的`write_split_site`用`backend/presentation.py:split_bodies`把live正文（article_blocks_json、editorial_blocks_json、article_translation_json、article_text）和流水线记账字段（DETAIL_FIELDS）移入`dist/bodies/<id>.json`；索引行加has_original_body/has_editorial_body/has_translation_body、body_preview、body_ref（正文hash，作URL版本）。全文检索文本写`dist/search-index.json`，首次输入检索词时才取。前端`C.needBody/attachBody/setSearchTexts`；阅读页、头版主头条渲染时取正文，悬停链接预取。frontend/data.js与culture-desk-preview.html仍内联全部正文。实测data.js gzip 7.44MB→1.04MB；字库2.28MB未动，下一步可按unicode-range切分黑体。

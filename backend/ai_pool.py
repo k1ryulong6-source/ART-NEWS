@@ -1,4 +1,4 @@
-"""AI translation lanes: DeepSeek (default when its key is set) or two free Gemini projects."""
+"""AI translation lanes: DeepSeek and two free Gemini projects share disjoint articles in parallel."""
 import json
 import os
 import threading
@@ -23,14 +23,14 @@ DEEPSEEK = ('deepseek', 'DEEPSEEK_API_KEY', 'data/ai-translation-ledger-deepseek
 
 
 def provider_choice(environ=None):
-    """AI_TRANSLATION_PROVIDER wins; otherwise DeepSeek once its key exists, else Gemini."""
+    """AI_TRANSLATION_PROVIDER=deepseek|gemini forces one; otherwise every configured lane runs."""
     environ = os.environ if environ is None else environ
     choice = environ.get('AI_TRANSLATION_PROVIDER', '').strip().lower()
     if choice in ('deepseek', 'gemini'):
         return choice
-    if choice:
+    if choice not in ('', 'both'):
         raise ValueError('unknown_ai_translation_provider')
-    return 'deepseek' if environ.get(DEEPSEEK[1], '').strip() else 'gemini'
+    return 'both' if environ.get(DEEPSEEK[1], '').strip() else 'gemini'
 
 
 def continue_today(cfg, reports, pending_after, instant=None):
@@ -45,16 +45,21 @@ def continue_today(cfg, reports, pending_after, instant=None):
 def projects(cfg=None, environ=None):
     cfg = cfg or configuration()
     environ = os.environ if environ is None else environ
-    if provider_choice(environ) == 'deepseek':
+    choice = provider_choice(environ)
+    result = []
+    if choice in ('deepseek', 'both'):
+        # Listed first so the top-ranked (headline) article goes to the fastest lane.
         identity, variable, path = DEEPSEEK
         key = environ.get(variable, '').strip()
         project_cfg = deepseek_configuration(cfg, environ)
         if type(project_cfg['requests_per_day']) is not int or project_cfg['requests_per_day'] <= 0:
             raise ValueError('invalid_project_daily_limit')
-        return [{'id': identity, 'key': key, 'ledger': path, 'provider': 'deepseek',
-                 'status': 'ready' if key else 'not_configured', 'cfg': project_cfg}]
+        result.append({'id': identity, 'key': key, 'ledger': path, 'provider': 'deepseek',
+                       'status': 'ready' if key else 'not_configured', 'cfg': project_cfg})
+        if choice == 'deepseek':
+            return result
     budgets = cfg.get('project_daily_limits', {'primary': cfg['requests_per_day'], 'secondary': 500})
-    result, seen = [], set()
+    seen = set()
     for identity, variable, path in PROJECTS:
         limit = budgets[identity]
         if type(limit) is not int or not 0 < limit <= 500:
@@ -166,7 +171,7 @@ def run_pool(store, reservation_id, *, root=ROOT, cfg=None, environ=None,
 
     # Non-runnable, configured projects also finalize their unused reservation
     # through run_ai, without receiving any article assignments or API calls.
-    with ThreadPoolExecutor(max_workers=2) as pool:
+    with ThreadPoolExecutor(max_workers=len(specs)) as pool:
         futures = {p['id']: pool.submit(worker, p) for p in specs if p['status'] == 'ready'}
         for identity, future in futures.items():
             reports[identity] = future.result()
@@ -187,8 +192,9 @@ def run_pool(store, reservation_id, *, root=ROOT, cfg=None, environ=None,
     else:
         status = 'run_limit' if 'run_limit' in statuses else 'completed'
     lane_cfg = specs[0]['cfg']
+    providers = list(dict.fromkeys(p['provider'] for p in specs if p['status'] == 'ready')) or [specs[0]['provider']]
     report = {'status': status, 'provider': 'contextual-api:' + specs[0]['provider'] + ':' + lane_cfg['model'] + ':direct-v1',
-              'model': lane_cfg['model'], 'translation_provider': specs[0]['provider'], 'account_mode': lane_cfg['account_mode'], 'pool_mode': 'parallel_disjoint_articles',
+              'model': lane_cfg['model'], 'translation_provider': '+'.join(providers), 'account_mode': lane_cfg['account_mode'], 'pool_mode': 'parallel_disjoint_articles',
               'started_at': started, 'finished_at': now(), 'projects': lanes,
               'pending_before': len(pending), 'configured_projects': len(active)}
     report['service_retry_policy'] = SERVICE_RETRY_POLICY

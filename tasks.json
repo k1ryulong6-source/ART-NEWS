@@ -2615,6 +2615,28 @@
       "evidence": [
         "当前1552页，生成1.4秒、约30MB；本地dist在1280/390px打开分享页直达文章、返回到头版，无脚本错误；4个新Python测试通过。草稿PR待用户确认是否要单篇分享页"
       ]
+    },
+    {
+      "id": "T080",
+      "title": "重写网站简介（搜索摘要与分享预览）",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Claude（前端）",
+      "updated_at": "2026-10-17",
+      "depends_on": [],
+      "scope": [
+        "frontend/index.html",
+        "docs/DECISIONS.md",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "meta description 与 og:description 改为用户确认的文艺版文案",
+        "不再强调“中文阅览/原文可查”",
+        "单篇分享页的摘要逻辑不变"
+      ],
+      "evidence": [
+        "仅改两处文案，草稿PR待用户确认；本地未跑页面，线上未核对。"
+      ]
     }
   ]
 }

@@ -2586,6 +2586,34 @@
       "evidence": [
         "本地dist在Chromium中验证：开场页打开时Tab不进入背景，翻开后焦点在main；导航切换后焦点在main，搜索输入保持在搜索框；JS 23项测试和check_project通过。完整体检清单见/mnt/project-files/audit/site-audit-2026-10-16.md；草稿PR待用户确认"
       ]
+    },
+    {
+      "id": "T079",
+      "title": "每篇文章生成独立分享页（标题/摘要/配图/canonical）与sitemap",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Claude（前端＋发布构建）",
+      "updated_at": "2026-10-17",
+      "depends_on": [
+        "T065"
+      ],
+      "scope": [
+        "backend/share_pages.py",
+        "scripts/build_static.py",
+        "frontend/app.js",
+        "tests/test_share_pages.py",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "dist/a/<id>/index.html带该篇标题、摘要、配图、og/twitter与canonical，打开后进入站内#reader/<id>",
+        "sitemap.xml与robots.txt随发布生成",
+        "阅读页“分享”按钮给出单篇链接",
+        "页面数上限5000（按发布时间取最新），data/live.json不改"
+      ],
+      "evidence": [
+        "当前1552页，生成1.4秒、约30MB；本地dist在1280/390px打开分享页直达文章、返回到头版，无脚本错误；4个新Python测试通过。草稿PR待用户确认是否要单篇分享页"
+      ]
     }
   ]
 }

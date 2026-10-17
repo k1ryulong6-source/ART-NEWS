@@ -4,6 +4,8 @@
 
 > T077草稿（2026-10-17，Claude）：中文黑体按unicode-range切成73片（frontend/fonts/sans-v1/，`scripts/split_sans_font.py`生成，需fonttools）。首片含ASCII、站内用到的符号和最常用1500字；其余按站内字频每40/120字一片。切片成员记录在slices.json，重跑默认沿用，`--reorder`才按live.json字频重排。theme.css里sans-slices标记之间的@font-face由脚本写入，不要手改；intermission-sans-v1.woff2保留作切片来源和单文件预览内嵌。实测首页黑体2.06MB→0.97MB，中文阅读页0.63MB。与T076（PR #25）互不依赖。
 
+> T079草稿（2026-10-17，Claude）：发布时`backend/share_pages.py`为每篇live文章生成`dist/a/<id>/index.html`（首页外壳+该篇标题/摘要/配图/og/twitter/canonical，`<base href="../../">`，开头脚本把地址换成`#reader/<id>`进入站内阅读）以及`sitemap.xml`、`robots.txt`。标题/摘要取法与CultureCore.displayTitle/readingSummary一致，改那两处时同步改这里。上限MAX_PAGES=5000（最新优先），当前1552页、约1.4秒、30MB。阅读页工具条加“分享”（navigator.share或复制单篇链接）。用户若选“保持现状”就关掉此PR。
+
 > T075待合并（2026-10-16，Claude前端）：文章阅读页排版优化，只改theme.css与app.js的阅读部分。正文单栏行长改为--reader-measure（700px），--article-size改18px；中文正文取消两端对齐（含长英文名的行会被拉开字距）；日文原文改用日文字体栈；自动机翻正文在显示时把半角,.;:?!改为中文标点并去掉⁇（仅展示，存储不变）；桌面端中文/原文切换条吸顶，切换后按段落序号停在同一段；标题行显示约读时长。数据、选稿、收藏和接口均未改。
 
 > T074进行中（2026-10-16，Claude接手后台）：新增DeepSeek翻译提供方（backend/deepseek_translation.py）。设置GitHub Secret DEEPSEEK_API_KEY后自动翻译默认走DeepSeek（deepseek-flash，关闭thinking），Actions变量AI_TRANSLATION_PROVIDER=gemini切回Gemini，DEEPSEEK_MODEL改模型。独立账本data/ai-translation-ledger-deepseek.json，300请求/太平洋日；402余额不足暂停6小时。235项测试通过，尚无真实DeepSeek调用证据，见D074。

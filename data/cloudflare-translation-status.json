@@ -4,24 +4,17 @@
   "configured": true,
   "requests": 8,
   "translated": [
-    "live-bcb2d97aadf9ce22f5fbcbe8"
+    "live-0e3a4bca35b254aa5eead18a",
+    "live-f67894bde678ab904b86469d"
   ],
   "failed": [
     {
-      "id": "live-213e0bb2a26cdd5a82bd47a3",
-      "reason": "ai_unit_coverage_mismatch"
+      "id": "live-a02083cd3eaef0206a7820ca",
+      "reason": "ai_numbers_missing:block:16:text:0"
     },
     {
-      "id": "live-e4713e7c32edcf3ff31a8af2",
-      "reason": "ai_numbers_missing:block:0:text:0"
-    },
-    {
-      "id": "live-b35151db943112fc135a712d",
-      "reason": "ai_numbers_missing:block:5:text:0"
-    },
-    {
-      "id": "live-7df803388adad2c3d0feb405",
-      "reason": "ai_unit_coverage_mismatch"
+      "id": "live-62858b56a398788b4b41c717",
+      "reason": "Unterminated string starting at: line 1 column 641 (char 640)"
     }
   ],
   "credential_checks": {
@@ -29,7 +22,7 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-17T05:40:35.228228+00:00",
+  "started_at": "2026-10-17T06:09:42.708435+00:00",
   "verification_run": false,
   "status": "daily_limit",
   "account_mode": "free-project-only",
@@ -67,6 +60,10 @@
     "live-04b91c2d0422a31e1049946d",
     "live-a5e29643abcf183007cc054b",
     "live-80873b0d831a13d97ee39db0",
+    "live-213e0bb2a26cdd5a82bd47a3",
+    "live-e4713e7c32edcf3ff31a8af2",
+    "live-b35151db943112fc135a712d",
+    "live-7df803388adad2c3d0feb405",
     "live-27d7769fc624bc2120a69717",
     "live-5980f4877e8edcc5f8ef2105",
     "live-bc116950b9594ad1f08e6e58",
@@ -84,31 +81,33 @@
     "live-ee482fa2d66fc5faf589af9b",
     "live-be3faf114081a9260191b2ed"
   ],
-  "resumed": [],
+  "resumed": [
+    "live-0e3a4bca35b254aa5eead18a"
+  ],
   "stale": [],
-  "input_tokens": 18309,
-  "output_tokens": 4498,
+  "input_tokens": 27632,
+  "output_tokens": 3865,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 461,
+  "pending_before": 430,
   "retry_after": "2026-10-18T00:15:00+00:00",
-  "pending_after": 460,
-  "finished_at": "2026-10-17T05:41:57.601397+00:00",
-  "seconds": 82.37,
-  "requests_today": 95,
+  "pending_after": 428,
+  "finished_at": "2026-10-17T06:10:47.131699+00:00",
+  "seconds": 64.42,
+  "requests_today": 103,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
     "day": "2026-10-17",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 3234.131225,
+    "estimated_neurons": 3479.7151,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 0.0,
-    "requests": 95,
-    "input_tokens": 302497,
-    "output_tokens": 60216,
+    "requests": 103,
+    "input_tokens": 330129,
+    "output_tokens": 64081,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

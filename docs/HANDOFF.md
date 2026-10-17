@@ -1,5 +1,7 @@
 > T076草稿（2026-10-17，Claude）：网页数据减负，只改发布构建与前端，data/live.json不动。`scripts/build_static.py`的`write_split_site`用`backend/presentation.py:split_bodies`把live正文（article_blocks_json、editorial_blocks_json、article_translation_json、article_text）和流水线记账字段（DETAIL_FIELDS）移入`dist/bodies/<id>.json`；索引行加has_original_body/has_editorial_body/has_translation_body、body_preview、body_ref（正文hash，作URL版本）。全文检索文本写`dist/search-index.json`，首次输入检索词时才取。前端`C.needBody/attachBody/setSearchTexts`；阅读页、头版主头条渲染时取正文，悬停链接预取。frontend/data.js与culture-desk-preview.html仍内联全部正文。实测data.js gzip 7.44MB→1.04MB；字库2.28MB未动，下一步可按unicode-range切分黑体。
 
+> T077草稿（2026-10-17，Claude）：中文黑体按unicode-range切成73片（frontend/fonts/sans-v1/，`scripts/split_sans_font.py`生成，需fonttools）。首片含ASCII、站内用到的符号和最常用1500字；其余按站内字频每40/120字一片。切片成员记录在slices.json，重跑默认沿用，`--reorder`才按live.json字频重排。theme.css里sans-slices标记之间的@font-face由脚本写入，不要手改；intermission-sans-v1.woff2保留作切片来源和单文件预览内嵌。实测首页黑体2.06MB→0.97MB，中文阅读页0.63MB。与T076（PR #25）互不依赖。
+
 > T075待合并（2026-10-16，Claude前端）：文章阅读页排版优化，只改theme.css与app.js的阅读部分。正文单栏行长改为--reader-measure（700px），--article-size改18px；中文正文取消两端对齐（含长英文名的行会被拉开字距）；日文原文改用日文字体栈；自动机翻正文在显示时把半角,.;:?!改为中文标点并去掉⁇（仅展示，存储不变）；桌面端中文/原文切换条吸顶，切换后按段落序号停在同一段；标题行显示约读时长。数据、选稿、收藏和接口均未改。
 
 > T074进行中（2026-10-16，Claude接手后台）：新增DeepSeek翻译提供方（backend/deepseek_translation.py）。设置GitHub Secret DEEPSEEK_API_KEY后自动翻译默认走DeepSeek（deepseek-flash，关闭thinking），Actions变量AI_TRANSLATION_PROVIDER=gemini切回Gemini，DEEPSEEK_MODEL改模型。独立账本data/ai-translation-ledger-deepseek.json，300请求/太平洋日；402余额不足暂停6小时。235项测试通过，尚无真实DeepSeek调用证据，见D074。

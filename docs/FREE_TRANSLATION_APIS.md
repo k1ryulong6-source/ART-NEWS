@@ -1,3 +1,5 @@
+> D080（2026-10-17）：设置DEEPSEEK_API_KEY后默认DeepSeek与两路免费Gemini并行分担，不再是二选一；`AI_TRANSLATION_PROVIDER=deepseek`或`gemini`可只用一家。
+
 > T074（2026-10-16）：Gemini免费层持续503，用户要求接入DeepSeek。设置GitHub Secret `DEEPSEEK_API_KEY`后自动翻译默认改走DeepSeek（模型deepseek-flash，可用Actions变量`DEEPSEEK_MODEL`改），Actions变量`AI_TRANSLATION_PROVIDER=gemini`可切回Gemini。DeepSeek为预充值付费，程序上限300请求/太平洋日，账本data/ai-translation-ledger-deepseek.json；余额不足(402)暂停6小时。价格见下方DeepSeek链接。
 
 > T055最终（2026-10-15）：用户明确不希望固定闲置50次每日额度，网站最终上限500/太平洋日，对齐账号RPD500；未用额度不滚存，不再固定预留50。保持免费模式、不清零用量/预留、不启用付费，429自动等待。下方450为临时方案。

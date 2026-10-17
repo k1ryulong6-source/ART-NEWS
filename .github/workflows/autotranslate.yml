@@ -81,7 +81,7 @@ jobs:
             git pull --rebase origin main
             git push origin HEAD:main
           fi
-      - name: Translate with contextual AI (DeepSeek when its key is set, otherwise free Gemini)
+      - name: Translate with contextual AI (DeepSeek and free Gemini lanes in parallel)
         id: ai
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

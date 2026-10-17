@@ -8,24 +8,29 @@ from tests import test_ai_pool
 
 
 class DeepSeekProviderTests(unittest.TestCase):
-    def test_choice_defaults_to_deepseek_only_when_its_key_exists(self):
+    def test_choice_runs_both_providers_when_deepseek_key_exists(self):
         self.assertEqual(provider_choice({}), 'gemini')
         self.assertEqual(provider_choice({'GEMINI_API_KEY': 'g'}), 'gemini')
-        self.assertEqual(provider_choice({'DEEPSEEK_API_KEY': 'd', 'GEMINI_API_KEY': 'g'}), 'deepseek')
+        self.assertEqual(provider_choice({'DEEPSEEK_API_KEY': 'd', 'GEMINI_API_KEY': 'g'}), 'both')
         self.assertEqual(provider_choice({'DEEPSEEK_API_KEY': 'd', 'AI_TRANSLATION_PROVIDER': 'gemini'}), 'gemini')
         self.assertEqual(provider_choice({'AI_TRANSLATION_PROVIDER': ' DeepSeek '}), 'deepseek')
         with self.assertRaises(ValueError):
             provider_choice({'AI_TRANSLATION_PROVIDER': 'other'})
 
-    def test_deepseek_lane_has_own_ledger_cap_and_model_override(self):
+    def test_deepseek_lane_comes_first_beside_gemini_lanes(self):
         lanes = projects(configuration(), {'DEEPSEEK_API_KEY': 'd', 'GEMINI_API_KEY': 'g',
                                            'DEEPSEEK_MODEL': 'deepseek-v4-pro'})
-        self.assertEqual([lane['id'] for lane in lanes], ['deepseek'])
+        self.assertEqual([(lane['id'], lane['status']) for lane in lanes],
+                         [('deepseek', 'ready'), ('primary', 'ready'), ('secondary', 'not_configured')])
         lane = lanes[0]
         self.assertEqual(lane['ledger'], 'data/ai-translation-ledger-deepseek.json')
         self.assertEqual(lane['cfg']['model'], 'deepseek-v4-pro')
         self.assertEqual(lane['cfg']['requests_per_day'], configuration()['deepseek']['requests_per_day'])
         self.assertEqual(lane['cfg']['account_mode'], 'user-authorized-prepaid')
+        self.assertEqual(lanes[1]['cfg']['account_mode'], 'free-project-only')
+        forced = projects(configuration(), {'DEEPSEEK_API_KEY': 'd', 'GEMINI_API_KEY': 'g',
+                                            'AI_TRANSLATION_PROVIDER': 'deepseek'})
+        self.assertEqual([lane['id'] for lane in forced], ['deepseek'])
 
     def test_request_disables_thinking_and_maps_usage(self):
         sent = []
@@ -74,8 +79,42 @@ class DeepSeekPoolTests(test_ai_pool.AIPoolTests):
                     'choices': [{'finish_reason': 'stop', 'message': {'content': json.dumps({'outputs': outputs})}}]}
         return DeepSeekTranslator(project['key'], cfg=project['cfg'], transport=transport or answer)
 
-    def test_deepseek_lane_translates_and_never_touches_gemini_ledgers(self):
-        self.setup_pool(env={'DEEPSEEK_API_KEY': 'deep-test-key', 'GEMINI_API_KEY': 'first-test-key'})
+    def mixed_provider(self, project, gemini_transport=None):
+        if project['provider'] == 'deepseek':
+            return self.deepseek_provider(project)
+        if gemini_transport:
+            return test_ai_pool.GeminiTranslator(project['key'], cfg=project['cfg'], transport=gemini_transport)
+        return self.provider(project)
+
+    def test_deepseek_and_gemini_share_disjoint_articles(self):
+        self.setup_pool(second_article=True, env={'DEEPSEEK_API_KEY': 'deep-test-key', 'GEMINI_API_KEY': 'first-test-key'})
+        report = self.execute(self.mixed_provider)
+        self.assertEqual(len(report['translated']), 2)
+        self.assertEqual(report['translation_provider'], 'deepseek+gemini')
+        lanes = {lane['id']: lane for lane in report['projects']}
+        self.assertEqual((len(lanes['deepseek']['translated']), len(lanes['primary']['translated'])), (1, 1))
+        self.assertNotIn('deep-test-key', json.dumps(report))
+        providers = {r['editorial_provider'].split(':')[1] for r in self.store.dataset('live')['content']
+                     if r.get('editorial_provider')}
+        self.assertEqual(providers, {'deepseek', 'gemini'})
+
+    def test_gemini_503_leaves_deepseek_lane_working_and_hands_over_next_run(self):
+        self.setup_pool(second_article=True, env={'DEEPSEEK_API_KEY': 'deep-test-key', 'GEMINI_API_KEY': 'first-test-key'})
+        def unavailable(payload):
+            raise ServiceError(503)
+        first = self.execute(lambda p: self.mixed_provider(p, unavailable))
+        lanes = {lane['id']: lane for lane in first['projects']}
+        self.assertEqual(len(lanes['deepseek']['translated']), 1)
+        self.assertEqual(lanes['primary']['status'], 'service_wait')
+        # Gemini is backing off, so the next run gives its article to DeepSeek.
+        second = self.execute(self.mixed_provider, attempt='test:2')
+        lanes = {lane['id']: lane for lane in second['projects']}
+        self.assertEqual(len(lanes['deepseek']['translated']), 1)
+        self.assertEqual(lanes['primary']['requests'], 0)
+
+    def test_deepseek_only_mode_never_touches_gemini_ledgers(self):
+        self.setup_pool(env={'DEEPSEEK_API_KEY': 'deep-test-key', 'GEMINI_API_KEY': 'first-test-key',
+                             'AI_TRANSLATION_PROVIDER': 'deepseek'})
         report = self.execute(self.deepseek_provider)
         self.assertEqual(report['translated'], [self.row['id']])
         self.assertEqual(report['translation_provider'], 'deepseek')

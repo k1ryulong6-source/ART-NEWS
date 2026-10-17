@@ -138,7 +138,7 @@ def operations_report(snapshot, evidence, instant=None):
                                      'account_mode': cfg.get('account_mode'), 'paid_activation': cfg.get('paid_activation'),
                                      'backup_schedule': 'every_30_minutes_at_UTC_minutes_5_and_35; GitHub scheduling may be delayed',
                                      'requests_per_run': cfg.get('requests_per_run'),
-                                     'requests_per_run_scope': 'per_project', 'parallel_projects_max': 2,
+                                     'requests_per_run_scope': 'per_project', 'parallel_projects_max': 3,
                                      'project_daily_limits': project_limits},
             'workflow_health': {'checked_at': health.get('checked_at'), 'stages': health.get('stages') or {},
                                 'issues': health.get('issues') or []},

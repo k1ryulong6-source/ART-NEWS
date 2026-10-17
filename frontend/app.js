@@ -257,6 +257,7 @@
   function readerPage() {
     const row = dataset.content.find(item => item.id === state.readerId);
     if (!row) return empty('这条资讯暂不在当前资料中', '可以返回资讯列表，或查看真实资料模式。', '<button class="button" data-action="reader-back">返回资讯</button>');
+    if (!C.needBody(row)) return `<article class="reader-page"><div class="reader-toolbar"><button class="text-link" data-action="reader-back">‹ 返回</button></div><h1 lang="zh-CN">${e(C.displayTitle(row))}</h1><p class="article-status" role="status">${row.body_failed ? '正文未能载入，请检查网络后刷新页面。' : '正在载入正文…'}</p></article>`;
     const url = C.originalPageUrl(row), saved = findBookmark('content', row.id);
     const blocks = C.articleBlocks(row), translatedBlocks = row.language === 'zh' ? C.articleBlocks(row) : C.articleBlocks(row, true);
     const partial = row.article_status === 'partial';
@@ -270,6 +271,7 @@
   function openReader(id, route = true) {
     if (state.view !== 'reader') { state.readerReturn = state.view; state.readerScroll = window.scrollY; }
     state.readerId = id; state.readerTab = 'chinese'; state.view = 'reader';
+    const story = dataset.content.find(item => item.id === id); if (story?.body_failed) story.body_failed = false;
     if ($('detail-dialog').open) $('detail-dialog').close();
     if (route) history.pushState(null, '', C.readerRoute(id));
     render(); window.scrollTo({ top: 0 });
@@ -291,6 +293,31 @@
     document.title = pageTitle ? `${pageTitle} · 幕间休息` : '幕间休息';
     const hash = state.view === 'reader' ? C.readerRoute(state.readerId) : '#' + state.view;
     if (location.hash !== hash) history.replaceState(null, '', hash);
+    loadBodies(C.takeWantedBodies());
+    if (state.query.trim() && dataset.content.some(C.bodyPending)) loadSearchIndex();
+  }
+  // Static builds: fetch the article bodies the last render asked for, then render once more.
+  const bodyRequests = new Map();
+  function loadBodies(rows, rerender = true) {
+    const store = boot.body_store?.bodies;
+    if (!store || !rows.length) return;
+    // Views may render copies of a row; attach to the dataset's own row so later copies carry the body.
+    const requests = rows.map(copy => dataset.content.find(item => item.id === copy.id) || copy).map(row => {
+      if (!bodyRequests.has(row.id)) bodyRequests.set(row.id, fetch(`${store}${encodeURIComponent(row.id)}.json?v=${encodeURIComponent(row.body_ref)}`)
+        .then(response => response.ok ? response.json() : Promise.reject(new Error(response.status)))
+        .then(body => C.attachBody(row, body))
+        .catch(() => { row.body_failed = true; bodyRequests.delete(row.id); }));
+      return bodyRequests.get(row.id);
+    });
+    if (rerender) Promise.all(requests).then(() => render());
+  }
+  let searchIndexRequest = null;
+  function loadSearchIndex() {
+    if (searchIndexRequest || !boot.body_store?.search) return;
+    searchIndexRequest = fetch(boot.body_store.search)
+      .then(response => response.ok ? response.json() : Promise.reject(new Error(response.status)))
+      .then(texts => { C.setSearchTexts(texts); if (state.query.trim()) render(); })
+      .catch(() => { searchIndexRequest = null; });
   }
   function showDetail(type, id) {
     if (type === 'content') { openReader(id); return; }
@@ -437,6 +464,9 @@
     try { if (await savePreferences(next)) toast('已保存'); } catch (error) { button.disabled = false; toast(error.message); }
   });
   document.addEventListener('toggle', event => { if (event.target.id === 'advanced-filters' && event.target.isConnected) state.advancedOpen = event.target.open; }, true);
+  // Start fetching a story's body as soon as a pointer or focus lands on its link.
+  const prefetchBody = event => { const route = C.parseRoute(event.target.closest?.('a[href^="#reader/"]')?.getAttribute('href')); const row = route.view === 'reader' && dataset.content.find(item => item.id === route.id); if (row && C.bodyPending(row) && !row.body_failed) loadBodies([row], false); };
+  document.addEventListener('pointerover', prefetchBody, { passive: true }); document.addEventListener('focusin', prefetchBody);
   $('search').addEventListener('input', event => { state.listPage = 1; state.query = event.target.value; state.view = 'explore'; render(); });
   $('coordinate-button').addEventListener('click', () => { state.view = 'settings'; render(); });
   $('close-detail').addEventListener('click', () => $('detail-dialog').close());

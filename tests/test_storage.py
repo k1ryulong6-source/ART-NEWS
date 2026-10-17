@@ -91,7 +91,7 @@ class StorageChecks(unittest.TestCase):
             app = create_app(Path(self.temp.name) / "api.db")
             async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://local.test") as client:
                 self.assertEqual((await client.get("/api/health")).json()["status"], "ok")
-                for path in ("/", "/styles.css", "/theme.css", "/core.js", "/ui.js", "/app.js", "/data.js", "/fonts/intermission-masthead-v1.woff2", "/fonts/intermission-sans-v1.woff2", "/fonts/intermission-news-v1.woff2"):
+                for path in ("/", "/styles.css", "/theme.css", "/core.js", "/ui.js", "/app.js", "/data.js", "/fonts/intermission-masthead-v1.woff2", "/fonts/intermission-sans-v1.woff2", "/fonts/sans-v1/00.woff2", "/fonts/intermission-news-v1.woff2"):
                     self.assertEqual((await client.get(path)).status_code, 200)
                 self.assertEqual((await client.get("/runtime/culture-desk.db")).status_code, 404)
                 tokyo = (await client.get("/api/events", params={"city": "东京", "mode": "demo"})).json()

@@ -5,15 +5,15 @@
   "translation_provider": "deepseek+gemini",
   "account_mode": "user-authorized-prepaid",
   "pool_mode": "parallel_disjoint_articles",
-  "started_at": "2026-10-18T15:29:52.370886+00:00",
-  "finished_at": "2026-10-18T15:30:04.404838+00:00",
+  "started_at": "2026-10-18T15:58:49.820227+00:00",
+  "finished_at": "2026-10-18T15:59:04.818976+00:00",
   "projects": [
     {
       "status": "daily_limit",
       "provider": "contextual-api:deepseek:deepseek-flash:direct-v1",
       "model": "deepseek-flash",
       "account_mode": "user-authorized-prepaid",
-      "started_at": "2026-10-18T15:29:52.372098+00:00",
+      "started_at": "2026-10-18T15:58:49.821157+00:00",
       "translated": [],
       "failed": [],
       "deferred": [],
@@ -27,8 +27,8 @@
       "service_failures": [],
       "pending_before": 0,
       "pending_after": 0,
-      "finished_at": "2026-10-18T15:30:02.699417+00:00",
-      "seconds": 10.33,
+      "finished_at": "2026-10-18T15:59:04.813605+00:00",
+      "seconds": 14.99,
       "requests_today": 260,
       "daily_request_limit": 300,
       "unknown_usage_requests_today": 0,
@@ -37,18 +37,22 @@
       "configured": true
     },
     {
-      "status": "completed",
+      "status": "partial_failure",
       "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
       "model": "gemini-3.5-flash-lite",
       "account_mode": "free-project-only",
-      "started_at": "2026-10-18T15:29:52.372403+00:00",
+      "started_at": "2026-10-18T15:58:49.821568+00:00",
       "translated": [],
-      "failed": [],
+      "failed": [
+        {
+          "id": "live-1e398608a79570e381c493bc",
+          "reason": "ai_numbers_missing:block:7:text:0"
+        }
+      ],
       "deferred": [
         "live-51cf375544c1311bc5bc2bc8",
         "live-ce1a33976090e0c28aa161ef",
         "live-1cd1c874e309aaef695f221f",
-        "live-1e398608a79570e381c493bc",
         "live-f816288b1215c5fd790246d9",
         "live-2d3927a6139aca97abfa0d21",
         "live-060658cea0eefb38036b7f47",
@@ -103,19 +107,21 @@
         "live-76c8ed316d62d29f25a90d15",
         "live-ee482fa2d66fc5faf589af9b"
       ],
-      "resumed": [],
+      "resumed": [
+        "live-1e398608a79570e381c493bc"
+      ],
       "stale": [],
-      "requests": 0,
-      "input_tokens": 0,
-      "output_tokens": 0,
+      "requests": 1,
+      "input_tokens": 1903,
+      "output_tokens": 158,
       "service_retry_policy": "bounded-exponential-v1",
       "inline_service_retries": 0,
       "service_failures": [],
       "pending_before": 57,
       "pending_after": 57,
-      "finished_at": "2026-10-18T15:30:02.799505+00:00",
-      "seconds": 10.43,
-      "requests_today": 225,
+      "finished_at": "2026-10-18T15:59:04.181707+00:00",
+      "seconds": 14.36,
+      "requests_today": 226,
       "daily_request_limit": 500,
       "unknown_usage_requests_today": 2,
       "id": "primary",
@@ -126,7 +132,7 @@
       "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
       "model": "gemini-3.5-flash-lite",
       "account_mode": "free-project-only",
-      "started_at": "2026-10-18T15:29:52.372284+00:00",
+      "started_at": "2026-10-18T15:58:49.822026+00:00",
       "translated": [],
       "failed": [],
       "deferred": [
@@ -198,8 +204,8 @@
       "service_failures": [],
       "pending_before": 57,
       "pending_after": 57,
-      "finished_at": "2026-10-18T15:30:04.399310+00:00",
-      "seconds": 12.03,
+      "finished_at": "2026-10-18T15:59:00.707625+00:00",
+      "seconds": 10.89,
       "requests_today": 195,
       "daily_request_limit": 500,
       "unknown_usage_requests_today": 2,
@@ -213,12 +219,13 @@
   "inline_service_retries": 0,
   "service_failures": [],
   "translated": [],
-  "resumed": [],
+  "resumed": [
+    "live-1e398608a79570e381c493bc"
+  ],
   "deferred": [
     "live-51cf375544c1311bc5bc2bc8",
     "live-ce1a33976090e0c28aa161ef",
     "live-1cd1c874e309aaef695f221f",
-    "live-1e398608a79570e381c493bc",
     "live-f816288b1215c5fd790246d9",
     "live-2d3927a6139aca97abfa0d21",
     "live-060658cea0eefb38036b7f47",
@@ -331,14 +338,20 @@
     "live-bec7ecaa39ce323f0e73eea5"
   ],
   "stale": [],
-  "failed": [],
-  "requests": 0,
-  "input_tokens": 0,
-  "output_tokens": 0,
-  "requests_today": 680,
+  "failed": [
+    {
+      "id": "live-1e398608a79570e381c493bc",
+      "reason": "ai_numbers_missing:block:7:text:0",
+      "project": "primary"
+    }
+  ],
+  "requests": 1,
+  "input_tokens": 1903,
+  "output_tokens": 158,
+  "requests_today": 681,
   "unknown_usage_requests_today": 4,
   "daily_request_limit": 1300,
   "pending_after": 114,
   "continue_recommended": false,
-  "seconds": 12.03
+  "seconds": 14.99
 }

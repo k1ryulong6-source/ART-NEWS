@@ -1,11 +1,32 @@
 {
-  "status": "completed",
+  "status": "partial_failure",
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-18T13:32:17.486303+00:00",
+  "started_at": "2026-10-18T14:00:41.167982+00:00",
   "translated": [],
-  "failed": [],
+  "failed": [
+    {
+      "id": "live-2447a625ae06d51b87d03c42",
+      "reason": "ai_numbers_missing:block:24:text:0"
+    },
+    {
+      "id": "live-62858b56a398788b4b41c717",
+      "reason": "ai_numbers_missing:block:1:text:0"
+    },
+    {
+      "id": "live-e5cabd90ee7db9e8a5034bab",
+      "reason": "empty_ai_translation:block:25:text:0"
+    },
+    {
+      "id": "live-76c8ed316d62d29f25a90d15",
+      "reason": "ai_paragraph_not_translated:block:17:text:0"
+    },
+    {
+      "id": "live-ee482fa2d66fc5faf589af9b",
+      "reason": "ai_paragraph_not_translated:block:32:text:0"
+    }
+  ],
   "deferred": [
     "live-1cd1c874e309aaef695f221f",
     "live-a666674bb9b73216a594e4b3",
@@ -14,7 +35,6 @@
     "live-fc34527bd1f1aed999a01e8e",
     "live-060658cea0eefb38036b7f47",
     "live-28df7871f5a7a9bb1a0e8bce",
-    "live-2447a625ae06d51b87d03c42",
     "live-a1245d0a7e9bc7cd87940813",
     "live-6b2b9e1012e9182d6f61bd11",
     "live-ec936dfd7ff12c7d25a4f336",
@@ -23,7 +43,6 @@
     "live-d27f942e6a1695405ce4b478",
     "live-98664313fbd636147a00d8de",
     "live-e4713e7c32edcf3ff31a8af2",
-    "live-62858b56a398788b4b41c717",
     "live-ef3b9f23c647cfd74adf3d2a",
     "live-46785b8e60a0bd6d033faf61",
     "live-5980f4877e8edcc5f8ef2105",
@@ -60,25 +79,28 @@
     "live-1d22c7625fdbcd788a0a6a34",
     "live-b5b16277ccb4d4a2fe938f57",
     "live-14fdc00be9a2ef7c1cbf2693",
-    "live-e5cabd90ee7db9e8a5034bab",
     "live-4b231ebbfd3d7c4ffc9c1dce",
+    "live-bec7ecaa39ce323f0e73eea5"
+  ],
+  "resumed": [
+    "live-2447a625ae06d51b87d03c42",
+    "live-62858b56a398788b4b41c717",
+    "live-e5cabd90ee7db9e8a5034bab",
     "live-76c8ed316d62d29f25a90d15",
-    "live-bec7ecaa39ce323f0e73eea5",
     "live-ee482fa2d66fc5faf589af9b"
   ],
-  "resumed": [],
   "stale": [],
-  "requests": 0,
-  "input_tokens": 0,
-  "output_tokens": 0,
+  "requests": 5,
+  "input_tokens": 23841,
+  "output_tokens": 1164,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
   "pending_before": 58,
   "pending_after": 58,
-  "finished_at": "2026-10-18T13:32:32.486897+00:00",
-  "seconds": 15.0,
-  "requests_today": 193,
+  "finished_at": "2026-10-18T14:02:03.667462+00:00",
+  "seconds": 82.5,
+  "requests_today": 198,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 2,
   "id": "primary",

@@ -2,38 +2,20 @@
   "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
   "model": "@cf/qwen/qwen3-30b-a3b-fp8",
   "configured": true,
-  "requests": 6,
-  "translated": [
-    "live-766f14133db0c7a1a2795aa7"
-  ],
+  "requests": 8,
+  "translated": [],
   "failed": [
     {
-      "id": "live-2447a625ae06d51b87d03c42",
+      "id": "live-34023ccd85a0f685a4eaef69",
       "reason": "ai_unit_coverage_mismatch"
     },
     {
-      "id": "live-c9d98f5e001e5f8352184118",
-      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
+      "id": "live-70a7b12cc2253a8a3826a669",
+      "reason": "block_not_chinese"
     },
     {
-      "id": "live-faef0bf90e784d4f00b0106b",
+      "id": "live-a666674bb9b73216a594e4b3",
       "reason": "ai_numbers_missing:block:3:text:0"
-    },
-    {
-      "id": "live-a1245d0a7e9bc7cd87940813",
-      "reason": "Unterminated string starting at: line 1 column 498 (char 497)"
-    },
-    {
-      "id": "live-4b231ebbfd3d7c4ffc9c1dce",
-      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
-    },
-    {
-      "id": "live-b712814601f4b2a120036cfb",
-      "reason": "ai_unit_coverage_mismatch"
-    },
-    {
-      "id": "live-d13a53998bb90d171e1a6b0d",
-      "reason": "ai_paragraph_not_translated:block:8:text:0"
     }
   ],
   "credential_checks": {
@@ -41,9 +23,9 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-18T10:36:54.613299+00:00",
+  "started_at": "2026-10-18T10:42:25.096643+00:00",
   "verification_run": false,
-  "status": "partial_failure",
+  "status": "daily_limit",
   "account_mode": "free-project-only",
   "deferred": [
     "live-c07ebcb2238676a0ca273691",
@@ -57,6 +39,10 @@
     "live-060658cea0eefb38036b7f47",
     "live-28df7871f5a7a9bb1a0e8bce",
     "live-0428e6f0bd99130fd69cf9fc",
+    "live-2447a625ae06d51b87d03c42",
+    "live-c9d98f5e001e5f8352184118",
+    "live-faef0bf90e784d4f00b0106b",
+    "live-a1245d0a7e9bc7cd87940813",
     "live-61270b82651ee15b55293180",
     "live-6b2b9e1012e9182d6f61bd11",
     "live-ec936dfd7ff12c7d25a4f336",
@@ -89,6 +75,8 @@
     "live-61ad094274dadd7365d0f3ad",
     "live-621ad835eb28513282aa34e2",
     "live-2476c76cca7060ed589d1586",
+    "live-b712814601f4b2a120036cfb",
+    "live-d13a53998bb90d171e1a6b0d",
     "live-e00ea2022c2c0cc8772d34d4",
     "live-1c5789e645c1311841bde1f1",
     "live-7d50f83138777c6466ca66de",
@@ -104,40 +92,38 @@
     "live-715f48cefa36107b1c39ef86",
     "live-e5cabd90ee7db9e8a5034bab",
     "live-f0fe2ed67fc7390368932d19",
+    "live-4b231ebbfd3d7c4ffc9c1dce",
     "live-69504e2fe66d667bab88ff37",
     "live-76c8ed316d62d29f25a90d15",
     "live-a446c44efc0ae05a31d1173d",
     "live-bec7ecaa39ce323f0e73eea5",
     "live-ee482fa2d66fc5faf589af9b"
   ],
-  "resumed": [
-    "live-faef0bf90e784d4f00b0106b",
-    "live-a1245d0a7e9bc7cd87940813",
-    "live-d13a53998bb90d171e1a6b0d"
-  ],
+  "resumed": [],
   "stale": [],
-  "input_tokens": 16594,
-  "output_tokens": 6708,
+  "input_tokens": 25710,
+  "output_tokens": 4420,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 109,
-  "pending_after": 108,
-  "finished_at": "2026-10-18T10:38:20.545989+00:00",
-  "seconds": 85.93,
-  "requests_today": 154,
+  "pending_before": 124,
+  "retry_after": "2026-10-19T00:15:00+00:00",
+  "pending_after": 124,
+  "finished_at": "2026-10-18T10:43:36.911287+00:00",
+  "seconds": 71.81,
+  "requests_today": 162,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
     "day": "2026-10-18",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 5410.8723,
+    "estimated_neurons": 5664.48055,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 0.0,
-    "requests": 154,
-    "input_tokens": 480900,
-    "output_tokens": 104568,
+    "requests": 162,
+    "input_tokens": 506610,
+    "output_tokens": 108988,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

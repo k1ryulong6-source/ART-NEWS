@@ -1,18 +1,22 @@
 {
-  "status": "completed",
+  "status": "partial_failure",
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-18T21:58:45.327279+00:00",
+  "started_at": "2026-10-18T22:29:58.537415+00:00",
   "translated": [],
-  "failed": [],
+  "failed": [
+    {
+      "id": "live-1e398608a79570e381c493bc",
+      "reason": "ai_numbers_missing:block:7:text:0"
+    }
+  ],
   "deferred": [
     "live-868ab2ab1ef038502bf02388",
     "live-bf391b952f3cfea13ba21e52",
     "live-c0704545fc5122ea2e0a0d12",
     "live-1cd1c874e309aaef695f221f",
     "live-c07ebcb2238676a0ca273691",
-    "live-1e398608a79570e381c493bc",
     "live-f816288b1215c5fd790246d9",
     "live-fc34527bd1f1aed999a01e8e",
     "live-060658cea0eefb38036b7f47",
@@ -67,19 +71,21 @@
     "live-a446c44efc0ae05a31d1173d",
     "live-bec7ecaa39ce323f0e73eea5"
   ],
-  "resumed": [],
+  "resumed": [
+    "live-1e398608a79570e381c493bc"
+  ],
   "stale": [],
-  "requests": 0,
-  "input_tokens": 0,
-  "output_tokens": 0,
+  "requests": 1,
+  "input_tokens": 1903,
+  "output_tokens": 163,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
   "pending_before": 59,
   "pending_after": 59,
-  "finished_at": "2026-10-18T21:58:56.254340+00:00",
-  "seconds": 10.93,
-  "requests_today": 290,
+  "finished_at": "2026-10-18T22:30:05.940393+00:00",
+  "seconds": 7.4,
+  "requests_today": 291,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 3,
   "id": "secondary",

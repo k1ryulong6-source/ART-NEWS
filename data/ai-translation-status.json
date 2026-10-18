@@ -5,15 +5,15 @@
   "translation_provider": "deepseek+gemini",
   "account_mode": "user-authorized-prepaid",
   "pool_mode": "parallel_disjoint_articles",
-  "started_at": "2026-10-18T21:58:45.324757+00:00",
-  "finished_at": "2026-10-18T21:59:00.448963+00:00",
+  "started_at": "2026-10-18T22:29:58.536384+00:00",
+  "finished_at": "2026-10-18T22:30:05.946027+00:00",
   "projects": [
     {
       "status": "daily_limit",
       "provider": "contextual-api:deepseek:deepseek-flash:direct-v1",
       "model": "deepseek-flash",
       "account_mode": "user-authorized-prepaid",
-      "started_at": "2026-10-18T21:58:45.325482+00:00",
+      "started_at": "2026-10-18T22:29:58.537223+00:00",
       "translated": [],
       "failed": [],
       "deferred": [],
@@ -27,8 +27,8 @@
       "service_failures": [],
       "pending_before": 0,
       "pending_after": 0,
-      "finished_at": "2026-10-18T21:59:00.443612+00:00",
-      "seconds": 15.12,
+      "finished_at": "2026-10-18T22:30:05.675980+00:00",
+      "seconds": 7.14,
       "requests_today": 260,
       "daily_request_limit": 300,
       "unknown_usage_requests_today": 0,
@@ -41,7 +41,7 @@
       "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
       "model": "gemini-3.5-flash-lite",
       "account_mode": "free-project-only",
-      "started_at": "2026-10-18T21:58:45.325959+00:00",
+      "started_at": "2026-10-18T22:29:58.537320+00:00",
       "translated": [],
       "failed": [],
       "deferred": [
@@ -102,8 +102,8 @@
         "live-4b231ebbfd3d7c4ffc9c1dce",
         "live-76c8ed316d62d29f25a90d15",
         "live-ee482fa2d66fc5faf589af9b",
-        "live-0a6073f6b47f566042dd719a",
-        "live-d62f4a62f48168c5e329d52d"
+        "live-d62f4a62f48168c5e329d52d",
+        "live-0a6073f6b47f566042dd719a"
       ],
       "resumed": [],
       "stale": [],
@@ -115,8 +115,8 @@
       "service_failures": [],
       "pending_before": 59,
       "pending_after": 59,
-      "finished_at": "2026-10-18T21:58:59.926729+00:00",
-      "seconds": 14.6,
+      "finished_at": "2026-10-18T22:30:04.098090+00:00",
+      "seconds": 5.56,
       "requests_today": 336,
       "daily_request_limit": 500,
       "unknown_usage_requests_today": 3,
@@ -124,20 +124,24 @@
       "configured": true
     },
     {
-      "status": "completed",
+      "status": "partial_failure",
       "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
       "model": "gemini-3.5-flash-lite",
       "account_mode": "free-project-only",
-      "started_at": "2026-10-18T21:58:45.327279+00:00",
+      "started_at": "2026-10-18T22:29:58.537415+00:00",
       "translated": [],
-      "failed": [],
+      "failed": [
+        {
+          "id": "live-1e398608a79570e381c493bc",
+          "reason": "ai_numbers_missing:block:7:text:0"
+        }
+      ],
       "deferred": [
         "live-868ab2ab1ef038502bf02388",
         "live-bf391b952f3cfea13ba21e52",
         "live-c0704545fc5122ea2e0a0d12",
         "live-1cd1c874e309aaef695f221f",
         "live-c07ebcb2238676a0ca273691",
-        "live-1e398608a79570e381c493bc",
         "live-f816288b1215c5fd790246d9",
         "live-fc34527bd1f1aed999a01e8e",
         "live-060658cea0eefb38036b7f47",
@@ -192,19 +196,21 @@
         "live-a446c44efc0ae05a31d1173d",
         "live-bec7ecaa39ce323f0e73eea5"
       ],
-      "resumed": [],
+      "resumed": [
+        "live-1e398608a79570e381c493bc"
+      ],
       "stale": [],
-      "requests": 0,
-      "input_tokens": 0,
-      "output_tokens": 0,
+      "requests": 1,
+      "input_tokens": 1903,
+      "output_tokens": 163,
       "service_retry_policy": "bounded-exponential-v1",
       "inline_service_retries": 0,
       "service_failures": [],
       "pending_before": 59,
       "pending_after": 59,
-      "finished_at": "2026-10-18T21:58:56.254340+00:00",
-      "seconds": 10.93,
-      "requests_today": 290,
+      "finished_at": "2026-10-18T22:30:05.940393+00:00",
+      "seconds": 7.4,
+      "requests_today": 291,
       "daily_request_limit": 500,
       "unknown_usage_requests_today": 3,
       "id": "secondary",
@@ -217,7 +223,9 @@
   "inline_service_retries": 0,
   "service_failures": [],
   "translated": [],
-  "resumed": [],
+  "resumed": [
+    "live-1e398608a79570e381c493bc"
+  ],
   "deferred": [
     "live-99e14e4566c6d48c1ff94a7a",
     "live-65723ff399767c5ad7d9d776",
@@ -276,14 +284,13 @@
     "live-4b231ebbfd3d7c4ffc9c1dce",
     "live-76c8ed316d62d29f25a90d15",
     "live-ee482fa2d66fc5faf589af9b",
-    "live-0a6073f6b47f566042dd719a",
     "live-d62f4a62f48168c5e329d52d",
+    "live-0a6073f6b47f566042dd719a",
     "live-868ab2ab1ef038502bf02388",
     "live-bf391b952f3cfea13ba21e52",
     "live-c0704545fc5122ea2e0a0d12",
     "live-1cd1c874e309aaef695f221f",
     "live-c07ebcb2238676a0ca273691",
-    "live-1e398608a79570e381c493bc",
     "live-f816288b1215c5fd790246d9",
     "live-fc34527bd1f1aed999a01e8e",
     "live-060658cea0eefb38036b7f47",
@@ -339,14 +346,20 @@
     "live-bec7ecaa39ce323f0e73eea5"
   ],
   "stale": [],
-  "failed": [],
-  "requests": 0,
-  "input_tokens": 0,
-  "output_tokens": 0,
-  "requests_today": 886,
+  "failed": [
+    {
+      "id": "live-1e398608a79570e381c493bc",
+      "reason": "ai_numbers_missing:block:7:text:0",
+      "project": "secondary"
+    }
+  ],
+  "requests": 1,
+  "input_tokens": 1903,
+  "output_tokens": 163,
+  "requests_today": 887,
   "unknown_usage_requests_today": 6,
   "daily_request_limit": 1300,
   "pending_after": 118,
   "continue_recommended": false,
-  "seconds": 15.12
+  "seconds": 7.4
 }

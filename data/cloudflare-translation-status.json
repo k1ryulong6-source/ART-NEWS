@@ -2,43 +2,90 @@
   "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
   "model": "@cf/qwen/qwen3-30b-a3b-fp8",
   "configured": true,
-  "requests": 0,
+  "requests": 8,
   "translated": [],
-  "failed": [],
+  "failed": [
+    {
+      "id": "live-ce1a33976090e0c28aa161ef",
+      "reason": "ai_unit_coverage_mismatch"
+    },
+    {
+      "id": "live-fc34527bd1f1aed999a01e8e",
+      "reason": "ai_numbers_missing:block:7:text:0"
+    },
+    {
+      "id": "live-5980f4877e8edcc5f8ef2105",
+      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
+    },
+    {
+      "id": "live-405e840b30e68e87bd39db58",
+      "reason": "ai_paragraph_not_translated:block:13:text:0"
+    },
+    {
+      "id": "live-ee482fa2d66fc5faf589af9b",
+      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
+    },
+    {
+      "id": "live-51cf375544c1311bc5bc2bc8",
+      "reason": "ai_unit_coverage_mismatch"
+    },
+    {
+      "id": "live-8d8d52c8b19a5a720e3958d9",
+      "reason": "ai_unit_coverage_mismatch"
+    }
+  ],
   "credential_checks": {
     "api_token_present": true,
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-18T15:59:05.125158+00:00",
+  "started_at": "2026-10-18T16:35:24.091633+00:00",
   "verification_run": false,
-  "status": "quota_wait",
+  "status": "daily_limit",
   "account_mode": "free-project-only",
-  "deferred": [],
-  "resumed": [],
+  "deferred": [
+    "live-a666674bb9b73216a594e4b3",
+    "live-1e398608a79570e381c493bc",
+    "live-c9d98f5e001e5f8352184118",
+    "live-2447a625ae06d51b87d03c42",
+    "live-a1245d0a7e9bc7cd87940813",
+    "live-61270b82651ee15b55293180",
+    "live-bc116950b9594ad1f08e6e58",
+    "live-b712814601f4b2a120036cfb",
+    "live-d13a53998bb90d171e1a6b0d",
+    "live-e00ea2022c2c0cc8772d34d4",
+    "live-1c5789e645c1311841bde1f1",
+    "live-7d50f83138777c6466ca66de",
+    "live-f0fe2ed67fc7390368932d19",
+    "live-4b231ebbfd3d7c4ffc9c1dce"
+  ],
+  "resumed": [
+    "live-fc34527bd1f1aed999a01e8e"
+  ],
   "stale": [],
-  "input_tokens": 0,
-  "output_tokens": 0,
+  "input_tokens": 26092,
+  "output_tokens": 4348,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "retry_after": "2026-10-18T16:30:08.344324+00:00",
-  "error": "ai_http_429",
-  "finished_at": "2026-10-18T15:59:05.280450+00:00",
-  "seconds": 0.15,
-  "requests_today": 174,
+  "pending_before": 113,
+  "retry_after": "2026-10-19T00:15:00+00:00",
+  "pending_after": 113,
+  "finished_at": "2026-10-18T16:36:49.533609+00:00",
+  "seconds": 85.44,
+  "requests_today": 182,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 4,
   "neurons": {
     "day": "2026-10-18",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 5888.072675,
+    "estimated_neurons": 6141.253475,
     "unknown_neurons_upper_bound": 743.19715,
     "reserved_neurons": 0.0,
-    "requests": 174,
-    "input_tokens": 527675,
-    "output_tokens": 113128,
+    "requests": 182,
+    "input_tokens": 553767,
+    "output_tokens": 117476,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

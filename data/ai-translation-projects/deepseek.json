@@ -3,26 +3,56 @@
   "provider": "contextual-api:deepseek:deepseek-flash:direct-v1",
   "model": "deepseek-flash",
   "account_mode": "user-authorized-prepaid",
-  "started_at": "2026-10-18T06:50:21.413305+00:00",
-  "translated": [],
-  "failed": [],
+  "started_at": "2026-10-18T07:33:51.520730+00:00",
+  "translated": [
+    "live-ca5b4c637933df1164a591b2",
+    "live-34023ccd85a0f685a4eaef69",
+    "live-8e0fe089538e112a5d21e49d",
+    "live-be3faf114081a9260191b2ed",
+    "live-2844acc0018379f431cda412",
+    "live-b55c9e0a1375c9984c1b84ac",
+    "live-7be1307c9e774d1d33438e81",
+    "live-351c5be3cd88e2fc4b181e04"
+  ],
+  "failed": [
+    {
+      "id": "live-bc116950b9594ad1f08e6e58",
+      "reason": "ai_numbers_missing:excerpt:0"
+    },
+    {
+      "id": "live-d7ef045dc3fba3a12a48ba0b",
+      "reason": "ai_numbers_missing:block:36:text:0"
+    },
+    {
+      "id": "live-a446c44efc0ae05a31d1173d",
+      "reason": "ai_paragraph_not_translated:block:1213:text:0"
+    },
+    {
+      "id": "live-2d3927a6139aca97abfa0d21",
+      "reason": "block_not_chinese"
+    },
+    {
+      "id": "live-28df7871f5a7a9bb1a0e8bce",
+      "reason": "ai_numbers_missing:block:10:text:0"
+    }
+  ],
   "deferred": [],
   "resumed": [],
   "stale": [],
-  "requests": 0,
-  "input_tokens": 0,
-  "output_tokens": 0,
+  "requests": 40,
+  "input_tokens": 1174918,
+  "output_tokens": 46565,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 0,
-  "pending_after": 0,
-  "finished_at": "2026-10-18T06:50:30.342479+00:00",
-  "seconds": 8.93,
-  "requests_today": 300,
+  "pending_before": 56,
+  "retry_after": "2026-10-19T07:15:00+00:00",
+  "pending_after": 48,
+  "finished_at": "2026-10-18T07:39:44.426783+00:00",
+  "seconds": 352.91,
+  "requests_today": 40,
   "daily_request_limit": 300,
   "unknown_usage_requests_today": 0,
-  "retry_after": "2026-10-18T07:15:00+00:00",
   "id": "deepseek",
   "configured": true
 }

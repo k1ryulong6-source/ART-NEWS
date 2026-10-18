@@ -4,24 +4,25 @@
   "configured": true,
   "requests": 8,
   "translated": [
-    "live-252620bdbb7d11615b532965"
+    "live-21fd8c2a1a7adf10e4c635f6",
+    "live-868b1f0a768abc2454356848"
   ],
   "failed": [
     {
-      "id": "live-fc34527bd1f1aed999a01e8e",
-      "reason": "ai_numbers_missing:block:7:text:0"
+      "id": "live-ca5b4c637933df1164a591b2",
+      "reason": "ai_unit_coverage_mismatch"
     },
     {
-      "id": "live-438ff879303e1a431df5ebc0",
+      "id": "live-252620bdbb7d11615b532965",
+      "reason": "ai_numbers_missing:block:19:text:0"
+    },
+    {
+      "id": "live-257509ab7e4474a2855dd4eb",
+      "reason": "ai_unit_coverage_mismatch"
+    },
+    {
+      "id": "live-ee482fa2d66fc5faf589af9b",
       "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
-    },
-    {
-      "id": "live-34023ccd85a0f685a4eaef69",
-      "reason": "ai_output_incomplete"
-    },
-    {
-      "id": "live-53e5d31021e8ac55442c3aa0",
-      "reason": "ai_numbers_missing:block:11:text:0"
     }
   ],
   "credential_checks": {
@@ -29,17 +30,20 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-18T00:44:50.004036+00:00",
+  "started_at": "2026-10-18T00:56:30.502203+00:00",
   "verification_run": false,
   "status": "daily_limit",
   "account_mode": "free-project-only",
   "deferred": [
     "live-2d3927a6139aca97abfa0d21",
+    "live-fc34527bd1f1aed999a01e8e",
+    "live-438ff879303e1a431df5ebc0",
     "live-c9d98f5e001e5f8352184118",
     "live-2cb586ea5662e6701f2eb22b",
     "live-342293e465b49deef3b1ecab",
     "live-fb4c6af5258914d1e193d5d0",
     "live-ef3b9f23c647cfd74adf3d2a",
+    "live-34023ccd85a0f685a4eaef69",
     "live-01d6cb60889a94a9374b2fd9",
     "live-46785b8e60a0bd6d033faf61",
     "live-1f7aee7e7873cdd7725f278a",
@@ -79,33 +83,34 @@
     "live-6a06874a1a2de1b470e366ca",
     "live-b5b16277ccb4d4a2fe938f57",
     "live-05cb6eadaef17d128d266571",
+    "live-53e5d31021e8ac55442c3aa0",
     "live-d62f4a62f48168c5e329d52d"
   ],
   "resumed": [],
   "stale": [],
-  "input_tokens": 24877,
-  "output_tokens": 7770,
+  "input_tokens": 17267,
+  "output_tokens": 4234,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 156,
+  "pending_before": 163,
   "retry_after": "2026-10-19T00:15:00+00:00",
-  "pending_after": 155,
-  "finished_at": "2026-10-18T00:46:46.499482+00:00",
-  "seconds": 116.49,
-  "requests_today": 8,
+  "pending_after": 161,
+  "finished_at": "2026-10-18T00:57:57.931338+00:00",
+  "seconds": 87.42,
+  "requests_today": 16,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
     "day": "2026-10-18",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 351.846875,
+    "estimated_neurons": 560.7379,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 0.0,
-    "requests": 8,
-    "input_tokens": 24877,
-    "output_tokens": 7770,
+    "requests": 16,
+    "input_tokens": 42144,
+    "output_tokens": 12004,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

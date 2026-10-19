@@ -5,15 +5,15 @@
   "translation_provider": "deepseek+gemini",
   "account_mode": "user-authorized-prepaid",
   "pool_mode": "parallel_disjoint_articles",
-  "started_at": "2026-10-19T01:37:45.188274+00:00",
-  "finished_at": "2026-10-19T01:38:01.824216+00:00",
+  "started_at": "2026-10-19T02:33:36.908019+00:00",
+  "finished_at": "2026-10-19T02:34:55.695255+00:00",
   "projects": [
     {
       "status": "daily_limit",
       "provider": "contextual-api:deepseek:deepseek-flash:direct-v1",
       "model": "deepseek-flash",
       "account_mode": "user-authorized-prepaid",
-      "started_at": "2026-10-19T01:37:45.188945+00:00",
+      "started_at": "2026-10-19T02:33:36.908702+00:00",
       "translated": [],
       "failed": [],
       "deferred": [],
@@ -27,8 +27,8 @@
       "service_failures": [],
       "pending_before": 0,
       "pending_after": 0,
-      "finished_at": "2026-10-19T01:37:56.332043+00:00",
-      "seconds": 11.14,
+      "finished_at": "2026-10-19T02:33:48.379085+00:00",
+      "seconds": 11.47,
       "requests_today": 260,
       "daily_request_limit": 300,
       "unknown_usage_requests_today": 0,
@@ -41,18 +41,34 @@
       "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
       "model": "gemini-3.5-flash-lite",
       "account_mode": "free-project-only",
-      "started_at": "2026-10-19T01:37:45.190006+00:00",
+      "started_at": "2026-10-19T02:33:36.909170+00:00",
       "translated": [],
       "failed": [
         {
-          "id": "live-1cd1c874e309aaef695f221f",
-          "reason": "ai_numbers_missing:excerpt:0"
+          "id": "live-c07ebcb2238676a0ca273691",
+          "reason": "ai_numbers_missing:block:2:text:0"
+        },
+        {
+          "id": "live-62858b56a398788b4b41c717",
+          "reason": "ai_numbers_missing:block:1:text:0"
+        },
+        {
+          "id": "live-e5cabd90ee7db9e8a5034bab",
+          "reason": "empty_ai_translation:block:25:text:0"
+        },
+        {
+          "id": "live-76c8ed316d62d29f25a90d15",
+          "reason": "ai_paragraph_not_translated:block:17:text:0"
+        },
+        {
+          "id": "live-ee482fa2d66fc5faf589af9b",
+          "reason": "ai_paragraph_not_translated:block:32:text:0"
         }
       ],
       "deferred": [
         "live-99e14e4566c6d48c1ff94a7a",
         "live-863b62fdf1947c023ec0dfe7",
-        "live-c07ebcb2238676a0ca273691",
+        "live-1cd1c874e309aaef695f221f",
         "live-d7ef045dc3fba3a12a48ba0b",
         "live-438ff879303e1a431df5ebc0",
         "live-c9a1edae85b0ebb26b4ae997",
@@ -64,7 +80,6 @@
         "live-94d343c73f0ee500180ddcd5",
         "live-d27f942e6a1695405ce4b478",
         "live-1aa41fc2c93bc743de81e824",
-        "live-62858b56a398788b4b41c717",
         "live-01d6cb60889a94a9374b2fd9",
         "live-1f7aee7e7873cdd7725f278a",
         "live-64192915e883adfd0919c366",
@@ -99,40 +114,58 @@
         "live-e20414805dd1abb454067844",
         "live-91d2d80f25729d14deb137bd",
         "live-05cb6eadaef17d128d266571",
-        "live-e5cabd90ee7db9e8a5034bab",
         "live-4b231ebbfd3d7c4ffc9c1dce",
-        "live-76c8ed316d62d29f25a90d15",
-        "live-ee482fa2d66fc5faf589af9b",
         "live-0a6073f6b47f566042dd719a"
       ],
       "resumed": [
-        "live-1cd1c874e309aaef695f221f"
+        "live-c07ebcb2238676a0ca273691",
+        "live-62858b56a398788b4b41c717",
+        "live-e5cabd90ee7db9e8a5034bab",
+        "live-76c8ed316d62d29f25a90d15",
+        "live-ee482fa2d66fc5faf589af9b"
       ],
       "stale": [],
-      "requests": 1,
-      "input_tokens": 4230,
-      "output_tokens": 248,
+      "requests": 5,
+      "input_tokens": 20046,
+      "output_tokens": 1164,
       "service_retry_policy": "bounded-exponential-v1",
       "inline_service_retries": 0,
       "service_failures": [],
       "pending_before": 55,
       "pending_after": 55,
-      "finished_at": "2026-10-19T01:38:01.818174+00:00",
-      "seconds": 16.63,
-      "requests_today": 415,
+      "finished_at": "2026-10-19T02:34:55.688651+00:00",
+      "seconds": 78.78,
+      "requests_today": 420,
       "daily_request_limit": 500,
       "unknown_usage_requests_today": 8,
       "id": "primary",
       "configured": true
     },
     {
-      "status": "completed",
+      "status": "partial_failure",
       "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
       "model": "gemini-3.5-flash-lite",
       "account_mode": "free-project-only",
-      "started_at": "2026-10-19T01:37:45.190093+00:00",
+      "started_at": "2026-10-19T02:33:36.909322+00:00",
       "translated": [],
-      "failed": [],
+      "failed": [
+        {
+          "id": "live-7d50f83138777c6466ca66de",
+          "reason": "ai_numbers_missing:block:4:text:0"
+        },
+        {
+          "id": "live-2447a625ae06d51b87d03c42",
+          "reason": "ai_paragraph_not_translated:block:24:text:0"
+        },
+        {
+          "id": "live-f0fe2ed67fc7390368932d19",
+          "reason": "ai_numbers_missing:block:6:text:0"
+        },
+        {
+          "id": "live-69504e2fe66d667bab88ff37",
+          "reason": "ai_numbers_missing:block:5:text:0"
+        }
+      ],
       "deferred": [
         "live-868ab2ab1ef038502bf02388",
         "live-65723ff399767c5ad7d9d776",
@@ -142,7 +175,6 @@
         "live-2d3927a6139aca97abfa0d21",
         "live-fc34527bd1f1aed999a01e8e",
         "live-060658cea0eefb38036b7f47",
-        "live-2447a625ae06d51b87d03c42",
         "live-a1245d0a7e9bc7cd87940813",
         "live-61270b82651ee15b55293180",
         "live-69c47a1a48da9a5526fc9eda",
@@ -178,31 +210,33 @@
         "live-56133e1bff6dd7abceadb8cf",
         "live-47c0633fe3a5f56644fcfa73",
         "live-e6de386d66bb2d472dd35408",
-        "live-7d50f83138777c6466ca66de",
         "live-084578a6c52df1f89d900926",
         "live-8a31a8663c8f4f8f88d28e9f",
         "live-1d22c7625fdbcd788a0a6a34",
         "live-b5b16277ccb4d4a2fe938f57",
         "live-14fdc00be9a2ef7c1cbf2693",
         "live-715f48cefa36107b1c39ef86",
-        "live-f0fe2ed67fc7390368932d19",
-        "live-69504e2fe66d667bab88ff37",
         "live-a446c44efc0ae05a31d1173d",
         "live-bec7ecaa39ce323f0e73eea5"
       ],
-      "resumed": [],
+      "resumed": [
+        "live-7d50f83138777c6466ca66de",
+        "live-2447a625ae06d51b87d03c42",
+        "live-f0fe2ed67fc7390368932d19",
+        "live-69504e2fe66d667bab88ff37"
+      ],
       "stale": [],
-      "requests": 0,
-      "input_tokens": 0,
-      "output_tokens": 0,
+      "requests": 4,
+      "input_tokens": 13174,
+      "output_tokens": 477,
       "service_retry_policy": "bounded-exponential-v1",
       "inline_service_retries": 0,
       "service_failures": [],
       "pending_before": 55,
       "pending_after": 55,
-      "finished_at": "2026-10-19T01:38:00.505589+00:00",
-      "seconds": 15.32,
-      "requests_today": 357,
+      "finished_at": "2026-10-19T02:34:35.325942+00:00",
+      "seconds": 58.42,
+      "requests_today": 361,
       "daily_request_limit": 500,
       "unknown_usage_requests_today": 8,
       "id": "secondary",
@@ -216,12 +250,20 @@
   "service_failures": [],
   "translated": [],
   "resumed": [
-    "live-1cd1c874e309aaef695f221f"
+    "live-c07ebcb2238676a0ca273691",
+    "live-62858b56a398788b4b41c717",
+    "live-e5cabd90ee7db9e8a5034bab",
+    "live-76c8ed316d62d29f25a90d15",
+    "live-ee482fa2d66fc5faf589af9b",
+    "live-7d50f83138777c6466ca66de",
+    "live-2447a625ae06d51b87d03c42",
+    "live-f0fe2ed67fc7390368932d19",
+    "live-69504e2fe66d667bab88ff37"
   ],
   "deferred": [
     "live-99e14e4566c6d48c1ff94a7a",
     "live-863b62fdf1947c023ec0dfe7",
-    "live-c07ebcb2238676a0ca273691",
+    "live-1cd1c874e309aaef695f221f",
     "live-d7ef045dc3fba3a12a48ba0b",
     "live-438ff879303e1a431df5ebc0",
     "live-c9a1edae85b0ebb26b4ae997",
@@ -233,7 +275,6 @@
     "live-94d343c73f0ee500180ddcd5",
     "live-d27f942e6a1695405ce4b478",
     "live-1aa41fc2c93bc743de81e824",
-    "live-62858b56a398788b4b41c717",
     "live-01d6cb60889a94a9374b2fd9",
     "live-1f7aee7e7873cdd7725f278a",
     "live-64192915e883adfd0919c366",
@@ -268,10 +309,7 @@
     "live-e20414805dd1abb454067844",
     "live-91d2d80f25729d14deb137bd",
     "live-05cb6eadaef17d128d266571",
-    "live-e5cabd90ee7db9e8a5034bab",
     "live-4b231ebbfd3d7c4ffc9c1dce",
-    "live-76c8ed316d62d29f25a90d15",
-    "live-ee482fa2d66fc5faf589af9b",
     "live-0a6073f6b47f566042dd719a",
     "live-868ab2ab1ef038502bf02388",
     "live-65723ff399767c5ad7d9d776",
@@ -281,7 +319,6 @@
     "live-2d3927a6139aca97abfa0d21",
     "live-fc34527bd1f1aed999a01e8e",
     "live-060658cea0eefb38036b7f47",
-    "live-2447a625ae06d51b87d03c42",
     "live-a1245d0a7e9bc7cd87940813",
     "live-61270b82651ee15b55293180",
     "live-69c47a1a48da9a5526fc9eda",
@@ -317,33 +354,70 @@
     "live-56133e1bff6dd7abceadb8cf",
     "live-47c0633fe3a5f56644fcfa73",
     "live-e6de386d66bb2d472dd35408",
-    "live-7d50f83138777c6466ca66de",
     "live-084578a6c52df1f89d900926",
     "live-8a31a8663c8f4f8f88d28e9f",
     "live-1d22c7625fdbcd788a0a6a34",
     "live-b5b16277ccb4d4a2fe938f57",
     "live-14fdc00be9a2ef7c1cbf2693",
     "live-715f48cefa36107b1c39ef86",
-    "live-f0fe2ed67fc7390368932d19",
-    "live-69504e2fe66d667bab88ff37",
     "live-a446c44efc0ae05a31d1173d",
     "live-bec7ecaa39ce323f0e73eea5"
   ],
   "stale": [],
   "failed": [
     {
-      "id": "live-1cd1c874e309aaef695f221f",
-      "reason": "ai_numbers_missing:excerpt:0",
+      "id": "live-c07ebcb2238676a0ca273691",
+      "reason": "ai_numbers_missing:block:2:text:0",
       "project": "primary"
+    },
+    {
+      "id": "live-62858b56a398788b4b41c717",
+      "reason": "ai_numbers_missing:block:1:text:0",
+      "project": "primary"
+    },
+    {
+      "id": "live-e5cabd90ee7db9e8a5034bab",
+      "reason": "empty_ai_translation:block:25:text:0",
+      "project": "primary"
+    },
+    {
+      "id": "live-76c8ed316d62d29f25a90d15",
+      "reason": "ai_paragraph_not_translated:block:17:text:0",
+      "project": "primary"
+    },
+    {
+      "id": "live-ee482fa2d66fc5faf589af9b",
+      "reason": "ai_paragraph_not_translated:block:32:text:0",
+      "project": "primary"
+    },
+    {
+      "id": "live-7d50f83138777c6466ca66de",
+      "reason": "ai_numbers_missing:block:4:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-2447a625ae06d51b87d03c42",
+      "reason": "ai_paragraph_not_translated:block:24:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-f0fe2ed67fc7390368932d19",
+      "reason": "ai_numbers_missing:block:6:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-69504e2fe66d667bab88ff37",
+      "reason": "ai_numbers_missing:block:5:text:0",
+      "project": "secondary"
     }
   ],
-  "requests": 1,
-  "input_tokens": 4230,
-  "output_tokens": 248,
-  "requests_today": 1032,
+  "requests": 9,
+  "input_tokens": 33220,
+  "output_tokens": 1641,
+  "requests_today": 1041,
   "unknown_usage_requests_today": 16,
   "daily_request_limit": 1300,
   "pending_after": 110,
   "continue_recommended": false,
-  "seconds": 16.63
+  "seconds": 78.78
 }

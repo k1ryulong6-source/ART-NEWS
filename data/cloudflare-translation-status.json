@@ -4,14 +4,36 @@
   "configured": true,
   "requests": 8,
   "translated": [
-    "live-7eb52d46cd15768788f6ec5d",
-    "live-5b10507c5cfd25b725b6e3c7",
-    "live-c90c468beaedef92a6f2a2f6"
+    "live-acb7d35e387d5e418310797a"
   ],
   "failed": [
     {
-      "id": "live-ffac5e019c695094d6fdc9f5",
+      "id": "live-fc34527bd1f1aed999a01e8e",
+      "reason": "ai_numbers_missing:block:7:text:0"
+    },
+    {
+      "id": "live-5980f4877e8edcc5f8ef2105",
+      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
+    },
+    {
+      "id": "live-88cc1fc663f9368f2b676ef2",
+      "reason": "Unterminated string starting at: line 1 column 774 (char 773)"
+    },
+    {
+      "id": "live-04b1431ad4a1a98773e1d188",
+      "reason": "ai_numbers_missing:block:2:text:0"
+    },
+    {
+      "id": "live-715f48cefa36107b1c39ef86",
+      "reason": "ai_numbers_missing:block:3:text:0"
+    },
+    {
+      "id": "live-08575b1781dd45468e91a7e6",
       "reason": "ai_unit_coverage_mismatch"
+    },
+    {
+      "id": "live-14fdc00be9a2ef7c1cbf2693",
+      "reason": "ai_paragraph_not_translated:block:4:text:0"
     }
   ],
   "credential_checks": {
@@ -19,13 +41,13 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-19T17:11:08.088675+00:00",
+  "started_at": "2026-10-19T18:03:58.692496+00:00",
   "verification_run": false,
-  "status": "daily_limit",
+  "status": "partial_failure",
   "account_mode": "free-project-only",
   "deferred": [
     "live-62bfd5560912e14b08d53c39",
-    "live-ea17e41d113d00e4071fffea",
+    "live-ffac5e019c695094d6fdc9f5",
     "live-9cc556510085463b6d77bb22",
     "live-46b62cf90499a36d91605693",
     "live-b5cc5139d6ccf7d045dba8aa",
@@ -49,9 +71,6 @@
     "live-65723ff399767c5ad7d9d776",
     "live-863b62fdf1947c023ec0dfe7",
     "live-1cd1c874e309aaef695f221f",
-    "live-fc34527bd1f1aed999a01e8e",
-    "live-a1245d0a7e9bc7cd87940813",
-    "live-61270b82651ee15b55293180",
     "live-6b2b9e1012e9182d6f61bd11",
     "live-69c47a1a48da9a5526fc9eda",
     "live-7ee74a6c1eb39aae2c014956",
@@ -63,7 +82,6 @@
     "live-62858b56a398788b4b41c717",
     "live-011099c20b8f3de9deca26b2",
     "live-01d6cb60889a94a9374b2fd9",
-    "live-5980f4877e8edcc5f8ef2105",
     "live-bc116950b9594ad1f08e6e58",
     "live-e00ea2022c2c0cc8772d34d4",
     "live-1c5789e645c1311841bde1f1",
@@ -73,8 +91,6 @@
     "live-e20414805dd1abb454067844",
     "live-1d22c7625fdbcd788a0a6a34",
     "live-91d2d80f25729d14deb137bd",
-    "live-b5b16277ccb4d4a2fe938f57",
-    "live-05cb6eadaef17d128d266571",
     "live-e5cabd90ee7db9e8a5034bab",
     "live-f0fe2ed67fc7390368932d19",
     "live-4b231ebbfd3d7c4ffc9c1dce",
@@ -85,32 +101,33 @@
     "live-0a6073f6b47f566042dd719a"
   ],
   "resumed": [
-    "live-715f48cefa36107b1c39ef86"
+    "live-fc34527bd1f1aed999a01e8e",
+    "live-715f48cefa36107b1c39ef86",
+    "live-14fdc00be9a2ef7c1cbf2693"
   ],
   "stale": [],
-  "input_tokens": 17523,
-  "output_tokens": 3418,
+  "input_tokens": 19848,
+  "output_tokens": 3513,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 128,
-  "retry_after": "2026-10-20T00:15:00+00:00",
-  "pending_after": 125,
-  "finished_at": "2026-10-19T17:12:24.685421+00:00",
-  "seconds": 76.59,
-  "requests_today": 195,
+  "pending_before": 124,
+  "pending_after": 123,
+  "finished_at": "2026-10-19T18:05:09.981557+00:00",
+  "seconds": 71.28,
+  "requests_today": 203,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
     "day": "2026-10-19",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 6644.042925,
+    "estimated_neurons": 6842.8986,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 0.0,
-    "requests": 195,
-    "input_tokens": 641775,
-    "output_tokens": 120618,
+    "requests": 203,
+    "input_tokens": 661623,
+    "output_tokens": 124131,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

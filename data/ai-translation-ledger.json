@@ -1862,5 +1862,17 @@
     "category": "unclassified_http_error",
     "api_status": "INTERNAL",
     "occurred_at": "2026-10-19T16:54:28.919149+00:00"
-  }
+  },
+  "service_retry": {
+    "policy": "bounded-exponential-v1",
+    "consecutive_failures": 1,
+    "delay_seconds": 72,
+    "server_retry_seconds": 0,
+    "error": "TimeoutError",
+    "failed_at": "2026-10-20T01:46:15.007377+00:00",
+    "retry_after": "2026-10-20T01:47:27.007377+00:00"
+  },
+  "retry_after": "2026-10-20T01:47:27.007377+00:00",
+  "retry_status": "service_wait",
+  "retry_error": "TimeoutError"
 }

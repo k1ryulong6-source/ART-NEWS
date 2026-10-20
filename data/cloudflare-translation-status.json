@@ -4,28 +4,36 @@
   "configured": true,
   "requests": 8,
   "translated": [
-    "live-59e03a4cfc5f7559f724e90f"
+    "live-aa71b92c4034c8bc47a3b4ad"
   ],
   "failed": [
     {
-      "id": "live-1c5789e645c1311841bde1f1",
-      "reason": "ai_numbers_missing:excerpt:0"
+      "id": "live-0048756de9fb0126a657ed01",
+      "reason": "ai_unit_coverage_mismatch"
     },
     {
-      "id": "live-7d50f83138777c6466ca66de",
-      "reason": "ai_numbers_missing:block:2:text:0"
+      "id": "live-d10b527d989f1e2129ba7888",
+      "reason": "ai_numbers_missing:block:14:text:0"
     },
     {
-      "id": "live-11fda173ddff3c944a71d5cc",
-      "reason": "ai_numbers_missing:block:11:text:0"
+      "id": "live-a16c5d7d63b7d7566b19aa32",
+      "reason": "ai_paragraph_not_translated:block:1:text:0"
     },
     {
-      "id": "live-8f6b7e6d57e6471644ccf101",
-      "reason": "ai_numbers_missing:block:15:text:0"
+      "id": "live-8dd7dfa740e746b61dbde841",
+      "reason": "ai_paragraph_not_translated:block:18:text:0"
     },
     {
-      "id": "live-a446c44efc0ae05a31d1173d",
-      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
+      "id": "live-c29b8d60a818d6bea481fd90",
+      "reason": "block_not_chinese"
+    },
+    {
+      "id": "live-8e5fb7c1659365336402cf7b",
+      "reason": "ai_unit_coverage_mismatch"
+    },
+    {
+      "id": "live-084578a6c52df1f89d900926",
+      "reason": "ai_numbers_missing:block:1:text:0"
     }
   ],
   "credential_checks": {
@@ -33,11 +41,13 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-20T23:05:26.405000+00:00",
+  "started_at": "2026-10-20T23:36:12.542075+00:00",
   "verification_run": false,
-  "status": "daily_limit",
+  "status": "partial_failure",
   "account_mode": "free-project-only",
   "deferred": [
+    "live-11fda173ddff3c944a71d5cc",
+    "live-8f6b7e6d57e6471644ccf101",
     "live-4be0e811864eba9247898485",
     "live-3e1b46bda64afa072b64d24f",
     "live-6e3fd28f2b8692ab51647102",
@@ -69,6 +79,8 @@
     "live-5980f4877e8edcc5f8ef2105",
     "live-bc116950b9594ad1f08e6e58",
     "live-e00ea2022c2c0cc8772d34d4",
+    "live-1c5789e645c1311841bde1f1",
+    "live-7d50f83138777c6466ca66de",
     "live-e20414805dd1abb454067844",
     "live-1d22c7625fdbcd788a0a6a34",
     "live-91d2d80f25729d14deb137bd",
@@ -79,38 +91,42 @@
     "live-f0fe2ed67fc7390368932d19",
     "live-4b231ebbfd3d7c4ffc9c1dce",
     "live-76c8ed316d62d29f25a90d15",
+    "live-a446c44efc0ae05a31d1173d",
     "live-bec7ecaa39ce323f0e73eea5",
     "live-ee482fa2d66fc5faf589af9b",
     "live-53e5d31021e8ac55442c3aa0"
   ],
   "resumed": [
-    "live-1c5789e645c1311841bde1f1",
-    "live-7d50f83138777c6466ca66de"
+    "live-d10b527d989f1e2129ba7888",
+    "live-aa71b92c4034c8bc47a3b4ad",
+    "live-a16c5d7d63b7d7566b19aa32",
+    "live-8dd7dfa740e746b61dbde841",
+    "live-c29b8d60a818d6bea481fd90",
+    "live-084578a6c52df1f89d900926"
   ],
   "stale": [],
-  "input_tokens": 18598,
-  "output_tokens": 3436,
+  "input_tokens": 27719,
+  "output_tokens": 7287,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 148,
-  "retry_after": "2026-10-21T00:15:00+00:00",
-  "pending_after": 147,
-  "finished_at": "2026-10-20T23:06:34.974637+00:00",
-  "seconds": 68.56,
-  "requests_today": 244,
+  "pending_before": 147,
+  "pending_after": 146,
+  "finished_at": "2026-10-20T23:37:45.894408+00:00",
+  "seconds": 93.34,
+  "requests_today": 252,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 2,
   "neurons": {
     "day": "2026-10-20",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 8713.5368,
+    "estimated_neurons": 9063.8085,
     "unknown_neurons_upper_bound": 366.733075,
     "reserved_neurons": 0.0,
-    "requests": 244,
-    "input_tokens": 763233,
-    "output_tokens": 170093,
+    "requests": 252,
+    "input_tokens": 790952,
+    "output_tokens": 177380,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

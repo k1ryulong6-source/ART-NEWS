@@ -2,34 +2,40 @@
   "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
   "model": "@cf/qwen/qwen3-30b-a3b-fp8",
   "configured": true,
-  "requests": 8,
-  "translated": [
-    "live-56f2c9668638d7be9204689d"
-  ],
+  "requests": 6,
+  "translated": [],
   "failed": [
     {
-      "id": "live-e3d6778598faf64b5f888e42",
-      "reason": "ai_numbers_missing:block:12:text:0"
+      "id": "live-f2266ca06f33ad6f54ffed79",
+      "reason": "ai_paragraph_not_translated:block:8:text:0"
     },
     {
-      "id": "live-7efe8503a1ccc2d4e4f062c1",
+      "id": "live-46b62cf90499a36d91605693",
+      "reason": "ai_paragraph_not_translated:block:9:text:0"
+    },
+    {
+      "id": "live-b5cc5139d6ccf7d045dba8aa",
+      "reason": "ai_numbers_missing:block:2:text:0"
+    },
+    {
+      "id": "live-5a03d513acd3e87980e026e9",
+      "reason": "ai_unit_coverage_mismatch"
+    },
+    {
+      "id": "live-05cb6eadaef17d128d266571",
+      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
+    },
+    {
+      "id": "live-675b5dad9387540757232e04",
       "reason": "ai_numbers_missing:block:3:text:0"
     },
     {
-      "id": "live-2db9f4b6bffd4539e161e4da",
-      "reason": "ai_numbers_missing:block:5:text:0"
+      "id": "live-7458d3a099139c985a9b278c",
+      "reason": "ai_numbers_missing:block:1:text:0"
     },
     {
-      "id": "live-05cc76e49a90a86d0d05ec6a",
-      "reason": "ai_numbers_missing:title:0"
-    },
-    {
-      "id": "live-53e5d31021e8ac55442c3aa0",
-      "reason": "ai_numbers_missing:block:11:text:0"
-    },
-    {
-      "id": "live-3f3c1467a20618a64f202772",
-      "reason": "ai_numbers_missing:title:0"
+      "id": "live-b5b16277ccb4d4a2fe938f57",
+      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
     }
   ],
   "credential_checks": {
@@ -37,15 +43,18 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-20T11:14:50.477739+00:00",
+  "started_at": "2026-10-20T12:06:35.253977+00:00",
   "verification_run": false,
-  "status": "daily_limit",
+  "status": "partial_failure",
   "account_mode": "free-project-only",
   "deferred": [
+    "live-7efe8503a1ccc2d4e4f062c1",
+    "live-2db9f4b6bffd4539e161e4da",
     "live-625951b3d62639097cc54976",
     "live-a8683f6d843f4cc1d2254fe1",
     "live-59503f2f9219fc667b4f593f",
     "live-e4392a8d45c867ddd06b4b17",
+    "live-05cc76e49a90a86d0d05ec6a",
     "live-feffdfa78a0a1c06d7f1502a",
     "live-d10b527d989f1e2129ba7888",
     "live-aa71b92c4034c8bc47a3b4ad",
@@ -54,6 +63,7 @@
     "live-a16c5d7d63b7d7566b19aa32",
     "live-86e5ab933fac211ce50619b8",
     "live-c29b8d60a818d6bea481fd90",
+    "live-3f3c1467a20618a64f202772",
     "live-04b1431ad4a1a98773e1d188",
     "live-62bfd5560912e14b08d53c39",
     "live-ffac5e019c695094d6fdc9f5",
@@ -75,36 +85,39 @@
     "live-76c8ed316d62d29f25a90d15",
     "live-a446c44efc0ae05a31d1173d",
     "live-bec7ecaa39ce323f0e73eea5",
-    "live-ee482fa2d66fc5faf589af9b"
-  ],
-  "resumed": [
-    "live-e3d6778598faf64b5f888e42",
+    "live-ee482fa2d66fc5faf589af9b",
     "live-53e5d31021e8ac55442c3aa0"
   ],
+  "resumed": [
+    "live-f2266ca06f33ad6f54ffed79",
+    "live-46b62cf90499a36d91605693",
+    "live-b5cc5139d6ccf7d045dba8aa",
+    "live-675b5dad9387540757232e04",
+    "live-7458d3a099139c985a9b278c"
+  ],
   "stale": [],
-  "input_tokens": 25070,
-  "output_tokens": 3911,
+  "input_tokens": 19966,
+  "output_tokens": 3407,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 134,
-  "retry_after": "2026-10-21T00:15:00+00:00",
-  "pending_after": 133,
-  "finished_at": "2026-10-20T11:16:09.481913+00:00",
-  "seconds": 79.0,
-  "requests_today": 114,
+  "pending_before": 132,
+  "pending_after": 132,
+  "finished_at": "2026-10-20T12:07:48.541385+00:00",
+  "seconds": 73.28,
+  "requests_today": 120,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 1,
   "neurons": {
     "day": "2026-10-20",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 4371.229425,
+    "estimated_neurons": 4567.4005,
     "unknown_neurons_upper_bound": 176.223225,
     "reserved_neurons": 0.0,
-    "requests": 114,
-    "input_tokens": 380055,
-    "output_tokens": 85758,
+    "requests": 120,
+    "input_tokens": 400021,
+    "output_tokens": 89165,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

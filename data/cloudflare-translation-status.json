@@ -2,40 +2,40 @@
   "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
   "model": "@cf/qwen/qwen3-30b-a3b-fp8",
   "configured": true,
-  "requests": 8,
+  "requests": 7,
   "translated": [],
   "failed": [
     {
-      "id": "live-6ce1934a5a37b73f9f7d4e84",
-      "reason": "ai_paragraph_not_translated:block:7:text:0"
+      "id": "live-4be0e811864eba9247898485",
+      "reason": "ai_numbers_missing:block:2:text:0"
     },
     {
-      "id": "live-488a9e4078c566c04f39ddd9",
-      "reason": "ai_numbers_missing:block:12:text:0"
+      "id": "live-6f7b3ba55dfc0a11ca9113f3",
+      "reason": "ai_unit_coverage_mismatch"
     },
     {
-      "id": "live-625951b3d62639097cc54976",
-      "reason": "ai_numbers_missing:block:26:text:0"
+      "id": "live-418e0504c5172f68d805b886",
+      "reason": "ai_numbers_missing:block:19:text:0"
     },
     {
-      "id": "live-a8683f6d843f4cc1d2254fe1",
-      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
-    },
-    {
-      "id": "live-1d22c7625fdbcd788a0a6a34",
-      "reason": "ai_numbers_missing:block:0:text:0"
-    },
-    {
-      "id": "live-05cc76e49a90a86d0d05ec6a",
+      "id": "live-115c065386b51e945d56d5d6",
       "reason": "ai_numbers_missing:title:0"
     },
     {
-      "id": "live-feffdfa78a0a1c06d7f1502a",
+      "id": "live-ee482fa2d66fc5faf589af9b",
+      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
+    },
+    {
+      "id": "live-bc116950b9594ad1f08e6e58",
+      "reason": "ai_numbers_missing:excerpt:0"
+    },
+    {
+      "id": "live-e00ea2022c2c0cc8772d34d4",
       "reason": "ai_numbers_missing:block:1:text:0"
     },
     {
-      "id": "live-e20414805dd1abb454067844",
-      "reason": "ai_paragraph_not_translated:block:35:text:0"
+      "id": "live-bec7ecaa39ce323f0e73eea5",
+      "reason": "ai_unit_coverage_mismatch"
     }
   ],
   "credential_checks": {
@@ -43,15 +43,15 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-20T22:34:36.942133+00:00",
+  "started_at": "2026-10-20T22:52:15.409729+00:00",
   "verification_run": false,
   "status": "partial_failure",
   "account_mode": "free-project-only",
   "deferred": [
-    "live-0048756de9fb0126a657ed01",
     "live-3e1b46bda64afa072b64d24f",
     "live-6e3fd28f2b8692ab51647102",
     "live-66fbda4265e7cc06e3aa9e1b",
+    "live-6ce1934a5a37b73f9f7d4e84",
     "live-9e5963fd480df7bad91b1e65",
     "live-5a799d6772d56340dc58a116",
     "live-50051c4ef299507ae669f643",
@@ -66,16 +66,17 @@
     "live-874f9548a4c413177f336167",
     "live-2db9f4b6bffd4539e161e4da",
     "live-b3328c1648deee9eeebe649f",
-    "live-6f7b3ba55dfc0a11ca9113f3",
-    "live-418e0504c5172f68d805b886",
+    "live-625951b3d62639097cc54976",
+    "live-a8683f6d843f4cc1d2254fe1",
+    "live-05cc76e49a90a86d0d05ec6a",
+    "live-feffdfa78a0a1c06d7f1502a",
     "live-21e53b661093bf053c62814d",
-    "live-115c065386b51e945d56d5d6",
     "live-fc34527bd1f1aed999a01e8e",
     "live-5980f4877e8edcc5f8ef2105",
-    "live-bc116950b9594ad1f08e6e58",
-    "live-e00ea2022c2c0cc8772d34d4",
     "live-1c5789e645c1311841bde1f1",
     "live-7d50f83138777c6466ca66de",
+    "live-e20414805dd1abb454067844",
+    "live-1d22c7625fdbcd788a0a6a34",
     "live-91d2d80f25729d14deb137bd",
     "live-b5b16277ccb4d4a2fe938f57",
     "live-05cb6eadaef17d128d266571",
@@ -85,43 +86,39 @@
     "live-4b231ebbfd3d7c4ffc9c1dce",
     "live-76c8ed316d62d29f25a90d15",
     "live-a446c44efc0ae05a31d1173d",
-    "live-bec7ecaa39ce323f0e73eea5",
-    "live-ee482fa2d66fc5faf589af9b",
     "live-8c822d2d4fb8b88d20a6755e",
     "live-53e5d31021e8ac55442c3aa0",
     "live-d62f4a62f48168c5e329d52d"
   ],
   "resumed": [
-    "live-6ce1934a5a37b73f9f7d4e84",
-    "live-625951b3d62639097cc54976",
-    "live-1d22c7625fdbcd788a0a6a34",
-    "live-05cc76e49a90a86d0d05ec6a",
-    "live-feffdfa78a0a1c06d7f1502a",
-    "live-e20414805dd1abb454067844"
+    "live-418e0504c5172f68d805b886",
+    "live-115c065386b51e945d56d5d6",
+    "live-bc116950b9594ad1f08e6e58",
+    "live-e00ea2022c2c0cc8772d34d4"
   ],
   "stale": [],
-  "input_tokens": 24924,
-  "output_tokens": 3612,
+  "input_tokens": 24310,
+  "output_tokens": 5674,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 147,
-  "pending_after": 147,
-  "finished_at": "2026-10-20T22:35:57.769758+00:00",
-  "seconds": 80.82,
-  "requests_today": 229,
+  "pending_before": 150,
+  "pending_after": 150,
+  "finished_at": "2026-10-20T22:53:40.382087+00:00",
+  "seconds": 84.96,
+  "requests_today": 236,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 2,
   "neurons": {
     "day": "2026-10-20",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 8237.46005,
+    "estimated_neurons": 8522.80895,
     "unknown_neurons_upper_bound": 366.733075,
     "reserved_neurons": 0.0,
-    "requests": 229,
-    "input_tokens": 720325,
-    "output_tokens": 160983,
+    "requests": 236,
+    "input_tokens": 744635,
+    "output_tokens": 166657,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

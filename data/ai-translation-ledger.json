@@ -2033,20 +2033,14 @@
   },
   "service_retry": {
     "policy": "bounded-exponential-v1",
-    "consecutive_failures": 1,
-    "delay_seconds": 72,
+    "consecutive_failures": 2,
+    "delay_seconds": 126,
     "server_retry_seconds": 0,
-    "error": "ai_http_503",
-    "failed_at": "2026-10-20T15:43:55.450316+00:00",
-    "retry_after": "2026-10-20T15:45:07.450316+00:00",
-    "provider_error": {
-      "http_status": 503,
-      "category": "capacity_unavailable",
-      "api_status": "UNAVAILABLE",
-      "message_evidence": "high demand"
-    }
+    "error": "TimeoutError",
+    "failed_at": "2026-10-20T16:38:19.754331+00:00",
+    "retry_after": "2026-10-20T16:40:25.754331+00:00"
   },
-  "retry_after": "2026-10-20T15:45:07.450316+00:00",
+  "retry_after": "2026-10-20T16:40:25.754331+00:00",
   "retry_status": "service_wait",
-  "retry_error": "ai_http_503"
+  "retry_error": "TimeoutError"
 }

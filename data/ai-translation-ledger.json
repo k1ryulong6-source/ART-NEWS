@@ -44,10 +44,10 @@
       "unknown_usage_requests": 3
     },
     "2026-10-20": {
-      "requests": 37,
-      "input_tokens": 127155,
-      "output_tokens": 35791,
-      "reserved_requests": 40,
+      "requests": 40,
+      "input_tokens": 135521,
+      "output_tokens": 40375,
+      "reserved_requests": 37,
       "unknown_usage_requests": 1
     }
   },
@@ -1936,7 +1936,7 @@
     "39398778609:1": {
       "day": "2026-10-20",
       "allocated": 40,
-      "remaining": 40,
+      "remaining": 37,
       "status": "reserved"
     }
   },
@@ -1947,28 +1947,11 @@
     "reason": "Actual Google 404: old model no longer available to new users; recommended 3.5 has Free Tier. Clear only this stale configuration backoff, preserve all requests/tokens/reservations.",
     "cleared_retry_after": "2026-10-15T00:02:01.690921+00:00"
   },
-  "last_service_recovery_at": "2026-10-20T03:11:09.893048+00:00",
+  "last_service_recovery_at": "2026-10-20T09:11:28.163023+00:00",
   "last_api_error": {
     "http_status": 500,
     "category": "unclassified_http_error",
     "api_status": "INTERNAL",
     "occurred_at": "2026-10-20T08:54:29.020843+00:00"
-  },
-  "service_retry": {
-    "policy": "bounded-exponential-v1",
-    "consecutive_failures": 1,
-    "delay_seconds": 72,
-    "server_retry_seconds": 0,
-    "error": "ai_http_500",
-    "failed_at": "2026-10-20T08:54:29.018338+00:00",
-    "retry_after": "2026-10-20T08:55:41.018338+00:00",
-    "provider_error": {
-      "http_status": 500,
-      "category": "unclassified_http_error",
-      "api_status": "INTERNAL"
-    }
-  },
-  "retry_after": "2026-10-20T08:55:41.018338+00:00",
-  "retry_status": "service_wait",
-  "retry_error": "ai_http_500"
+  }
 }

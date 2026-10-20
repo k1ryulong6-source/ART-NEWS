@@ -3,16 +3,30 @@
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-20T03:09:24.477783+00:00",
-  "translated": [],
+  "started_at": "2026-10-20T04:09:20.717034+00:00",
+  "translated": [
+    "live-9cc556510085463b6d77bb22"
+  ],
   "failed": [
     {
-      "id": "live-c29b8d60a818d6bea481fd90",
-      "reason": "block_not_chinese"
+      "id": "live-0a6073f6b47f566042dd719a",
+      "reason": "ai_numbers_missing:block:8:text:0"
     },
     {
-      "id": "live-91d2d80f25729d14deb137bd",
-      "reason": "ai_paragraph_not_translated:block:15:text:0"
+      "id": "live-b5cc5139d6ccf7d045dba8aa",
+      "reason": "ai_numbers_missing:excerpt:0"
+    },
+    {
+      "id": "live-be35ba521774c172f6032987",
+      "reason": "ai_numbers_missing:block:9:text:0"
+    },
+    {
+      "id": "live-ad21d4f379dfaae459455175",
+      "reason": "ai_numbers_missing:excerpt:0"
+    },
+    {
+      "id": "live-61270b82651ee15b55293180",
+      "reason": "ai_numbers_missing:excerpt:0"
     }
   ],
   "deferred": [
@@ -21,19 +35,16 @@
     "live-a16c5d7d63b7d7566b19aa32",
     "live-128c71e7254f441dba89fefd",
     "live-c9e55c0e3a62fb00a9b94e59",
+    "live-c29b8d60a818d6bea481fd90",
     "live-9c5166d3428a30a725e4d2ce",
     "live-04b1431ad4a1a98773e1d188",
     "live-62bfd5560912e14b08d53c39",
     "live-88cc1fc663f9368f2b676ef2",
-    "live-9cc556510085463b6d77bb22",
     "live-f2266ca06f33ad6f54ffed79",
-    "live-b5cc5139d6ccf7d045dba8aa",
     "live-675b5dad9387540757232e04",
-    "live-be35ba521774c172f6032987",
     "live-11b5a285dfc9d044cb22bdce",
     "live-eacd2c5b95138e28cca8ded9",
     "live-115c065386b51e945d56d5d6",
-    "live-ad21d4f379dfaae459455175",
     "live-868ab2ab1ef038502bf02388",
     "live-863b62fdf1947c023ec0dfe7",
     "live-c07ebcb2238676a0ca273691",
@@ -41,7 +52,6 @@
     "live-c9a1edae85b0ebb26b4ae997",
     "live-28df7871f5a7a9bb1a0e8bce",
     "live-c9d98f5e001e5f8352184118",
-    "live-61270b82651ee15b55293180",
     "live-69c47a1a48da9a5526fc9eda",
     "live-94d343c73f0ee500180ddcd5",
     "live-d27f942e6a1695405ce4b478",
@@ -75,45 +85,33 @@
     "live-e6de386d66bb2d472dd35408",
     "live-084578a6c52df1f89d900926",
     "live-e20414805dd1abb454067844",
+    "live-91d2d80f25729d14deb137bd",
     "live-14fdc00be9a2ef7c1cbf2693",
     "live-f0fe2ed67fc7390368932d19",
     "live-76c8ed316d62d29f25a90d15",
     "live-bec7ecaa39ce323f0e73eea5",
-    "live-ee482fa2d66fc5faf589af9b",
-    "live-0a6073f6b47f566042dd719a"
+    "live-ee482fa2d66fc5faf589af9b"
   ],
   "resumed": [
-    "live-c29b8d60a818d6bea481fd90",
-    "live-91d2d80f25729d14deb137bd"
+    "live-0a6073f6b47f566042dd719a",
+    "live-9cc556510085463b6d77bb22",
+    "live-b5cc5139d6ccf7d045dba8aa",
+    "live-be35ba521774c172f6032987",
+    "live-ad21d4f379dfaae459455175",
+    "live-61270b82651ee15b55293180"
   ],
   "stale": [],
-  "requests": 3,
-  "input_tokens": 6950,
-  "output_tokens": 327,
+  "requests": 6,
+  "input_tokens": 17757,
+  "output_tokens": 3010,
   "service_retry_policy": "bounded-exponential-v1",
-  "inline_service_retries": 1,
-  "service_failures": [
-    {
-      "policy": "bounded-exponential-v1",
-      "consecutive_failures": 1,
-      "delay_seconds": 72,
-      "server_retry_seconds": 0,
-      "error": "ai_http_500",
-      "failed_at": "2026-10-20T03:09:41.884758+00:00",
-      "retry_after": "2026-10-20T03:10:53.884758+00:00",
-      "provider_error": {
-        "http_status": 500,
-        "category": "unclassified_http_error",
-        "api_status": "INTERNAL"
-      },
-      "inline_retry": true
-    }
-  ],
+  "inline_service_retries": 0,
+  "service_failures": [],
   "pending_before": 67,
-  "pending_after": 67,
-  "finished_at": "2026-10-20T03:11:27.659608+00:00",
-  "seconds": 123.18,
-  "requests_today": 440,
+  "pending_after": 66,
+  "finished_at": "2026-10-20T04:11:06.047131+00:00",
+  "seconds": 105.33,
+  "requests_today": 446,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 3,
   "id": "primary",

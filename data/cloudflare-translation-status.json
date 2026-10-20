@@ -6,36 +6,24 @@
   "translated": [],
   "failed": [
     {
-      "id": "live-fc34527bd1f1aed999a01e8e",
-      "reason": "ai_numbers_missing:block:7:text:0"
+      "id": "live-efd78ce793b25f7a6a458961",
+      "reason": "ai_numbers_missing:excerpt:0"
     },
     {
-      "id": "live-5980f4877e8edcc5f8ef2105",
+      "id": "live-b3328c1648deee9eeebe649f",
       "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
     },
     {
-      "id": "live-405e840b30e68e87bd39db58",
-      "reason": "ai_paragraph_not_translated:block:13:text:0"
+      "id": "live-05cc76e49a90a86d0d05ec6a",
+      "reason": "ai_numbers_missing:title:0"
     },
     {
-      "id": "live-6b1fcf758e4b48af0915b9af",
-      "reason": "ai_numbers_missing:block:8:text:0"
+      "id": "live-d10b527d989f1e2129ba7888",
+      "reason": "ai_paragraph_not_translated:block:10:text:0"
     },
     {
-      "id": "live-be3faf114081a9260191b2ed",
-      "reason": "ai_unit_coverage_mismatch"
-    },
-    {
-      "id": "live-7347ccfaf767bbdf782486ec",
-      "reason": "ai_numbers_missing:block:0:text:0"
-    },
-    {
-      "id": "live-874f9548a4c413177f336167",
-      "reason": "ai_numbers_missing:block:3:text:0"
-    },
-    {
-      "id": "live-d279d369cc75c7b16bf9e2b9",
-      "reason": "ai_paragraph_not_translated:block:6:text:0"
+      "id": "live-e20414805dd1abb454067844",
+      "reason": "ai_paragraph_not_translated:block:35:text:0"
     }
   ],
   "credential_checks": {
@@ -43,11 +31,14 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-20T13:08:39.030495+00:00",
+  "started_at": "2026-10-20T13:49:58.805866+00:00",
   "verification_run": false,
-  "status": "partial_failure",
+  "status": "daily_limit",
   "account_mode": "free-project-only",
   "deferred": [
+    "live-6b1fcf758e4b48af0915b9af",
+    "live-7347ccfaf767bbdf782486ec",
+    "live-874f9548a4c413177f336167",
     "live-7efe8503a1ccc2d4e4f062c1",
     "live-2db9f4b6bffd4539e161e4da",
     "live-625951b3d62639097cc54976",
@@ -55,8 +46,6 @@
     "live-59503f2f9219fc667b4f593f",
     "live-e4392a8d45c867ddd06b4b17",
     "live-feffdfa78a0a1c06d7f1502a",
-    "live-d10b527d989f1e2129ba7888",
-    "live-aa71b92c4034c8bc47a3b4ad",
     "live-6f7b3ba55dfc0a11ca9113f3",
     "live-418e0504c5172f68d805b886",
     "live-a16c5d7d63b7d7566b19aa32",
@@ -81,7 +70,10 @@
     "live-eacd2c5b95138e28cca8ded9",
     "live-2688cc9427bd18e0a17b551c",
     "live-115c065386b51e945d56d5d6",
+    "live-fc34527bd1f1aed999a01e8e",
+    "live-5980f4877e8edcc5f8ef2105",
     "live-bc116950b9594ad1f08e6e58",
+    "live-405e840b30e68e87bd39db58",
     "live-e00ea2022c2c0cc8772d34d4",
     "live-1c5789e645c1311841bde1f1",
     "live-7d50f83138777c6466ca66de",
@@ -100,31 +92,32 @@
     "live-53e5d31021e8ac55442c3aa0"
   ],
   "resumed": [
-    "live-fc34527bd1f1aed999a01e8e"
+    "live-e20414805dd1abb454067844"
   ],
   "stale": [],
-  "input_tokens": 27889,
-  "output_tokens": 8028,
+  "input_tokens": 25336,
+  "output_tokens": 4789,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 140,
-  "pending_after": 140,
-  "finished_at": "2026-10-20T13:10:31.331218+00:00",
-  "seconds": 112.29,
-  "requests_today": 136,
+  "pending_before": 136,
+  "retry_after": "2026-10-21T00:15:00+00:00",
+  "pending_after": 136,
+  "finished_at": "2026-10-20T13:51:22.006122+00:00",
+  "seconds": 83.19,
+  "requests_today": 144,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 1,
   "neurons": {
     "day": "2026-10-20",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 5275.91405,
+    "estimated_neurons": 5539.037825,
     "unknown_neurons_upper_bound": 176.223225,
     "reserved_neurons": 0.0,
-    "requests": 136,
-    "input_tokens": 457716,
-    "output_tokens": 103658,
+    "requests": 144,
+    "input_tokens": 483052,
+    "output_tokens": 108447,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

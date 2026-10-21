@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "checked_at": "2026-10-21T02:44:48.156235+00:00",
-  "snapshot_at": "2026-10-21T02:44:28.702615+00:00",
-  "snapshot_key": "f802ad3d1021ceba195c2cb82c4c392973ce5df7dfd172afe2bf5de9a52bfa0f",
+  "checked_at": "2026-10-21T02:47:28.494968+00:00",
+  "snapshot_at": "2026-10-21T02:46:56.226248+00:00",
+  "snapshot_key": "5d8dfb9b75da252a23ab664c1070a9f9fba68cbefd9efd4233ab494e96ff2c21",
   "all_ready": false,
   "gates": {
     "unattended_24h": {
@@ -22,7 +22,8 @@
       "passed": false,
       "open_reasons": [
         "foreign_full_text_backlog_remains",
-        "original_bodies_missing"
+        "original_bodies_missing",
+        "headlines_waiting_for_AI"
       ]
     },
     "coverage_gaps": {
@@ -30,7 +31,9 @@
       "open_reasons": [
         "core_source_failures",
         "enabled_source_collection_not_verified",
-        "priority_country_field_gaps"
+        "priority_country_field_gaps",
+        "attention_source_not_current:artthrob",
+        "attention_source_not_current:artafrica"
       ]
     }
   },
@@ -40,15 +43,15 @@
     "Program structure/source checks are not semantic or human translation review."
   ],
   "counts": {
-    "total": 2142,
-    "completed": 1896,
-    "api_completed": 1806,
-    "pending": 144,
+    "total": 2144,
+    "completed": 1885,
+    "api_completed": 1795,
+    "pending": 157,
     "without_body": 31
   },
   "quality": {
-    "remote_verified": 1481,
-    "remote_unchecked": 173,
+    "remote_verified": 1484,
+    "remote_unchecked": 179,
     "complete": false
   },
   "trial": {

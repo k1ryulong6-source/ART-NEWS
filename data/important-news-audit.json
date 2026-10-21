@@ -1,6 +1,6 @@
 {
-  "checked_at": "2026-10-21T02:44:36.809034+00:00",
-  "list_audit_at": "2026-10-21T00:55:41.573616+00:00",
+  "checked_at": "2026-10-21T02:47:19.104691+00:00",
+  "list_audit_at": "2026-10-21T02:47:02.789187+00:00",
   "scope": "configured_sources_current_lists_only",
   "global_completeness": "unknown",
   "core_source_problems": [
@@ -20,6 +20,30 @@
         "no_recent_success"
       ],
       "last_success_at": "2026-10-14T00:31:48.725165+00:00"
+    },
+    {
+      "source_id": "artafrica",
+      "reasons": [
+        "latest_collection_failed",
+        "list_audit_failed"
+      ],
+      "last_success_at": "2026-10-21T00:54:37.502206+00:00"
+    },
+    {
+      "source_id": "cinepremiere",
+      "reasons": [
+        "latest_collection_failed",
+        "list_audit_failed"
+      ],
+      "last_success_at": "2026-10-21T00:54:43.020652+00:00"
+    },
+    {
+      "source_id": "artthrob",
+      "reasons": [
+        "latest_collection_failed",
+        "list_audit_failed"
+      ],
+      "last_success_at": "2026-10-21T00:54:25.492745+00:00"
     }
   ],
   "missing_important_items": [],
@@ -1515,7 +1539,7 @@
             "rss_sources": 1,
             "successful_rss_checks": 1,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 162,
+            "inventory_from_assigned_sources": 163,
             "coverage_status": "assigned_sources_only"
           }
         }
@@ -2123,8 +2147,12 @@
               "africanah"
             ],
             "rss_sources": 3,
-            "successful_rss_checks": 3,
-            "failed_source_ids": [],
+            "successful_rss_checks": 0,
+            "failed_source_ids": [
+              "artafrica",
+              "artthrob",
+              "africanah"
+            ],
             "inventory_from_assigned_sources": 61,
             "coverage_status": "assigned_sources_only"
           },
@@ -2255,8 +2283,10 @@
               "cinepremiere"
             ],
             "rss_sources": 3,
-            "successful_rss_checks": 3,
-            "failed_source_ids": [],
+            "successful_rss_checks": 2,
+            "failed_source_ids": [
+              "cinepremiere"
+            ],
             "inventory_from_assigned_sources": 90,
             "coverage_status": "assigned_sources_only"
           },
@@ -2403,7 +2433,7 @@
             "rss_sources": 3,
             "successful_rss_checks": 3,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 440,
+            "inventory_from_assigned_sources": 441,
             "coverage_status": "assigned_sources_only"
           },
           "art": {
@@ -2578,11 +2608,12 @@
               "indiewire"
             ],
             "rss_sources": 12,
-            "successful_rss_checks": 11,
+            "successful_rss_checks": 10,
             "failed_source_ids": [
+              "cinepremiere",
               "cineuropa"
             ],
-            "inventory_from_assigned_sources": 1036,
+            "inventory_from_assigned_sources": 1037,
             "coverage_status": "assigned_sources_only"
           },
           "art": {
@@ -2604,8 +2635,12 @@
               "artreview"
             ],
             "rss_sources": 14,
-            "successful_rss_checks": 14,
-            "failed_source_ids": [],
+            "successful_rss_checks": 11,
+            "failed_source_ids": [
+              "artafrica",
+              "artthrob",
+              "africanah"
+            ],
             "inventory_from_assigned_sources": 663,
             "coverage_status": "assigned_sources_only"
           },
@@ -2626,13 +2661,13 @@
             "rss_sources": 9,
             "successful_rss_checks": 9,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 424,
+            "inventory_from_assigned_sources": 425,
             "coverage_status": "assigned_sources_only"
           }
         }
       }
     ],
-    "unlocated_content": 1729,
+    "unlocated_content": 1730,
     "discovery_share_of_available_new_body_slots": 0.2,
     "global_completeness": "unknown",
     "limitations": [

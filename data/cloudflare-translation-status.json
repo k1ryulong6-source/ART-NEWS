@@ -2,40 +2,24 @@
   "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
   "model": "@cf/qwen/qwen3-30b-a3b-fp8",
   "configured": true,
-  "requests": 7,
+  "requests": 8,
   "translated": [],
   "failed": [
     {
-      "id": "live-741574521b2204f6b6e689dc",
-      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
+      "id": "live-924c93a0f2e87918dbcd7a6d",
+      "reason": "ai_numbers_missing:block:9:text:0"
     },
     {
-      "id": "live-9b3a9d4e791a007a615ebf5d",
-      "reason": "ai_numbers_missing:block:2:text:0"
+      "id": "live-f8f60c0e9a48ee21d0b8a6dc",
+      "reason": "ai_paragraph_not_translated:block:10:text:0"
     },
     {
-      "id": "live-ba340b8bb28851517671f51c",
-      "reason": "ai_numbers_missing:block:4:text:0"
+      "id": "live-3e1b46bda64afa072b64d24f",
+      "reason": "ai_numbers_missing:block:14:text:0"
     },
     {
-      "id": "live-3d4536cdeec33df5cab0639d",
-      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
-    },
-    {
-      "id": "live-715f48cefa36107b1c39ef86",
-      "reason": "ai_numbers_missing:block:3:text:0"
-    },
-    {
-      "id": "live-675b5dad9387540757232e04",
-      "reason": "ai_numbers_missing:block:3:text:0"
-    },
-    {
-      "id": "live-7458d3a099139c985a9b278c",
-      "reason": "ai_numbers_missing:block:1:text:0"
-    },
-    {
-      "id": "live-e6de386d66bb2d472dd35408",
-      "reason": "ai_numbers_missing:block:5:text:0"
+      "id": "live-837996368fbc0c1b0ecc1464",
+      "reason": "ai_numbers_missing:block:14:text:0"
     }
   ],
   "credential_checks": {
@@ -43,9 +27,9 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-21T02:39:16.380745+00:00",
+  "started_at": "2026-10-21T02:56:32.358140+00:00",
   "verification_run": false,
-  "status": "partial_failure",
+  "status": "daily_limit",
   "account_mode": "free-project-only",
   "deferred": [
     "live-a965b4bc6a9076e12ade3aa6",
@@ -54,16 +38,13 @@
     "live-8f6b7e6d57e6471644ccf101",
     "live-4be0e811864eba9247898485",
     "live-0048756de9fb0126a657ed01",
-    "live-3e1b46bda64afa072b64d24f",
     "live-6e3fd28f2b8692ab51647102",
     "live-66fbda4265e7cc06e3aa9e1b",
     "live-6ce1934a5a37b73f9f7d4e84",
-    "live-837996368fbc0c1b0ecc1464",
-    "live-6b1fcf758e4b48af0915b9af",
-    "live-7347ccfaf767bbdf782486ec",
-    "live-874f9548a4c413177f336167",
-    "live-2db9f4b6bffd4539e161e4da",
-    "live-b3328c1648deee9eeebe649f",
+    "live-741574521b2204f6b6e689dc",
+    "live-9b3a9d4e791a007a615ebf5d",
+    "live-ba340b8bb28851517671f51c",
+    "live-3d4536cdeec33df5cab0639d",
     "live-625951b3d62639097cc54976",
     "live-a8683f6d843f4cc1d2254fe1",
     "live-05cc76e49a90a86d0d05ec6a",
@@ -82,6 +63,8 @@
     "live-f2266ca06f33ad6f54ffed79",
     "live-46b62cf90499a36d91605693",
     "live-b5cc5139d6ccf7d045dba8aa",
+    "live-675b5dad9387540757232e04",
+    "live-7458d3a099139c985a9b278c",
     "live-21e53b661093bf053c62814d",
     "live-115c065386b51e945d56d5d6",
     "live-fc34527bd1f1aed999a01e8e",
@@ -89,6 +72,7 @@
     "live-bc116950b9594ad1f08e6e58",
     "live-e00ea2022c2c0cc8772d34d4",
     "live-1c5789e645c1311841bde1f1",
+    "live-e6de386d66bb2d472dd35408",
     "live-7d50f83138777c6466ca66de",
     "live-120a52664745a069fa6479f1",
     "live-084578a6c52df1f89d900926",
@@ -97,8 +81,7 @@
     "live-1d22c7625fdbcd788a0a6a34",
     "live-91d2d80f25729d14deb137bd",
     "live-b5b16277ccb4d4a2fe938f57",
-    "live-05cb6eadaef17d128d266571",
-    "live-14fdc00be9a2ef7c1cbf2693",
+    "live-715f48cefa36107b1c39ef86",
     "live-f0fe2ed67fc7390368932d19",
     "live-4b231ebbfd3d7c4ffc9c1dce",
     "live-76c8ed316d62d29f25a90d15",
@@ -108,35 +91,32 @@
     "live-53e5d31021e8ac55442c3aa0"
   ],
   "resumed": [
-    "live-9b3a9d4e791a007a615ebf5d",
-    "live-ba340b8bb28851517671f51c",
-    "live-715f48cefa36107b1c39ef86",
-    "live-675b5dad9387540757232e04",
-    "live-7458d3a099139c985a9b278c"
+    "live-6b1fcf758e4b48af0915b9af"
   ],
   "stale": [],
-  "input_tokens": 27997,
-  "output_tokens": 2025,
+  "input_tokens": 22730,
+  "output_tokens": 4488,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 144,
-  "pending_after": 144,
-  "finished_at": "2026-10-21T02:40:15.541209+00:00",
-  "seconds": 59.15,
-  "requests_today": 29,
+  "pending_before": 150,
+  "retry_after": "2026-10-22T00:15:00+00:00",
+  "pending_after": 150,
+  "finished_at": "2026-10-21T02:57:44.612256+00:00",
+  "seconds": 72.25,
+  "requests_today": 37,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
     "day": "2026-10-21",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 1125.9042,
+    "estimated_neurons": 1367.80225,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 0.0,
-    "requests": 29,
-    "input_tokens": 105415,
-    "output_tokens": 20947,
+    "requests": 37,
+    "input_tokens": 128145,
+    "output_tokens": 25435,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

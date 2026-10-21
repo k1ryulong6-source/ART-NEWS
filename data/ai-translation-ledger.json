@@ -54,7 +54,7 @@
       "requests": 145,
       "input_tokens": 484003,
       "output_tokens": 108730,
-      "reserved_requests": 76,
+      "reserved_requests": 40,
       "unknown_usage_requests": 1
     }
   },
@@ -2277,8 +2277,9 @@
     "39623080386:1": {
       "day": "2026-10-21",
       "allocated": 40,
-      "remaining": 36,
-      "status": "reserved"
+      "remaining": 0,
+      "status": "closed",
+      "actual_requests": 4
     }
   },
   "configuration_repair": {
@@ -2295,5 +2296,17 @@
     "api_status": "UNAVAILABLE",
     "message_evidence": "high demand",
     "occurred_at": "2026-10-20T18:59:01.404675+00:00"
-  }
+  },
+  "service_retry": {
+    "policy": "bounded-exponential-v1",
+    "consecutive_failures": 1,
+    "delay_seconds": 72,
+    "server_retry_seconds": 0,
+    "error": "TimeoutError",
+    "failed_at": "2026-10-21T15:14:22.337532+00:00",
+    "retry_after": "2026-10-21T15:15:34.337532+00:00"
+  },
+  "retry_after": "2026-10-21T15:15:34.337532+00:00",
+  "retry_status": "service_wait",
+  "retry_error": "TimeoutError"
 }

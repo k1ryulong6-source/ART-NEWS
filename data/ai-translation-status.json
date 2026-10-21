@@ -5,15 +5,15 @@
   "translation_provider": "deepseek+gemini",
   "account_mode": "user-authorized-prepaid",
   "pool_mode": "parallel_disjoint_articles",
-  "started_at": "2026-10-21T01:39:53.222310+00:00",
-  "finished_at": "2026-10-21T01:41:11.851071+00:00",
+  "started_at": "2026-10-21T02:34:11.164660+00:00",
+  "finished_at": "2026-10-21T02:39:16.079546+00:00",
   "projects": [
     {
       "status": "configuration_error",
       "provider": "contextual-api:deepseek:deepseek-flash:direct-v1",
       "model": "deepseek-flash",
       "account_mode": "user-authorized-prepaid",
-      "started_at": "2026-10-21T01:39:53.223174+00:00",
+      "started_at": "2026-10-21T02:34:11.165568+00:00",
       "translated": [],
       "failed": [],
       "deferred": [],
@@ -27,8 +27,8 @@
       "service_failures": [],
       "retry_after": "2026-10-21T02:56:52.717988+00:00",
       "error": "ai_http_402",
-      "finished_at": "2026-10-21T01:39:54.710626+00:00",
-      "seconds": 1.49,
+      "finished_at": "2026-10-21T02:34:12.105232+00:00",
+      "seconds": 0.94,
       "requests_today": 83,
       "daily_request_limit": 300,
       "unknown_usage_requests_today": 3,
@@ -40,52 +40,79 @@
       "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
       "model": "gemini-3.5-flash-lite",
       "account_mode": "free-project-only",
-      "started_at": "2026-10-21T01:39:53.223934+00:00",
-      "translated": [
-        "live-50051c4ef299507ae669f643",
-        "live-9e5963fd480df7bad91b1e65",
-        "live-b03b3c71474d66166d13f451"
-      ],
+      "started_at": "2026-10-21T02:34:11.165840+00:00",
+      "translated": [],
       "failed": [
         {
-          "id": "live-f0fe2ed67fc7390368932d19",
-          "reason": "ai_numbers_missing:block:6:text:0"
+          "id": "live-9b3a9d4e791a007a615ebf5d",
+          "reason": "ai_numbers_missing:block:2:text:0"
         },
         {
-          "id": "live-76c8ed316d62d29f25a90d15",
-          "reason": "ai_paragraph_not_translated:block:17:text:0"
+          "id": "live-7347ccfaf767bbdf782486ec",
+          "reason": "ai_numbers_missing:block:0:text:0"
+        },
+        {
+          "id": "live-b3328c1648deee9eeebe649f",
+          "reason": "ai_output_incomplete"
+        },
+        {
+          "id": "live-05cc76e49a90a86d0d05ec6a",
+          "reason": "ai_numbers_missing:title:0"
+        },
+        {
+          "id": "live-d10b527d989f1e2129ba7888",
+          "reason": "ai_numbers_missing:block:14:text:0"
+        },
+        {
+          "id": "live-c29b8d60a818d6bea481fd90",
+          "reason": "block_not_chinese"
+        },
+        {
+          "id": "live-3f3c1467a20618a64f202772",
+          "reason": "ai_numbers_missing:title:0"
+        },
+        {
+          "id": "live-b5cc5139d6ccf7d045dba8aa",
+          "reason": "ai_numbers_missing:excerpt:0"
+        },
+        {
+          "id": "live-7458d3a099139c985a9b278c",
+          "reason": "ai_numbers_missing:block:5:text:0"
+        },
+        {
+          "id": "live-8dd7dfa740e746b61dbde841",
+          "reason": "ai_paragraph_not_translated:block:13:text:0"
+        },
+        {
+          "id": "live-1d22c7625fdbcd788a0a6a34",
+          "reason": "ai_numbers_missing:block:0:text:0"
+        },
+        {
+          "id": "live-14fdc00be9a2ef7c1cbf2693",
+          "reason": "ai_numbers_missing:block:4:text:0"
         }
       ],
       "deferred": [
-        "live-a965b4bc6a9076e12ade3aa6",
         "live-5c7773131befcf6286bc298f",
-        "live-8f6b7e6d57e6471644ccf101",
+        "live-11fda173ddff3c944a71d5cc",
         "live-0048756de9fb0126a657ed01",
-        "live-6e3fd28f2b8692ab51647102",
-        "live-741574521b2204f6b6e689dc",
-        "live-ba340b8bb28851517671f51c",
-        "live-6b1fcf758e4b48af0915b9af",
-        "live-874f9548a4c413177f336167",
-        "live-2db9f4b6bffd4539e161e4da",
-        "live-625951b3d62639097cc54976",
-        "live-05cc76e49a90a86d0d05ec6a",
-        "live-d10b527d989f1e2129ba7888",
-        "live-c29b8d60a818d6bea481fd90",
-        "live-3f3c1467a20618a64f202772",
+        "live-3e1b46bda64afa072b64d24f",
+        "live-66fbda4265e7cc06e3aa9e1b",
+        "live-3d4536cdeec33df5cab0639d",
+        "live-837996368fbc0c1b0ecc1464",
+        "live-a8683f6d843f4cc1d2254fe1",
+        "live-6f7b3ba55dfc0a11ca9113f3",
         "live-62bfd5560912e14b08d53c39",
         "live-88cc1fc663f9368f2b676ef2",
         "live-f2266ca06f33ad6f54ffed79",
-        "live-b5cc5139d6ccf7d045dba8aa",
-        "live-7458d3a099139c985a9b278c",
         "live-b2f238e41583759fc2b0dfc7",
-        "live-21e53b661093bf053c62814d",
         "live-eacd2c5b95138e28cca8ded9",
+        "live-115c065386b51e945d56d5d6",
         "live-4ba2dcd8cec2b7382fc92d95",
         "live-868ab2ab1ef038502bf02388",
         "live-863b62fdf1947c023ec0dfe7",
         "live-c07ebcb2238676a0ca273691",
         "live-d7ef045dc3fba3a12a48ba0b",
-        "live-fc34527bd1f1aed999a01e8e",
         "live-c9a1edae85b0ebb26b4ae997",
         "live-28df7871f5a7a9bb1a0e8bce",
         "live-c9d98f5e001e5f8352184118",
@@ -100,6 +127,7 @@
         "live-0ca89a7ad1730a47858547bd",
         "live-7af82fb8de0eccc86d78103b",
         "live-c4182cd836140ed28b4eb6fb",
+        "live-bc116950b9594ad1f08e6e58",
         "live-831862c6992ec43b09428f24",
         "live-7008c16f98e0aabc9ef840fa",
         "live-621ad835eb28513282aa34e2",
@@ -110,43 +138,48 @@
         "live-58137dbc09668a9b677a4bbd",
         "live-9474327fade22295786c9872",
         "live-53c62dd430065cc1f8578972",
-        "live-e00ea2022c2c0cc8772d34d4",
         "live-b4c2f3016f33d306c51f0acc",
         "live-48543945b90350df5055ed2b",
         "live-e073be9f377d63cfdb0c3882",
         "live-619c71add8da12c1b4973032",
         "live-366639d4167b7c6859d281af",
+        "live-1c5789e645c1311841bde1f1",
         "live-eacef680e6ccb361beff812e",
         "live-a9066d39f6d39bbbb8cd10dd",
         "live-56133e1bff6dd7abceadb8cf",
         "live-47c0633fe3a5f56644fcfa73",
         "live-120a52664745a069fa6479f1",
-        "live-8dd7dfa740e746b61dbde841",
-        "live-1d22c7625fdbcd788a0a6a34",
         "live-b5b16277ccb4d4a2fe938f57",
-        "live-14fdc00be9a2ef7c1cbf2693",
+        "live-f0fe2ed67fc7390368932d19",
+        "live-76c8ed316d62d29f25a90d15",
         "live-ee482fa2d66fc5faf589af9b",
         "live-53e5d31021e8ac55442c3aa0"
       ],
       "resumed": [
-        "live-50051c4ef299507ae669f643",
-        "live-9e5963fd480df7bad91b1e65",
-        "live-b03b3c71474d66166d13f451",
-        "live-f0fe2ed67fc7390368932d19",
-        "live-76c8ed316d62d29f25a90d15"
+        "live-9b3a9d4e791a007a615ebf5d",
+        "live-7347ccfaf767bbdf782486ec",
+        "live-05cc76e49a90a86d0d05ec6a",
+        "live-d10b527d989f1e2129ba7888",
+        "live-c29b8d60a818d6bea481fd90",
+        "live-3f3c1467a20618a64f202772",
+        "live-b5cc5139d6ccf7d045dba8aa",
+        "live-7458d3a099139c985a9b278c",
+        "live-8dd7dfa740e746b61dbde841",
+        "live-1d22c7625fdbcd788a0a6a34",
+        "live-14fdc00be9a2ef7c1cbf2693"
       ],
       "stale": [],
-      "requests": 5,
-      "input_tokens": 14505,
-      "output_tokens": 1302,
+      "requests": 12,
+      "input_tokens": 46647,
+      "output_tokens": 21492,
       "service_retry_policy": "bounded-exponential-v1",
       "inline_service_retries": 0,
       "service_failures": [],
-      "pending_before": 75,
-      "pending_after": 72,
-      "finished_at": "2026-10-21T01:41:11.844684+00:00",
-      "seconds": 78.62,
-      "requests_today": 335,
+      "pending_before": 73,
+      "pending_after": 73,
+      "finished_at": "2026-10-21T02:37:58.739645+00:00",
+      "seconds": 227.57,
+      "requests_today": 347,
       "daily_request_limit": 500,
       "unknown_usage_requests_today": 13,
       "id": "primary",
@@ -157,47 +190,94 @@
       "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
       "model": "gemini-3.5-flash-lite",
       "account_mode": "free-project-only",
-      "started_at": "2026-10-21T01:39:53.224281+00:00",
+      "started_at": "2026-10-21T02:34:11.166151+00:00",
       "translated": [
-        "live-5a799d6772d56340dc58a116"
+        "live-8e5fb7c1659365336402cf7b"
       ],
       "failed": [
         {
-          "id": "live-a446c44efc0ae05a31d1173d",
-          "reason": "ai_paragraph_not_translated:block:289:text:0"
+          "id": "live-741574521b2204f6b6e689dc",
+          "reason": "ai_translation_expansion:block:36:text:0"
+        },
+        {
+          "id": "live-ba340b8bb28851517671f51c",
+          "reason": "ai_numbers_missing:block:4:text:0"
+        },
+        {
+          "id": "live-6b1fcf758e4b48af0915b9af",
+          "reason": "ai_numbers_missing:block:8:text:0"
+        },
+        {
+          "id": "live-874f9548a4c413177f336167",
+          "reason": "ai_numbers_missing:block:3:text:0"
+        },
+        {
+          "id": "live-2db9f4b6bffd4539e161e4da",
+          "reason": "ai_numbers_missing:block:5:text:0"
+        },
+        {
+          "id": "live-625951b3d62639097cc54976",
+          "reason": "ai_numbers_missing:block:26:text:0"
+        },
+        {
+          "id": "live-feffdfa78a0a1c06d7f1502a",
+          "reason": "ai_numbers_missing:block:4:text:0"
+        },
+        {
+          "id": "live-04b1431ad4a1a98773e1d188",
+          "reason": "ai_numbers_missing:block:18:text:0"
+        },
+        {
+          "id": "live-ffac5e019c695094d6fdc9f5",
+          "reason": "ai_numbers_missing:block:13:text:0"
+        },
+        {
+          "id": "live-08575b1781dd45468e91a7e6",
+          "reason": "ai_paragraph_not_translated:block:6:text:0"
+        },
+        {
+          "id": "live-46b62cf90499a36d91605693",
+          "reason": "ai_numbers_missing:block:9:text:0"
+        },
+        {
+          "id": "live-675b5dad9387540757232e04",
+          "reason": "ai_numbers_missing:block:3:text:0"
+        },
+        {
+          "id": "live-91d2d80f25729d14deb137bd",
+          "reason": "ai_paragraph_not_translated:block:15:text:0"
+        },
+        {
+          "id": "live-05cb6eadaef17d128d266571",
+          "reason": "ai_numbers_missing:block:9:text:0"
+        },
+        {
+          "id": "live-715f48cefa36107b1c39ef86",
+          "reason": "ai_numbers_missing:block:3:text:0"
+        },
+        {
+          "id": "live-4b231ebbfd3d7c4ffc9c1dce",
+          "reason": "ai_numbers_missing:block:1:text:0"
         }
       ],
       "deferred": [
-        "live-11fda173ddff3c944a71d5cc",
+        "live-a965b4bc6a9076e12ade3aa6",
+        "live-8f6b7e6d57e6471644ccf101",
         "live-4be0e811864eba9247898485",
-        "live-3e1b46bda64afa072b64d24f",
-        "live-66fbda4265e7cc06e3aa9e1b",
+        "live-6e3fd28f2b8692ab51647102",
         "live-6ce1934a5a37b73f9f7d4e84",
-        "live-9b3a9d4e791a007a615ebf5d",
-        "live-3d4536cdeec33df5cab0639d",
-        "live-837996368fbc0c1b0ecc1464",
-        "live-7347ccfaf767bbdf782486ec",
-        "live-b3328c1648deee9eeebe649f",
-        "live-a8683f6d843f4cc1d2254fe1",
-        "live-feffdfa78a0a1c06d7f1502a",
-        "live-6f7b3ba55dfc0a11ca9113f3",
         "live-418e0504c5172f68d805b886",
         "live-a16c5d7d63b7d7566b19aa32",
-        "live-8e5fb7c1659365336402cf7b",
-        "live-04b1431ad4a1a98773e1d188",
-        "live-ffac5e019c695094d6fdc9f5",
-        "live-08575b1781dd45468e91a7e6",
-        "live-46b62cf90499a36d91605693",
-        "live-675b5dad9387540757232e04",
         "live-be35ba521774c172f6032987",
+        "live-21e53b661093bf053c62814d",
         "live-11b5a285dfc9d044cb22bdce",
         "live-2688cc9427bd18e0a17b551c",
-        "live-115c065386b51e945d56d5d6",
         "live-99e14e4566c6d48c1ff94a7a",
         "live-65723ff399767c5ad7d9d776",
         "live-1cd1c874e309aaef695f221f",
         "live-1e398608a79570e381c493bc",
         "live-f816288b1215c5fd790246d9",
+        "live-fc34527bd1f1aed999a01e8e",
         "live-060658cea0eefb38036b7f47",
         "live-0428e6f0bd99130fd69cf9fc",
         "live-a1245d0a7e9bc7cd87940813",
@@ -211,7 +291,6 @@
         "live-64192915e883adfd0919c366",
         "live-149bb20438829946613f8af5",
         "live-7a9ef79b7a0ded19c4844696",
-        "live-bc116950b9594ad1f08e6e58",
         "live-d51e410b4c16de24ca72fc07",
         "live-61ad094274dadd7365d0f3ad",
         "live-2476c76cca7060ed589d1586",
@@ -219,14 +298,14 @@
         "live-5f1d536e2240592db24d647b",
         "live-df5e53e5c67c5b78e0f432f1",
         "live-4f4f929541f901f461fcfb53",
-        "live-0c0ef83fd9e831e19497c682",
         "live-d84a3e1a6453e98853214665",
+        "live-0c0ef83fd9e831e19497c682",
         "live-d146404b357113405b4f6692",
+        "live-e00ea2022c2c0cc8772d34d4",
         "live-6955a2b3a19247dff6c35efd",
         "live-b31432c0101327269ba8d48d",
         "live-f607abd576b39043c598440f",
         "live-f0d6e12f6c193c13ca3f31fd",
-        "live-1c5789e645c1311841bde1f1",
         "live-1ace3a4e0b1af6bf21a28299",
         "live-7df6f37a887a91dc6896867c",
         "live-5690c9fa5fedbedd6f909850",
@@ -235,84 +314,105 @@
         "live-7d50f83138777c6466ca66de",
         "live-084578a6c52df1f89d900926",
         "live-e20414805dd1abb454067844",
-        "live-91d2d80f25729d14deb137bd",
-        "live-05cb6eadaef17d128d266571",
-        "live-715f48cefa36107b1c39ef86",
-        "live-4b231ebbfd3d7c4ffc9c1dce",
+        "live-a446c44efc0ae05a31d1173d",
         "live-bec7ecaa39ce323f0e73eea5"
       ],
       "resumed": [
-        "live-5a799d6772d56340dc58a116",
-        "live-a446c44efc0ae05a31d1173d"
+        "live-741574521b2204f6b6e689dc",
+        "live-ba340b8bb28851517671f51c",
+        "live-6b1fcf758e4b48af0915b9af",
+        "live-874f9548a4c413177f336167",
+        "live-2db9f4b6bffd4539e161e4da",
+        "live-625951b3d62639097cc54976",
+        "live-feffdfa78a0a1c06d7f1502a",
+        "live-8e5fb7c1659365336402cf7b",
+        "live-04b1431ad4a1a98773e1d188",
+        "live-ffac5e019c695094d6fdc9f5",
+        "live-08575b1781dd45468e91a7e6",
+        "live-46b62cf90499a36d91605693",
+        "live-675b5dad9387540757232e04",
+        "live-91d2d80f25729d14deb137bd",
+        "live-05cb6eadaef17d128d266571",
+        "live-715f48cefa36107b1c39ef86",
+        "live-4b231ebbfd3d7c4ffc9c1dce"
       ],
       "stale": [],
-      "requests": 2,
-      "input_tokens": 63931,
-      "output_tokens": 1344,
+      "requests": 17,
+      "input_tokens": 67917,
+      "output_tokens": 13020,
       "service_retry_policy": "bounded-exponential-v1",
       "inline_service_retries": 0,
       "service_failures": [],
-      "pending_before": 74,
-      "pending_after": 73,
-      "finished_at": "2026-10-21T01:40:24.870607+00:00",
-      "seconds": 31.65,
-      "requests_today": 349,
+      "pending_before": 72,
+      "pending_after": 71,
+      "finished_at": "2026-10-21T02:39:16.072297+00:00",
+      "seconds": 304.91,
+      "requests_today": 366,
       "daily_request_limit": 500,
       "unknown_usage_requests_today": 15,
       "id": "secondary",
       "configured": true
     }
   ],
-  "pending_before": 149,
+  "pending_before": 145,
   "configured_projects": 3,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
   "translated": [
-    "live-50051c4ef299507ae669f643",
-    "live-9e5963fd480df7bad91b1e65",
-    "live-b03b3c71474d66166d13f451",
-    "live-5a799d6772d56340dc58a116"
+    "live-8e5fb7c1659365336402cf7b"
   ],
   "resumed": [
-    "live-50051c4ef299507ae669f643",
-    "live-9e5963fd480df7bad91b1e65",
-    "live-b03b3c71474d66166d13f451",
-    "live-f0fe2ed67fc7390368932d19",
-    "live-76c8ed316d62d29f25a90d15",
-    "live-5a799d6772d56340dc58a116",
-    "live-a446c44efc0ae05a31d1173d"
-  ],
-  "deferred": [
-    "live-a965b4bc6a9076e12ade3aa6",
-    "live-5c7773131befcf6286bc298f",
-    "live-8f6b7e6d57e6471644ccf101",
-    "live-0048756de9fb0126a657ed01",
-    "live-6e3fd28f2b8692ab51647102",
+    "live-9b3a9d4e791a007a615ebf5d",
+    "live-7347ccfaf767bbdf782486ec",
+    "live-05cc76e49a90a86d0d05ec6a",
+    "live-d10b527d989f1e2129ba7888",
+    "live-c29b8d60a818d6bea481fd90",
+    "live-3f3c1467a20618a64f202772",
+    "live-b5cc5139d6ccf7d045dba8aa",
+    "live-7458d3a099139c985a9b278c",
+    "live-8dd7dfa740e746b61dbde841",
+    "live-1d22c7625fdbcd788a0a6a34",
+    "live-14fdc00be9a2ef7c1cbf2693",
     "live-741574521b2204f6b6e689dc",
     "live-ba340b8bb28851517671f51c",
     "live-6b1fcf758e4b48af0915b9af",
     "live-874f9548a4c413177f336167",
     "live-2db9f4b6bffd4539e161e4da",
     "live-625951b3d62639097cc54976",
-    "live-05cc76e49a90a86d0d05ec6a",
-    "live-d10b527d989f1e2129ba7888",
-    "live-c29b8d60a818d6bea481fd90",
-    "live-3f3c1467a20618a64f202772",
+    "live-feffdfa78a0a1c06d7f1502a",
+    "live-8e5fb7c1659365336402cf7b",
+    "live-04b1431ad4a1a98773e1d188",
+    "live-ffac5e019c695094d6fdc9f5",
+    "live-08575b1781dd45468e91a7e6",
+    "live-46b62cf90499a36d91605693",
+    "live-675b5dad9387540757232e04",
+    "live-91d2d80f25729d14deb137bd",
+    "live-05cb6eadaef17d128d266571",
+    "live-715f48cefa36107b1c39ef86",
+    "live-4b231ebbfd3d7c4ffc9c1dce"
+  ],
+  "deferred": [
+    "live-5c7773131befcf6286bc298f",
+    "live-11fda173ddff3c944a71d5cc",
+    "live-0048756de9fb0126a657ed01",
+    "live-3e1b46bda64afa072b64d24f",
+    "live-66fbda4265e7cc06e3aa9e1b",
+    "live-3d4536cdeec33df5cab0639d",
+    "live-837996368fbc0c1b0ecc1464",
+    "live-a8683f6d843f4cc1d2254fe1",
+    "live-6f7b3ba55dfc0a11ca9113f3",
     "live-62bfd5560912e14b08d53c39",
     "live-88cc1fc663f9368f2b676ef2",
     "live-f2266ca06f33ad6f54ffed79",
-    "live-b5cc5139d6ccf7d045dba8aa",
-    "live-7458d3a099139c985a9b278c",
     "live-b2f238e41583759fc2b0dfc7",
-    "live-21e53b661093bf053c62814d",
     "live-eacd2c5b95138e28cca8ded9",
+    "live-115c065386b51e945d56d5d6",
     "live-4ba2dcd8cec2b7382fc92d95",
     "live-868ab2ab1ef038502bf02388",
     "live-863b62fdf1947c023ec0dfe7",
     "live-c07ebcb2238676a0ca273691",
     "live-d7ef045dc3fba3a12a48ba0b",
-    "live-fc34527bd1f1aed999a01e8e",
     "live-c9a1edae85b0ebb26b4ae997",
     "live-28df7871f5a7a9bb1a0e8bce",
     "live-c9d98f5e001e5f8352184118",
@@ -327,6 +427,7 @@
     "live-0ca89a7ad1730a47858547bd",
     "live-7af82fb8de0eccc86d78103b",
     "live-c4182cd836140ed28b4eb6fb",
+    "live-bc116950b9594ad1f08e6e58",
     "live-831862c6992ec43b09428f24",
     "live-7008c16f98e0aabc9ef840fa",
     "live-621ad835eb28513282aa34e2",
@@ -337,53 +438,39 @@
     "live-58137dbc09668a9b677a4bbd",
     "live-9474327fade22295786c9872",
     "live-53c62dd430065cc1f8578972",
-    "live-e00ea2022c2c0cc8772d34d4",
     "live-b4c2f3016f33d306c51f0acc",
     "live-48543945b90350df5055ed2b",
     "live-e073be9f377d63cfdb0c3882",
     "live-619c71add8da12c1b4973032",
     "live-366639d4167b7c6859d281af",
+    "live-1c5789e645c1311841bde1f1",
     "live-eacef680e6ccb361beff812e",
     "live-a9066d39f6d39bbbb8cd10dd",
     "live-56133e1bff6dd7abceadb8cf",
     "live-47c0633fe3a5f56644fcfa73",
     "live-120a52664745a069fa6479f1",
-    "live-8dd7dfa740e746b61dbde841",
-    "live-1d22c7625fdbcd788a0a6a34",
     "live-b5b16277ccb4d4a2fe938f57",
-    "live-14fdc00be9a2ef7c1cbf2693",
+    "live-f0fe2ed67fc7390368932d19",
+    "live-76c8ed316d62d29f25a90d15",
     "live-ee482fa2d66fc5faf589af9b",
     "live-53e5d31021e8ac55442c3aa0",
-    "live-11fda173ddff3c944a71d5cc",
+    "live-a965b4bc6a9076e12ade3aa6",
+    "live-8f6b7e6d57e6471644ccf101",
     "live-4be0e811864eba9247898485",
-    "live-3e1b46bda64afa072b64d24f",
-    "live-66fbda4265e7cc06e3aa9e1b",
+    "live-6e3fd28f2b8692ab51647102",
     "live-6ce1934a5a37b73f9f7d4e84",
-    "live-9b3a9d4e791a007a615ebf5d",
-    "live-3d4536cdeec33df5cab0639d",
-    "live-837996368fbc0c1b0ecc1464",
-    "live-7347ccfaf767bbdf782486ec",
-    "live-b3328c1648deee9eeebe649f",
-    "live-a8683f6d843f4cc1d2254fe1",
-    "live-feffdfa78a0a1c06d7f1502a",
-    "live-6f7b3ba55dfc0a11ca9113f3",
     "live-418e0504c5172f68d805b886",
     "live-a16c5d7d63b7d7566b19aa32",
-    "live-8e5fb7c1659365336402cf7b",
-    "live-04b1431ad4a1a98773e1d188",
-    "live-ffac5e019c695094d6fdc9f5",
-    "live-08575b1781dd45468e91a7e6",
-    "live-46b62cf90499a36d91605693",
-    "live-675b5dad9387540757232e04",
     "live-be35ba521774c172f6032987",
+    "live-21e53b661093bf053c62814d",
     "live-11b5a285dfc9d044cb22bdce",
     "live-2688cc9427bd18e0a17b551c",
-    "live-115c065386b51e945d56d5d6",
     "live-99e14e4566c6d48c1ff94a7a",
     "live-65723ff399767c5ad7d9d776",
     "live-1cd1c874e309aaef695f221f",
     "live-1e398608a79570e381c493bc",
     "live-f816288b1215c5fd790246d9",
+    "live-fc34527bd1f1aed999a01e8e",
     "live-060658cea0eefb38036b7f47",
     "live-0428e6f0bd99130fd69cf9fc",
     "live-a1245d0a7e9bc7cd87940813",
@@ -397,7 +484,6 @@
     "live-64192915e883adfd0919c366",
     "live-149bb20438829946613f8af5",
     "live-7a9ef79b7a0ded19c4844696",
-    "live-bc116950b9594ad1f08e6e58",
     "live-d51e410b4c16de24ca72fc07",
     "live-61ad094274dadd7365d0f3ad",
     "live-2476c76cca7060ed589d1586",
@@ -405,14 +491,14 @@
     "live-5f1d536e2240592db24d647b",
     "live-df5e53e5c67c5b78e0f432f1",
     "live-4f4f929541f901f461fcfb53",
-    "live-0c0ef83fd9e831e19497c682",
     "live-d84a3e1a6453e98853214665",
+    "live-0c0ef83fd9e831e19497c682",
     "live-d146404b357113405b4f6692",
+    "live-e00ea2022c2c0cc8772d34d4",
     "live-6955a2b3a19247dff6c35efd",
     "live-b31432c0101327269ba8d48d",
     "live-f607abd576b39043c598440f",
     "live-f0d6e12f6c193c13ca3f31fd",
-    "live-1c5789e645c1311841bde1f1",
     "live-1ace3a4e0b1af6bf21a28299",
     "live-7df6f37a887a91dc6896867c",
     "live-5690c9fa5fedbedd6f909850",
@@ -421,37 +507,159 @@
     "live-7d50f83138777c6466ca66de",
     "live-084578a6c52df1f89d900926",
     "live-e20414805dd1abb454067844",
-    "live-91d2d80f25729d14deb137bd",
-    "live-05cb6eadaef17d128d266571",
-    "live-715f48cefa36107b1c39ef86",
-    "live-4b231ebbfd3d7c4ffc9c1dce",
+    "live-a446c44efc0ae05a31d1173d",
     "live-bec7ecaa39ce323f0e73eea5"
   ],
   "stale": [],
   "failed": [
     {
-      "id": "live-f0fe2ed67fc7390368932d19",
-      "reason": "ai_numbers_missing:block:6:text:0",
+      "id": "live-9b3a9d4e791a007a615ebf5d",
+      "reason": "ai_numbers_missing:block:2:text:0",
       "project": "primary"
     },
     {
-      "id": "live-76c8ed316d62d29f25a90d15",
-      "reason": "ai_paragraph_not_translated:block:17:text:0",
+      "id": "live-7347ccfaf767bbdf782486ec",
+      "reason": "ai_numbers_missing:block:0:text:0",
       "project": "primary"
     },
     {
-      "id": "live-a446c44efc0ae05a31d1173d",
-      "reason": "ai_paragraph_not_translated:block:289:text:0",
+      "id": "live-b3328c1648deee9eeebe649f",
+      "reason": "ai_output_incomplete",
+      "project": "primary"
+    },
+    {
+      "id": "live-05cc76e49a90a86d0d05ec6a",
+      "reason": "ai_numbers_missing:title:0",
+      "project": "primary"
+    },
+    {
+      "id": "live-d10b527d989f1e2129ba7888",
+      "reason": "ai_numbers_missing:block:14:text:0",
+      "project": "primary"
+    },
+    {
+      "id": "live-c29b8d60a818d6bea481fd90",
+      "reason": "block_not_chinese",
+      "project": "primary"
+    },
+    {
+      "id": "live-3f3c1467a20618a64f202772",
+      "reason": "ai_numbers_missing:title:0",
+      "project": "primary"
+    },
+    {
+      "id": "live-b5cc5139d6ccf7d045dba8aa",
+      "reason": "ai_numbers_missing:excerpt:0",
+      "project": "primary"
+    },
+    {
+      "id": "live-7458d3a099139c985a9b278c",
+      "reason": "ai_numbers_missing:block:5:text:0",
+      "project": "primary"
+    },
+    {
+      "id": "live-8dd7dfa740e746b61dbde841",
+      "reason": "ai_paragraph_not_translated:block:13:text:0",
+      "project": "primary"
+    },
+    {
+      "id": "live-1d22c7625fdbcd788a0a6a34",
+      "reason": "ai_numbers_missing:block:0:text:0",
+      "project": "primary"
+    },
+    {
+      "id": "live-14fdc00be9a2ef7c1cbf2693",
+      "reason": "ai_numbers_missing:block:4:text:0",
+      "project": "primary"
+    },
+    {
+      "id": "live-741574521b2204f6b6e689dc",
+      "reason": "ai_translation_expansion:block:36:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-ba340b8bb28851517671f51c",
+      "reason": "ai_numbers_missing:block:4:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-6b1fcf758e4b48af0915b9af",
+      "reason": "ai_numbers_missing:block:8:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-874f9548a4c413177f336167",
+      "reason": "ai_numbers_missing:block:3:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-2db9f4b6bffd4539e161e4da",
+      "reason": "ai_numbers_missing:block:5:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-625951b3d62639097cc54976",
+      "reason": "ai_numbers_missing:block:26:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-feffdfa78a0a1c06d7f1502a",
+      "reason": "ai_numbers_missing:block:4:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-04b1431ad4a1a98773e1d188",
+      "reason": "ai_numbers_missing:block:18:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-ffac5e019c695094d6fdc9f5",
+      "reason": "ai_numbers_missing:block:13:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-08575b1781dd45468e91a7e6",
+      "reason": "ai_paragraph_not_translated:block:6:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-46b62cf90499a36d91605693",
+      "reason": "ai_numbers_missing:block:9:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-675b5dad9387540757232e04",
+      "reason": "ai_numbers_missing:block:3:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-91d2d80f25729d14deb137bd",
+      "reason": "ai_paragraph_not_translated:block:15:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-05cb6eadaef17d128d266571",
+      "reason": "ai_numbers_missing:block:9:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-715f48cefa36107b1c39ef86",
+      "reason": "ai_numbers_missing:block:3:text:0",
+      "project": "secondary"
+    },
+    {
+      "id": "live-4b231ebbfd3d7c4ffc9c1dce",
+      "reason": "ai_numbers_missing:block:1:text:0",
       "project": "secondary"
     }
   ],
-  "requests": 7,
-  "input_tokens": 78436,
-  "output_tokens": 2646,
-  "requests_today": 767,
+  "requests": 29,
+  "input_tokens": 114564,
+  "output_tokens": 34512,
+  "requests_today": 796,
   "unknown_usage_requests_today": 31,
   "daily_request_limit": 1300,
-  "pending_after": 145,
+  "pending_after": 144,
   "continue_recommended": false,
-  "seconds": 78.62
+  "seconds": 304.91
 }

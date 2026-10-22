@@ -4,6 +4,7 @@
 **Project:** ART-NEWS / 幕间休息 (Intermission)  
 **Repository:** https://github.com/k1ryulong6-source/ART-NEWS  
 **Official form:** https://openai.com/zh-Hans-CN/form/codex-for-oss/
+**Owner decision:** Prepare this public ART-NEWS project and the future fully open-source `linyining0604-pixel/taizidang` research project as **two distinct applications** by the **same real individual**, not by different people/accounts for multiple benefits.
 
 > Working document only. Nothing in this file means OpenAI has approved an application. Do not fabricate stars, downloads, users, collaborators, releases or tests. This draft does **not** grant permission to change repository visibility, incur API costs, modify production workflows, or publish third-party content.
 
@@ -55,6 +56,13 @@ This is an early-stage public project with substantial development activity but 
 4. Generate *draft* release notes from verified diffs, with human review.
 
 Routine news translation, bulk acquisition of full copyrighted articles, and work in unrelated private apps are **not** the maintenance-credit rationale.
+
+## Two submissions / identity consistency
+
+- This application concerns **ART-NEWS only**; the separate future application will concern **the complete 权脉 (taizidang) project** after the research release is ready, its repository is made public, and legal/privacy/evidence audits pass.
+- Both GitHub accounts may be maintained by the same person. OpenAI may request evidence of control; always use one truthful applicant identity and the correct ChatGPT email, with both profiles disclosed as necessary.
+- The Program Terms prohibit using multiple identities or accounts to obtain more than one benefit. Two projects do **not** entitle the maintainer to two ChatGPT Pro awards. Any award/credit scope is determined by OpenAI.
+- ART-NEWS is already public and can be prepared sooner; the future private-research-to-public conversion must **not** delay this project's OSS readiness work or misstate the other project's eligibility.
 
 ## Decision checkpoint
 

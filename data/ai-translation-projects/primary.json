@@ -1,74 +1,96 @@
 {
-  "status": "run_limit",
+  "status": "service_wait",
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-22T16:09:59.158848+00:00",
+  "started_at": "2026-10-22T16:47:28.661838+00:00",
   "translated": [
-    "live-0037b2c98516617ae0f7df11",
-    "live-346cd6b25bedad3c675c3aa9",
-    "live-c72fd9892943e2b27f2bb028"
+    "live-8717a3834119c841f09d83b9",
+    "live-2d969503d87e3fad9cc6fa21"
   ],
   "failed": [
     {
-      "id": "live-5c7773131befcf6286bc298f",
-      "reason": "ai_numbers_missing:block:13:text:0"
-    },
-    {
-      "id": "live-7d50f83138777c6466ca66de",
-      "reason": "ai_numbers_missing:block:4:text:0"
-    },
-    {
-      "id": "live-f0fe2ed67fc7390368932d19",
-      "reason": "ai_numbers_missing:block:6:text:0"
+      "id": "live-c61abc2f284857ed37c6aecb",
+      "reason": "ai_numbers_missing:excerpt:0"
     }
   ],
   "deferred": [
     "live-76cdf5f8441b6eaf01e214f3",
-    "live-8c6333a78003b2033b7287d6",
-    "live-250af33b8cc02e1d8f0b4ae4",
-    "live-b66532bd54cad96b80dd2bbf",
-    "live-8fb530594469730626caeb09",
-    "live-f7bba470e41790edd654ccd4",
+    "live-8f8749170a72f3f09bb4ef88",
+    "live-6b613f95fd25bbf29dcbbb56",
+    "live-49b9d099d738f1970b1c5515",
+    "live-cd8fc8089d503d4150a0c5b1",
+    "live-5e9640763506ccc13d30808e",
+    "live-5c7773131befcf6286bc298f",
+    "live-6f7b3ba55dfc0a11ca9113f3",
     "live-21e53b661093bf053c62814d",
-    "live-fc34527bd1f1aed999a01e8e",
     "live-5980f4877e8edcc5f8ef2105",
-    "live-621ad835eb28513282aa34e2",
-    "live-d13a53998bb90d171e1a6b0d",
-    "live-ddc4e9607887ff3f1bb6a9c4",
-    "live-5f1d536e2240592db24d647b",
-    "live-c61abc2f284857ed37c6aecb",
-    "live-df5e53e5c67c5b78e0f432f1",
-    "live-58137dbc09668a9b677a4bbd",
-    "live-9474327fade22295786c9872",
-    "live-d146404b357113405b4f6692",
-    "live-6955a2b3a19247dff6c35efd",
-    "live-b31432c0101327269ba8d48d",
-    "live-f607abd576b39043c598440f",
+    "live-f548c2d1687aaa2f3fe496b5",
+    "live-e00ea2022c2c0cc8772d34d4",
+    "live-7d50f83138777c6466ca66de",
+    "live-91d2d80f25729d14deb137bd",
+    "live-f0fe2ed67fc7390368932d19",
     "live-76c8ed316d62d29f25a90d15",
+    "live-bec7ecaa39ce323f0e73eea5",
     "live-ee482fa2d66fc5faf589af9b",
-    "live-d62f4a62f48168c5e329d52d",
+    "live-bc475e6bcb80f011083ed204",
     "live-b4c59e4b02b472967fe4550d"
   ],
   "resumed": [
-    "live-5c7773131befcf6286bc298f",
-    "live-7d50f83138777c6466ca66de",
-    "live-f0fe2ed67fc7390368932d19"
+    "live-c61abc2f284857ed37c6aecb"
   ],
   "stale": [],
-  "requests": 7,
-  "input_tokens": 20222,
-  "output_tokens": 5802,
+  "requests": 5,
+  "input_tokens": 6265,
+  "output_tokens": 2306,
   "service_retry_policy": "bounded-exponential-v1",
-  "inline_service_retries": 0,
-  "service_failures": [],
-  "pending_before": 96,
-  "pending_after": 93,
-  "finished_at": "2026-10-22T16:18:02.934092+00:00",
-  "seconds": 483.78,
-  "requests_today": 177,
+  "inline_service_retries": 1,
+  "service_failures": [
+    {
+      "policy": "bounded-exponential-v1",
+      "consecutive_failures": 1,
+      "delay_seconds": 72,
+      "server_retry_seconds": 0,
+      "error": "ai_http_503",
+      "failed_at": "2026-10-22T16:50:11.074083+00:00",
+      "retry_after": "2026-10-22T16:51:23.074083+00:00",
+      "provider_error": {
+        "http_status": 503,
+        "category": "capacity_unavailable",
+        "api_status": "UNAVAILABLE",
+        "message_evidence": "high demand"
+      },
+      "inline_retry": true
+    },
+    {
+      "policy": "bounded-exponential-v1",
+      "consecutive_failures": 2,
+      "delay_seconds": 126,
+      "server_retry_seconds": 0,
+      "error": "TimeoutError",
+      "failed_at": "2026-10-22T16:53:40.879341+00:00",
+      "retry_after": "2026-10-22T16:55:46.879341+00:00",
+      "inline_retry": false
+    }
+  ],
+  "pending_before": 110,
+  "error": "TimeoutError",
+  "retry_after": "2026-10-22T16:55:46.879341+00:00",
+  "pending_after": 108,
+  "finished_at": "2026-10-22T16:53:40.886557+00:00",
+  "seconds": 372.22,
+  "requests_today": 182,
   "daily_request_limit": 500,
-  "unknown_usage_requests_today": 6,
+  "unknown_usage_requests_today": 8,
+  "service_retry": {
+    "policy": "bounded-exponential-v1",
+    "consecutive_failures": 2,
+    "delay_seconds": 126,
+    "server_retry_seconds": 0,
+    "error": "TimeoutError",
+    "failed_at": "2026-10-22T16:53:40.879341+00:00",
+    "retry_after": "2026-10-22T16:55:46.879341+00:00"
+  },
   "id": "primary",
   "configured": true
 }

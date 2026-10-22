@@ -1,6 +1,6 @@
 {
-  "checked_at": "2026-10-22T20:43:52.568005+00:00",
-  "list_audit_at": "2026-10-22T18:55:23.442149+00:00",
+  "checked_at": "2026-10-22T20:46:50.215233+00:00",
+  "list_audit_at": "2026-10-22T20:46:37.038744+00:00",
   "scope": "configured_sources_current_lists_only",
   "global_completeness": "unknown",
   "core_source_problems": [
@@ -28,6 +28,13 @@
         "no_recent_success"
       ],
       "last_success_at": "2026-10-14T00:31:48.725165+00:00"
+    },
+    {
+      "source_id": "artishock",
+      "reasons": [
+        "list_audit_failed"
+      ],
+      "last_success_at": "2026-10-22T20:45:22.110923+00:00"
     }
   ],
   "missing_important_items": [],
@@ -1757,7 +1764,7 @@
             "failed_source_ids": [
               "cineuropa"
             ],
-            "inventory_from_assigned_sources": 363,
+            "inventory_from_assigned_sources": 365,
             "coverage_status": "assigned_sources_only"
           },
           "art": {
@@ -1826,7 +1833,7 @@
             "rss_sources": 4,
             "successful_rss_checks": 4,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 385,
+            "inventory_from_assigned_sources": 388,
             "coverage_status": "assigned_sources_only"
           },
           "photography": {
@@ -1896,7 +1903,7 @@
             "rss_sources": 5,
             "successful_rss_checks": 5,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 344,
+            "inventory_from_assigned_sources": 346,
             "coverage_status": "assigned_sources_only"
           }
         }
@@ -2324,8 +2331,10 @@
               "artishock"
             ],
             "rss_sources": 1,
-            "successful_rss_checks": 1,
-            "failed_source_ids": [],
+            "successful_rss_checks": 0,
+            "failed_source_ids": [
+              "artishock"
+            ],
             "inventory_from_assigned_sources": 16,
             "coverage_status": "assigned_sources_only"
           },
@@ -2387,7 +2396,7 @@
             "rss_sources": 1,
             "successful_rss_checks": 1,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 18,
+            "inventory_from_assigned_sources": 19,
             "coverage_status": "assigned_sources_only"
           }
         }
@@ -2411,7 +2420,7 @@
             "rss_sources": 3,
             "successful_rss_checks": 3,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 553,
+            "inventory_from_assigned_sources": 571,
             "coverage_status": "assigned_sources_only"
           },
           "art": {
@@ -2429,7 +2438,7 @@
             "rss_sources": 3,
             "successful_rss_checks": 3,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 284,
+            "inventory_from_assigned_sources": 291,
             "coverage_status": "assigned_sources_only"
           },
           "photography": {
@@ -2586,11 +2595,12 @@
               "indiewire"
             ],
             "rss_sources": 12,
-            "successful_rss_checks": 11,
+            "successful_rss_checks": 10,
             "failed_source_ids": [
-              "cineuropa"
+              "cineuropa",
+              "filmcomment"
             ],
-            "inventory_from_assigned_sources": 1214,
+            "inventory_from_assigned_sources": 1236,
             "coverage_status": "assigned_sources_only"
           },
           "art": {
@@ -2612,9 +2622,11 @@
               "artreview"
             ],
             "rss_sources": 14,
-            "successful_rss_checks": 14,
-            "failed_source_ids": [],
-            "inventory_from_assigned_sources": 787,
+            "successful_rss_checks": 13,
+            "failed_source_ids": [
+              "artishock"
+            ],
+            "inventory_from_assigned_sources": 796,
             "coverage_status": "assigned_sources_only"
           },
           "photography": {
@@ -2634,13 +2646,13 @@
             "rss_sources": 9,
             "successful_rss_checks": 9,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 479,
+            "inventory_from_assigned_sources": 482,
             "coverage_status": "assigned_sources_only"
           }
         }
       }
     ],
-    "unlocated_content": 2034,
+    "unlocated_content": 2063,
     "discovery_share_of_available_new_body_slots": 0.2,
     "global_completeness": "unknown",
     "limitations": [
@@ -2651,6 +2663,70 @@
     ]
   },
   "fresh_important_items": [
+    {
+      "id": "live-5b09b0d399ecabac7ca48ed8",
+      "source_id": "guardian-culture",
+      "title_original": "Terry Lee obituary",
+      "canonical_url": "https://www.theguardian.com/artanddesign/2026/oct/22/terry-lee-obituary",
+      "language": "en",
+      "article_status": "collected",
+      "editorial_status": null,
+      "translation_priority": {
+        "priority": "P0",
+        "label": "紧急",
+        "importance": "high",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": true,
+        "archive": false,
+        "reasons": [
+          "机构／行业重大变化相关信号，自动初判",
+          "来源发布时间在48小时内",
+          "主头条候选，先完成AI全文再上版"
+        ],
+        "source_title": "Terry Lee obituary",
+        "model_route": "fast-direct",
+        "exhibition": false,
+        "exhibition_region": null,
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0,
+        "headline_order": 0,
+        "headline_slot": "lead"
+      },
+      "has_original_body": true
+    },
+    {
+      "id": "live-16f94e9bc0d2717eed5a2831",
+      "source_id": "indiewire",
+      "title_original": "Tom Skerritt, ‘Alien’ and ‘M*A*S*H’ Star, Dies at 93",
+      "canonical_url": "https://www.indiewire.com/news/obituary/tom-skerritt-dead-alien-mash-1235223498/",
+      "language": "en",
+      "article_status": "collected",
+      "editorial_status": null,
+      "translation_priority": {
+        "priority": "P0",
+        "label": "紧急",
+        "importance": "high",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": true,
+        "archive": false,
+        "reasons": [
+          "机构／行业重大变化相关信号，自动初判",
+          "来源发布时间在48小时内",
+          "电影栏目头条候选，先完成AI全文再上版"
+        ],
+        "source_title": "Tom Skerritt, ‘Alien’ and ‘M*A*S*H’ Star, Dies at 93",
+        "model_route": "fast-direct",
+        "exhibition": false,
+        "exhibition_region": null,
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0,
+        "headline_order": 1,
+        "headline_slot": "film"
+      },
+      "has_original_body": true
+    },
     {
       "id": "live-aa6d1dfa7168852897bce758",
       "source_id": "artnews",
@@ -2670,7 +2746,7 @@
         "reasons": [
           "机构／行业重大变化相关信号，自动初判",
           "来源发布时间在48小时内",
-          "主头条候选，先完成AI全文再上版"
+          "艺术栏目头条候选，先完成AI全文再上版"
         ],
         "source_title": "Questions Raised Over Maintenance of Frank Lloyd Wright’s Taliesin West Home After Death",
         "model_route": "fast-direct",
@@ -2678,80 +2754,10 @@
         "exhibition_region": null,
         "exhibition_deprioritized": false,
         "recommendation_penalty": 0,
-        "headline_order": 0,
-        "headline_slot": "lead",
-        "frontpage_headline_order": 0,
-        "frontpage_headline_slot": "lead"
-      },
-      "has_original_body": true
-    },
-    {
-      "id": "live-ccd91cc1df0f10d54e7cde5c",
-      "source_id": "deadline-film",
-      "title_original": "Skydance Nordics & Germany Boss Says “We’re Doing Our Best To Manage The Change” After Mega-Merger",
-      "canonical_url": "https://deadline.com/2026/10/christina-sulebakk-on-skydance-merger-nordics-germany-1237170520/",
-      "language": "en",
-      "article_status": "partial",
-      "editorial_status": "translated",
-      "translation_priority": {
-        "priority": "P0",
-        "label": "紧急",
-        "importance": "high",
-        "time_sensitive": false,
-        "due": null,
-        "fresh": true,
-        "archive": false,
-        "reasons": [
-          "机构／行业重大变化相关信号，自动初判",
-          "来源发布时间在48小时内",
-          "电影栏目头条候选，先完成AI全文再上版"
-        ],
-        "source_title": "Skydance Nordics & Germany Boss Says “We’re Doing Our Best To Manage The Change” After Mega-Merger",
-        "model_route": "fast-direct",
-        "exhibition": false,
-        "exhibition_region": null,
-        "exhibition_deprioritized": false,
-        "recommendation_penalty": 0,
-        "headline_order": 1,
-        "headline_slot": "film",
-        "frontpage_headline_order": 1,
-        "frontpage_headline_slot": "film"
-      },
-      "has_original_body": true
-    },
-    {
-      "id": "live-13ea514db1733e0830ee1bef",
-      "source_id": "artnews-japan",
-      "title_original": "排泄物を用いた「最後の晩餐」でホルツィンガーがヴェネチア・ビエンナーレの展示に幕",
-      "canonical_url": "https://artnewsjapan.com/article/90514",
-      "language": "ja",
-      "article_status": "collected",
-      "editorial_status": "translated",
-      "translation_priority": {
-        "priority": "P0",
-        "label": "紧急",
-        "importance": "high",
-        "time_sensitive": false,
-        "due": null,
-        "fresh": true,
-        "archive": false,
-        "reasons": [
-          "新作／上映／展览相关资讯",
-          "重大双年展／奖项展／重要回顾展相关信号，自动初判",
-          "来源发布时间在48小时内",
-          "展览地区未确定，未按语言或媒体所在地降级",
-          "艺术栏目头条候选，先完成AI全文再上版"
-        ],
-        "source_title": "排泄物を用いた「最後の晩餐」でホルツィンガーがヴェネチア・ビエンナーレの展示に幕",
-        "model_route": "fast-direct",
-        "exhibition": true,
-        "exhibition_region": "unknown",
-        "exhibition_deprioritized": false,
-        "recommendation_penalty": 0,
         "headline_order": 2,
         "headline_slot": "art",
-        "frontpage_headline_order": 2,
-        "frontpage_headline_slot": "art"
+        "frontpage_headline_order": 0,
+        "frontpage_headline_slot": "lead"
       },
       "has_original_body": true
     },
@@ -2819,11 +2825,11 @@
       "has_original_body": true
     },
     {
-      "id": "live-1da7c03978f35e286bc8669f",
-      "source_id": "variety-film",
-      "title_original": "Neon Partners With ‘NAZA’ Filmmakers, Guardian and MK2 to Bring Prize-Winning Doc to Wider Audiences",
-      "canonical_url": "https://variety.com/2026/film/news/neon-naza-wider-audiences-1236918907/",
-      "language": "en",
+      "id": "live-13ea514db1733e0830ee1bef",
+      "source_id": "artnews-japan",
+      "title_original": "排泄物を用いた「最後の晩餐」でホルツィンガーがヴェネチア・ビエンナーレの展示に幕",
+      "canonical_url": "https://artnewsjapan.com/article/90514",
+      "language": "ja",
       "article_status": "collected",
       "editorial_status": "translated",
       "translation_priority": {
@@ -2835,10 +2841,43 @@
         "fresh": true,
         "archive": false,
         "reasons": [
-          "重大影展／奖项相关信号，自动初判",
+          "新作／上映／展览相关资讯",
+          "重大双年展／奖项展／重要回顾展相关信号，自动初判",
+          "来源发布时间在48小时内",
+          "展览地区未确定，未按语言或媒体所在地降级"
+        ],
+        "source_title": "排泄物を用いた「最後の晩餐」でホルツィンガーがヴェネチア・ビエンナーレの展示に幕",
+        "model_route": "fast-direct",
+        "exhibition": true,
+        "exhibition_region": "unknown",
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0,
+        "frontpage_headline_order": 2,
+        "frontpage_headline_slot": "art"
+      },
+      "has_original_body": true
+    },
+    {
+      "id": "live-2160e7cd0781d351dac76460",
+      "source_id": "variety-film",
+      "title_original": "Tom Skerritt, ‘Picket Fences’ and ‘Alien’ Star, Dies at 93",
+      "canonical_url": "https://variety.com/2026/film/news/tom-skerritt-dead-picket-fences-alien-1236921694/",
+      "language": "en",
+      "article_status": "collected",
+      "editorial_status": null,
+      "translation_priority": {
+        "priority": "P0",
+        "label": "紧急",
+        "importance": "high",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": true,
+        "archive": false,
+        "reasons": [
+          "机构／行业重大变化相关信号，自动初判",
           "来源发布时间在48小时内"
         ],
-        "source_title": "Neon Partners With ‘NAZA’ Filmmakers, Guardian and MK2 to Bring Prize-Winning Doc to Wider Audiences",
+        "source_title": "Tom Skerritt, ‘Picket Fences’ and ‘Alien’ Star, Dies at 93",
         "model_route": "fast-direct",
         "exhibition": false,
         "exhibition_region": null,
@@ -3051,6 +3090,35 @@
       "has_original_body": true
     },
     {
+      "id": "live-aa9170f389194ddb95d3a1f4",
+      "source_id": "guardian-culture",
+      "title_original": "Nana Patekar obituary",
+      "canonical_url": "https://www.theguardian.com/film/2026/oct/22/nana-patekar-obituary",
+      "language": "en",
+      "article_status": "collected",
+      "editorial_status": null,
+      "translation_priority": {
+        "priority": "P0",
+        "label": "紧急",
+        "importance": "high",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": true,
+        "archive": false,
+        "reasons": [
+          "机构／行业重大变化相关信号，自动初判",
+          "来源发布时间在48小时内"
+        ],
+        "source_title": "Nana Patekar obituary",
+        "model_route": "fast-direct",
+        "exhibition": false,
+        "exhibition_region": null,
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0
+      },
+      "has_original_body": true
+    },
+    {
       "id": "live-b3e6f92fa174445c85e527be",
       "source_id": "variety-film",
       "title_original": "Oscar Entries From Thailand, Nepal Head to Tokyo Filmex Competition; Lee Kang-sheng Joins Jury",
@@ -3167,6 +3235,37 @@
       "has_original_body": true
     },
     {
+      "id": "live-ccd91cc1df0f10d54e7cde5c",
+      "source_id": "deadline-film",
+      "title_original": "Skydance Nordics & Germany Boss Says “We’re Doing Our Best To Manage The Change” After Mega-Merger",
+      "canonical_url": "https://deadline.com/2026/10/christina-sulebakk-on-skydance-merger-nordics-germany-1237170520/",
+      "language": "en",
+      "article_status": "partial",
+      "editorial_status": "translated",
+      "translation_priority": {
+        "priority": "P0",
+        "label": "紧急",
+        "importance": "high",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": true,
+        "archive": false,
+        "reasons": [
+          "机构／行业重大变化相关信号，自动初判",
+          "来源发布时间在48小时内"
+        ],
+        "source_title": "Skydance Nordics & Germany Boss Says “We’re Doing Our Best To Manage The Change” After Mega-Merger",
+        "model_route": "fast-direct",
+        "exhibition": false,
+        "exhibition_region": null,
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0,
+        "frontpage_headline_order": 1,
+        "frontpage_headline_slot": "film"
+      },
+      "has_original_body": true
+    },
+    {
       "id": "live-daf96a6b01709078aafdc2ca",
       "source_id": "deadline-film",
       "title_original": "Oscar Nuñez, Marlene Forte, Otmara Marrero & Vivian Ruiz To Star In Adrian Cardenas’ Directorial Debut ‘In An Orderly Fashion’",
@@ -3254,7 +3353,7 @@
       "has_original_body": true
     }
   ],
-  "awaiting_AI_count": 0,
+  "awaiting_AI_count": 4,
   "without_original_body_count": 0,
   "limitations": [
     "关键词重要性为自动初判，不能替代编辑判断。",

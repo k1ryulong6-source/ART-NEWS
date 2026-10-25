@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "snapshot_at": "2026-10-25T19:59:29.274926+00:00",
+  "snapshot_at": "2026-10-25T20:37:31.101528+00:00",
   "mode": "chatgpt-direct",
   "pending": 209,
   "reviewed": 26,
@@ -8,8 +8,7 @@
   "quality_mode": "direct-ai",
   "priority_policy_path": "config/translation-priority.json",
   "pending_priority_counts": {
-    "P0": 1,
-    "P1": 1,
+    "P1": 2,
     "P2": 192,
     "P3": 15
   },
@@ -26,12 +25,10 @@
   "frontpage_priority_ids": [
     "live-9bf574d7ba75ab098d054c98",
     "live-df27e0565163d74c7e41d70e",
-    "live-05760bd055149557329447d7",
+    "live-bb27357861384acb315a8417",
     "live-dc2af0809c3f5c2eed1ef0b9"
   ],
-  "frontpage_waiting_ids": [
-    "live-05760bd055149557329447d7"
-  ],
+  "frontpage_waiting_ids": [],
   "headline_policy": "ai_full_text_before_display; native_chinese_body_exempt",
   "frontpage_display_ids": [
     "live-9bf574d7ba75ab098d054c98",
@@ -533,20 +530,20 @@
       "input_path": "data/translation-input/live-17e7dbc64f658e7fe7877351.json"
     },
     {
-      "id": "live-2b390df9bc7cbd981a1c7686",
-      "source_id": "exibart",
-      "language": "it",
-      "title_original": "Parigi, Art Basel chiuderà con due giorni di anticipo per le proteste del 24 ottobre",
-      "excerpt_original": "Il 24 ottobre Parigi torna in piazza: annunciate proteste proprio davanti al Grand Palais, sede di Art Basel Paris. Che ha appena annunciato la chiusura anticipata L'articolo Parigi, Art Basel chiuderà con due giorni di anticipo per le proteste del 24 ottobre proviene da…",
-      "input_path": "data/translation-input/live-2b390df9bc7cbd981a1c7686.json"
-    },
-    {
       "id": "live-ab02bdcd24816146823acd88",
       "source_id": "exibart",
       "language": "it",
       "title_original": "Parigi, le manifestazioni del 24 ottobre potrebbero coinvolgere anche Art Basel",
       "excerpt_original": "Il 24 ottobre Parigi torna in piazza: annunciate proteste proprio davanti al Grand Palais, sede di Art Basel Paris. Che conferma l’apertura e rafforza controlli e misure di sicurezza L'articolo Parigi, le manifestazioni del 24 ottobre potrebbero coinvolgere anche Art Basel…",
       "input_path": "data/translation-input/live-ab02bdcd24816146823acd88.json"
+    },
+    {
+      "id": "live-2b390df9bc7cbd981a1c7686",
+      "source_id": "exibart",
+      "language": "it",
+      "title_original": "Parigi, Art Basel chiuderà con due giorni di anticipo per le proteste del 24 ottobre",
+      "excerpt_original": "Il 24 ottobre Parigi torna in piazza: annunciate proteste proprio davanti al Grand Palais, sede di Art Basel Paris. Che ha appena annunciato la chiusura anticipata L'articolo Parigi, Art Basel chiuderà con due giorni di anticipo per le proteste del 24 ottobre proviene da…",
+      "input_path": "data/translation-input/live-2b390df9bc7cbd981a1c7686.json"
     },
     {
       "id": "live-250af33b8cc02e1d8f0b4ae4",
@@ -1340,14 +1337,14 @@
       "reason": "http_403"
     },
     {
-      "id": "live-fb70d279474abebcf3721ced",
+      "id": "live-2e1af51b4860dc2d00bcbf76",
       "title_original": "Inside the Scrappy SoHo Gallery That Made Art History in the Aughts",
       "source_id": "artnet",
       "article_status": "restricted",
       "reason": "http_403"
     },
     {
-      "id": "live-2e1af51b4860dc2d00bcbf76",
+      "id": "live-fb70d279474abebcf3721ced",
       "title_original": "Inside the Scrappy SoHo Gallery That Made Art History in the Aughts",
       "source_id": "artnet",
       "article_status": "restricted",
@@ -1403,26 +1400,22 @@
       "blocks": 23,
       "article_status": "collected",
       "translation_priority": {
-        "priority": "P0",
-        "label": "紧急",
+        "priority": "P1",
+        "label": "优先",
         "importance": "high",
         "time_sensitive": false,
         "due": null,
-        "fresh": true,
+        "fresh": false,
         "archive": false,
         "reasons": [
-          "机构／行业重大变化相关信号，自动初判",
-          "来源发布时间在48小时内",
-          "艺术栏目头条候选，先完成AI全文再上版"
+          "机构／行业重大变化相关信号，自动初判"
         ],
         "source_title": "Terry Denton obituary",
         "model_route": "fast-direct",
         "exhibition": false,
         "exhibition_region": null,
         "exhibition_deprioritized": false,
-        "recommendation_penalty": 0,
-        "headline_order": 2,
-        "headline_slot": "art"
+        "recommendation_penalty": 0
       }
     },
     {
@@ -1522,37 +1515,6 @@
       }
     },
     {
-      "id": "live-17e7dbc64f658e7fe7877351",
-      "source_id": "tokyo-art-beat",
-      "channel": "art",
-      "language": "ja",
-      "title_original": "フェラガモがフィレンツェのミュージアム所蔵品を東京で公開。ウォーホル旧蔵の靴や草間彌生のドローイングをもとにしたバッグなども",
-      "published_at": "2026-10-22T11:30:00+00:00",
-      "article_hash": "c46ff4adf331719fb22eba2574c402e80e66a36458cbdfa6323f7064a21c1bef",
-      "input_path": "data/translation-input/live-17e7dbc64f658e7fe7877351.json",
-      "characters": 1167,
-      "blocks": 13,
-      "article_status": "collected",
-      "translation_priority": {
-        "priority": "P2",
-        "label": "普通",
-        "importance": "medium",
-        "time_sensitive": false,
-        "due": null,
-        "fresh": false,
-        "archive": false,
-        "reasons": [
-          "新作／上映／展览相关资讯"
-        ],
-        "source_title": "フェラガモがフィレンツェのミュージアム所蔵品を東京で公開。ウォーホル旧蔵の靴や草間彌生のドローイングをもとにしたバッグなども",
-        "model_route": "fast-direct",
-        "exhibition": false,
-        "exhibition_region": null,
-        "exhibition_deprioritized": false,
-        "recommendation_penalty": 0
-      }
-    },
-    {
       "id": "live-46dde417bd87b3537f3176c0",
       "source_id": "eiga-com",
       "channel": "film",
@@ -1576,6 +1538,37 @@
           "一般资讯；未确认临近活动日期"
         ],
         "source_title": "耳をすませば（1995）",
+        "model_route": "fast-direct",
+        "exhibition": false,
+        "exhibition_region": null,
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0
+      }
+    },
+    {
+      "id": "live-17e7dbc64f658e7fe7877351",
+      "source_id": "tokyo-art-beat",
+      "channel": "art",
+      "language": "ja",
+      "title_original": "フェラガモがフィレンツェのミュージアム所蔵品を東京で公開。ウォーホル旧蔵の靴や草間彌生のドローイングをもとにしたバッグなども",
+      "published_at": "2026-10-22T11:30:00+00:00",
+      "article_hash": "c46ff4adf331719fb22eba2574c402e80e66a36458cbdfa6323f7064a21c1bef",
+      "input_path": "data/translation-input/live-17e7dbc64f658e7fe7877351.json",
+      "characters": 1167,
+      "blocks": 13,
+      "article_status": "collected",
+      "translation_priority": {
+        "priority": "P2",
+        "label": "普通",
+        "importance": "medium",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": false,
+        "archive": false,
+        "reasons": [
+          "新作／上映／展览相关资讯"
+        ],
+        "source_title": "フェラガモがフィレンツェのミュージアム所蔵品を東京で公開。ウォーホル旧蔵の靴や草間彌生のドローイングをもとにしたバッグなども",
         "model_route": "fast-direct",
         "exhibition": false,
         "exhibition_region": null,
@@ -1677,37 +1670,6 @@
       }
     },
     {
-      "id": "live-21e53b661093bf053c62814d",
-      "source_id": "screendaily",
-      "channel": "film",
-      "language": "en",
-      "title_original": "‘Street Fighter’ tops global box office with $51m opening punch; ‘Sense And Sensibility’ enters top 10",
-      "published_at": "2026-10-19T08:40:00+00:00",
-      "article_hash": "9dfff8a1728963c00f641e6c725d8f09d7900b33af139aee438e3b49f2ae53ae",
-      "input_path": "data/translation-input/live-21e53b661093bf053c62814d.json",
-      "characters": 6505,
-      "blocks": 114,
-      "article_status": "collected",
-      "translation_priority": {
-        "priority": "P2",
-        "label": "普通",
-        "importance": "medium",
-        "time_sensitive": false,
-        "due": null,
-        "fresh": false,
-        "archive": false,
-        "reasons": [
-          "新作／上映／展览相关资讯"
-        ],
-        "source_title": "‘Street Fighter’ tops global box office with $51m opening punch; ‘Sense And Sensibility’ enters top 10",
-        "model_route": "fast-direct",
-        "exhibition": false,
-        "exhibition_region": null,
-        "exhibition_deprioritized": false,
-        "recommendation_penalty": 0
-      }
-    },
-    {
       "id": "live-8c822d2d4fb8b88d20a6755e",
       "source_id": "eiga-com",
       "channel": "film",
@@ -1731,6 +1693,37 @@
           "一般资讯；未确认临近活动日期"
         ],
         "source_title": "URCHIN アーチン",
+        "model_route": "fast-direct",
+        "exhibition": false,
+        "exhibition_region": null,
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0
+      }
+    },
+    {
+      "id": "live-21e53b661093bf053c62814d",
+      "source_id": "screendaily",
+      "channel": "film",
+      "language": "en",
+      "title_original": "‘Street Fighter’ tops global box office with $51m opening punch; ‘Sense And Sensibility’ enters top 10",
+      "published_at": "2026-10-19T08:40:00+00:00",
+      "article_hash": "9dfff8a1728963c00f641e6c725d8f09d7900b33af139aee438e3b49f2ae53ae",
+      "input_path": "data/translation-input/live-21e53b661093bf053c62814d.json",
+      "characters": 6505,
+      "blocks": 114,
+      "article_status": "collected",
+      "translation_priority": {
+        "priority": "P2",
+        "label": "普通",
+        "importance": "medium",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": false,
+        "archive": false,
+        "reasons": [
+          "新作／上映／展览相关资讯"
+        ],
+        "source_title": "‘Street Fighter’ tops global box office with $51m opening punch; ‘Sense And Sensibility’ enters top 10",
         "model_route": "fast-direct",
         "exhibition": false,
         "exhibition_region": null,
@@ -1832,37 +1825,6 @@
       }
     },
     {
-      "id": "live-5980f4877e8edcc5f8ef2105",
-      "source_id": "artnews-japan",
-      "channel": "art",
-      "language": "ja",
-      "title_original": "過去のミスも修正、約1900年前の「ミイラ肖像画」が海外初公開へ──古代エジプトの「2人の兄弟」",
-      "published_at": "2026-10-15T10:00:00+00:00",
-      "article_hash": "7314ddf4ab28dfd26b5bb460cdf5f07d16d81e96afe5662347d5c9a82046e22c",
-      "input_path": "data/translation-input/live-5980f4877e8edcc5f8ef2105.json",
-      "characters": 7612,
-      "blocks": 103,
-      "article_status": "collected",
-      "translation_priority": {
-        "priority": "P2",
-        "label": "普通",
-        "importance": "medium",
-        "time_sensitive": false,
-        "due": null,
-        "fresh": false,
-        "archive": false,
-        "reasons": [
-          "新作／上映／展览相关资讯"
-        ],
-        "source_title": "過去のミスも修正、約1900年前の「ミイラ肖像画」が海外初公開へ──古代エジプトの「2人の兄弟」",
-        "model_route": "fast-direct",
-        "exhibition": false,
-        "exhibition_region": null,
-        "exhibition_deprioritized": false,
-        "recommendation_penalty": 0
-      }
-    },
-    {
       "id": "live-b8e13da6715f9bb432363812",
       "source_id": "eiga-com",
       "channel": "film",
@@ -1886,6 +1848,37 @@
           "一般资讯；未确认临近活动日期"
         ],
         "source_title": "昨夜は殺れたかも",
+        "model_route": "fast-direct",
+        "exhibition": false,
+        "exhibition_region": null,
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0
+      }
+    },
+    {
+      "id": "live-5980f4877e8edcc5f8ef2105",
+      "source_id": "artnews-japan",
+      "channel": "art",
+      "language": "ja",
+      "title_original": "過去のミスも修正、約1900年前の「ミイラ肖像画」が海外初公開へ──古代エジプトの「2人の兄弟」",
+      "published_at": "2026-10-15T10:00:00+00:00",
+      "article_hash": "7314ddf4ab28dfd26b5bb460cdf5f07d16d81e96afe5662347d5c9a82046e22c",
+      "input_path": "data/translation-input/live-5980f4877e8edcc5f8ef2105.json",
+      "characters": 7612,
+      "blocks": 103,
+      "article_status": "collected",
+      "translation_priority": {
+        "priority": "P2",
+        "label": "普通",
+        "importance": "medium",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": false,
+        "archive": false,
+        "reasons": [
+          "新作／上映／展览相关资讯"
+        ],
+        "source_title": "過去のミスも修正、約1900年前の「ミイラ肖像画」が海外初公開へ──古代エジプトの「2人の兄弟」",
         "model_route": "fast-direct",
         "exhibition": false,
         "exhibition_region": null,
@@ -1987,37 +1980,6 @@
       }
     },
     {
-      "id": "live-e00ea2022c2c0cc8772d34d4",
-      "source_id": "tokyo-art-beat",
-      "channel": "art",
-      "language": "ja",
-      "title_original": "東京国立近代美術館、2027年度の展覧会スケジュールが公開。速水御舟や、山口晃、ミルトン・エイヴリーなど",
-      "published_at": "2026-10-13T01:27:00+00:00",
-      "article_hash": "2beef07fef251b7e6dfb537d090d9e6abda5d86cf4ef120ad1eded5c4bd4c063",
-      "input_path": "data/translation-input/live-e00ea2022c2c0cc8772d34d4.json",
-      "characters": 1350,
-      "blocks": 17,
-      "article_status": "collected",
-      "translation_priority": {
-        "priority": "P2",
-        "label": "普通",
-        "importance": "medium",
-        "time_sensitive": false,
-        "due": null,
-        "fresh": false,
-        "archive": false,
-        "reasons": [
-          "新作／上映／展览相关资讯"
-        ],
-        "source_title": "東京国立近代美術館、2027年度の展覧会スケジュールが公開。速水御舟や、山口晃、ミルトン・エイヴリーなど",
-        "model_route": "fast-direct",
-        "exhibition": true,
-        "exhibition_region": "japan",
-        "exhibition_deprioritized": false,
-        "recommendation_penalty": 0
-      }
-    },
-    {
       "id": "live-bc475e6bcb80f011083ed204",
       "source_id": "tokyo-photo-museum",
       "channel": "photography",
@@ -2041,6 +2003,37 @@
           "一般资讯；未确认临近活动日期"
         ],
         "source_title": "ふたたびくみたてる　日本の新進作家 vol.23",
+        "model_route": "fast-direct",
+        "exhibition": true,
+        "exhibition_region": "japan",
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0
+      }
+    },
+    {
+      "id": "live-e00ea2022c2c0cc8772d34d4",
+      "source_id": "tokyo-art-beat",
+      "channel": "art",
+      "language": "ja",
+      "title_original": "東京国立近代美術館、2027年度の展覧会スケジュールが公開。速水御舟や、山口晃、ミルトン・エイヴリーなど",
+      "published_at": "2026-10-13T01:27:00+00:00",
+      "article_hash": "2beef07fef251b7e6dfb537d090d9e6abda5d86cf4ef120ad1eded5c4bd4c063",
+      "input_path": "data/translation-input/live-e00ea2022c2c0cc8772d34d4.json",
+      "characters": 1350,
+      "blocks": 17,
+      "article_status": "collected",
+      "translation_priority": {
+        "priority": "P2",
+        "label": "普通",
+        "importance": "medium",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": false,
+        "archive": false,
+        "reasons": [
+          "新作／上映／展览相关资讯"
+        ],
+        "source_title": "東京国立近代美術館、2027年度の展覧会スケジュールが公開。速水御舟や、山口晃、ミルトン・エイヴリーなど",
         "model_route": "fast-direct",
         "exhibition": true,
         "exhibition_region": "japan",
@@ -2143,37 +2136,6 @@
       }
     },
     {
-      "id": "live-8e11776885daa601de56a98f",
-      "source_id": "exibart",
-      "channel": "art",
-      "language": "it",
-      "title_original": "Parigi archivia una settimana da record per le aste",
-      "published_at": "2026-10-25T15:43:54+00:00",
-      "article_hash": "71895b2a237fb9e56807579288fb501ddc8771d40890a0dd89f018d943de2c06",
-      "input_path": "data/translation-input/live-8e11776885daa601de56a98f.json",
-      "characters": 5842,
-      "blocks": 12,
-      "article_status": "collected",
-      "translation_priority": {
-        "priority": "P2",
-        "label": "普通",
-        "importance": "normal",
-        "time_sensitive": false,
-        "due": null,
-        "fresh": true,
-        "archive": false,
-        "reasons": [
-          "来源发布时间在48小时内"
-        ],
-        "source_title": "Parigi archivia una settimana da record per le aste",
-        "model_route": "fast-direct",
-        "exhibition": false,
-        "exhibition_region": null,
-        "exhibition_deprioritized": false,
-        "recommendation_penalty": 0
-      }
-    },
-    {
       "id": "live-d62f4a62f48168c5e329d52d",
       "source_id": "eiga-com",
       "channel": "film",
@@ -2197,6 +2159,37 @@
           "一般资讯；未确认临近活动日期"
         ],
         "source_title": "クジラに落ちた男",
+        "model_route": "fast-direct",
+        "exhibition": false,
+        "exhibition_region": null,
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0
+      }
+    },
+    {
+      "id": "live-8e11776885daa601de56a98f",
+      "source_id": "exibart",
+      "channel": "art",
+      "language": "it",
+      "title_original": "Parigi archivia una settimana da record per le aste",
+      "published_at": "2026-10-25T15:43:54+00:00",
+      "article_hash": "71895b2a237fb9e56807579288fb501ddc8771d40890a0dd89f018d943de2c06",
+      "input_path": "data/translation-input/live-8e11776885daa601de56a98f.json",
+      "characters": 5842,
+      "blocks": 12,
+      "article_status": "collected",
+      "translation_priority": {
+        "priority": "P2",
+        "label": "普通",
+        "importance": "normal",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": true,
+        "archive": false,
+        "reasons": [
+          "来源发布时间在48小时内"
+        ],
+        "source_title": "Parigi archivia una settimana da record per le aste",
         "model_route": "fast-direct",
         "exhibition": false,
         "exhibition_region": null,
@@ -2298,37 +2291,6 @@
       }
     },
     {
-      "id": "live-45f507ac973140b2732332ba",
-      "source_id": "exibart",
-      "channel": "art",
-      "language": "it",
-      "title_original": "5 cose da sapere su Marisa Merz prima della grande retrospettiva di Torino",
-      "published_at": "2026-10-24T19:01:01+00:00",
-      "article_hash": "f04ec55ee58333fe4aba448b8faa5ecc0f6307d137c353d934288983429b080c",
-      "input_path": "data/translation-input/live-45f507ac973140b2732332ba.json",
-      "characters": 7191,
-      "blocks": 25,
-      "article_status": "collected",
-      "translation_priority": {
-        "priority": "P2",
-        "label": "普通",
-        "importance": "normal",
-        "time_sensitive": false,
-        "due": null,
-        "fresh": true,
-        "archive": false,
-        "reasons": [
-          "来源发布时间在48小时内"
-        ],
-        "source_title": "5 cose da sapere su Marisa Merz prima della grande retrospettiva di Torino",
-        "model_route": "fast-direct",
-        "exhibition": false,
-        "exhibition_region": null,
-        "exhibition_deprioritized": false,
-        "recommendation_penalty": 0
-      }
-    },
-    {
       "id": "live-ee482fa2d66fc5faf589af9b",
       "source_id": "matca",
       "channel": "photography",
@@ -2352,6 +2314,37 @@
           "超过近期新闻窗口，仍保留待译"
         ],
         "source_title": "The Mosquito Net of Memories and Memorials: The Art of Dinh Q. Lê",
+        "model_route": "fast-direct",
+        "exhibition": false,
+        "exhibition_region": null,
+        "exhibition_deprioritized": false,
+        "recommendation_penalty": 0
+      }
+    },
+    {
+      "id": "live-45f507ac973140b2732332ba",
+      "source_id": "exibart",
+      "channel": "art",
+      "language": "it",
+      "title_original": "5 cose da sapere su Marisa Merz prima della grande retrospettiva di Torino",
+      "published_at": "2026-10-24T19:01:01+00:00",
+      "article_hash": "f04ec55ee58333fe4aba448b8faa5ecc0f6307d137c353d934288983429b080c",
+      "input_path": "data/translation-input/live-45f507ac973140b2732332ba.json",
+      "characters": 7191,
+      "blocks": 25,
+      "article_status": "collected",
+      "translation_priority": {
+        "priority": "P2",
+        "label": "普通",
+        "importance": "normal",
+        "time_sensitive": false,
+        "due": null,
+        "fresh": true,
+        "archive": false,
+        "reasons": [
+          "来源发布时间在48小时内"
+        ],
+        "source_title": "5 cose da sapere su Marisa Merz prima della grande retrospettiva di Torino",
         "model_route": "fast-direct",
         "exhibition": false,
         "exhibition_region": null,

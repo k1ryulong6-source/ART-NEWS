@@ -1,28 +1,135 @@
 {
-  "status": "daily_limit",
+  "status": "run_limit",
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-25T06:53:07.237398+00:00",
-  "translated": [],
-  "failed": [],
+  "started_at": "2026-10-25T07:39:21.406957+00:00",
+  "translated": [
+    "live-9b8a2f96c53d4364b079bad6",
+    "live-1efcc164a9ef13e168e8e287",
+    "live-20ff630b4a6e5922f3a2f619",
+    "live-0b34bff031a3a3eed34141e9",
+    "live-c2c242d517d5b42c760b1b71"
+  ],
+  "failed": [
+    {
+      "id": "live-2160e7cd0781d351dac76460",
+      "reason": "ai_numbers_missing:block:7:text:0"
+    },
+    {
+      "id": "live-924c93a0f2e87918dbcd7a6d",
+      "reason": "ai_numbers_missing:block:9:text:0"
+    },
+    {
+      "id": "live-5c7773131befcf6286bc298f",
+      "reason": "ai_numbers_missing:block:13:text:0"
+    },
+    {
+      "id": "live-418e0504c5172f68d805b886",
+      "reason": "ai_numbers_missing:block:40:text:0"
+    },
+    {
+      "id": "live-8c822d2d4fb8b88d20a6755e",
+      "reason": "ai_paragraph_not_translated:block:4:text:0"
+    },
+    {
+      "id": "live-fc34527bd1f1aed999a01e8e",
+      "reason": "ai_numbers_missing:block:7:text:0"
+    },
+    {
+      "id": "live-5980f4877e8edcc5f8ef2105",
+      "reason": "ai_numbers_missing:block:26:text:0"
+    },
+    {
+      "id": "live-bc116950b9594ad1f08e6e58",
+      "reason": "ai_numbers_missing:block:11:text:0"
+    },
+    {
+      "id": "live-cc2a080c264bb08e270dd2d2",
+      "reason": "ai_numbers_missing:block:14:text:0"
+    },
+    {
+      "id": "live-1c5789e645c1311841bde1f1",
+      "reason": "ai_numbers_missing:excerpt:0"
+    },
+    {
+      "id": "live-a446c44efc0ae05a31d1173d",
+      "reason": "ai_paragraph_not_translated:block:289:text:0"
+    },
+    {
+      "id": "live-0e4b295d10aefab5fc8277db",
+      "reason": "ai_numbers_missing:block:10:text:0"
+    },
+    {
+      "id": "live-45f507ac973140b2732332ba",
+      "reason": "ai_numbers_missing:block:1:text:0"
+    },
+    {
+      "id": "live-a900dfe3e323cafab90922cc",
+      "reason": "ai_paragraph_not_translated:block:40:text:0"
+    },
+    {
+      "id": "live-344253071841c1cfa73584f0",
+      "reason": "ai_numbers_missing:block:131:text:0"
+    },
+    {
+      "id": "live-4b231ebbfd3d7c4ffc9c1dce",
+      "reason": "ai_numbers_missing:block:1:text:0"
+    },
+    {
+      "id": "live-5da9738ecb94c384369c5d7d",
+      "reason": "ai_numbers_missing:block:16:text:0"
+    },
+    {
+      "id": "live-ebb35eb56734951a958a0638",
+      "reason": "ai_numbers_missing:block:20:text:0"
+    },
+    {
+      "id": "live-8a583e425121ad2acadabd5d",
+      "reason": "ai_numbers_missing:block:1:text:0"
+    },
+    {
+      "id": "live-f0fe2ed67fc7390368932d19",
+      "reason": "ai_numbers_missing:block:6:text:0"
+    }
+  ],
   "deferred": [],
-  "resumed": [],
+  "resumed": [
+    "live-924c93a0f2e87918dbcd7a6d",
+    "live-5c7773131befcf6286bc298f",
+    "live-418e0504c5172f68d805b886",
+    "live-fc34527bd1f1aed999a01e8e",
+    "live-9b8a2f96c53d4364b079bad6",
+    "live-5980f4877e8edcc5f8ef2105",
+    "live-bc116950b9594ad1f08e6e58",
+    "live-cc2a080c264bb08e270dd2d2",
+    "live-1c5789e645c1311841bde1f1",
+    "live-a446c44efc0ae05a31d1173d",
+    "live-45f507ac973140b2732332ba",
+    "live-a900dfe3e323cafab90922cc",
+    "live-344253071841c1cfa73584f0",
+    "live-4b231ebbfd3d7c4ffc9c1dce",
+    "live-c2c242d517d5b42c760b1b71",
+    "live-5da9738ecb94c384369c5d7d",
+    "live-ebb35eb56734951a958a0638",
+    "live-8a583e425121ad2acadabd5d",
+    "live-f0fe2ed67fc7390368932d19",
+    "live-1ddd8ccafd671396c5264f3b"
+  ],
   "stale": [],
-  "requests": 0,
-  "input_tokens": 0,
-  "output_tokens": 0,
+  "requests": 26,
+  "input_tokens": 177964,
+  "output_tokens": 21561,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 0,
-  "pending_after": 0,
-  "finished_at": "2026-10-25T06:53:14.410128+00:00",
-  "seconds": 7.17,
-  "requests_today": 460,
+  "pending_before": 116,
+  "pending_after": 111,
+  "finished_at": "2026-10-25T07:47:23.487813+00:00",
+  "seconds": 482.08,
+  "requests_today": 26,
   "daily_request_limit": 500,
-  "unknown_usage_requests_today": 10,
-  "retry_after": "2026-10-25T07:15:00+00:00",
+  "unknown_usage_requests_today": 0,
   "id": "secondary",
   "configured": true
 }

@@ -2,17 +2,50 @@
   "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
   "model": "@cf/qwen/qwen3-30b-a3b-fp8",
   "configured": true,
-  "requests": 0,
+  "requests": 7,
   "translated": [],
-  "failed": [],
+  "failed": [
+    {
+      "id": "live-b9b2ee89209694fc4f2dfe7a",
+      "reason": "ai_numbers_missing:block:12:text:0"
+    },
+    {
+      "id": "live-115c065386b51e945d56d5d6",
+      "reason": "ai_numbers_missing:title:0"
+    },
+    {
+      "id": "live-096d6e12b7c9c03e30d2197e",
+      "reason": "ai_paragraph_not_translated:block:6:text:0"
+    },
+    {
+      "id": "live-3e802b5e565ab97796459123",
+      "reason": "ai_numbers_missing:title:0"
+    },
+    {
+      "id": "live-4b231ebbfd3d7c4ffc9c1dce",
+      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
+    },
+    {
+      "id": "live-5969c0d059d133df0e3a8057",
+      "reason": "Unterminated string starting at: line 1 column 755 (char 754)"
+    },
+    {
+      "id": "live-57b5f9d5f775b073c9a95e14",
+      "reason": "ai_unit_coverage_mismatch"
+    },
+    {
+      "id": "live-f0fe2ed67fc7390368932d19",
+      "reason": "ai_numbers_missing:block:6:text:0"
+    }
+  ],
   "credential_checks": {
     "api_token_present": true,
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-25T23:56:16.995453+00:00",
+  "started_at": "2026-10-26T00:55:49.161534+00:00",
   "verification_run": false,
-  "status": "daily_limit",
+  "status": "partial_failure",
   "account_mode": "free-project-only",
   "deferred": [
     "live-ee90c05b938ac25f95c01ecd",
@@ -24,14 +57,9 @@
     "live-a900dfe3e323cafab90922cc",
     "live-dd374e85edfb7d5a86840127",
     "live-344253071841c1cfa73584f0",
-    "live-b9b2ee89209694fc4f2dfe7a",
-    "live-31250cc0dc60bdae0f451c8b",
-    "live-ebb35eb56734951a958a0638",
     "live-b0438372c9b2957ae34ed2da",
     "live-05760bd055149557329447d7",
     "live-8a583e425121ad2acadabd5d",
-    "live-95857f450d7b6734912766d7",
-    "live-1ddd8ccafd671396c5264f3b",
     "live-3ef8e43e3242681de6ea5668",
     "live-87a6fbc6dc71b56a37ae2e9a",
     "live-0073526e5de6c4f6ea23e1a9",
@@ -53,13 +81,6 @@
     "live-cc4950069948469a7b2b51cb",
     "live-0433becca0e86b9e20f73de4",
     "live-17e7dbc64f658e7fe7877351",
-    "live-250af33b8cc02e1d8f0b4ae4",
-    "live-49b9d099d738f1970b1c5515",
-    "live-cd8fc8089d503d4150a0c5b1",
-    "live-8fb530594469730626caeb09",
-    "live-5e9640763506ccc13d30808e",
-    "live-730e602963d9bb31869cc1e3",
-    "live-0264a0bc6e1fd027b1d4290c",
     "live-e9e9eff3b1b3371c10fafdcb",
     "live-924c93a0f2e87918dbcd7a6d",
     "live-5c7773131befcf6286bc298f",
@@ -73,53 +94,50 @@
     "live-c61abc2f284857ed37c6aecb",
     "live-e00ea2022c2c0cc8772d34d4",
     "live-1c5789e645c1311841bde1f1",
-    "live-56133e1bff6dd7abceadb8cf",
     "live-1b83a291211c4a38bc383871",
     "live-47c0633fe3a5f56644fcfa73",
     "live-e6de386d66bb2d472dd35408",
-    "live-120a52664745a069fa6479f1",
     "live-8dd7dfa740e746b61dbde841",
     "live-1d22c7625fdbcd788a0a6a34",
     "live-91d2d80f25729d14deb137bd",
-    "live-b5b16277ccb4d4a2fe938f57",
-    "live-05cb6eadaef17d128d266571",
     "live-76c8ed316d62d29f25a90d15",
     "live-a446c44efc0ae05a31d1173d",
     "live-bec7ecaa39ce323f0e73eea5",
     "live-ee482fa2d66fc5faf589af9b",
-    "live-8c822d2d4fb8b88d20a6755e",
-    "live-46dde417bd87b3537f3176c0",
+    "live-bc475e6bcb80f011083ed204",
     "live-d62f4a62f48168c5e329d52d",
-    "live-bc475e6bcb80f011083ed204"
+    "live-46dde417bd87b3537f3176c0",
+    "live-8c822d2d4fb8b88d20a6755e"
   ],
   "resumed": [
-    "live-115c065386b51e945d56d5d6"
+    "live-b9b2ee89209694fc4f2dfe7a",
+    "live-115c065386b51e945d56d5d6",
+    "live-096d6e12b7c9c03e30d2197e",
+    "live-f0fe2ed67fc7390368932d19"
   ],
   "stale": [],
-  "input_tokens": 0,
-  "output_tokens": 0,
+  "input_tokens": 18783,
+  "output_tokens": 4560,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
   "pending_before": 214,
-  "error": "cloudflare_neuron_reservation_exhausted",
-  "retry_after": "2026-10-26T00:01:00+00:00",
   "pending_after": 214,
-  "finished_at": "2026-10-25T23:56:22.464768+00:00",
-  "seconds": 5.46,
-  "requests_today": 300,
+  "finished_at": "2026-10-26T00:57:04.720596+00:00",
+  "seconds": 75.55,
+  "requests_today": 7,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
-    "day": "2026-10-25",
+    "day": "2026-10-26",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 9816.940475,
+    "estimated_neurons": 225.837375,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 0.0,
-    "requests": 300,
-    "input_tokens": 929866,
-    "output_tokens": 181011,
+    "requests": 7,
+    "input_tokens": 18783,
+    "output_tokens": 4560,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

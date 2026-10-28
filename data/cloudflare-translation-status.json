@@ -4,16 +4,28 @@
   "configured": true,
   "requests": 8,
   "translated": [
-    "live-bbd99f7580a24ef6e93606af"
+    "live-67fd8743b817a4dfb24ff694"
   ],
   "failed": [
     {
-      "id": "live-01bc54f41da7cf5a00b05ef3",
-      "reason": "ai_paragraph_not_translated:block:38:text:0"
+      "id": "live-0ae65f94477ce35b941cdcc1",
+      "reason": "ai_numbers_missing:block:1:text:0"
     },
     {
-      "id": "live-52307e70ce7aef0a675077a7",
-      "reason": "ai_paragraph_not_translated:block:2:text:0"
+      "id": "live-c4f7e9a30a862b0ff772410e",
+      "reason": "ai_numbers_missing:excerpt:0"
+    },
+    {
+      "id": "live-d83aca024a4d02626d9228d1",
+      "reason": "ai_numbers_missing:excerpt:0"
+    },
+    {
+      "id": "live-895c9528d8276a02fdc356b7",
+      "reason": "ai_numbers_missing:block:5:text:0"
+    },
+    {
+      "id": "live-d62f4a62f48168c5e329d52d",
+      "reason": "ai_unit_coverage_mismatch"
     }
   ],
   "credential_checks": {
@@ -21,11 +33,12 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-28T19:04:28.518312+00:00",
+  "started_at": "2026-10-28T19:56:58.764965+00:00",
   "verification_run": false,
   "status": "daily_limit",
   "account_mode": "free-project-only",
   "deferred": [
+    "live-01bc54f41da7cf5a00b05ef3",
     "live-0017bf85b2736b60975ea5db",
     "live-90501feeffa77d3f1e65163b",
     "live-3b0863f5515ad149fd9e8d3f",
@@ -34,11 +47,11 @@
     "live-76bf645e02b68a4f37c51d35",
     "live-60974687f471fe5846fd0fe5",
     "live-0ee1f54e9c0b2506dfb223c8",
-    "live-c8083292ed8756ff3a5d22bc",
     "live-8982eebedc506b1197d00f6b",
     "live-fdad2f4d33298b04037bf575",
     "live-e8e5a8346bfa41e43756e73c",
     "live-c16d619ea88ca168b3b20015",
+    "live-52307e70ce7aef0a675077a7",
     "live-418e0504c5172f68d805b886",
     "live-b9b2ee89209694fc4f2dfe7a",
     "live-05760bd055149557329447d7",
@@ -58,7 +71,6 @@
     "live-e00ea2022c2c0cc8772d34d4",
     "live-eee8146781b454239dfd56da",
     "live-1c5789e645c1311841bde1f1",
-    "live-8dd7dfa740e746b61dbde841",
     "live-715f48cefa36107b1c39ef86",
     "live-f0fe2ed67fc7390368932d19",
     "live-4b231ebbfd3d7c4ffc9c1dce",
@@ -66,37 +78,38 @@
     "live-a446c44efc0ae05a31d1173d",
     "live-bec7ecaa39ce323f0e73eea5",
     "live-ee482fa2d66fc5faf589af9b",
-    "live-9f89680fd1534da8f55ac8e6",
+    "live-bc475e6bcb80f011083ed204",
     "live-8c822d2d4fb8b88d20a6755e",
-    "live-bc475e6bcb80f011083ed204"
+    "live-9f89680fd1534da8f55ac8e6"
   ],
   "resumed": [
-    "live-52307e70ce7aef0a675077a7"
+    "live-c4f7e9a30a862b0ff772410e",
+    "live-d83aca024a4d02626d9228d1"
   ],
   "stale": [],
-  "input_tokens": 23173,
-  "output_tokens": 4050,
+  "input_tokens": 22758,
+  "output_tokens": 5186,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 339,
+  "pending_before": 331,
   "retry_after": "2026-10-29T00:15:00+00:00",
-  "pending_after": 338,
-  "finished_at": "2026-10-28T19:05:52.104257+00:00",
-  "seconds": 83.57,
-  "requests_today": 220,
+  "pending_after": 330,
+  "finished_at": "2026-10-28T19:58:12.806213+00:00",
+  "seconds": 74.03,
+  "requests_today": 228,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
     "day": "2026-10-28",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 7803.359325,
+    "estimated_neurons": 8066.658425,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 0.0,
-    "requests": 220,
-    "input_tokens": 697767,
-    "output_tokens": 150162,
+    "requests": 228,
+    "input_tokens": 720525,
+    "output_tokens": 155348,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

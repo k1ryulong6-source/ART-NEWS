@@ -103,7 +103,7 @@
       "requests": 167,
       "input_tokens": 675238,
       "output_tokens": 131749,
-      "reserved_requests": 21,
+      "reserved_requests": 0,
       "unknown_usage_requests": 2
     }
   },
@@ -4228,8 +4228,9 @@
     "40677198281:1": {
       "day": "2026-10-28",
       "allocated": 40,
-      "remaining": 21,
-      "status": "reserved"
+      "remaining": 0,
+      "status": "closed",
+      "actual_requests": 19
     }
   },
   "configuration_repair": {
@@ -4241,10 +4242,11 @@
   },
   "last_service_recovery_at": "2026-10-28T10:51:41.299604+00:00",
   "last_api_error": {
-    "http_status": 429,
-    "category": "unclassified_http_error",
-    "api_status": "RESOURCE_EXHAUSTED",
-    "occurred_at": "2026-10-27T20:17:49.333702+00:00"
+    "http_status": 503,
+    "category": "capacity_unavailable",
+    "api_status": "UNAVAILABLE",
+    "message_evidence": "high demand",
+    "occurred_at": "2026-10-28T11:12:42.205922+00:00"
   },
   "service_retry": {
     "policy": "bounded-exponential-v1",

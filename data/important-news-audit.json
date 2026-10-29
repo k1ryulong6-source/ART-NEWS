@@ -1,6 +1,6 @@
 {
-  "checked_at": "2026-10-29T04:50:22.470462+00:00",
-  "list_audit_at": "2026-10-29T02:58:08.118569+00:00",
+  "checked_at": "2026-10-29T04:57:31.419109+00:00",
+  "list_audit_at": "2026-10-29T04:56:42.869964+00:00",
   "scope": "configured_sources_current_lists_only",
   "global_completeness": "unknown",
   "core_source_problems": [
@@ -20,6 +20,37 @@
         "no_recent_success"
       ],
       "last_success_at": "2026-10-14T00:31:48.725165+00:00"
+    },
+    {
+      "source_id": "artafrica",
+      "reasons": [
+        "latest_collection_failed",
+        "list_audit_failed"
+      ],
+      "last_success_at": "2026-10-29T02:56:53.757535+00:00"
+    },
+    {
+      "source_id": "cinepremiere",
+      "reasons": [
+        "latest_collection_failed",
+        "list_audit_failed"
+      ],
+      "last_success_at": "2026-10-29T02:56:58.631731+00:00"
+    },
+    {
+      "source_id": "zum",
+      "reasons": [
+        "list_audit_failed"
+      ],
+      "last_success_at": "2026-10-29T04:55:20.125878+00:00"
+    },
+    {
+      "source_id": "artthrob",
+      "reasons": [
+        "latest_collection_failed",
+        "list_audit_failed"
+      ],
+      "last_success_at": "2026-10-29T02:56:41.543354+00:00"
     }
   ],
   "missing_important_items": [],
@@ -1492,7 +1523,7 @@
             "rss_sources": 5,
             "successful_rss_checks": 5,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 415,
+            "inventory_from_assigned_sources": 418,
             "coverage_status": "assigned_sources_only"
           },
           "photography": {
@@ -1515,7 +1546,7 @@
             "rss_sources": 1,
             "successful_rss_checks": 1,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 281,
+            "inventory_from_assigned_sources": 284,
             "coverage_status": "assigned_sources_only"
           }
         }
@@ -2123,8 +2154,12 @@
               "africanah"
             ],
             "rss_sources": 3,
-            "successful_rss_checks": 3,
-            "failed_source_ids": [],
+            "successful_rss_checks": 0,
+            "failed_source_ids": [
+              "artafrica",
+              "artthrob",
+              "africanah"
+            ],
             "inventory_from_assigned_sources": 67,
             "coverage_status": "assigned_sources_only"
           },
@@ -2255,8 +2290,10 @@
               "cinepremiere"
             ],
             "rss_sources": 3,
-            "successful_rss_checks": 3,
-            "failed_source_ids": [],
+            "successful_rss_checks": 2,
+            "failed_source_ids": [
+              "cinepremiere"
+            ],
             "inventory_from_assigned_sources": 115,
             "coverage_status": "assigned_sources_only"
           },
@@ -2377,8 +2414,10 @@
               "zum"
             ],
             "rss_sources": 1,
-            "successful_rss_checks": 1,
-            "failed_source_ids": [],
+            "successful_rss_checks": 0,
+            "failed_source_ids": [
+              "zum"
+            ],
             "inventory_from_assigned_sources": 21,
             "coverage_status": "assigned_sources_only"
           }
@@ -2403,7 +2442,7 @@
             "rss_sources": 3,
             "successful_rss_checks": 3,
             "failed_source_ids": [],
-            "inventory_from_assigned_sources": 900,
+            "inventory_from_assigned_sources": 902,
             "coverage_status": "assigned_sources_only"
           },
           "art": {
@@ -2578,11 +2617,12 @@
               "indiewire"
             ],
             "rss_sources": 12,
-            "successful_rss_checks": 11,
+            "successful_rss_checks": 10,
             "failed_source_ids": [
+              "cinepremiere",
               "cineuropa"
             ],
-            "inventory_from_assigned_sources": 1740,
+            "inventory_from_assigned_sources": 1742,
             "coverage_status": "assigned_sources_only"
           },
           "art": {
@@ -2604,8 +2644,12 @@
               "artreview"
             ],
             "rss_sources": 14,
-            "successful_rss_checks": 14,
-            "failed_source_ids": [],
+            "successful_rss_checks": 11,
+            "failed_source_ids": [
+              "artafrica",
+              "artthrob",
+              "africanah"
+            ],
             "inventory_from_assigned_sources": 1094,
             "coverage_status": "assigned_sources_only"
           },
@@ -2626,7 +2670,7 @@
             "rss_sources": 9,
             "successful_rss_checks": 8,
             "failed_source_ids": [
-              "blind"
+              "zum"
             ],
             "inventory_from_assigned_sources": 633,
             "coverage_status": "assigned_sources_only"
@@ -2634,7 +2678,7 @@
         }
       }
     ],
-    "unlocated_content": 2901,
+    "unlocated_content": 2905,
     "discovery_share_of_available_new_body_slots": 0.2,
     "global_completeness": "unknown",
     "limitations": [

@@ -4228,5 +4228,17 @@
     "api_status": "UNAVAILABLE",
     "message_evidence": "high demand",
     "occurred_at": "2026-10-28T17:00:54.097193+00:00"
-  }
+  },
+  "service_retry": {
+    "policy": "bounded-exponential-v1",
+    "consecutive_failures": 1,
+    "delay_seconds": 75,
+    "server_retry_seconds": 0,
+    "error": "TimeoutError",
+    "failed_at": "2026-10-29T13:17:48.137335+00:00",
+    "retry_after": "2026-10-29T13:19:03.137335+00:00"
+  },
+  "retry_after": "2026-10-29T13:19:03.137335+00:00",
+  "retry_status": "service_wait",
+  "retry_error": "TimeoutError"
 }

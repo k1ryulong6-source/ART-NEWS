@@ -3,52 +3,19 @@
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-10-29T16:55:21.476056+00:00",
+  "started_at": "2026-10-29T17:12:34.093378+00:00",
   "translated": [
-    "live-4036b401ffc16550f5ebd1a9"
+    "live-7c0ed4ec3119a0e0d50e416e"
   ],
-  "failed": [
-    {
-      "id": "live-51cfe118d25990e4a4c8d711",
-      "reason": "ai_numbers_missing:title:0"
-    },
-    {
-      "id": "live-8982eebedc506b1197d00f6b",
-      "reason": "ai_numbers_missing:block:13:text:0"
-    },
-    {
-      "id": "live-c16d619ea88ca168b3b20015",
-      "reason": "ai_numbers_missing:block:33:text:0"
-    },
-    {
-      "id": "live-c4f7e9a30a862b0ff772410e",
-      "reason": "ai_numbers_missing:excerpt:0"
-    },
-    {
-      "id": "live-bc475e6bcb80f011083ed204",
-      "reason": "ai_paragraph_not_translated:block:7:text:1"
-    },
-    {
-      "id": "live-17e7dbc64f658e7fe7877351",
-      "reason": "ai_numbers_missing:block:10:text:0"
-    },
-    {
-      "id": "live-924c93a0f2e87918dbcd7a6d",
-      "reason": "ai_numbers_missing:block:9:text:0"
-    }
-  ],
+  "failed": [],
   "deferred": [
-    "live-fc08ff99ca8aa18a3e3484c8",
     "live-15ee5033bc84074b47bccfa8",
     "live-41ad13398cfb7ef111960432",
+    "live-51cfe118d25990e4a4c8d711",
     "live-0ee1f54e9c0b2506dfb223c8",
-    "live-7b0bdfbde3d34e59cfa7b190",
-    "live-2edf6151c942bb81bde35087",
-    "live-ba216780aba7fe59d2fb727a",
-    "live-75d9d4b400d9c09c12f3bb8b",
-    "live-c0ed045b148d2a72c76c1201",
+    "live-8982eebedc506b1197d00f6b",
     "live-52307e70ce7aef0a675077a7",
-    "live-d7f2daaef7499f78501742d6",
+    "live-c4f7e9a30a862b0ff772410e",
     "live-8fb692ba229e8f7fd010a2b4",
     "live-2a41f70cb03f0cee5244dae3",
     "live-2c9cf6464dd60dbb0cf082fe",
@@ -58,6 +25,7 @@
     "live-0e4b295d10aefab5fc8277db",
     "live-a900dfe3e323cafab90922cc",
     "live-18c3b1bb9d60bfd06788c998",
+    "live-b9b2ee89209694fc4f2dfe7a",
     "live-ebb35eb56734951a958a0638",
     "live-05760bd055149557329447d7",
     "live-95857f450d7b6734912766d7",
@@ -71,43 +39,30 @@
     "live-9c9c3c737d1c6d8fc2f500a6",
     "live-40d627555020e3745e662f22",
     "live-0433becca0e86b9e20f73de4",
-    "live-3f53985815997193b62b0ddd",
-    "live-5cc7dcf5b80dbca88e7bfb99",
-    "live-c435164712024b7b03eb989d",
-    "live-8872895727e285103bf61f84",
-    "live-5f1d536e2240592db24d647b",
-    "live-d0f7860adf4fc2772b0f7192",
-    "live-4de400a0a50c1b2e41b0dbef",
-    "live-4f4f929541f901f461fcfb53",
-    "live-9474327fade22295786c9872",
-    "live-b4c2f3016f33d306c51f0acc"
-  ],
-  "resumed": [
-    "live-51cfe118d25990e4a4c8d711",
-    "live-8982eebedc506b1197d00f6b",
-    "live-c16d619ea88ca168b3b20015",
-    "live-c4f7e9a30a862b0ff772410e",
-    "live-bc475e6bcb80f011083ed204",
     "live-17e7dbc64f658e7fe7877351",
-    "live-4036b401ffc16550f5ebd1a9",
     "live-924c93a0f2e87918dbcd7a6d",
-    "live-21e53b661093bf053c62814d"
+    "live-5cc7dcf5b80dbca88e7bfb99",
+    "live-0724c1c1774bbfe479714ec0",
+    "live-df5e53e5c67c5b78e0f432f1",
+    "live-faaf652115fe48c41e4cd2a8",
+    "live-bc475e6bcb80f011083ed204"
   ],
+  "resumed": [],
   "stale": [],
-  "requests": 10,
-  "input_tokens": 34835,
-  "output_tokens": 1671,
+  "requests": 4,
+  "input_tokens": 1529,
+  "output_tokens": 740,
   "service_retry_policy": "bounded-exponential-v1",
-  "inline_service_retries": 1,
+  "inline_service_retries": 2,
   "service_failures": [
     {
       "policy": "bounded-exponential-v1",
-      "consecutive_failures": 1,
-      "delay_seconds": 75,
+      "consecutive_failures": 2,
+      "delay_seconds": 122,
       "server_retry_seconds": 0,
       "error": "ai_http_503",
-      "failed_at": "2026-10-29T16:57:02.418337+00:00",
-      "retry_after": "2026-10-29T16:58:17.418337+00:00",
+      "failed_at": "2026-10-29T17:12:50.181806+00:00",
+      "retry_after": "2026-10-29T17:14:52.181806+00:00",
       "provider_error": {
         "http_status": 503,
         "category": "capacity_unavailable",
@@ -122,8 +77,24 @@
       "delay_seconds": 75,
       "server_retry_seconds": 0,
       "error": "ai_http_503",
-      "failed_at": "2026-10-29T17:02:06.466010+00:00",
-      "retry_after": "2026-10-29T17:03:21.466010+00:00",
+      "failed_at": "2026-10-29T17:16:11.675534+00:00",
+      "retry_after": "2026-10-29T17:17:26.675534+00:00",
+      "provider_error": {
+        "http_status": 503,
+        "category": "capacity_unavailable",
+        "api_status": "UNAVAILABLE",
+        "message_evidence": "high demand"
+      },
+      "inline_retry": true
+    },
+    {
+      "policy": "bounded-exponential-v1",
+      "consecutive_failures": 2,
+      "delay_seconds": 122,
+      "server_retry_seconds": 0,
+      "error": "ai_http_503",
+      "failed_at": "2026-10-29T17:17:42.982815+00:00",
+      "retry_after": "2026-10-29T17:19:44.982815+00:00",
       "provider_error": {
         "http_status": 503,
         "category": "capacity_unavailable",
@@ -133,7 +104,7 @@
       "inline_retry": false
     }
   ],
-  "pending_before": 208,
+  "pending_before": 224,
   "error_detail": {
     "http_status": 503,
     "category": "capacity_unavailable",
@@ -141,21 +112,21 @@
     "message_evidence": "high demand"
   },
   "error": "ai_http_503",
-  "retry_after": "2026-10-29T17:03:21.466010+00:00",
-  "pending_after": 207,
-  "finished_at": "2026-10-29T17:02:08.249103+00:00",
-  "seconds": 406.77,
-  "requests_today": 210,
+  "retry_after": "2026-10-29T17:19:44.982815+00:00",
+  "pending_after": 223,
+  "finished_at": "2026-10-29T17:17:45.793580+00:00",
+  "seconds": 311.7,
+  "requests_today": 214,
   "daily_request_limit": 500,
-  "unknown_usage_requests_today": 13,
+  "unknown_usage_requests_today": 16,
   "service_retry": {
     "policy": "bounded-exponential-v1",
-    "consecutive_failures": 1,
-    "delay_seconds": 75,
+    "consecutive_failures": 2,
+    "delay_seconds": 122,
     "server_retry_seconds": 0,
     "error": "ai_http_503",
-    "failed_at": "2026-10-29T17:02:06.466010+00:00",
-    "retry_after": "2026-10-29T17:03:21.466010+00:00",
+    "failed_at": "2026-10-29T17:17:42.982815+00:00",
+    "retry_after": "2026-10-29T17:19:44.982815+00:00",
     "provider_error": {
       "http_status": 503,
       "category": "capacity_unavailable",

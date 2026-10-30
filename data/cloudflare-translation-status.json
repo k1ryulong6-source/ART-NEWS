@@ -4,24 +4,29 @@
   "configured": true,
   "requests": 8,
   "translated": [
-    "live-078ab7ac0ad53781b0466a87"
+    "live-96536e7a1dc6d8f2269b0fb5",
+    "live-0cc3c8f66e08a86ef03e58d1"
   ],
   "failed": [
     {
-      "id": "live-c61abc2f284857ed37c6aecb",
-      "reason": "ai_numbers_missing:excerpt:0"
+      "id": "live-0453e24d39dc988d6f7b4e87",
+      "reason": "ai_numbers_missing:block:2:text:0"
     },
     {
-      "id": "live-1c3de3a4b795121834773c57",
+      "id": "live-d174d3df885978ed23d56b03",
       "reason": "ai_unit_coverage_mismatch"
     },
     {
-      "id": "live-e9529aa3a3fb12a32252dac1",
-      "reason": "ai_numbers_missing:block:6:text:0"
+      "id": "live-96e3cb9196f8b506bce56e82",
+      "reason": "ai_unit_coverage_mismatch"
     },
     {
-      "id": "live-1d22c7625fdbcd788a0a6a34",
-      "reason": "ai_paragraph_not_translated:block:0:text:0"
+      "id": "live-05cb6eadaef17d128d266571",
+      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
+    },
+    {
+      "id": "live-b758f7c0277171d9732f6d85",
+      "reason": "ai_paragraph_not_translated:block:3:text:0"
     }
   ],
   "credential_checks": {
@@ -29,11 +34,13 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-30T18:56:00.555204+00:00",
+  "started_at": "2026-10-30T19:09:40.132766+00:00",
   "verification_run": false,
   "status": "daily_limit",
   "account_mode": "free-project-only",
   "deferred": [
+    "live-1c3de3a4b795121834773c57",
+    "live-e9529aa3a3fb12a32252dac1",
     "live-3dc84761a66ca7b6876561cb",
     "live-1a24f6de686a05b270c100e9",
     "live-830e1910c41392ceecf5691e",
@@ -44,10 +51,6 @@
     "live-5927d9a96b1c0cab787c5a5c",
     "live-a19b1593b063cd45914c879e",
     "live-8293956ecbc27d5d0277920b",
-    "live-a10ce400bf9dc66a013a03db",
-    "live-2d272368feaf1d75bdcd0d57",
-    "live-694752c0733cefa9810376ab",
-    "live-1aebf446d9efaf38daf65d63",
     "live-2dac947f5e247060c50de9e1",
     "live-62e979a207a72a6a98fd6266",
     "live-51cfe118d25990e4a4c8d711",
@@ -73,15 +76,15 @@
     "live-fc34527bd1f1aed999a01e8e",
     "live-5980f4877e8edcc5f8ef2105",
     "live-bc116950b9594ad1f08e6e58",
+    "live-c61abc2f284857ed37c6aecb",
     "live-e00ea2022c2c0cc8772d34d4",
     "live-eee8146781b454239dfd56da",
     "live-1c5789e645c1311841bde1f1",
     "live-e6de386d66bb2d472dd35408",
     "live-120a52664745a069fa6479f1",
     "live-084578a6c52df1f89d900926",
+    "live-1d22c7625fdbcd788a0a6a34",
     "live-91d2d80f25729d14deb137bd",
-    "live-b5b16277ccb4d4a2fe938f57",
-    "live-05cb6eadaef17d128d266571",
     "live-14fdc00be9a2ef7c1cbf2693",
     "live-715f48cefa36107b1c39ef86",
     "live-f0fe2ed67fc7390368932d19",
@@ -93,34 +96,31 @@
     "live-bc475e6bcb80f011083ed204",
     "live-d2c3954f930f342308c39427"
   ],
-  "resumed": [
-    "live-c61abc2f284857ed37c6aecb",
-    "live-1d22c7625fdbcd788a0a6a34"
-  ],
+  "resumed": [],
   "stale": [],
-  "input_tokens": 24675,
-  "output_tokens": 3660,
+  "input_tokens": 26505,
+  "output_tokens": 3804,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 426,
+  "pending_before": 442,
   "retry_after": "2026-10-31T00:15:00+00:00",
-  "pending_after": 425,
-  "finished_at": "2026-10-30T18:57:10.175131+00:00",
-  "seconds": 69.6,
-  "requests_today": 208,
+  "pending_after": 440,
+  "finished_at": "2026-10-30T19:11:06.332135+00:00",
+  "seconds": 86.19,
+  "requests_today": 216,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
     "day": "2026-10-30",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 7225.35435,
+    "estimated_neurons": 7463.866875,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 0.0,
-    "requests": 208,
-    "input_tokens": 673087,
-    "output_tokens": 134941,
+    "requests": 216,
+    "input_tokens": 699592,
+    "output_tokens": 138745,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

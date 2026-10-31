@@ -2,38 +2,17 @@
   "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
   "model": "@cf/qwen/qwen3-30b-a3b-fp8",
   "configured": true,
-  "requests": 7,
+  "requests": 8,
   "translated": [
-    "live-3068f3447c798ec81f19ca05"
+    "live-202fbf9c0ef012c31a9e7cd9",
+    "live-b21f4940a2050bd3ce9cf62d",
+    "live-155c245911292ef4b745edf9",
+    "live-237f9bce6c2e3e21296aaa20"
   ],
   "failed": [
     {
-      "id": "live-e00ea2022c2c0cc8772d34d4",
-      "reason": "ai_numbers_missing:block:1:text:0"
-    },
-    {
-      "id": "live-1c5789e645c1311841bde1f1",
-      "reason": "ai_numbers_missing:excerpt:0"
-    },
-    {
-      "id": "live-3dc84761a66ca7b6876561cb",
-      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini"
-    },
-    {
-      "id": "live-830e1910c41392ceecf5691e",
-      "reason": "ai_paragraph_not_translated:block:9:text:0"
-    },
-    {
-      "id": "live-084578a6c52df1f89d900926",
-      "reason": "ai_numbers_missing:block:1:text:0"
-    },
-    {
-      "id": "live-5f4fa9d9f07ea49e63ccfb97",
-      "reason": "ai_numbers_missing:block:4:text:0"
-    },
-    {
-      "id": "live-120a52664745a069fa6479f1",
-      "reason": "ai_numbers_missing:title:0"
+      "id": "live-6f029c88091809b2e278bc4d",
+      "reason": "ai_paragraph_not_translated:block:2:text:0"
     }
   ],
   "credential_checks": {
@@ -41,9 +20,9 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-10-31T12:55:58.377769+00:00",
+  "started_at": "2026-10-31T13:02:14.901434+00:00",
   "verification_run": false,
-  "status": "partial_failure",
+  "status": "daily_limit",
   "account_mode": "free-project-only",
   "deferred": [
     "live-5b8177901358dc3f0ce0b82f",
@@ -63,6 +42,9 @@
     "live-e9529aa3a3fb12a32252dac1",
     "live-a5c192a463e6535f386617ad",
     "live-cd22bda297fc257ac60f26ec",
+    "live-3dc84761a66ca7b6876561cb",
+    "live-830e1910c41392ceecf5691e",
+    "live-5f4fa9d9f07ea49e63ccfb97",
     "live-62e979a207a72a6a98fd6266",
     "live-51cfe118d25990e4a4c8d711",
     "live-1c4a670fa07fa1c4bdbaddaa",
@@ -90,7 +72,11 @@
     "live-5980f4877e8edcc5f8ef2105",
     "live-bc116950b9594ad1f08e6e58",
     "live-c61abc2f284857ed37c6aecb",
+    "live-e00ea2022c2c0cc8772d34d4",
     "live-eee8146781b454239dfd56da",
+    "live-1c5789e645c1311841bde1f1",
+    "live-120a52664745a069fa6479f1",
+    "live-084578a6c52df1f89d900926",
     "live-8dd7dfa740e746b61dbde841",
     "live-1d22c7625fdbcd788a0a6a34",
     "live-91d2d80f25729d14deb137bd",
@@ -107,38 +93,31 @@
     "live-bc475e6bcb80f011083ed204",
     "live-d2c3954f930f342308c39427"
   ],
-  "resumed": [
-    "live-e00ea2022c2c0cc8772d34d4",
-    "live-1c5789e645c1311841bde1f1",
-    "live-830e1910c41392ceecf5691e",
-    "live-084578a6c52df1f89d900926",
-    "live-5f4fa9d9f07ea49e63ccfb97",
-    "live-3068f3447c798ec81f19ca05",
-    "live-120a52664745a069fa6479f1"
-  ],
+  "resumed": [],
   "stale": [],
-  "input_tokens": 22257,
-  "output_tokens": 3520,
+  "input_tokens": 16909,
+  "output_tokens": 5276,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 412,
-  "pending_after": 411,
-  "finished_at": "2026-10-31T12:57:08.412889+00:00",
-  "seconds": 70.02,
-  "requests_today": 138,
+  "pending_before": 427,
+  "retry_after": "2026-11-01T00:15:00+00:00",
+  "pending_after": 423,
+  "finished_at": "2026-10-31T13:03:33.154636+00:00",
+  "seconds": 78.24,
+  "requests_today": 146,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
     "day": "2026-10-31",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 4643.281975,
+    "estimated_neurons": 4882.2722,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 0.0,
-    "requests": 138,
-    "input_tokens": 433619,
-    "output_tokens": 86556,
+    "requests": 146,
+    "input_tokens": 450528,
+    "output_tokens": 91832,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

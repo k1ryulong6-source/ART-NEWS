@@ -1,15 +1,14 @@
 {
   "schema_version": 1,
-  "checked_at": "2026-11-01T01:27:39.759114+00:00",
-  "snapshot_at": "2026-11-01T01:27:23.046236+00:00",
-  "snapshot_key": "d229da3f1169401397c2a2cbf9aaf2ca229cdf6f204f5027404c7dd1313a5088",
+  "checked_at": "2026-11-01T06:04:08.559918+00:00",
+  "snapshot_at": "2026-11-01T06:03:35.888297+00:00",
+  "snapshot_key": "c804127f3548d3a86b37dbcea1bb897561c1c9fa2f0a0878bc031f03e27326f3",
   "all_ready": false,
   "gates": {
     "unattended_24h": {
       "passed": false,
       "open_reasons": [
-        "current_public_snapshot_not_verified",
-        "stage_not_verified:translation"
+        "current_public_snapshot_not_verified"
       ]
     },
     "article_quality": {
@@ -23,7 +22,8 @@
       "passed": false,
       "open_reasons": [
         "foreign_full_text_backlog_remains",
-        "original_bodies_missing"
+        "original_bodies_missing",
+        "headlines_waiting_for_AI"
       ]
     },
     "coverage_gaps": {
@@ -41,15 +41,15 @@
     "Program structure/source checks are not semantic or human translation review."
   ],
   "counts": {
-    "total": 4051,
-    "completed": 3478,
-    "api_completed": 3394,
-    "pending": 408,
+    "total": 4082,
+    "completed": 3472,
+    "api_completed": 3388,
+    "pending": 445,
     "without_body": 86
   },
   "quality": {
-    "remote_verified": 2432,
-    "remote_unchecked": 777,
+    "remote_verified": 2411,
+    "remote_unchecked": 827,
     "complete": false
   },
   "trial": {

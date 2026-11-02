@@ -1,14 +1,15 @@
 {
   "schema_version": 1,
-  "checked_at": "2026-11-02T11:08:16.540032+00:00",
-  "snapshot_at": "2026-11-02T11:07:58.959315+00:00",
-  "snapshot_key": "b90fa070b5c0ff8bfd3a04e3a7c8b08a75b431c7b3745d6cd11a6ef903b8dcc0",
+  "checked_at": "2026-11-02T20:58:02.355632+00:00",
+  "snapshot_at": "2026-11-02T20:57:32.742597+00:00",
+  "snapshot_key": "0769391b40cf1f331df277663ed87e26073ae3bd725867bb79d4128ffdd40978",
   "all_ready": false,
   "gates": {
     "unattended_24h": {
       "passed": false,
       "open_reasons": [
-        "current_public_snapshot_not_verified"
+        "current_public_snapshot_not_verified",
+        "stage_not_verified:collection"
       ]
     },
     "article_quality": {
@@ -30,7 +31,13 @@
       "open_reasons": [
         "core_source_failures",
         "enabled_source_collection_not_verified",
-        "priority_country_field_gaps"
+        "priority_country_field_gaps",
+        "attention_source_not_current:artishock",
+        "attention_source_not_current:artthrob",
+        "attention_source_not_current:take-on-art",
+        "attention_source_not_current:zum",
+        "attention_source_not_current:artafrica",
+        "attention_source_not_current:matca"
       ]
     }
   },
@@ -41,14 +48,14 @@
   ],
   "counts": {
     "total": 4155,
-    "completed": 3569,
-    "api_completed": 3485,
-    "pending": 421,
+    "completed": 3573,
+    "api_completed": 3489,
+    "pending": 417,
     "without_body": 86
   },
   "quality": {
-    "remote_verified": 2384,
-    "remote_unchecked": 895,
+    "remote_verified": 2276,
+    "remote_unchecked": 998,
     "complete": false
   },
   "trial": {

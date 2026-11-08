@@ -55,5 +55,36 @@
   },
   "error": "ai_numbers_missing:block:5:text:0",
   "retry_policy": "regular",
-  "retry_after": "2026-11-08T12:44:48.917264+00:00"
+  "retry_after": "2026-11-08T20:17:59.746133+00:00",
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:5:text:0",
+      "source_numbers": [
+        "150",
+        "1960",
+        "1980",
+        "230",
+        "25",
+        "3",
+        "35",
+        "500",
+        "520",
+        "600"
+      ],
+      "returned_numbers": [
+        "150000",
+        "1960",
+        "1980",
+        "2300000",
+        "25",
+        "3000",
+        "35",
+        "500",
+        "520000",
+        "600000"
+      ],
+      "truncated": false
+    }
+  ]
 }

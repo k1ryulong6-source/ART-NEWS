@@ -60,5 +60,38 @@
   },
   "error": "ai_numbers_missing:block:24:text:0",
   "retry_policy": "regular",
-  "retry_after": "2026-11-08T15:38:13.058430+00:00"
+  "retry_after": "2026-11-09T04:12:12.152811+00:00",
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:24:text:0",
+      "source_numbers": [
+        "10",
+        "1972"
+      ],
+      "returned_numbers": [
+        "1972"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:43:text:0",
+      "source_numbers": [
+        "120",
+        "2006",
+        "238",
+        "40",
+        "60"
+      ],
+      "returned_numbers": [
+        "120000000",
+        "2006",
+        "238",
+        "40",
+        "60"
+      ],
+      "truncated": false
+    }
+  ]
 }

@@ -63,5 +63,33 @@
   },
   "error": "ai_numbers_missing:block:1:text:0",
   "retry_policy": "regular",
-  "retry_after": "2026-11-08T12:43:36.010744+00:00"
+  "retry_after": "2026-11-08T20:20:59.075120+00:00",
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:1:text:0",
+      "source_numbers": [
+        "1.8",
+        "11",
+        "1986",
+        "1991",
+        "1995",
+        "2011",
+        "350",
+        "70"
+      ],
+      "returned_numbers": [
+        "11",
+        "1800",
+        "1986",
+        "1991",
+        "1995",
+        "2011",
+        "3",
+        "350",
+        "70000"
+      ],
+      "truncated": false
+    }
+  ]
 }

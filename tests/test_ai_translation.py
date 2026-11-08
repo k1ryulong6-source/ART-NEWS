@@ -102,6 +102,11 @@ class AITranslationTests(unittest.TestCase):
         path = self.root / 'ai-progress' / (self.row['id'] + '.json')
         state = json.loads(path.read_text())
         self.assertEqual(set(state['outputs']), {'title:0', 'excerpt:0'})
+        issue = report['failed'][0]['validation_issues'][0]
+        self.assertEqual(issue['reason'], 'ai_numbers_missing')
+        self.assertTrue(issue['source_numbers'])
+        self.assertEqual(issue['returned_numbers'], [])
+        self.assertEqual(state['validation_issues'], report['failed'][0]['validation_issues'])
         self.assertIsNone(self.store.dataset('live')['content'][0]['editorial_status'])
         # Simulate the next scheduled run after the existing per-article cooldown.
         state['retry_after'] = '2000-01-01T00:00:00+00:00'; path.write_text(json.dumps(state))

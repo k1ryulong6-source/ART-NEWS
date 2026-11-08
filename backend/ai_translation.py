@@ -10,7 +10,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 from .storage import ROOT, now
-from .editorial import checked_result, numbers_preserved, publish_translation, rules
+from .editorial import checked_result, numbers, numbers_preserved, publish_translation, rules
 from .autonomous_translation import assemble, write_json, read_checkpoint
 from .priority import rank_snapshot, translation_batch
 from . import ai_retry
@@ -401,6 +401,21 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                     if not invalid:
                         state.pop('retry_after', None)
                         state.pop('error', None)
+                        state.pop('validation_issues', None)
+                    else:
+                        # Diagnose the already-returned response without storing
+                        # source text, calling another model, or accepting it.
+                        sources = dict(chunk)
+                        issues = []
+                        for reason, key in invalid[:8]:
+                            issue = {'reason': reason, 'key': key}
+                            if reason == 'ai_numbers_missing':
+                                expected = sorted(numbers(sources[key]))
+                                returned = sorted(numbers(outputs[key]))
+                                issue.update(source_numbers=expected[:40], returned_numbers=returned[:40],
+                                             truncated=len(expected) > 40 or len(returned) > 40)
+                            issues.append(issue)
+                        state['validation_issues'] = issues
                     persist(path, state)
                     if checkpoint_sink and accepted:
                         checkpoint_sink()
@@ -459,7 +474,8 @@ def run_ai(store, provider, directory=None, ledger_path=None, *, cfg=None, reser
                 state['retry_policy'] = 'headline' if is_headline else 'regular'
                 state['retry_after'] = (datetime.now(timezone.utc) + delay).isoformat()
                 persist(path, state)
-                report['failed'].append({'id': row['id'], 'reason': state['error']})
+                report['failed'].append({'id': row['id'], 'reason': state['error'],
+                                         'validation_issues': state.get('validation_issues') or []})
         report['pending_after'] = len(rows) - len(report['translated'])
     if report['failed'] and report['status'] == 'completed':
         report['status'] = 'partial_failure'

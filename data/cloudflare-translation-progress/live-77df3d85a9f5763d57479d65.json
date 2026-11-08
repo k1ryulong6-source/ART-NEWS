@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "id": "live-77df3d85a9f5763d57479d65",
+  "input_hash": "45be2abf88e0d89b348af3cb26d01de43cf380431eabcec19da60799d376bed5",
+  "source_hash": "8d9268e5be5606f1cc0ad7ea0976126dd88ce7da7d49a0cd9a73780d19727489",
+  "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
+  "outputs": {
+    "title:0": "帕拉马塔火力中心本周六开幕——内外都令人目不暇接",
+    "block:0:text:0": "被称作“西悉尼歌剧院”的帕拉马塔火力中心的白色格子外骨骼，由1300个独立部件组成，包裹着30000平方米的内部空间，已经成为一个熟悉的地标。",
+    "block:1:text:0": "也许更广为人知的是这个项目的争议历史。自2014年帕拉马塔分馆宣布以来，由前员工和理事组成的直言不讳的反对团体一直抱怨他们认为博物馆的乌尔蒂莫校区被忽视，取而代之的是新的基础设施项目，以及他们所说的博物馆核心业务向当代艺术和活动的转变。",
+    "block:3:caption:0": "《任务永恒》是帕拉马塔火力中心的旗舰开幕展览——一场对飞行和太空旅行的庆祝。照片：布莱克·夏普-威金斯/《卫报》",
+    "block:3:alt:0": "《任务永恒》中的展品。",
+    "block:4:text:0": "当这个主要新场馆于周六向公众开放时，最大的问题是：这一切是否值得？它将为帕拉马塔带来什么——它是否足以吸引悉尼的其余地区，以及整个澳大利亚的西部？",
+    "block:5:text:0": "火力中心通过为期23天的开幕节日活动来增加吸引力，包括表演、派对、讲座、放映和工作坊，其中65%的节目是免费的。当《卫报澳大利亚》上周参观时，现场挤满了穿着反光背心、安全帽和钢头靴的安装人员。但即使展览还在各种准备阶段，也很难不被其光彩所折服。",
+    "block:6:text:0": "令人目眩的奇观与平静的感觉"
+  },
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "excerpt:0",
+      "source_numbers": [
+        "23",
+        "915"
+      ],
+      "returned_numbers": [
+        "23",
+        "915000000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:2:text:0",
+      "source_numbers": [
+        "10",
+        "915"
+      ],
+      "returned_numbers": [
+        "10",
+        "8",
+        "915000000"
+      ],
+      "truncated": false
+    }
+  ],
+  "error": "ai_numbers_missing:excerpt:0",
+  "retry_policy": "regular",
+  "retry_after": "2026-11-08T15:59:13.078713+00:00"
+}

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "id": "live-9595cc7b78fea36c71ea6011",
+  "input_hash": "a3429a1ae573e231b53c405bee74fb789cccceddb8e260a69c238dcd2f5f9081",
+  "source_hash": "e8e570c3788c8b5ab9eb0130427da4c22617cf6af12889baf6194f6489a0183e",
+  "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
+  "outputs": {
+    "title:0": "特朗普总统采取行动将椭圆形办公室设为国家纪念碑",
+    "excerpt:0": "在其第二个任期内，特朗普将重新装修椭圆形办公室和内阁会议室作为工作重点",
+    "block:0:text:0": "唐纳德·特朗普总统于周四签署了一项公告，试图将椭圆形办公室及相邻的内阁会议室指定为国家纪念碑，并表示这一新指定将防止未来政府在未经国会批准的情况下进行重大修改。在其第二个任期内，特朗普将这两处空间的重新装修设为首要任务，将原本克制的总统工作空间改造成了路易十四风格的奢华镀金内饰。",
+    "block:3:text:0": "目前尚不清楚将椭圆形办公室指定为国家纪念碑将如何阻止另一位总统简单地修改或忽视这一指定——白宫本身已被指定为国家历史地标，但这并未阻止特朗普建造他的宴会厅。尽管如此，特朗普在现已被金色充满的椭圆形办公室里对记者说：“当完成后，当我们把文件完全做好、具有法律约束力时，这将使任何人永远无法摧毁这个令人难以置信的空间。”"
+  },
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:1:text:0",
+      "source_numbers": [
+        "600000000",
+        "90000"
+      ],
+      "returned_numbers": [
+        "6000000",
+        "90000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:2:text:0",
+      "source_numbers": [
+        "14000000",
+        "250"
+      ],
+      "returned_numbers": [
+        "14",
+        "140000",
+        "250"
+      ],
+      "truncated": false
+    }
+  ],
+  "error": "ai_numbers_missing:block:1:text:0",
+  "retry_policy": "regular",
+  "retry_after": "2026-11-09T04:12:52.150188+00:00"
+}

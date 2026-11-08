@@ -23,5 +23,26 @@
   },
   "error": "ai_numbers_missing:block:10:text:0",
   "retry_policy": "regular",
-  "retry_after": "2026-11-08T12:42:53.475881+00:00"
+  "retry_after": "2026-11-08T20:22:57.655935+00:00",
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:10:text:0",
+      "source_numbers": [
+        "2390000",
+        "25200000",
+        "3100",
+        "7",
+        "8000000"
+      ],
+      "returned_numbers": [
+        "2390000",
+        "25200000",
+        "3100",
+        "7000000",
+        "8000000"
+      ],
+      "truncated": false
+    }
+  ]
 }

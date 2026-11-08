@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "task": "T081",
+  "checked_at": "2026-11-08T10:05:08.715457+00:00",
+  "status": "repair_verified",
+  "baseline_articles": 4155,
+  "new_articles_collected": 354,
+  "current_articles": 4509,
+  "old_ids_preserved": 4155,
+  "existing_AI_records_preserved_during_migration": 3589,
+  "old_format_reconstructed_bytes": 106064003,
+  "github_file_limit_bytes": 104857600,
+  "snapshot_storage": {
+    "format": "content-shards-v1",
+    "parts": 256,
+    "manifest_bytes": 547822,
+    "largest_part_bytes": 797525
+  },
+  "workflow_runs": {
+    "collection": 42467616688,
+    "first_translation": 42467604204,
+    "latest_translation": 42468839972,
+    "collection_pages": 42468837757,
+    "latest_pages": 42469582274,
+    "health_retry": 42469451631,
+    "post_translation_health": 42469584389,
+    "final_code_checks": 42469443309
+  },
+  "translation_batches": {
+    "first_requests": 51,
+    "first_completed": 3,
+    "latest_requests": 46,
+    "latest_completed": 19,
+    "total_completed_article_events": 22,
+    "second_batch_machine_fallback_status": "ai_priority"
+  },
+  "publication": {
+    "snapshot_key": "1d5ab2c70dbd449e15e34bf6c79aff5ca1268de4c89c437b87d26fcbce87a28a",
+    "article_ids": [
+      "live-a98377476910dcbcc8ebd118",
+      "live-131d6fd7f5fbe1f6cd57ac9b",
+      "live-fb69ec10ef912fa9ca67377c"
+    ],
+    "generated_at": "2026-11-08T10:01:16.300499+00:00"
+  },
+  "public_article_checks": [
+    {
+      "id": "live-a44f2b92c44a230255f40fd3",
+      "http": 200,
+      "source_hash_matches": true,
+      "original_blocks_match": true,
+      "ai_title_and_blocks_match": true
+    },
+    {
+      "id": "live-f96f73b56ecf2cadd787fd24",
+      "http": 200,
+      "source_hash_matches": true,
+      "original_blocks_match": true,
+      "ai_title_and_blocks_match": true
+    },
+    {
+      "id": "live-1aebf446d9efaf38daf65d63",
+      "http": 200,
+      "source_hash_matches": true,
+      "original_blocks_match": true,
+      "ai_title_and_blocks_match": true
+    },
+    {
+      "id": "live-b693f6b61aa34dc08b43c9f6",
+      "http": 200,
+      "source_hash_matches": true,
+      "original_blocks_match": true,
+      "ai_title_and_blocks_match": true
+    },
+    {
+      "id": "live-3a49c5775353737f5d746394",
+      "http": 200,
+      "source_hash_matches": true,
+      "original_blocks_match": true,
+      "ai_title_and_blocks_match": false
+    }
+  ],
+  "health_issues": [],
+  "tests": {
+    "python": 262,
+    "javascript": 29,
+    "production_migration_roundtrip_and_static_build": true
+  },
+  "remaining": {
+    "all_ready": false,
+    "pending_ai": 442,
+    "without_original_body": 394,
+    "deepseek": "HTTP402 insufficient balance; existing free routes continue"
+  },
+  "limitations": [
+    "Program/hash/structure evidence is not semantic or human translation review.",
+    "T028/T062 remain open; configured-source recovery is not worldwide completeness.",
+    "No secret, fee, daily API limit or session-translation worker was added."
+  ]
+}

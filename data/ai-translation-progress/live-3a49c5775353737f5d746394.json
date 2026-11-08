@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "id": "live-3a49c5775353737f5d746394",
+  "input_hash": "26a776bcd0671c5770ec11b78f87e19468f065d89f0590f904b50b35869f47ff",
+  "source_hash": "9dd2696b994d05b68af8bd4ed407b3ab220dbe7fb1e976a532f3ffbda8f49c58",
+  "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
+  "outputs": {
+    "excerpt:0": "这是曾作为休·格兰特与朱莉娅·罗伯茨爱情故事背景的伦敦住宅。一座被改造成奢华住宅的前礼拜堂，与电影中威廉·萨克杂乱的公寓截然不同。文章《诺丁山的蓝门之家在…》",
+    "block:1:text:0": "该房产由英国苏富比国际 realty（UK Sotheby’s International Realty）代理。它位于韦斯特伯恩公园路280号（280 Westbourne Park Road），拥有很不寻常的建筑历史。事实上，在成为私人住宅之前，这栋建筑是一座19世纪的浸信会礼拜堂，并于1993年由编剧理查德·柯蒂斯——也就是《诺丁山》的编剧——改造成了住宅。",
+    "block:3:caption:0": "© UK Sotheby’s International Realty",
+    "block:3:alt:0": "notting hill casa vendita",
+    "block:4:text:0": "然而，看着房源照片，《诺丁山》的怀旧者们将不由自主地联想到这栋正在出售的房屋的另一个版本。那是威廉所居住的、远非无可挑剔的版本：随处乱放的盘子和剩饭剩菜、一个别具一格的冰箱（蜂蜜里泡着杏子？），堆积如山的物品以及丢失的物品（去电影院约会前的眼镜）、电视机前的沙发、浴缸。尤其是斯派克，那个由瑞斯·伊凡斯饰演的可爱室友，带着他不可思议的衣橱和极其独特的秩序观念。很难想象他今天会在苏富比拍摄的无瑕环境中闲逛。",
+    "block:5:text:0": "最迷人的元素之一是一层的美术馆式走廊，它沿着客厅的大部分区域延伸，俯瞰下方的空间。这里有一个挑高工作室，配有书架墙和带有彩色装饰玻璃的拱形窗户。这个细节几乎像是对威廉文学职业的一种致敬，尽管这位电影里的书商可能会以稍微不那么井井有条的方式填满那些书架。",
+    "block:6:text:0": "睡眠区包括楼上的主卧室，配有定制衣柜和带双洗手盆、独立淋浴间以及独立式浴缸的私人浴室。另外两间用作卧室的空间位于下层，并配有第二间带淋浴间的浴室和一个洗衣房。复古壁炉、装饰线条、木地板和彩色玻璃窗即使在最私密的私人空间中也保留了建筑的历史特色。",
+    "block:8:text:0": "事实上，有一个重要的澄清：该房产的外立面确实在电影中使用过，但威廉公寓的内部是在摄影棚里重建的。真正的房子属于理查德·柯蒂斯，他与伴侣艾玛·弗洛伊德一起将这座前礼拜堂改造成了住宅。那扇著名的蓝门也有它的故事：原本那扇19世纪的门在电影成功后被拍卖用于慈善；今天看到的是更换后的门。",
+    "block:9:text:0": "这种对比是不可抗拒的。一方面是英国苏富比国际 realty 房源中展示的奢华住宅，拥有艺术画廊般的空间、挑高图书馆和全景露台；另一方面是电影中的公寓，在那里，生活与其所有的混乱似乎已经彻底占据了上风。超现实，但很美。"
+  },
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "title:0",
+      "source_numbers": [
+        "5",
+        "7"
+      ],
+      "returned_numbers": [
+        "7500000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:0:text:0",
+      "source_numbers": [
+        "1999",
+        "5",
+        "7"
+      ],
+      "returned_numbers": [
+        "1999",
+        "7500000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:2:text:0",
+      "source_numbers": [
+        "14",
+        "256",
+        "48",
+        "6"
+      ],
+      "returned_numbers": [
+        "14.6",
+        "2",
+        "256",
+        "3",
+        "48"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:7:text:0",
+      "source_numbers": [
+        "3",
+        "4",
+        "8"
+      ],
+      "returned_numbers": [
+        "4.3",
+        "8.8"
+      ],
+      "truncated": false
+    }
+  ],
+  "error": "ai_numbers_missing:title:0",
+  "retry_policy": "regular",
+  "retry_after": "2026-11-08T15:57:26.108759+00:00"
+}

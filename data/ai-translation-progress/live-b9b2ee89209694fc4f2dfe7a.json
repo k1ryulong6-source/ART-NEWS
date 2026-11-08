@@ -40,5 +40,22 @@
   },
   "error": "ai_numbers_missing:block:12:text:0",
   "retry_policy": "regular",
-  "retry_after": "2026-11-08T12:41:04.216090+00:00"
+  "retry_after": "2026-11-08T20:16:51.905453+00:00",
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:12:text:0",
+      "source_numbers": [
+        "5",
+        "600000",
+        "7.5"
+      ],
+      "returned_numbers": [
+        "5000000",
+        "600000",
+        "7.5"
+      ],
+      "truncated": false
+    }
+  ]
 }

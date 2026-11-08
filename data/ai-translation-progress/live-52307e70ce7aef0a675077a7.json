@@ -24,5 +24,58 @@
   },
   "error": "ai_numbers_missing:block:2:text:0",
   "retry_policy": "regular",
-  "retry_after": "2026-11-08T12:39:40.125274+00:00"
+  "retry_after": "2026-11-08T20:15:30.080140+00:00",
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:2:text:0",
+      "source_numbers": [
+        "60",
+        "80000000"
+      ],
+      "returned_numbers": [
+        "60000000",
+        "80000000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:6:text:0",
+      "source_numbers": [
+        "14700000",
+        "16",
+        "17",
+        "1914",
+        "1915",
+        "1916",
+        "1997",
+        "20",
+        "2025",
+        "21",
+        "236400000",
+        "30900000",
+        "60",
+        "80000000"
+      ],
+      "returned_numbers": [
+        "11",
+        "14700000",
+        "16",
+        "17",
+        "1914",
+        "1915",
+        "1916",
+        "1997",
+        "20",
+        "2025",
+        "21",
+        "236400000",
+        "30900000",
+        "60000000",
+        "80000000"
+      ],
+      "truncated": false
+    }
+  ]
 }

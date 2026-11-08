@@ -4,13 +4,14 @@ import json
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from backend.snapshot_files import read_snapshot
 from backend.storage import ROOT, now
 from backend.autonomous_translation import write_json
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--initialize', action='store_true')
 args = parser.parse_args()
-snapshot = json.loads((ROOT / 'data/live.json').read_text())
+snapshot = read_snapshot(ROOT / 'data/live.json')
 path = ROOT / 'data/collection-metrics.json'
 current = {source['id']: source.get('last_run') or {} for source in snapshot.get('source_status', [])}
 if path.exists():

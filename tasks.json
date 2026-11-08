@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-17",
+  "updated_at": "2026-11-08",
   "status_values": [
     "todo",
     "doing",
@@ -2636,6 +2636,39 @@
       ],
       "evidence": [
         "仅改两处文案，草稿PR待用户确认；本地未跑页面，线上未核对。"
+      ]
+    },
+    {
+      "id": "T081",
+      "title": "恢复采集保存：有校验的正文分片、推送诊断及翻译检查误报修复",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex（直接修复后端，无会话翻译工作者）",
+      "updated_at": "2026-11-08",
+      "depends_on": [
+        "T072"
+      ],
+      "scope": [
+        "backend/snapshot_files.py",
+        "backend/public_sync.py",
+        "backend/storage.py",
+        "backend/editorial.py",
+        "scripts/",
+        ".github/workflows/",
+        "tests/",
+        "docs/",
+        "tasks.json"
+      ],
+      "acceptance": [
+        "大存档分片逐字段无损，旧JSON可恢复，所有构建/采集/翻译/审计入口兼容；缺片或hash不符失败关闭",
+        "每个受追踪的快照文件保持有界，不删资讯/原文/译文或强推，不改密钥/预算/付费模式",
+        "推送失败保存脱敏分类和原始错误的安全片段，保留已接受的数据副本",
+        "只修有证据的数字检查误报，真正遗漏仍拒收；已有有效译文/断点复用",
+        "真实Actions采集保存和Pages发布成功，核对线上新增数据与旧数据保留；全量T028/T062未过则仍doing"
+      ],
+      "evidence": [
+        "11月8日采集42465164220抓取成功，但保存回GitHub的四次push未确认；data/live.json已104352698字节（99.52MiB），接近GitHub100MiB硬上限。",
+        "用户最新“怎么办”授权修复；本任务不启用会话翻译/二次模型校对或增加费用。"
       ]
     }
   ]

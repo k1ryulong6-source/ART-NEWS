@@ -5,6 +5,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 from backend.storage import ROOT
+from backend.autonomous_translation import write_json  # Load dependencies before the fixture patches ROOT.
 
 
 class CollectionMetricsTests(unittest.TestCase):
@@ -16,7 +17,7 @@ class CollectionMetricsTests(unittest.TestCase):
             path = root / 'data/live.json'
             old = {'id': 'existing', 'last_run': {'started_at': '2026-10-13T00:00:00+00:00',
                     'finished_at': '2026-10-13T00:01:00+00:00', 'inserted_count': 500, 'status': 'success'}}
-            path.write_text(json.dumps({'source_status': [old]}))
+            path.write_text(json.dumps({'content': [], 'source_status': [old]}))
             def run(initialize=False):
                 with patch('backend.storage.ROOT', root), patch('sys.argv', ['metrics'] + (['--initialize'] if initialize else [])):
                     runpy.run_path(str(script), run_name='metrics_test')
@@ -25,7 +26,7 @@ class CollectionMetricsTests(unittest.TestCase):
             self.assertEqual(json.loads((root / 'data/collection-metrics.json').read_text())['days'], {})
             new = {'id': 'new-source', 'last_run': {'started_at': '2026-10-14T00:00:00+00:00',
                    'finished_at': '2026-10-14T00:01:00+00:00', 'inserted_count': 80, 'status': 'success'}}
-            path.write_text(json.dumps({'source_status': [old, new]}))
+            path.write_text(json.dumps({'content': [], 'source_status': [old, new]}))
             run()
             run()
             day = json.loads((root / 'data/collection-metrics.json').read_text())['days']['2026-10-14']

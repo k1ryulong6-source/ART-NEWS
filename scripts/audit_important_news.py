@@ -4,12 +4,13 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from backend.snapshot_files import read_snapshot
 from backend.storage import ROOT, now
 from backend.priority import classify, rank_snapshot, priority_key
 from backend.autonomous_translation import write_json
 from backend.editorial_regions import regional_coverage
 
-snapshot = json.loads((ROOT / 'data/live.json').read_text())
+snapshot = read_snapshot(ROOT / 'data/live.json')
 policy = json.loads((ROOT / 'config/news-watch.json').read_text())
 audit_path = ROOT / 'data/coverage-audit.json'
 audit = json.loads(audit_path.read_text()) if audit_path.exists() else {'sources': []}

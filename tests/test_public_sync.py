@@ -3,6 +3,7 @@ import subprocess
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 from backend.public_sync import push_public_update
 
 
@@ -81,3 +82,43 @@ class PublicSyncTests(unittest.TestCase):
         push_public_update(self.worker, regenerate=regenerate)
         self.assertFalse((self.worker / path).exists())
         self.assertEqual(len(list((self.worker / 'runtime/public-update-evidence').glob('*-stage*.json'))), 2)
+
+    def test_new_oversized_blob_is_stopped_before_push_with_exact_file_evidence(self):
+        (self.worker / 'too-large.txt').write_text('x' * 4096)
+        self.git(self.worker, 'add', 'too-large.txt')
+        self.git(self.worker, 'commit', '-m', 'oversized fixture')
+        before = self.git(self.remote, 'rev-parse', 'main')
+        with patch('backend.public_sync.GIT_FILE_LIMIT', 1024):
+            with self.assertRaisesRegex(RuntimeError, 'git_file_too_large'):
+                push_public_update(self.worker)
+        report = json.loads((self.worker / 'runtime/public-update-evidence/git-push-report.json').read_text())
+        self.assertEqual(report['attempts'][0]['files'], [{'path': 'too-large.txt', 'bytes': 4096}])
+        self.assertEqual(self.git(self.remote, 'rev-parse', 'main'), before)
+
+    def test_remote_denial_is_recorded_and_credentials_are_redacted(self):
+        self.changes()
+        hook = self.remote / 'hooks/pre-receive'
+        hook.write_text('#!/bin/sh\necho "authentication failed https://fixture:private-token@example.org ghp_fixtureprivatevalue" >&2\nexit 1\n')
+        hook.chmod(0o755)
+        with self.assertRaisesRegex(RuntimeError, 'push_not_confirmed'):
+            push_public_update(self.worker, regenerate=self.regenerate)
+        raw = (self.worker / 'runtime/public-update-evidence/git-push-report.json').read_text()
+        report = json.loads(raw)
+        self.assertEqual(len(report['attempts']), 1)
+        self.assertEqual(report['attempts'][0]['category'], 'git_authentication_failed')
+        self.assertNotIn('private-token', raw)
+        self.assertNotIn('ghp_fixtureprivatevalue', raw)
+        self.assertTrue((self.worker / 'runtime/public-update-evidence/accepted-public-snapshot.json').exists())
+
+    def test_old_writer_cannot_push_a_manifest_without_its_shards(self):
+        from backend.snapshot_files import write_snapshot
+        write_snapshot(self.worker / 'data/live.json', {'content': [{'id': 'one', 'text': '原文'}]}, legacy_bytes=0)
+        self.git(self.worker, 'add', 'data/live.json')
+        self.git(self.worker, 'commit', '-m', 'old workflow forgot new shards')
+        before = self.git(self.remote, 'rev-parse', 'main')
+        with self.assertRaisesRegex(RuntimeError, 'snapshot_parts_not_committed'):
+            push_public_update(self.worker)
+        self.assertEqual(self.git(self.remote, 'rev-parse', 'main'), before)
+        self.git(self.worker, 'add', 'data/snapshot-content')
+        self.git(self.worker, 'commit', '-m', 'complete manifest publication')
+        self.assertEqual(push_public_update(self.worker)['status'], 'pushed')

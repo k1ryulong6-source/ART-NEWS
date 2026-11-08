@@ -48,6 +48,7 @@ jobs:
           python scripts/prepare_translation_queue.py
           python scripts/audit_important_news.py
           git add data/live.json data/ai-translation-status.json data/ai-translation-ledger.json data/ai-translation-progress data/translation-queue.json data/translation-queue data/translation-input data/important-news-audit.json
+          if [ -d data/snapshot-content ]; then git add -A -- data/snapshot-content; fi
           if ! git diff --cached --quiet; then
             git commit -m 'T038 Save actual Gemini verification and accepted translations'
             git pull --rebase origin main

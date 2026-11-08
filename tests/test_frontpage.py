@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import unittest
 from pathlib import Path
+from backend.snapshot_files import read_snapshot
 from backend.frontpage import frontpage_rows, headline_slots, headline_ready
 from backend.priority import classify, rank_snapshot, reference_time, translation_batch
 from backend.ai_translation import selected_rows
@@ -94,7 +95,7 @@ class FrontpagePriorityTests(unittest.TestCase):
                             self.story('old', '2026-10-08T11:59:59Z'),
                             self.story('unknown', None), self.story('invalid', 'unknown')],
                 'events': [], 'content_events': []}
-        snapshots = [self.fixture(), edge, json.loads((ROOT / 'data/live.json').read_text())]
+        snapshots = [self.fixture(), edge, read_snapshot(ROOT / 'data/live.json')]
         node = r"""
 const fs=require('node:fs'), input=JSON.parse(fs.readFileSync(0,'utf8'));
 const RealDate=Date;

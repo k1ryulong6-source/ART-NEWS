@@ -10,6 +10,7 @@ from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from backend.snapshot_files import read_snapshot
 from backend.headlines import load_headlines
 from backend.coverage import coverage_report
 from backend.priority import rank_snapshot
@@ -25,7 +26,7 @@ def build():
     }
     live_path = ROOT / "data/live.json"
     if live_path.exists():
-        bundle["live"] = json.loads(live_path.read_text(encoding="utf-8"))
+        bundle["live"] = read_snapshot(live_path)
         bundle["headlines"] = load_headlines(bundle["live"])
         bundle['priorities'] = rank_snapshot(bundle['live'])
         def optional_data(name):

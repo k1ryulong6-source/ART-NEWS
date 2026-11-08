@@ -26,6 +26,7 @@ on:
       - 'backend/cloudflare_translation.py'
       - 'scripts/run_cloudflare_translation.py'
       - 'backend/ai_pool.py'
+      - 'backend/snapshot_files.py'
       - 'backend/deepseek_translation.py'
       - 'scripts/run_ai_translation.py'
       - 'scripts/reserve_ai_quota.py'
@@ -149,6 +150,7 @@ jobs:
           git config user.name 'Intermission automatic translator'
           git config user.email 'updater@users.noreply.github.com'
           git add data/live.json data/quality.json data/important-news-audit.json data/translation-queue.json data/translation-queue data/translation-input data/auto-translation-progress data/auto-translation-status.json data/ai-translation-progress data/ai-translation-status.json
+          if [ -d data/snapshot-content ]; then git add -A -- data/snapshot-content; fi
           if [ -f data/ai-translation-ledger.json ]; then git add data/ai-translation-ledger.json; fi
           if [ -f data/ai-translation-ledger-secondary.json ]; then git add data/ai-translation-ledger-secondary.json; fi
           if [ -f data/ai-translation-ledger-deepseek.json ]; then git add data/ai-translation-ledger-deepseek.json; fi

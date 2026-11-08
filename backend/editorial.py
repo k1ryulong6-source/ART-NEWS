@@ -32,7 +32,9 @@ def numbers(text):
     text = text or ''
     # Noon/whole-hour Chinese notation preserves the :00 minutes implicitly.
     # Do not normalize half-hours or explicit minute expressions this way.
-    text = re.sub(r'(?<!\d)([01]?\d|2[0-3])[点时](?!\d|半|间|代|期)', r'\1:00', text)
+    # Japanese 点 counts artworks (84点が/12点の); Chinese 点作品 is also
+    # a count. These are not times and must never introduce an invented zero.
+    text = re.sub(r'(?<!\d)([01]?\d|2[0-3])[点时](?!\d|半|间|代|期|[のをがはにとも]|以上|以下|余|作品|画作|绘画|出品|展出|収蔵|藏品)', r'\1:00', text)
     for match in re.finditer(r'\d+(?:,\d{3})*(?:\.\d+)?', text):
         value = Decimal(match.group().replace(',', ''))
         suffix = text[match.end():]
@@ -63,8 +65,9 @@ def numbers_preserved(source, translated):
         if value in decades and re.search(r'(?<!\d)' + value[2:] + r'年代', translated):
             continue
         small = int(value) if value.isdigit() and 1 <= int(value) <= 10 else None
-        if small and re.search('第[' + CHINESE_SMALL[small] + ']|[' + CHINESE_SMALL[small] + '][' + MEASURE_WORDS + ']',
-                               translated):
+        chinese_digits = '一二两三四五六七八九十百千万亿零〇'
+        if small and re.search(r'(?:第[' + CHINESE_SMALL[small] + r'](?![' + chinese_digits + r'])|(?<!['
+                               + chinese_digits + r'])[' + CHINESE_SMALL[small] + '][' + MEASURE_WORDS + '])', translated):
             continue
         return False
     return True

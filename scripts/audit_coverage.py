@@ -3,11 +3,12 @@ import json
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from backend.snapshot_files import read_snapshot
 from backend.storage import ROOT
 from backend.ingestion import get_url
 from backend.coverage import audit_sources
 
-snapshot = json.loads((ROOT / 'data/live.json').read_text())
+snapshot = read_snapshot(ROOT / 'data/live.json')
 config = json.loads((ROOT / 'config/sources.json').read_text())
 path = ROOT / 'data/coverage-audit.json'
 previous = json.loads(path.read_text()) if path.exists() else None

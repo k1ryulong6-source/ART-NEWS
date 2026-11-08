@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from backend.snapshot_files import read_snapshot
 from backend.ingestion import canonical_url, GEAR, GEAR_MULTILINGUAL
 from backend.reading import public_url
 
@@ -136,7 +137,7 @@ def main():
     parser.add_argument('--output',type=Path)
     parser.add_argument('--strict',action='store_true')
     args=parser.parse_args()
-    report=audit_payload(json.loads((ROOT/'data/live.json').read_text()),json.loads((ROOT/'config/sources.json').read_text()))
+    report=audit_payload(read_snapshot(ROOT/'data/live.json'),json.loads((ROOT/'config/sources.json').read_text()))
     if args.output:
         args.output.parent.mkdir(parents=True,exist_ok=True)
         args.output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')

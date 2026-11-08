@@ -4,6 +4,7 @@ import sys
 from urllib.request import urlopen
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from backend.snapshot_files import read_snapshot
 from backend.storage import ROOT
 from backend.operations import load_operations
 from backend.attention_units import attention_report
@@ -15,7 +16,7 @@ def optional(name):
     except (OSError, ValueError): return None
 
 
-snapshot = optional('live.json')
+snapshot = read_snapshot(ROOT / 'data/live.json')
 operations = load_operations(snapshot)
 trial = optional('autonomous-trial-report.json') or {}
 quality = optional('article-quality-report.json') or {}

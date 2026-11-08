@@ -6,6 +6,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from backend.storage import ROOT, Store, now
 from backend.cloudflare_translation import restore_completed
+from backend.snapshot_files import write_snapshot
 
 store = Store(os.getenv("CULTURE_DESK_DB", ROOT / "runtime/culture-desk.db"))
 recovered = restore_completed(store)
@@ -26,5 +27,6 @@ for record in snapshot["content"]:
     record.pop("raw_excerpt", None)
 snapshot.pop("sources", None)
 snapshot["sources"] = [{key: row[key] for key in ("id", "name", "homepage_url", "source_type")} for row in store.source_status()]
-(ROOT / "data/live.json").write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+files = write_snapshot(ROOT / 'data/live.json', snapshot)
+print(json.dumps({'snapshot_files': files}))
 print(f"Public snapshot: {len(snapshot['content'])} articles, {len(snapshot['events'])} events")

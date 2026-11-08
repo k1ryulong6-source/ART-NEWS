@@ -102,6 +102,22 @@ class EditorialTests(unittest.TestCase):
 
 
 class NumbersPreservedTests(unittest.TestCase):
+    def test_japanese_artwork_counts_do_not_invent_clock_minutes(self):
+        from backend.editorial import numbers, numbers_preserved
+        for source, translated in [('名品12点の作品', '12件名作'), ('15点を展示', '展出15幅作品'),
+                                   ('展览精选了23点作品', '展览精选23件作品'), ('12点以上の絵画', '12幅以上的绘画')]:
+            self.assertNotIn('0', numbers(source))
+            self.assertTrue(numbers_preserved(source, translated))
+        self.assertTrue(numbers_preserved('Opens at 12:00', '12点开幕'))
+        self.assertFalse(numbers_preserved('Opens at 12:30', '12点开幕'))
+        self.assertFalse(numbers_preserved('12 paintings and 0 sculptures', '12幅绘画'))
+
+    def test_small_digit_matching_cannot_hide_larger_wrong_counts(self):
+        from backend.editorial import numbers_preserved
+        for source, translated in [('2 people', '十二人'), ('2 people', '第二十位'),
+                                   ('1 work', '十一件作品'), ('10 works', '第十二件')]:
+            self.assertFalse(numbers_preserved(source, translated))
+
     def test_conventional_chinese_renderings_count_as_preserved(self):
         from backend.editorial import numbers_preserved
         for source, translated in (('2人が出会った', '两人相遇'), ('Phase 01 – lectures', '第一阶段：讲座'),

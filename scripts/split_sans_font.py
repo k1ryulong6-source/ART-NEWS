@@ -11,9 +11,12 @@ import collections
 import hashlib
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from backend.snapshot_files import read_snapshot
 FONTS = ROOT / 'frontend/fonts'
 SOURCE = FONTS / 'intermission-sans-v1.woff2'
 OUTPUT = FONTS / 'sans-v1'
@@ -30,7 +33,7 @@ def is_han(code):
 
 
 def frequencies(codes):
-    live = json.loads((ROOT / 'data/live.json').read_text(encoding='utf-8'))
+    live = read_snapshot(ROOT / 'data/live.json')
     counts = collections.Counter()
     for row in live.get('content', []):
         text = ''.join(str(row.get(key) or '') for key in ('editorial_title_zh', 'translated_title_zh', 'title_zh', 'summary_zh', 'editorial_excerpt_zh', 'translated_excerpt_zh'))

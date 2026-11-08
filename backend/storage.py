@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 from zoneinfo import ZoneInfo
+from .snapshot_files import read_snapshot
 
 ROOT = Path(__file__).resolve().parents[1]
 STATUSES = {"want_to_see", "planning", "seen"}
@@ -233,7 +234,7 @@ class Store:
     def restore_public_snapshot(self, path):
         if not Path(path).exists():
             return 0
-        data = json.loads(Path(path).read_text(encoding="utf-8"))
+        data = read_snapshot(path)
         self.register_sources(json.loads((ROOT / "config/sources.json").read_text())["sources"])
         with self.connect() as db:
             existing = db.execute("SELECT count(*) FROM content WHERE is_demo=0").fetchone()[0]

@@ -27,14 +27,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Save real workflow health evidence
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           git config user.name 'Intermission workflow monitor'
           git config user.email 'updater@users.noreply.github.com'
           git add data/automation-health.json
           if ! git diff --cached --quiet; then
             git commit -m 'Record actual autonomous workflow health'
-            git pull --rebase origin main
-            git push origin HEAD:main
+            python -S scripts/push_health_update.py
           fi
       - name: Fail visibly when a stage stopped advancing
         run: python -c 'import json; r=json.load(open("data/automation-health.json")); raise SystemExit(bool(r["issues"]))'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: health-check-evidence
+          path: |
+            data/automation-health.json
+            runtime/health-update-evidence/
+          retention-days: 7

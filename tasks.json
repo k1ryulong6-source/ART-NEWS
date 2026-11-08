@@ -2658,7 +2658,11 @@
         "tests/",
         "docs/",
         "tasks.json",
-        "backend/ai_translation.py"
+        "backend/ai_translation.py",
+        "backend/health_sync.py",
+        "scripts/push_health_update.py",
+        ".github/workflows/automation-health.yml",
+        "tests/test_health_sync.py"
       ],
       "acceptance": [
         "大存档分片逐字段无损，旧JSON可恢复，所有构建/采集/翻译/审计入口兼容；缺片或hash不符失败关闭",
@@ -2674,7 +2678,10 @@
         "cff80a637已推送；远端CI42467604230通过259 Python与29 JS及静态构建。",
         "真实自动批42467604204已保存content-shards-v1到main；51 API请求新增3篇全文，46篇仍未过检查，CF6请求0全文。采集42467616688已开始，仍待其保存/Pages与线上核对。",
         "原有待译稿38篇包含确切点-count误报结构，未把这38篇计为完成；另加入失败数字差异诊断，不记录正文或追加模型调用。",
-        "语境AI有完整新稿时暂缓CPU机翻，加快释放写锁与发布；仅有部分单元或无AI全文进展时仍保留机翻兜底。相关63项API/预算/备用/报告回归通过。"
+        "语境AI有完整新稿时暂缓CPU机翻，加快释放写锁与发布；仅有部分单元或无AI全文进展时仍保留机翻兜底。相关63项API/预算/备用/报告回归通过。",
+        "真实采集42467616688及Pages42468837757 success：354新ID已发布，4155旧ID全部保留；线上/仓库snapshot_key一致，5篇新旧公开文章原文块/hash逐项一致，其中4篇AI标题和全文也一致。",
+        "新4509篇数据按旧格式为106064003字节，实际超过GitHub104857600字节限制；分片入口547880字节，最大分片797525字节。",
+        "复查发现health42468869381因cannot lock ref并发推送失败；新增只允许监测报告的4次有界fetch/rebase/push，冲突时重生成健康证据，拒绝任何其他文件冲突/本地未提交工作，保存脱敏诊断；待真实重跑。"
       ]
     }
   ]

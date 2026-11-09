@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "id": "live-8f5d9c40a90e387ce6128b40",
+  "input_hash": "72a0f7798ee717994ee235590f69a3061afc376b13c299f372498e3d4b9cec44",
+  "source_hash": "e754c8163eba47131fd1fdeec55b74105ccf670be0a4afda7e66666894665240",
+  "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
+  "outputs": {
+    "title:0": "Lucien Smith因意外过量服用药物身亡",
+    "excerpt:0": "Lucien Smith因意外过量服用药物身亡 Daniel Völzke Fri, 11/06/2026 - 14:41",
+    "block:0:text:0": "在美国艺术家Lucien Smith突然离世之后，其死因现已查明：这位37岁的艺术家死于过量服用芬太尼和羟考酮。",
+    "block:1:text:0": "纽约市法医办公室公布了这一消息。这位37岁的艺术家于9月7日被发现毫无生气地倒在曼哈顿的公寓里，其死因已被裁定为意外。",
+    "block:3:text:0": "据《纽约时报》报道，就在去世前不久，这位艺术家在长岛蒙托克的一个废弃棒球场上创作了一个包含4件作品的全新“Rain Paintings”系列。为此，他搭建了一个配有压缩机的喷涂装置，取代了他以往使用灭火器的技术。这些作品目前正在韦恩斯科特的特里波利画廊（Tripoli Gallery）举办的“Delay of Game”展览中展出，展览将持续至11月23日。这是Smith12年来首次与画廊合作。",
+    "block:4:text:0": "在去世前的几周里，Smith一直在与心理问题作斗争。《纽约时报》获取了由其好友、Half Gallery创始人Bill Powers提供的短信记录，显示该艺术家曾倾诉自己遭受焦虑发作、精疲力竭以及陷入个人低谷。Powers对该报表示，在8月底也就是他去世前几天，他曾连续5天保持戒酒戒毒。他一直把Smith视作自己的儿子一般。",
+    "block:5:text:0": "去年，Smith曾与厨师Mathieu Canet合作，在曼哈顿的唐人街开设了餐厅FOOD。在他逝世后，朋友和同仁们聚集在那里，设立了一个临时纪念地。另一场追悼会则在艺术家生前生活和工作的蒙托克举行。"
+  },
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:2:text:0",
+      "source_numbers": [
+        "2013",
+        "2014",
+        "24",
+        "389"
+      ],
+      "returned_numbers": [
+        "2013",
+        "2014",
+        "24",
+        "389000",
+        "4000000"
+      ],
+      "truncated": false
+    }
+  ],
+  "error": "ai_numbers_missing:block:2:text:0",
+  "retry_policy": "regular",
+  "retry_after": "2026-11-09T08:41:07.133145+00:00"
+}

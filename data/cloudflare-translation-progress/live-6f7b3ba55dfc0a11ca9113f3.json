@@ -4,5 +4,67 @@
   "input_hash": "d8fba9335b4587d7ecc2847099a78e56a5a604c0494561d686939967f1714116",
   "source_hash": "9fa521410ac7e241c3067ff081800192966fa350ae89c0cd490e05a46277c46d",
   "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
-  "outputs": {}
+  "outputs": {
+    "title:0": "Disney Plus 新作 – 2026 年 11 月 9 日至 15 日及整个月",
+    "block:0:text:0": "文章",
+    "block:1:text:0": "Disney Plus 新作 – 2026 年 11 月 2 日至 8 日及整个月",
+    "block:2:text:0": "Cine PREMIERE 编辑部",
+    "block:3:alt:0": "Disney Plus 新作 – 2026 年 11 月 2 日至 8 日及整个月",
+    "block:4:alt:0": "桌面中央横幅",
+    "block:5:alt:0": "移动设备中央横幅",
+    "block:6:text:0": "你这个月会看到什么？",
+    "block:8:text:0": "Disney Plus 每月多少钱？",
+    "block:9:text:0": "Disney Plus 的订阅有两种套餐。标准版每月 219 比索或每年 1,839 比索，高级版每月 299 比索或每年 2,509 比索。在两种情况下，会员资格允许创建多达 7 个个人资料，并且可以下载内容以离线观看。但视频/音频质量和同时传输的设备数量存在差异。",
+    "block:10:text:0": "你可能还对以下内容感兴趣：",
+    "block:11:text:0": "Disney Plus 2026 年 11 月电视剧新作",
+    "block:12:alt:0": "2026 年墨西哥 Disney Plus 电视剧和电影新作",
+    "block:13:text:0": "《波西·杰克逊与奥林匹斯诸神》第三季（Percy Jackson and the Olympians）（20/11/2026）"
+  },
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "excerpt:0",
+      "source_numbers": [
+        "15",
+        "2026",
+        "9"
+      ],
+      "returned_numbers": [
+        "11",
+        "2",
+        "2026",
+        "8"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:7:text:0",
+      "source_numbers": [
+        "20"
+      ],
+      "returned_numbers": [],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:14:text:0",
+      "source_numbers": [
+        "11",
+        "2026",
+        "3000",
+        "4"
+      ],
+      "returned_numbers": [
+        "11",
+        "2026",
+        "3000000000",
+        "4"
+      ],
+      "truncated": false
+    }
+  ],
+  "error": "ai_numbers_missing:excerpt:0",
+  "retry_policy": "regular",
+  "retry_after": "2026-11-10T10:26:28.924882+00:00"
 }

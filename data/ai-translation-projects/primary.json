@@ -3,62 +3,250 @@
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-11-10T12:33:59.249327+00:00",
+  "started_at": "2026-11-10T12:45:25.993889+00:00",
   "translated": [
-    "live-33594b6d8e11aee682389ba0",
-    "live-a4721db7e7b79d462df37b2c"
+    "live-8468416495cde73855bd3a82",
+    "live-62c1a5d4171e517e39aa502e",
+    "live-05f9a424a3a8794bd31a771e"
   ],
   "failed": [
     {
-      "id": "live-62e979a207a72a6a98fd6266",
-      "reason": "ai_numbers_missing:block:9:text:0",
+      "id": "live-6b95e86225f1e83c19870b8c",
+      "reason": "block_not_chinese",
+      "validation_issues": []
+    },
+    {
+      "id": "live-52307e70ce7aef0a675077a7",
+      "reason": "ai_numbers_missing:block:2:text:0",
       "validation_issues": [
         {
           "reason": "ai_numbers_missing",
-          "key": "block:9:text:0",
+          "key": "block:2:text:0",
           "source_numbers": [
-            "1980",
-            "3.3"
+            "60",
+            "80000000"
           ],
           "returned_numbers": [
+            "60000000",
+            "80000000"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:6:text:0",
+          "source_numbers": [
+            "14700000",
+            "16",
+            "17",
+            "1914",
+            "1915",
+            "1916",
+            "1997",
             "20",
-            "3300000",
-            "80"
+            "2025",
+            "21",
+            "236400000",
+            "30900000",
+            "60",
+            "80000000"
+          ],
+          "returned_numbers": [
+            "11",
+            "14700000",
+            "16",
+            "17",
+            "1914",
+            "1915",
+            "1916",
+            "1997",
+            "20",
+            "2025",
+            "21",
+            "236400000",
+            "30900000",
+            "60000000",
+            "80000000"
           ],
           "truncated": false
         }
       ]
     },
     {
-      "id": "live-0b0faaf39fff8ea125517874",
-      "reason": "ai_numbers_missing:block:8:text:0",
+      "id": "live-a0316ea213deb1858cb911de",
+      "reason": "ai_paragraph_not_translated:block:46:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:46:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:48:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:50:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:52:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:54:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:56:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:58:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:60:text:0"
+        }
+      ]
+    },
+    {
+      "id": "live-a446c44efc0ae05a31d1173d",
+      "reason": "ai_paragraph_not_translated:block:289:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:289:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:443:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:499:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:537:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:708:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:710:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:864:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:971:text:0"
+        }
+      ]
+    },
+    {
+      "id": "live-6f7b3ba55dfc0a11ca9113f3",
+      "reason": "ai_numbers_missing:block:14:text:0",
       "validation_issues": [
         {
           "reason": "ai_numbers_missing",
-          "key": "block:8:text:0",
+          "key": "block:14:text:0",
           "source_numbers": [
-            "2"
+            "11",
+            "2026",
+            "3000",
+            "4"
           ],
-          "returned_numbers": [],
+          "returned_numbers": [
+            "11",
+            "2026",
+            "3000000000",
+            "4"
+          ],
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "id": "live-51cfe118d25990e4a4c8d711",
+      "reason": "ai_numbers_missing:title:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "title:0",
+          "source_numbers": [
+            "2026",
+            "4"
+          ],
+          "returned_numbers": [
+            "2026"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:3:text:0",
+          "source_numbers": [
+            "1",
+            "2026"
+          ],
+          "returned_numbers": [
+            "2026"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:4:text:0",
+          "source_numbers": [
+            "2",
+            "2026"
+          ],
+          "returned_numbers": [
+            "2026"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:5:text:0",
+          "source_numbers": [
+            "2026",
+            "3"
+          ],
+          "returned_numbers": [
+            "2026"
+          ],
           "truncated": false
         }
       ]
     }
   ],
-  "deferred": [],
-  "resumed": [
+  "deferred": [
+    "live-430ff66871a32c4620dc0dcf",
+    "live-8a15f3275e8b65f426d8abed",
     "live-62e979a207a72a6a98fd6266",
-    "live-0b0faaf39fff8ea125517874",
-    "live-33594b6d8e11aee682389ba0",
-    "live-a4721db7e7b79d462df37b2c",
-    "live-ee482fa2d66fc5faf589af9b"
+    "live-05760bd055149557329447d7",
+    "live-d2c3954f930f342308c39427",
+    "live-0b0faaf39fff8ea125517874"
+  ],
+  "resumed": [
+    "live-52307e70ce7aef0a675077a7",
+    "live-a446c44efc0ae05a31d1173d",
+    "live-6f7b3ba55dfc0a11ca9113f3",
+    "live-51cfe118d25990e4a4c8d711",
+    "live-c4f7e9a30a862b0ff772410e"
   ],
   "stale": [],
-  "requests": 7,
-  "input_tokens": 16728,
-  "output_tokens": 1115,
+  "requests": 13,
+  "input_tokens": 89630,
+  "output_tokens": 12246,
   "service_retry_policy": "bounded-exponential-v1",
-  "inline_service_retries": 2,
+  "inline_service_retries": 1,
   "service_failures": [
     {
       "policy": "bounded-exponential-v1",
@@ -66,8 +254,8 @@
       "delay_seconds": 72,
       "server_retry_seconds": 0,
       "error": "ai_http_503",
-      "failed_at": "2026-11-10T12:35:11.162448+00:00",
-      "retry_after": "2026-11-10T12:36:23.162448+00:00",
+      "failed_at": "2026-11-10T12:47:20.812343+00:00",
+      "retry_after": "2026-11-10T12:48:32.812343+00:00",
       "provider_error": {
         "http_status": 503,
         "category": "capacity_unavailable",
@@ -78,28 +266,12 @@
     },
     {
       "policy": "bounded-exponential-v1",
-      "consecutive_failures": 2,
-      "delay_seconds": 126,
+      "consecutive_failures": 1,
+      "delay_seconds": 72,
       "server_retry_seconds": 0,
       "error": "ai_http_503",
-      "failed_at": "2026-11-10T12:36:41.092055+00:00",
-      "retry_after": "2026-11-10T12:38:47.092055+00:00",
-      "provider_error": {
-        "http_status": 503,
-        "category": "capacity_unavailable",
-        "api_status": "UNAVAILABLE",
-        "message_evidence": "high demand"
-      },
-      "inline_retry": true
-    },
-    {
-      "policy": "bounded-exponential-v1",
-      "consecutive_failures": 3,
-      "delay_seconds": 253,
-      "server_retry_seconds": 0,
-      "error": "ai_http_503",
-      "failed_at": "2026-11-10T12:39:04.503762+00:00",
-      "retry_after": "2026-11-10T12:43:17.503762+00:00",
+      "failed_at": "2026-11-10T12:50:48.135185+00:00",
+      "retry_after": "2026-11-10T12:52:00.135185+00:00",
       "provider_error": {
         "http_status": 503,
         "category": "capacity_unavailable",
@@ -109,7 +281,7 @@
       "inline_retry": false
     }
   ],
-  "pending_before": 194,
+  "pending_before": 315,
   "error_detail": {
     "http_status": 503,
     "category": "capacity_unavailable",
@@ -117,21 +289,21 @@
     "message_evidence": "high demand"
   },
   "error": "ai_http_503",
-  "retry_after": "2026-11-10T12:43:17.503762+00:00",
-  "pending_after": 192,
-  "finished_at": "2026-11-10T12:39:05.922869+00:00",
-  "seconds": 306.67,
-  "requests_today": 7,
+  "retry_after": "2026-11-10T12:52:00.135185+00:00",
+  "pending_after": 312,
+  "finished_at": "2026-11-10T12:50:48.145646+00:00",
+  "seconds": 322.15,
+  "requests_today": 20,
   "daily_request_limit": 500,
-  "unknown_usage_requests_today": 3,
+  "unknown_usage_requests_today": 5,
   "service_retry": {
     "policy": "bounded-exponential-v1",
-    "consecutive_failures": 3,
-    "delay_seconds": 253,
+    "consecutive_failures": 1,
+    "delay_seconds": 72,
     "server_retry_seconds": 0,
     "error": "ai_http_503",
-    "failed_at": "2026-11-10T12:39:04.503762+00:00",
-    "retry_after": "2026-11-10T12:43:17.503762+00:00",
+    "failed_at": "2026-11-10T12:50:48.135185+00:00",
+    "retry_after": "2026-11-10T12:52:00.135185+00:00",
     "provider_error": {
       "http_status": 503,
       "category": "capacity_unavailable",

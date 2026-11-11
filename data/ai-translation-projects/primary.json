@@ -3,14 +3,16 @@
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-11-10T20:53:10.041698+00:00",
+  "started_at": "2026-11-11T00:36:33.151766+00:00",
   "translated": [],
   "failed": [],
   "deferred": [
-    "live-a0316ea213deb1858cb911de",
+    "live-6f7b3ba55dfc0a11ca9113f3",
     "live-430ff66871a32c4620dc0dcf",
-    "live-62e979a207a72a6a98fd6266",
-    "live-4b231ebbfd3d7c4ffc9c1dce"
+    "live-8a15f3275e8b65f426d8abed",
+    "live-c4f7e9a30a862b0ff772410e",
+    "live-ee482fa2d66fc5faf589af9b",
+    "live-0b0faaf39fff8ea125517874"
   ],
   "resumed": [],
   "stale": [],
@@ -22,12 +24,12 @@
   "service_failures": [
     {
       "policy": "bounded-exponential-v1",
-      "consecutive_failures": 4,
-      "delay_seconds": 490,
+      "consecutive_failures": 5,
+      "delay_seconds": 975,
       "server_retry_seconds": 0,
       "error": "ai_http_503",
-      "failed_at": "2026-11-10T20:53:17.065011+00:00",
-      "retry_after": "2026-11-10T21:01:27.065011+00:00",
+      "failed_at": "2026-11-11T00:36:44.461303+00:00",
+      "retry_after": "2026-11-11T00:52:59.461303+00:00",
       "provider_error": {
         "http_status": 503,
         "category": "capacity_unavailable",
@@ -37,7 +39,7 @@
       "inline_retry": false
     }
   ],
-  "pending_before": 338,
+  "pending_before": 336,
   "error_detail": {
     "http_status": 503,
     "category": "capacity_unavailable",
@@ -45,21 +47,21 @@
     "message_evidence": "high demand"
   },
   "error": "ai_http_503",
-  "retry_after": "2026-11-10T21:01:27.065011+00:00",
-  "pending_after": 338,
-  "finished_at": "2026-11-10T20:53:17.077193+00:00",
-  "seconds": 7.04,
-  "requests_today": 23,
+  "retry_after": "2026-11-11T00:52:59.461303+00:00",
+  "pending_after": 336,
+  "finished_at": "2026-11-11T00:36:44.473497+00:00",
+  "seconds": 11.32,
+  "requests_today": 24,
   "daily_request_limit": 500,
-  "unknown_usage_requests_today": 8,
+  "unknown_usage_requests_today": 9,
   "service_retry": {
     "policy": "bounded-exponential-v1",
-    "consecutive_failures": 4,
-    "delay_seconds": 490,
+    "consecutive_failures": 5,
+    "delay_seconds": 975,
     "server_retry_seconds": 0,
     "error": "ai_http_503",
-    "failed_at": "2026-11-10T20:53:17.065011+00:00",
-    "retry_after": "2026-11-10T21:01:27.065011+00:00",
+    "failed_at": "2026-11-11T00:36:44.461303+00:00",
+    "retry_after": "2026-11-11T00:52:59.461303+00:00",
     "provider_error": {
       "http_status": 503,
       "category": "capacity_unavailable",

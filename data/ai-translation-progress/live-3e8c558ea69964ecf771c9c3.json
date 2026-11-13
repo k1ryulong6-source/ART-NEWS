@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "id": "live-3e8c558ea69964ecf771c9c3",
+  "input_hash": "f964bd40cfcfde7406b2e9428a71089224a06ac08f3af277d5719032d62e0783",
+  "source_hash": "3ca9f06e130aa83418dd9006d2ed4879ea079f550680109066f9af3c848ad4b2",
+  "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
+  "outputs": {
+    "title:0": "佳士得创下有史以来最高钟表总成交额，宝格丽粉钻以1400万美元成交",
+    "excerpt:0": "佳士得正在日内瓦举办其奢侈品周，尽管该行尚未公布最终总额，但早期回报看起来非常可观。",
+    "block:0:text:0": "奢侈品市场继续成为各大拍卖行主要的增长领域。佳士得正在日内瓦举办其奢侈品拍卖周，这也是其规模最大的珠宝和钟表专场活动，尽管该行尚未公布本周的最终总额，但早期的回报看来颇具前景。"
+  },
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:1:text:0",
+      "source_numbers": [
+        "100",
+        "179",
+        "2025",
+        "218",
+        "27000000",
+        "58700000",
+        "99"
+      ],
+      "returned_numbers": [
+        "100",
+        "11",
+        "179",
+        "2025",
+        "218",
+        "270000",
+        "587000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:2:text:0",
+      "source_numbers": [
+        "2000000",
+        "2200000",
+        "2400000",
+        "2500000",
+        "2600000",
+        "3100000",
+        "6700000",
+        "800000",
+        "8200000",
+        "976000"
+      ],
+      "returned_numbers": [
+        "2000000",
+        "2200000",
+        "2400000",
+        "2500000",
+        "2600000",
+        "3100000",
+        "67000",
+        "800000",
+        "8200000",
+        "976000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:3:text:0",
+      "source_numbers": [
+        "107",
+        "108",
+        "111",
+        "112",
+        "12000000",
+        "14800000",
+        "18000000",
+        "2025",
+        "24",
+        "25600000",
+        "29",
+        "34900000",
+        "49400000",
+        "49700000",
+        "75000000"
+      ],
+      "returned_numbers": [
+        "107",
+        "108",
+        "111",
+        "112",
+        "12000000",
+        "148000",
+        "18000000",
+        "2025",
+        "24",
+        "256000",
+        "29",
+        "349000",
+        "494000",
+        "497000",
+        "750000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:4:text:0",
+      "source_numbers": [
+        "15",
+        "2021",
+        "2026",
+        "4500000000",
+        "539000000"
+      ],
+      "returned_numbers": [
+        "15",
+        "2021",
+        "2026",
+        "450000000",
+        "539000000",
+        "7"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:5:text:0",
+      "source_numbers": [
+        "2026",
+        "800000000",
+        "850"
+      ],
+      "returned_numbers": [
+        "2026",
+        "8000000",
+        "850"
+      ],
+      "truncated": false
+    }
+  ],
+  "error": "ai_numbers_missing:block:1:text:0",
+  "retry_policy": "regular",
+  "retry_after": "2026-11-13T07:34:57.754546+00:00"
+}

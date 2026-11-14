@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "id": "live-f21cd7259c7b2d303b492850",
+  "input_hash": "ab4de21ff441177723ae5e75e4c46e1ef325a8a64a8c85c7be3d2f9459cb3843",
+  "source_hash": "61b62d239a842ce3942c2a348f6b33a603e014ac103fa98eae03ac7e50817daf",
+  "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
+  "outputs": {
+    "title:0": "不认输",
+    "excerpt:0": "大阪房地产开发商社长山岸忍将其亲身经历的真实事件写成书籍《不认输！东证一部上市企业社长 vs 地检特搜部》……",
+    "block:0:text:0": "剧透！点击阅读正文"
+  },
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:1:text:0",
+      "source_numbers": [
+        "1",
+        "2",
+        "40000",
+        "7",
+        "75",
+        "9"
+      ],
+      "returned_numbers": [
+        "1",
+        "2",
+        "40000",
+        "700000000",
+        "7500000000",
+        "9"
+      ],
+      "truncated": false
+    }
+  ],
+  "error": "ai_numbers_missing:block:1:text:0",
+  "retry_policy": "regular",
+  "retry_after": "2026-11-14T21:13:07.595396+00:00"
+}

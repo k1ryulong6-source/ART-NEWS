@@ -5,33 +5,39 @@
   "translation_provider": "deepseek+gemini",
   "account_mode": "user-authorized-prepaid",
   "pool_mode": "parallel_disjoint_articles",
-  "started_at": "2026-11-14T03:06:37.119344+00:00",
-  "finished_at": "2026-11-14T03:14:51.924579+00:00",
+  "started_at": "2026-11-14T06:23:58.109154+00:00",
+  "finished_at": "2026-11-14T06:32:07.170223+00:00",
   "projects": [
     {
       "status": "configuration_error",
       "provider": "contextual-api:deepseek:deepseek-flash:direct-v1",
       "model": "deepseek-flash",
       "account_mode": "user-authorized-prepaid",
-      "started_at": "2026-11-14T03:06:37.120025+00:00",
+      "started_at": "2026-11-14T06:23:58.110354+00:00",
       "translated": [],
       "failed": [],
       "deferred": [],
       "resumed": [],
       "stale": [],
-      "requests": 0,
+      "requests": 1,
       "input_tokens": 0,
       "output_tokens": 0,
       "service_retry_policy": "bounded-exponential-v1",
       "inline_service_retries": 0,
       "service_failures": [],
-      "retry_after": "2026-11-14T05:37:20.825803+00:00",
+      "pending_before": 351,
+      "error_detail": {
+        "http_status": 402,
+        "category": "insufficient_balance"
+      },
       "error": "ai_http_402",
-      "finished_at": "2026-11-14T03:06:40.381580+00:00",
-      "seconds": 3.26,
-      "requests_today": 3,
+      "retry_after": "2026-11-14T12:24:06.348602+00:00",
+      "pending_after": 351,
+      "finished_at": "2026-11-14T06:24:06.356801+00:00",
+      "seconds": 8.25,
+      "requests_today": 4,
       "daily_request_limit": 300,
-      "unknown_usage_requests_today": 3,
+      "unknown_usage_requests_today": 4,
       "id": "deepseek",
       "configured": true
     },
@@ -40,90 +46,128 @@
       "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
       "model": "gemini-3.5-flash-lite",
       "account_mode": "free-project-only",
-      "started_at": "2026-11-14T03:06:37.120530+00:00",
+      "started_at": "2026-11-14T06:23:58.110231+00:00",
       "translated": [
-        "live-410e905f2cf6999e005376bd",
-        "live-5b59b4c1d10dd6d7881bb56b",
-        "live-9c78a9a3cf0ce75fd64bc9db",
-        "live-066885a9c03521cd33b5a04b",
-        "live-1c60f31ec435a603fcc9a337"
+        "live-140be4aee58384d5aaf994ab",
+        "live-46aa28197297a174cf561524",
+        "live-fad66b1aead7556ee532ae26",
+        "live-ded4cfd2f7448776290ccdea",
+        "live-d2bb4d4b140e3414a3cdd834",
+        "live-2d41c3bb037a6cc1ee6c6005"
       ],
       "failed": [
         {
-          "id": "live-fc1dd9eeb049386a8c2dea65",
-          "reason": "ai_numbers_missing:block:2:text:0",
+          "id": "live-29e3497647f588c17c436356",
+          "reason": "ai_numbers_missing:block:23:text:0",
           "validation_issues": [
             {
               "reason": "ai_numbers_missing",
-              "key": "block:2:text:0",
+              "key": "block:23:text:0",
               "source_numbers": [
-                "2"
+                "1975",
+                "1981",
+                "83"
               ],
               "returned_numbers": [
-                "2200000"
+                "1981",
+                "1985",
+                "83"
               ],
               "truncated": false
             }
           ]
         },
         {
-          "id": "live-ce23ae74631c1a5a869204ff",
-          "reason": "ai_numbers_missing:block:9:text:0",
+          "id": "live-6f7b3ba55dfc0a11ca9113f3",
+          "reason": "ai_numbers_missing:block:14:text:0",
           "validation_issues": [
             {
               "reason": "ai_numbers_missing",
-              "key": "block:9:text:0",
+              "key": "block:14:text:0",
               "source_numbers": [
-                "1972",
-                "600"
+                "11",
+                "2026",
+                "3000",
+                "4"
               ],
               "returned_numbers": [
-                "1972",
-                "6000000"
+                "11",
+                "2026",
+                "30000000",
+                "4"
               ],
               "truncated": false
             }
           ]
         },
         {
-          "id": "live-62e979a207a72a6a98fd6266",
-          "reason": "ai_numbers_missing:block:9:text:0",
+          "id": "live-d2c3954f930f342308c39427",
+          "reason": "ai_numbers_missing:block:6:text:0",
           "validation_issues": [
             {
               "reason": "ai_numbers_missing",
-              "key": "block:9:text:0",
+              "key": "block:6:text:0",
               "source_numbers": [
-                "1980",
-                "3.3"
+                "1.98",
+                "10",
+                "1950",
+                "2",
+                "2.6",
+                "2011",
+                "2018",
+                "7.8"
               ],
               "returned_numbers": [
-                "19",
-                "3300000",
+                "1.98",
+                "1950",
+                "2",
+                "2.6",
+                "2011",
+                "2018",
+                "7.8"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:11:text:0",
+              "source_numbers": [
+                "1",
+                "15"
+              ],
+              "returned_numbers": [
+                "15"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:13:text:0",
+              "source_numbers": [
+                "0",
+                "2",
+                "80"
+              ],
+              "returned_numbers": [
+                "2",
                 "80"
               ],
               "truncated": false
-            }
-          ]
-        },
-        {
-          "id": "live-b5b16277ccb4d4a2fe938f57",
-          "reason": "ai_paragraph_not_translated:block:55:text:0",
-          "validation_issues": [
+            },
             {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:55:text:0"
-            }
-          ]
-        },
-        {
-          "id": "live-b4efd25ed33d0ef036197fbc",
-          "reason": "ai_numbers_missing:block:16:text:0",
-          "validation_issues": [
+              "reason": "ai_numbers_missing",
+              "key": "block:14:text:0",
+              "source_numbers": [
+                "2"
+              ],
+              "returned_numbers": [],
+              "truncated": false
+            },
             {
               "reason": "ai_numbers_missing",
               "key": "block:16:text:0",
               "source_numbers": [
-                "1"
+                "3"
               ],
               "returned_numbers": [],
               "truncated": false
@@ -131,149 +175,284 @@
           ]
         },
         {
-          "id": "live-546728c67a79001837bb8134",
-          "reason": "ai_numbers_missing:block:2:text:0",
-          "validation_issues": [
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:2:text:0",
-              "source_numbers": [
-                "12",
-                "18",
-                "34",
-                "36"
-              ],
-              "returned_numbers": [
-                "12",
-                "18",
-                "34",
-                "36000000"
-              ],
-              "truncated": false
-            },
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:22:text:0",
-              "source_numbers": [
-                "10",
-                "25",
-                "50"
-              ],
-              "returned_numbers": [
-                "10000000",
-                "25",
-                "50"
-              ],
-              "truncated": false
-            }
-          ]
-        },
-        {
-          "id": "live-a0c8c09fac80ffc878ff13a1",
-          "reason": "ai_paragraph_not_translated:block:1:text:0",
-          "validation_issues": [
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:1:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:2:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:6:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:8:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:9:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:10:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:11:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:15:text:0"
-            }
-          ]
-        },
-        {
-          "id": "live-0c4a06710d11f3bf3cabbc02",
+          "id": "live-51cfe118d25990e4a4c8d711",
           "reason": "ai_numbers_missing:title:0",
           "validation_issues": [
             {
               "reason": "ai_numbers_missing",
               "key": "title:0",
               "source_numbers": [
-                "30"
+                "2026",
+                "4"
               ],
               "returned_numbers": [
-                "30000"
+                "2026"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:3:text:0",
+              "source_numbers": [
+                "1",
+                "2026"
+              ],
+              "returned_numbers": [
+                "2026"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:4:text:0",
+              "source_numbers": [
+                "2",
+                "2026"
+              ],
+              "returned_numbers": [
+                "2026"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:5:text:0",
+              "source_numbers": [
+                "2026",
+                "3"
+              ],
+              "returned_numbers": [
+                "2026"
               ],
               "truncated": false
             }
           ]
         },
         {
-          "id": "live-8dd7dfa740e746b61dbde841",
-          "reason": "ai_paragraph_not_translated:block:18:text:0",
-          "validation_issues": [
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:18:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:19:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:20:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:21:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:23:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:25:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:26:text:0"
-            },
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:27:text:0"
-            }
-          ]
-        },
-        {
-          "id": "live-f14441b1cf0d6a04a51ffaa3",
+          "id": "live-c4f7e9a30a862b0ff772410e",
           "reason": "ai_numbers_missing:excerpt:0",
           "validation_issues": [
             {
               "reason": "ai_numbers_missing",
               "key": "excerpt:0",
               "source_numbers": [
-                "11",
-                "250"
+                "133000000000",
+                "20",
+                "2033",
+                "39"
               ],
               "returned_numbers": [
-                "11"
+                "133000000000",
+                "200000",
+                "2033",
+                "39"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:0:text:0",
+              "source_numbers": [
+                "133000000000",
+                "20",
+                "2033",
+                "39"
+              ],
+              "returned_numbers": [
+                "13300000000",
+                "200000",
+                "2033",
+                "39"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:13:text:0",
+              "source_numbers": [
+                "1670000000",
+                "2027",
+                "250000000000",
+                "40700000000",
+                "6.1"
+              ],
+              "returned_numbers": [
+                "1670000000",
+                "2027",
+                "250000000000",
+                "4070000000",
+                "61000"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-17e7dbc64f658e7fe7877351",
+          "reason": "ai_numbers_missing:block:10:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:10:text:0",
+              "source_numbers": [
+                "0",
+                "1",
+                "1958",
+                "2003",
+                "2008",
+                "9"
+              ],
+              "returned_numbers": [
+                "1958",
+                "2003",
+                "2008",
+                "9"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-241fbef663b9dddc14f8d9f5",
+          "reason": "ai_paragraph_not_translated:block:14:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:14:text:0"
+            }
+          ]
+        },
+        {
+          "id": "live-a446c44efc0ae05a31d1173d",
+          "reason": "ai_paragraph_not_translated:block:289:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:289:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:443:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:499:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:537:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:708:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:710:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:864:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:971:text:0"
+            }
+          ]
+        },
+        {
+          "id": "live-5980f4877e8edcc5f8ef2105",
+          "reason": "ai_numbers_missing:block:26:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:26:text:0",
+              "source_numbers": [
+                "1",
+                "25"
+              ],
+              "returned_numbers": [
+                "25"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:66:text:0",
+              "source_numbers": [
+                "1",
+                "22",
+                "30"
+              ],
+              "returned_numbers": [
+                "22",
+                "30"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-da286480da01691335271550",
+          "reason": "ai_paragraph_not_translated:block:93:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:93:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:95:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:97:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:99:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:101:text:0"
+            }
+          ]
+        },
+        {
+          "id": "live-f0fe2ed67fc7390368932d19",
+          "reason": "ai_numbers_missing:block:6:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:6:text:0",
+              "source_numbers": [
+                "2",
+                "2002",
+                "39"
+              ],
+              "returned_numbers": [
+                "2",
+                "2002",
+                "3",
+                "39000000"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-602a26793f3bf1a7687a6c20",
+          "reason": "ai_numbers_missing:excerpt:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "excerpt:0",
+              "source_numbers": [
+                "13",
+                "46"
+              ],
+              "returned_numbers": [
+                "46"
               ],
               "truncated": false
             },
@@ -282,415 +461,12 @@
               "key": "block:0:text:0",
               "source_numbers": [
                 "10",
-                "11",
-                "2026",
-                "22"
-              ],
-              "returned_numbers": [
-                "100000",
-                "11",
-                "2026",
-                "220000"
-              ],
-              "truncated": false
-            },
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:11:text:0",
-              "source_numbers": [
-                "100",
-                "75"
-              ],
-              "returned_numbers": [
-                "1000000",
-                "750000"
-              ],
-              "truncated": false
-            }
-          ]
-        },
-        {
-          "id": "live-e6de386d66bb2d472dd35408",
-          "reason": "ai_numbers_missing:block:5:text:0",
-          "validation_issues": [
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:5:text:0",
-              "source_numbers": [
-                "150",
-                "1960",
-                "1980",
-                "230",
-                "25",
-                "3",
-                "35",
-                "500",
-                "520",
-                "600"
-              ],
-              "returned_numbers": [
-                "150000",
-                "1960",
-                "1980",
-                "230000",
-                "25",
-                "3000",
-                "35",
-                "5",
-                "500",
-                "520000",
-                "6",
-                "600000"
-              ],
-              "truncated": false
-            }
-          ]
-        },
-        {
-          "id": "live-f0c42b9b5ef2d3df1f0c0d04",
-          "reason": "block_not_chinese",
-          "validation_issues": []
-        },
-        {
-          "id": "live-816b0ab3bee5363c9c1fa74b",
-          "reason": "ai_numbers_missing:block:30:text:0",
-          "validation_issues": [
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:30:text:0",
-              "source_numbers": [
                 "13",
-                "1980"
-              ],
-              "returned_numbers": [
-                "1980"
-              ],
-              "truncated": false
-            },
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:33:text:0",
-              "source_numbers": [
-                "13"
-              ],
-              "returned_numbers": [
-                "400"
-              ],
-              "truncated": false
-            }
-          ]
-        }
-      ],
-      "deferred": [
-        "live-ee3fabeb409214e153b873d8",
-        "live-743dc40b42924b7b54aa6866",
-        "live-6f7b3ba55dfc0a11ca9113f3",
-        "live-77df3d85a9f5763d57479d65",
-        "live-51cfe118d25990e4a4c8d711",
-        "live-52307e70ce7aef0a675077a7",
-        "live-d83aca024a4d02626d9228d1",
-        "live-17e7dbc64f658e7fe7877351",
-        "live-924c93a0f2e87918dbcd7a6d",
-        "live-87e88b04608f507b32b53a59",
-        "live-fc34527bd1f1aed999a01e8e",
-        "live-6edf22f92944f09794547f84",
-        "live-14fdc00be9a2ef7c1cbf2693",
-        "live-4b231ebbfd3d7c4ffc9c1dce",
-        "live-a446c44efc0ae05a31d1173d",
-        "live-bec7ecaa39ce323f0e73eea5",
-        "live-d2c3954f930f342308c39427",
-        "live-1fe6b455809eaaa0f54351a0"
-      ],
-      "resumed": [
-        "live-ce23ae74631c1a5a869204ff",
-        "live-62e979a207a72a6a98fd6266",
-        "live-b5b16277ccb4d4a2fe938f57",
-        "live-b4efd25ed33d0ef036197fbc",
-        "live-546728c67a79001837bb8134",
-        "live-8dd7dfa740e746b61dbde841",
-        "live-e6de386d66bb2d472dd35408"
-      ],
-      "stale": [],
-      "requests": 22,
-      "input_tokens": 92936,
-      "output_tokens": 23649,
-      "service_retry_policy": "bounded-exponential-v1",
-      "inline_service_retries": 1,
-      "service_failures": [
-        {
-          "policy": "bounded-exponential-v1",
-          "consecutive_failures": 1,
-          "delay_seconds": 72,
-          "server_retry_seconds": 0,
-          "error": "ai_http_503",
-          "failed_at": "2026-11-14T03:10:03.004533+00:00",
-          "retry_after": "2026-11-14T03:11:15.004533+00:00",
-          "provider_error": {
-            "http_status": 503,
-            "category": "capacity_unavailable",
-            "api_status": "UNAVAILABLE",
-            "message_evidence": "high demand"
-          },
-          "inline_retry": true
-        }
-      ],
-      "pending_before": 505,
-      "pending_after": 500,
-      "finished_at": "2026-11-14T03:14:51.906283+00:00",
-      "seconds": 494.79,
-      "requests_today": 100,
-      "daily_request_limit": 500,
-      "unknown_usage_requests_today": 14,
-      "id": "primary",
-      "configured": true
-    },
-    {
-      "status": "service_wait",
-      "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
-      "model": "gemini-3.5-flash-lite",
-      "account_mode": "free-project-only",
-      "started_at": "2026-11-14T03:06:37.121883+00:00",
-      "translated": [
-        "live-0016fa1b1bf8a710cc85f1ed",
-        "live-22bd11649f9b3ce355918d22",
-        "live-59247a22f7d33206d80bd488"
-      ],
-      "failed": [
-        {
-          "id": "live-1045d6f5674d5a6f2ac52ab4",
-          "reason": "ai_numbers_missing:block:9:text:0",
-          "validation_issues": [
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:9:text:0",
-              "source_numbers": [
-                "10000000",
-                "16",
-                "1996",
-                "400"
-              ],
-              "returned_numbers": [
-                "10000000",
-                "1600000000",
-                "1996",
-                "400"
-              ],
-              "truncated": false
-            }
-          ]
-        },
-        {
-          "id": "live-1fec11da6f0f85f24cea7132",
-          "reason": "ai_numbers_missing:block:30:text:0",
-          "validation_issues": [
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:30:text:0",
-              "source_numbers": [
-                "1964",
-                "1975",
-                "1981",
-                "79",
-                "86"
-              ],
-              "returned_numbers": [
-                "1964",
-                "1975",
-                "1979",
-                "1981",
-                "1986"
-              ],
-              "truncated": false
-            }
-          ]
-        },
-        {
-          "id": "live-e8e5a8346bfa41e43756e73c",
-          "reason": "ai_numbers_missing:block:22:text:0",
-          "validation_issues": [
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:22:text:0",
-              "source_numbers": [
-                "1987",
-                "1993",
-                "94"
-              ],
-              "returned_numbers": [
-                "1987",
-                "1993",
-                "1994"
-              ],
-              "truncated": false
-            }
-          ]
-        },
-        {
-          "id": "live-05760bd055149557329447d7",
-          "reason": "ai_numbers_missing:block:5:text:0",
-          "validation_issues": [
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:5:text:0",
-              "source_numbers": [
-                "13",
-                "35",
-                "7"
-              ],
-              "returned_numbers": [
-                "13000000",
-                "35",
-                "7"
-              ],
-              "truncated": false
-            }
-          ]
-        },
-        {
-          "id": "live-bc475e6bcb80f011083ed204",
-          "reason": "ai_paragraph_not_translated:block:7:text:1",
-          "validation_issues": [
-            {
-              "reason": "ai_paragraph_not_translated",
-              "key": "block:7:text:1"
-            }
-          ]
-        },
-        {
-          "id": "live-2160e7cd0781d351dac76460",
-          "reason": "ai_numbers_missing:block:18:text:0",
-          "validation_issues": [
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:18:text:0",
-              "source_numbers": [
-                "0",
-                "1989",
-                "1990",
-                "1992"
-              ],
-              "returned_numbers": [
-                "1989",
-                "1990",
-                "1992"
-              ],
-              "truncated": false
-            }
-          ]
-        },
-        {
-          "id": "live-4e99d9295733c05084c2ed55",
-          "reason": "ai_numbers_missing:block:34:text:0",
-          "validation_issues": [
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:34:text:0",
-              "source_numbers": [
-                "0",
-                "10",
-                "2027",
-                "2028",
-                "3",
-                "5"
+                "46"
               ],
               "returned_numbers": [
                 "10",
-                "2027",
-                "2028",
-                "3",
-                "5"
-              ],
-              "truncated": false
-            }
-          ]
-        },
-        {
-          "id": "live-f0d0fe3175286a2ad93c86d8",
-          "reason": "ai_numbers_missing:block:8:text:0",
-          "validation_issues": [
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:8:text:0",
-              "source_numbers": [
-                "0",
-                "0.1",
-                "1",
-                "10",
-                "11",
-                "12",
-                "120",
-                "14",
-                "15",
-                "16",
-                "18",
-                "1862",
-                "19",
-                "2",
-                "20",
-                "2026",
-                "2600",
-                "3",
-                "30",
-                "3670",
-                "40",
-                "50",
-                "90"
-              ],
-              "returned_numbers": [
-                "0",
-                "0.1",
-                "10",
-                "11",
-                "12",
-                "120",
-                "14",
-                "15",
-                "16",
-                "18",
-                "1862",
-                "19",
-                "2",
-                "20",
-                "2026",
-                "2600",
-                "30",
-                "3670",
-                "40",
-                "50",
-                "90"
-              ],
-              "truncated": false
-            }
-          ]
-        },
-        {
-          "id": "live-8a15f3275e8b65f426d8abed",
-          "reason": "ai_numbers_missing:excerpt:0",
-          "validation_issues": [
-            {
-              "reason": "ai_numbers_missing",
-              "key": "excerpt:0",
-              "source_numbers": [
-                "118.5"
-              ],
-              "returned_numbers": [
-                "118500000"
-              ],
-              "truncated": false
-            },
-            {
-              "reason": "ai_numbers_missing",
-              "key": "block:3:text:0",
-              "source_numbers": [
-                "1.17",
-                "30",
-                "7"
-              ],
-              "returned_numbers": [
-                "10",
-                "117000000",
-                "30",
-                "7"
+                "46"
               ],
               "truncated": false
             },
@@ -698,54 +474,19 @@
               "reason": "ai_numbers_missing",
               "key": "block:7:text:0",
               "source_numbers": [
-                "102.7",
-                "115",
-                "118.5",
-                "132.5",
-                "142.4",
-                "2.3",
-                "2026",
-                "24.2",
-                "25.9",
-                "38.6",
-                "39.3",
-                "45.2",
-                "49.4",
-                "58.9",
-                "59.3",
-                "668.6",
-                "67.6",
-                "68.2",
-                "70.2",
-                "766",
-                "81.1",
-                "88.2",
-                "93.2"
+                "13",
+                "2",
+                "2016",
+                "2017",
+                "2020",
+                "2023"
               ],
               "returned_numbers": [
-                "102700000",
-                "115000000",
-                "118500000",
-                "132500000",
-                "142400000",
-                "2026",
-                "2300000000",
-                "24200000",
-                "25900000",
-                "38600000",
-                "39300000",
-                "45200000",
-                "49400000",
-                "58900000",
-                "59300000",
-                "668600000",
-                "67600000",
-                "68200000",
-                "70200000",
-                "766000000",
-                "81100000",
-                "88200000",
-                "93200000"
+                "2",
+                "2016",
+                "2017",
+                "2020",
+                "2023"
               ],
               "truncated": false
             },
@@ -753,35 +494,129 @@
               "reason": "ai_numbers_missing",
               "key": "block:9:text:0",
               "source_numbers": [
-                "3",
-                "3.37",
-                "5"
+                "13"
+              ],
+              "returned_numbers": [],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:10:text:0",
+              "source_numbers": [
+                "13",
+                "1981",
+                "1982",
+                "2",
+                "2009",
+                "2027",
+                "24"
               ],
               "returned_numbers": [
-                "300000000",
-                "337000000",
-                "500000000"
+                "10",
+                "1981",
+                "1982",
+                "2009",
+                "2027",
+                "24"
               ],
               "truncated": false
             }
           ]
         },
         {
-          "id": "live-b9b2ee89209694fc4f2dfe7a",
-          "reason": "ai_numbers_missing:block:12:text:0",
+          "id": "live-39c21622f467b6ff4f441da2",
+          "reason": "ai_numbers_missing:block:14:caption:0",
           "validation_issues": [
             {
               "reason": "ai_numbers_missing",
-              "key": "block:12:text:0",
+              "key": "block:14:caption:0",
               "source_numbers": [
-                "5",
-                "600000",
-                "7.5"
+                "0",
+                "3"
               ],
               "returned_numbers": [
-                "5000000",
-                "600000",
-                "7.5"
+                "3"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-ee3fabeb409214e153b873d8",
+          "reason": "ai_numbers_missing:title:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "title:0",
+              "source_numbers": [
+                "2"
+              ],
+              "returned_numbers": [
+                "2000"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:1:text:0",
+              "source_numbers": [
+                "2"
+              ],
+              "returned_numbers": [
+                "2000"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:3:alt:0",
+              "source_numbers": [
+                "2"
+              ],
+              "returned_numbers": [
+                "2000"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-084578a6c52df1f89d900926",
+          "reason": "ai_numbers_missing:block:1:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:1:text:0",
+              "source_numbers": [
+                "100",
+                "1200",
+                "14",
+                "16",
+                "18.9",
+                "2025",
+                "2026",
+                "24",
+                "26",
+                "47",
+                "5",
+                "9",
+                "90",
+                "91"
+              ],
+              "returned_numbers": [
+                "100000000",
+                "1200",
+                "14",
+                "16.9",
+                "18",
+                "2025",
+                "2026",
+                "24.5",
+                "26",
+                "47500000",
+                "9",
+                "90",
+                "91900000"
               ],
               "truncated": false
             }
@@ -789,237 +624,724 @@
         }
       ],
       "deferred": [
-        "live-6ba3f69f6024980930aa8ba4",
-        "live-69f618fef0ae853e44784cb2",
-        "live-8982eebedc506b1197d00f6b",
-        "live-c4f7e9a30a862b0ff772410e",
-        "live-241fbef663b9dddc14f8d9f5",
-        "live-21e53b661093bf053c62814d",
-        "live-115c065386b51e945d56d5d6",
-        "live-5980f4877e8edcc5f8ef2105",
-        "live-91d2d80f25729d14deb137bd",
-        "live-05cb6eadaef17d128d266571",
-        "live-f0fe2ed67fc7390368932d19",
-        "live-76c8ed316d62d29f25a90d15"
+        "live-a0c8c09fac80ffc878ff13a1",
+        "live-f14441b1cf0d6a04a51ffaa3",
+        "live-b4efd25ed33d0ef036197fbc",
+        "live-1045d6f5674d5a6f2ac52ab4",
+        "live-2160e7cd0781d351dac76460",
+        "live-e6de386d66bb2d472dd35408",
+        "live-b5b16277ccb4d4a2fe938f57"
       ],
       "resumed": [
-        "live-1045d6f5674d5a6f2ac52ab4",
-        "live-1fec11da6f0f85f24cea7132",
-        "live-e8e5a8346bfa41e43756e73c",
-        "live-05760bd055149557329447d7",
-        "live-bc475e6bcb80f011083ed204",
-        "live-2160e7cd0781d351dac76460",
-        "live-0016fa1b1bf8a710cc85f1ed",
-        "live-4e99d9295733c05084c2ed55",
-        "live-8a15f3275e8b65f426d8abed",
-        "live-b9b2ee89209694fc4f2dfe7a"
+        "live-6f7b3ba55dfc0a11ca9113f3",
+        "live-d2c3954f930f342308c39427",
+        "live-51cfe118d25990e4a4c8d711",
+        "live-c4f7e9a30a862b0ff772410e",
+        "live-17e7dbc64f658e7fe7877351",
+        "live-241fbef663b9dddc14f8d9f5",
+        "live-a446c44efc0ae05a31d1173d",
+        "live-5980f4877e8edcc5f8ef2105",
+        "live-f0fe2ed67fc7390368932d19",
+        "live-ee3fabeb409214e153b873d8",
+        "live-084578a6c52df1f89d900926"
       ],
       "stale": [],
-      "requests": 16,
-      "input_tokens": 53681,
-      "output_tokens": 9113,
+      "requests": 26,
+      "input_tokens": 160033,
+      "output_tokens": 24406,
       "service_retry_policy": "bounded-exponential-v1",
-      "inline_service_retries": 1,
-      "service_failures": [
-        {
-          "policy": "bounded-exponential-v1",
-          "consecutive_failures": 1,
-          "delay_seconds": 75,
-          "server_retry_seconds": 0,
-          "error": "ai_http_503",
-          "failed_at": "2026-11-14T03:10:59.253975+00:00",
-          "retry_after": "2026-11-14T03:12:14.253975+00:00",
-          "provider_error": {
-            "http_status": 503,
-            "category": "capacity_unavailable",
-            "api_status": "UNAVAILABLE",
-            "message_evidence": "high demand"
-          },
-          "inline_retry": true
-        },
-        {
-          "policy": "bounded-exponential-v1",
-          "consecutive_failures": 2,
-          "delay_seconds": 122,
-          "server_retry_seconds": 0,
-          "error": "ai_http_503",
-          "failed_at": "2026-11-14T03:12:31.920744+00:00",
-          "retry_after": "2026-11-14T03:14:33.920744+00:00",
-          "provider_error": {
-            "http_status": 503,
-            "category": "capacity_unavailable",
-            "api_status": "UNAVAILABLE",
-            "message_evidence": "high demand"
-          },
-          "inline_retry": false
-        }
-      ],
-      "pending_before": 505,
-      "error_detail": {
-        "http_status": 503,
-        "category": "capacity_unavailable",
-        "api_status": "UNAVAILABLE",
-        "message_evidence": "high demand"
-      },
-      "error": "ai_http_503",
-      "retry_after": "2026-11-14T03:14:33.920744+00:00",
-      "pending_after": 502,
-      "finished_at": "2026-11-14T03:12:31.933237+00:00",
-      "seconds": 354.81,
-      "requests_today": 100,
+      "inline_service_retries": 0,
+      "service_failures": [],
+      "pending_before": 350,
+      "pending_after": 344,
+      "finished_at": "2026-11-14T06:32:07.148524+00:00",
+      "seconds": 489.04,
+      "requests_today": 126,
       "daily_request_limit": 500,
       "unknown_usage_requests_today": 14,
-      "service_retry": {
-        "policy": "bounded-exponential-v1",
-        "consecutive_failures": 2,
-        "delay_seconds": 122,
-        "server_retry_seconds": 0,
-        "error": "ai_http_503",
-        "failed_at": "2026-11-14T03:12:31.920744+00:00",
-        "retry_after": "2026-11-14T03:14:33.920744+00:00",
-        "provider_error": {
-          "http_status": 503,
-          "category": "capacity_unavailable",
-          "api_status": "UNAVAILABLE",
-          "message_evidence": "high demand"
+      "id": "primary",
+      "configured": true
+    },
+    {
+      "status": "run_limit",
+      "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
+      "model": "gemini-3.5-flash-lite",
+      "account_mode": "free-project-only",
+      "started_at": "2026-11-14T06:23:58.110454+00:00",
+      "translated": [
+        "live-b4030f03ae27126c591b4c94",
+        "live-6ba3f69f6024980930aa8ba4",
+        "live-afe15a1cd2b526d230656317",
+        "live-71e9f8c01086ffe8a8c09a6b",
+        "live-f99ff95e3998d0b37a484bd4",
+        "live-3a1d3f35e400c6cdf3b92d17",
+        "live-21288782888be0a090d40dd9"
+      ],
+      "failed": [
+        {
+          "id": "live-1fe6b455809eaaa0f54351a0",
+          "reason": "ai_numbers_missing:block:8:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:8:text:0",
+              "source_numbers": [
+                "2",
+                "30"
+              ],
+              "returned_numbers": [
+                "30"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-52307e70ce7aef0a675077a7",
+          "reason": "ai_numbers_missing:block:2:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:2:text:0",
+              "source_numbers": [
+                "60",
+                "80000000"
+              ],
+              "returned_numbers": [
+                "60000000",
+                "80000000"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:6:text:0",
+              "source_numbers": [
+                "14700000",
+                "16",
+                "17",
+                "1914",
+                "1915",
+                "1916",
+                "1997",
+                "20",
+                "2025",
+                "21",
+                "236400000",
+                "30900000",
+                "60",
+                "80000000"
+              ],
+              "returned_numbers": [
+                "11",
+                "14700000",
+                "16",
+                "17",
+                "1914",
+                "1915",
+                "1916",
+                "1997",
+                "2025",
+                "236400000",
+                "30900000",
+                "60000000",
+                "80000000"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-ee482fa2d66fc5faf589af9b",
+          "reason": "ai_paragraph_not_translated:block:32:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:32:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:35:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:36:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:37:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:38:text:0"
+            },
+            {
+              "reason": "ai_paragraph_not_translated",
+              "key": "block:39:text:0"
+            }
+          ]
+        },
+        {
+          "id": "live-69f618fef0ae853e44784cb2",
+          "reason": "ai_numbers_missing:block:115:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:115:text:0",
+              "source_numbers": [
+                "12.5",
+                "17"
+              ],
+              "returned_numbers": [
+                "12500000",
+                "17"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-77df3d85a9f5763d57479d65",
+          "reason": "ai_numbers_missing:excerpt:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "excerpt:0",
+              "source_numbers": [
+                "23",
+                "915"
+              ],
+              "returned_numbers": [
+                "23",
+                "5",
+                "915000000"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:2:text:0",
+              "source_numbers": [
+                "10",
+                "915"
+              ],
+              "returned_numbers": [
+                "10",
+                "8",
+                "915000000"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-8982eebedc506b1197d00f6b",
+          "reason": "ai_numbers_missing:block:13:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:13:text:0",
+              "source_numbers": [
+                "1943",
+                "3",
+                "660"
+              ],
+              "returned_numbers": [
+                "1943",
+                "300000000",
+                "660"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-d83aca024a4d02626d9228d1",
+          "reason": "ai_numbers_missing:excerpt:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "excerpt:0",
+              "source_numbers": [
+                "1",
+                "1981",
+                "2.3",
+                "2004"
+              ],
+              "returned_numbers": [
+                "1981",
+                "2004",
+                "2300000"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:0:text:0",
+              "source_numbers": [
+                "1",
+                "10",
+                "1981",
+                "2.3",
+                "2004",
+                "2021"
+              ],
+              "returned_numbers": [
+                "10",
+                "1981",
+                "2004",
+                "2021",
+                "2300000"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-4b231ebbfd3d7c4ffc9c1dce",
+          "reason": "ai_numbers_missing:block:1:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:1:text:0",
+              "source_numbers": [
+                "1.8",
+                "11",
+                "1986",
+                "1991",
+                "1995",
+                "2011",
+                "350",
+                "70"
+              ],
+              "returned_numbers": [
+                "11",
+                "1800",
+                "1986",
+                "1991",
+                "1995",
+                "2011",
+                "3",
+                "350",
+                "70000"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-87e88b04608f507b32b53a59",
+          "reason": "ai_numbers_missing:title:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "title:0",
+              "source_numbers": [
+                "2",
+                "2026"
+              ],
+              "returned_numbers": [
+                "2026"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:51:text:0",
+              "source_numbers": [
+                "20261019",
+                "3",
+                "3020093"
+              ],
+              "returned_numbers": [
+                "20261019",
+                "3020093"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-115c065386b51e945d56d5d6",
+          "reason": "ai_numbers_missing:block:0:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:0:text:0",
+              "source_numbers": [
+                "15",
+                "20"
+              ],
+              "returned_numbers": [
+                "15000000",
+                "20"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:1:text:0",
+              "source_numbers": [
+                "1000",
+                "11.2",
+                "15",
+                "2000",
+                "2006",
+                "21.5",
+                "24",
+                "26.5",
+                "855"
+              ],
+              "returned_numbers": [
+                "1000",
+                "11200000",
+                "15000000",
+                "2000",
+                "2006",
+                "21500000",
+                "24",
+                "26500000",
+                "855"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:2:text:0",
+              "source_numbers": [
+                "11",
+                "2023",
+                "24",
+                "4000",
+                "868",
+                "9",
+                "92.8"
+              ],
+              "returned_numbers": [
+                "11",
+                "20",
+                "2023",
+                "24000000",
+                "4000",
+                "868",
+                "9",
+                "92800000"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:9:text:0",
+              "source_numbers": [
+                "20",
+                "51",
+                "69",
+                "82"
+              ],
+              "returned_numbers": [
+                "20000000",
+                "51000000",
+                "69",
+                "82000000"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:10:text:0",
+              "source_numbers": [
+                "17.5",
+                "3065",
+                "60",
+                "8",
+                "9.5"
+              ],
+              "returned_numbers": [
+                "17500000",
+                "3065",
+                "60000000",
+                "8000000",
+                "9500000"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:11:text:0",
+              "source_numbers": [
+                "78.7",
+                "8.4"
+              ],
+              "returned_numbers": [
+                "78700000",
+                "8400000"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:14:text:0",
+              "source_numbers": [
+                "101.6",
+                "20",
+                "2025",
+                "45",
+                "8.2"
+              ],
+              "returned_numbers": [
+                "10160000",
+                "20",
+                "2025",
+                "45",
+                "8200000000"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-49d8e633659137434b13ed07",
+          "reason": "ai_numbers_missing:block:38:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:38:text:0",
+              "source_numbers": [
+                "20",
+                "9.3"
+              ],
+              "returned_numbers": [
+                "11",
+                "20",
+                "30",
+                "9"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:39:text:0",
+              "source_numbers": [
+                "14",
+                "1980",
+                "6",
+                "9"
+              ],
+              "returned_numbers": [
+                "0",
+                "11",
+                "14",
+                "1980",
+                "9"
+              ],
+              "truncated": false
+            },
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:55:text:0",
+              "source_numbers": [
+                "19",
+                "9.32"
+              ],
+              "returned_numbers": [
+                "11",
+                "19",
+                "32",
+                "9"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-05cb6eadaef17d128d266571",
+          "reason": "ai_numbers_missing:block:9:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:9:text:0",
+              "source_numbers": [
+                "150",
+                "1870"
+              ],
+              "returned_numbers": [
+                "150000",
+                "1870"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-baccc44ed5350755828df14a",
+          "reason": "ai_numbers_missing:block:16:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:16:text:0",
+              "source_numbers": [
+                "126400000",
+                "186000000"
+              ],
+              "returned_numbers": [
+                "1.26",
+                "186000000",
+                "2",
+                "40000"
+              ],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-120a52664745a069fa6479f1",
+          "reason": "ai_numbers_missing:title:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "title:0",
+              "source_numbers": [
+                "124"
+              ],
+              "returned_numbers": [],
+              "truncated": false
+            }
+          ]
+        },
+        {
+          "id": "live-7b1cf7beea1c861cfc06e20c",
+          "reason": "ai_numbers_missing:block:19:text:0",
+          "validation_issues": [
+            {
+              "reason": "ai_numbers_missing",
+              "key": "block:19:text:0",
+              "source_numbers": [
+                "12"
+              ],
+              "returned_numbers": [],
+              "truncated": false
+            }
+          ]
         }
-      },
+      ],
+      "deferred": [
+        "live-f0c42b9b5ef2d3df1f0c0d04",
+        "live-816b0ab3bee5363c9c1fa74b",
+        "live-62e979a207a72a6a98fd6266",
+        "live-8dd7dfa740e746b61dbde841",
+        "live-f0d0fe3175286a2ad93c86d8"
+      ],
+      "resumed": [
+        "live-1fe6b455809eaaa0f54351a0",
+        "live-52307e70ce7aef0a675077a7",
+        "live-6ba3f69f6024980930aa8ba4",
+        "live-ee482fa2d66fc5faf589af9b",
+        "live-69f618fef0ae853e44784cb2",
+        "live-77df3d85a9f5763d57479d65",
+        "live-8982eebedc506b1197d00f6b",
+        "live-d83aca024a4d02626d9228d1",
+        "live-4b231ebbfd3d7c4ffc9c1dce",
+        "live-87e88b04608f507b32b53a59",
+        "live-115c065386b51e945d56d5d6",
+        "live-05cb6eadaef17d128d266571",
+        "live-120a52664745a069fa6479f1"
+      ],
+      "stale": [],
+      "requests": 26,
+      "input_tokens": 114959,
+      "output_tokens": 21269,
+      "service_retry_policy": "bounded-exponential-v1",
+      "inline_service_retries": 0,
+      "service_failures": [],
+      "pending_before": 350,
+      "pending_after": 343,
+      "finished_at": "2026-11-14T06:32:02.852489+00:00",
+      "seconds": 484.74,
+      "requests_today": 126,
+      "daily_request_limit": 500,
+      "unknown_usage_requests_today": 14,
       "id": "secondary",
       "configured": true
     }
   ],
-  "pending_before": 1010,
+  "pending_before": 1051,
   "configured_projects": 3,
   "service_retry_policy": "bounded-exponential-v1",
-  "inline_service_retries": 2,
-  "service_failures": [
-    {
-      "policy": "bounded-exponential-v1",
-      "consecutive_failures": 1,
-      "delay_seconds": 72,
-      "server_retry_seconds": 0,
-      "error": "ai_http_503",
-      "failed_at": "2026-11-14T03:10:03.004533+00:00",
-      "retry_after": "2026-11-14T03:11:15.004533+00:00",
-      "provider_error": {
-        "http_status": 503,
-        "category": "capacity_unavailable",
-        "api_status": "UNAVAILABLE",
-        "message_evidence": "high demand"
-      },
-      "inline_retry": true,
-      "project": "primary"
-    },
-    {
-      "policy": "bounded-exponential-v1",
-      "consecutive_failures": 1,
-      "delay_seconds": 75,
-      "server_retry_seconds": 0,
-      "error": "ai_http_503",
-      "failed_at": "2026-11-14T03:10:59.253975+00:00",
-      "retry_after": "2026-11-14T03:12:14.253975+00:00",
-      "provider_error": {
-        "http_status": 503,
-        "category": "capacity_unavailable",
-        "api_status": "UNAVAILABLE",
-        "message_evidence": "high demand"
-      },
-      "inline_retry": true,
-      "project": "secondary"
-    },
-    {
-      "policy": "bounded-exponential-v1",
-      "consecutive_failures": 2,
-      "delay_seconds": 122,
-      "server_retry_seconds": 0,
-      "error": "ai_http_503",
-      "failed_at": "2026-11-14T03:12:31.920744+00:00",
-      "retry_after": "2026-11-14T03:14:33.920744+00:00",
-      "provider_error": {
-        "http_status": 503,
-        "category": "capacity_unavailable",
-        "api_status": "UNAVAILABLE",
-        "message_evidence": "high demand"
-      },
-      "inline_retry": false,
-      "project": "secondary"
-    }
-  ],
+  "inline_service_retries": 0,
+  "service_failures": [],
   "translated": [
-    "live-410e905f2cf6999e005376bd",
-    "live-5b59b4c1d10dd6d7881bb56b",
-    "live-9c78a9a3cf0ce75fd64bc9db",
-    "live-066885a9c03521cd33b5a04b",
-    "live-1c60f31ec435a603fcc9a337",
-    "live-0016fa1b1bf8a710cc85f1ed",
-    "live-22bd11649f9b3ce355918d22",
-    "live-59247a22f7d33206d80bd488"
+    "live-140be4aee58384d5aaf994ab",
+    "live-46aa28197297a174cf561524",
+    "live-fad66b1aead7556ee532ae26",
+    "live-ded4cfd2f7448776290ccdea",
+    "live-d2bb4d4b140e3414a3cdd834",
+    "live-2d41c3bb037a6cc1ee6c6005",
+    "live-b4030f03ae27126c591b4c94",
+    "live-6ba3f69f6024980930aa8ba4",
+    "live-afe15a1cd2b526d230656317",
+    "live-71e9f8c01086ffe8a8c09a6b",
+    "live-f99ff95e3998d0b37a484bd4",
+    "live-3a1d3f35e400c6cdf3b92d17",
+    "live-21288782888be0a090d40dd9"
   ],
   "resumed": [
-    "live-ce23ae74631c1a5a869204ff",
-    "live-62e979a207a72a6a98fd6266",
-    "live-b5b16277ccb4d4a2fe938f57",
-    "live-b4efd25ed33d0ef036197fbc",
-    "live-546728c67a79001837bb8134",
-    "live-8dd7dfa740e746b61dbde841",
-    "live-e6de386d66bb2d472dd35408",
-    "live-1045d6f5674d5a6f2ac52ab4",
-    "live-1fec11da6f0f85f24cea7132",
-    "live-e8e5a8346bfa41e43756e73c",
-    "live-05760bd055149557329447d7",
-    "live-bc475e6bcb80f011083ed204",
-    "live-2160e7cd0781d351dac76460",
-    "live-0016fa1b1bf8a710cc85f1ed",
-    "live-4e99d9295733c05084c2ed55",
-    "live-8a15f3275e8b65f426d8abed",
-    "live-b9b2ee89209694fc4f2dfe7a"
+    "live-6f7b3ba55dfc0a11ca9113f3",
+    "live-d2c3954f930f342308c39427",
+    "live-51cfe118d25990e4a4c8d711",
+    "live-c4f7e9a30a862b0ff772410e",
+    "live-17e7dbc64f658e7fe7877351",
+    "live-241fbef663b9dddc14f8d9f5",
+    "live-a446c44efc0ae05a31d1173d",
+    "live-5980f4877e8edcc5f8ef2105",
+    "live-f0fe2ed67fc7390368932d19",
+    "live-ee3fabeb409214e153b873d8",
+    "live-084578a6c52df1f89d900926",
+    "live-1fe6b455809eaaa0f54351a0",
+    "live-52307e70ce7aef0a675077a7",
+    "live-6ba3f69f6024980930aa8ba4",
+    "live-ee482fa2d66fc5faf589af9b",
+    "live-69f618fef0ae853e44784cb2",
+    "live-77df3d85a9f5763d57479d65",
+    "live-8982eebedc506b1197d00f6b",
+    "live-d83aca024a4d02626d9228d1",
+    "live-4b231ebbfd3d7c4ffc9c1dce",
+    "live-87e88b04608f507b32b53a59",
+    "live-115c065386b51e945d56d5d6",
+    "live-05cb6eadaef17d128d266571",
+    "live-120a52664745a069fa6479f1"
   ],
   "deferred": [
-    "live-ee3fabeb409214e153b873d8",
-    "live-743dc40b42924b7b54aa6866",
-    "live-6f7b3ba55dfc0a11ca9113f3",
-    "live-77df3d85a9f5763d57479d65",
-    "live-51cfe118d25990e4a4c8d711",
-    "live-52307e70ce7aef0a675077a7",
-    "live-d83aca024a4d02626d9228d1",
-    "live-17e7dbc64f658e7fe7877351",
-    "live-924c93a0f2e87918dbcd7a6d",
-    "live-87e88b04608f507b32b53a59",
-    "live-fc34527bd1f1aed999a01e8e",
-    "live-6edf22f92944f09794547f84",
-    "live-14fdc00be9a2ef7c1cbf2693",
-    "live-4b231ebbfd3d7c4ffc9c1dce",
-    "live-a446c44efc0ae05a31d1173d",
-    "live-bec7ecaa39ce323f0e73eea5",
-    "live-d2c3954f930f342308c39427",
-    "live-1fe6b455809eaaa0f54351a0",
-    "live-6ba3f69f6024980930aa8ba4",
-    "live-69f618fef0ae853e44784cb2",
-    "live-8982eebedc506b1197d00f6b",
-    "live-c4f7e9a30a862b0ff772410e",
-    "live-241fbef663b9dddc14f8d9f5",
-    "live-21e53b661093bf053c62814d",
-    "live-115c065386b51e945d56d5d6",
-    "live-5980f4877e8edcc5f8ef2105",
-    "live-91d2d80f25729d14deb137bd",
-    "live-05cb6eadaef17d128d266571",
-    "live-f0fe2ed67fc7390368932d19",
-    "live-76c8ed316d62d29f25a90d15"
+    "live-a0c8c09fac80ffc878ff13a1",
+    "live-f14441b1cf0d6a04a51ffaa3",
+    "live-b4efd25ed33d0ef036197fbc",
+    "live-1045d6f5674d5a6f2ac52ab4",
+    "live-2160e7cd0781d351dac76460",
+    "live-e6de386d66bb2d472dd35408",
+    "live-b5b16277ccb4d4a2fe938f57",
+    "live-f0c42b9b5ef2d3df1f0c0d04",
+    "live-816b0ab3bee5363c9c1fa74b",
+    "live-62e979a207a72a6a98fd6266",
+    "live-8dd7dfa740e746b61dbde841",
+    "live-f0d0fe3175286a2ad93c86d8"
   ],
   "stale": [],
   "failed": [
     {
-      "id": "live-fc1dd9eeb049386a8c2dea65",
-      "reason": "ai_numbers_missing:block:2:text:0",
+      "id": "live-29e3497647f588c17c436356",
+      "reason": "ai_numbers_missing:block:23:text:0",
       "validation_issues": [
         {
           "reason": "ai_numbers_missing",
-          "key": "block:2:text:0",
+          "key": "block:23:text:0",
           "source_numbers": [
-            "2"
+            "1975",
+            "1981",
+            "83"
           ],
           "returned_numbers": [
-            "2200000"
+            "1981",
+            "1985",
+            "83"
           ],
           "truncated": false
         }
@@ -1027,19 +1349,23 @@
       "project": "primary"
     },
     {
-      "id": "live-ce23ae74631c1a5a869204ff",
-      "reason": "ai_numbers_missing:block:9:text:0",
+      "id": "live-6f7b3ba55dfc0a11ca9113f3",
+      "reason": "ai_numbers_missing:block:14:text:0",
       "validation_issues": [
         {
           "reason": "ai_numbers_missing",
-          "key": "block:9:text:0",
+          "key": "block:14:text:0",
           "source_numbers": [
-            "1972",
-            "600"
+            "11",
+            "2026",
+            "3000",
+            "4"
           ],
           "returned_numbers": [
-            "1972",
-            "6000000"
+            "11",
+            "2026",
+            "30000000",
+            "4"
           ],
           "truncated": false
         }
@@ -1047,46 +1373,73 @@
       "project": "primary"
     },
     {
-      "id": "live-62e979a207a72a6a98fd6266",
-      "reason": "ai_numbers_missing:block:9:text:0",
+      "id": "live-d2c3954f930f342308c39427",
+      "reason": "ai_numbers_missing:block:6:text:0",
       "validation_issues": [
         {
           "reason": "ai_numbers_missing",
-          "key": "block:9:text:0",
+          "key": "block:6:text:0",
           "source_numbers": [
-            "1980",
-            "3.3"
+            "1.98",
+            "10",
+            "1950",
+            "2",
+            "2.6",
+            "2011",
+            "2018",
+            "7.8"
           ],
           "returned_numbers": [
-            "19",
-            "3300000",
+            "1.98",
+            "1950",
+            "2",
+            "2.6",
+            "2011",
+            "2018",
+            "7.8"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:11:text:0",
+          "source_numbers": [
+            "1",
+            "15"
+          ],
+          "returned_numbers": [
+            "15"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:13:text:0",
+          "source_numbers": [
+            "0",
+            "2",
+            "80"
+          ],
+          "returned_numbers": [
+            "2",
             "80"
           ],
           "truncated": false
-        }
-      ],
-      "project": "primary"
-    },
-    {
-      "id": "live-b5b16277ccb4d4a2fe938f57",
-      "reason": "ai_paragraph_not_translated:block:55:text:0",
-      "validation_issues": [
+        },
         {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:55:text:0"
-        }
-      ],
-      "project": "primary"
-    },
-    {
-      "id": "live-b4efd25ed33d0ef036197fbc",
-      "reason": "ai_numbers_missing:block:16:text:0",
-      "validation_issues": [
+          "reason": "ai_numbers_missing",
+          "key": "block:14:text:0",
+          "source_numbers": [
+            "2"
+          ],
+          "returned_numbers": [],
+          "truncated": false
+        },
         {
           "reason": "ai_numbers_missing",
           "key": "block:16:text:0",
           "source_numbers": [
-            "1"
+            "3"
           ],
           "returned_numbers": [],
           "truncated": false
@@ -1095,95 +1448,54 @@
       "project": "primary"
     },
     {
-      "id": "live-546728c67a79001837bb8134",
-      "reason": "ai_numbers_missing:block:2:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:2:text:0",
-          "source_numbers": [
-            "12",
-            "18",
-            "34",
-            "36"
-          ],
-          "returned_numbers": [
-            "12",
-            "18",
-            "34",
-            "36000000"
-          ],
-          "truncated": false
-        },
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:22:text:0",
-          "source_numbers": [
-            "10",
-            "25",
-            "50"
-          ],
-          "returned_numbers": [
-            "10000000",
-            "25",
-            "50"
-          ],
-          "truncated": false
-        }
-      ],
-      "project": "primary"
-    },
-    {
-      "id": "live-a0c8c09fac80ffc878ff13a1",
-      "reason": "ai_paragraph_not_translated:block:1:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:1:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:2:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:6:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:8:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:9:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:10:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:11:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:15:text:0"
-        }
-      ],
-      "project": "primary"
-    },
-    {
-      "id": "live-0c4a06710d11f3bf3cabbc02",
+      "id": "live-51cfe118d25990e4a4c8d711",
       "reason": "ai_numbers_missing:title:0",
       "validation_issues": [
         {
           "reason": "ai_numbers_missing",
           "key": "title:0",
           "source_numbers": [
-            "30"
+            "2026",
+            "4"
           ],
           "returned_numbers": [
-            "30000"
+            "2026"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:3:text:0",
+          "source_numbers": [
+            "1",
+            "2026"
+          ],
+          "returned_numbers": [
+            "2026"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:4:text:0",
+          "source_numbers": [
+            "2",
+            "2026"
+          ],
+          "returned_numbers": [
+            "2026"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:5:text:0",
+          "source_numbers": [
+            "2026",
+            "3"
+          ],
+          "returned_numbers": [
+            "2026"
           ],
           "truncated": false
         }
@@ -1191,57 +1503,237 @@
       "project": "primary"
     },
     {
-      "id": "live-8dd7dfa740e746b61dbde841",
-      "reason": "ai_paragraph_not_translated:block:18:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:18:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:19:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:20:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:21:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:23:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:25:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:26:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:27:text:0"
-        }
-      ],
-      "project": "primary"
-    },
-    {
-      "id": "live-f14441b1cf0d6a04a51ffaa3",
+      "id": "live-c4f7e9a30a862b0ff772410e",
       "reason": "ai_numbers_missing:excerpt:0",
       "validation_issues": [
         {
           "reason": "ai_numbers_missing",
           "key": "excerpt:0",
           "source_numbers": [
-            "11",
-            "250"
+            "133000000000",
+            "20",
+            "2033",
+            "39"
           ],
           "returned_numbers": [
-            "11"
+            "133000000000",
+            "200000",
+            "2033",
+            "39"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:0:text:0",
+          "source_numbers": [
+            "133000000000",
+            "20",
+            "2033",
+            "39"
+          ],
+          "returned_numbers": [
+            "13300000000",
+            "200000",
+            "2033",
+            "39"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:13:text:0",
+          "source_numbers": [
+            "1670000000",
+            "2027",
+            "250000000000",
+            "40700000000",
+            "6.1"
+          ],
+          "returned_numbers": [
+            "1670000000",
+            "2027",
+            "250000000000",
+            "4070000000",
+            "61000"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "primary"
+    },
+    {
+      "id": "live-17e7dbc64f658e7fe7877351",
+      "reason": "ai_numbers_missing:block:10:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:10:text:0",
+          "source_numbers": [
+            "0",
+            "1",
+            "1958",
+            "2003",
+            "2008",
+            "9"
+          ],
+          "returned_numbers": [
+            "1958",
+            "2003",
+            "2008",
+            "9"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "primary"
+    },
+    {
+      "id": "live-241fbef663b9dddc14f8d9f5",
+      "reason": "ai_paragraph_not_translated:block:14:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:14:text:0"
+        }
+      ],
+      "project": "primary"
+    },
+    {
+      "id": "live-a446c44efc0ae05a31d1173d",
+      "reason": "ai_paragraph_not_translated:block:289:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:289:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:443:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:499:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:537:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:708:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:710:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:864:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:971:text:0"
+        }
+      ],
+      "project": "primary"
+    },
+    {
+      "id": "live-5980f4877e8edcc5f8ef2105",
+      "reason": "ai_numbers_missing:block:26:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:26:text:0",
+          "source_numbers": [
+            "1",
+            "25"
+          ],
+          "returned_numbers": [
+            "25"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:66:text:0",
+          "source_numbers": [
+            "1",
+            "22",
+            "30"
+          ],
+          "returned_numbers": [
+            "22",
+            "30"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "primary"
+    },
+    {
+      "id": "live-da286480da01691335271550",
+      "reason": "ai_paragraph_not_translated:block:93:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:93:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:95:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:97:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:99:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:101:text:0"
+        }
+      ],
+      "project": "primary"
+    },
+    {
+      "id": "live-f0fe2ed67fc7390368932d19",
+      "reason": "ai_numbers_missing:block:6:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:6:text:0",
+          "source_numbers": [
+            "2",
+            "2002",
+            "39"
+          ],
+          "returned_numbers": [
+            "2",
+            "2002",
+            "3",
+            "39000000"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "primary"
+    },
+    {
+      "id": "live-602a26793f3bf1a7687a6c20",
+      "reason": "ai_numbers_missing:excerpt:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "excerpt:0",
+          "source_numbers": [
+            "13",
+            "46"
+          ],
+          "returned_numbers": [
+            "46"
           ],
           "truncated": false
         },
@@ -1250,351 +1742,12 @@
           "key": "block:0:text:0",
           "source_numbers": [
             "10",
-            "11",
-            "2026",
-            "22"
-          ],
-          "returned_numbers": [
-            "100000",
-            "11",
-            "2026",
-            "220000"
-          ],
-          "truncated": false
-        },
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:11:text:0",
-          "source_numbers": [
-            "100",
-            "75"
-          ],
-          "returned_numbers": [
-            "1000000",
-            "750000"
-          ],
-          "truncated": false
-        }
-      ],
-      "project": "primary"
-    },
-    {
-      "id": "live-e6de386d66bb2d472dd35408",
-      "reason": "ai_numbers_missing:block:5:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:5:text:0",
-          "source_numbers": [
-            "150",
-            "1960",
-            "1980",
-            "230",
-            "25",
-            "3",
-            "35",
-            "500",
-            "520",
-            "600"
-          ],
-          "returned_numbers": [
-            "150000",
-            "1960",
-            "1980",
-            "230000",
-            "25",
-            "3000",
-            "35",
-            "5",
-            "500",
-            "520000",
-            "6",
-            "600000"
-          ],
-          "truncated": false
-        }
-      ],
-      "project": "primary"
-    },
-    {
-      "id": "live-f0c42b9b5ef2d3df1f0c0d04",
-      "reason": "block_not_chinese",
-      "validation_issues": [],
-      "project": "primary"
-    },
-    {
-      "id": "live-816b0ab3bee5363c9c1fa74b",
-      "reason": "ai_numbers_missing:block:30:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:30:text:0",
-          "source_numbers": [
             "13",
-            "1980"
-          ],
-          "returned_numbers": [
-            "1980"
-          ],
-          "truncated": false
-        },
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:33:text:0",
-          "source_numbers": [
-            "13"
-          ],
-          "returned_numbers": [
-            "400"
-          ],
-          "truncated": false
-        }
-      ],
-      "project": "primary"
-    },
-    {
-      "id": "live-1045d6f5674d5a6f2ac52ab4",
-      "reason": "ai_numbers_missing:block:9:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:9:text:0",
-          "source_numbers": [
-            "10000000",
-            "16",
-            "1996",
-            "400"
-          ],
-          "returned_numbers": [
-            "10000000",
-            "1600000000",
-            "1996",
-            "400"
-          ],
-          "truncated": false
-        }
-      ],
-      "project": "secondary"
-    },
-    {
-      "id": "live-1fec11da6f0f85f24cea7132",
-      "reason": "ai_numbers_missing:block:30:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:30:text:0",
-          "source_numbers": [
-            "1964",
-            "1975",
-            "1981",
-            "79",
-            "86"
-          ],
-          "returned_numbers": [
-            "1964",
-            "1975",
-            "1979",
-            "1981",
-            "1986"
-          ],
-          "truncated": false
-        }
-      ],
-      "project": "secondary"
-    },
-    {
-      "id": "live-e8e5a8346bfa41e43756e73c",
-      "reason": "ai_numbers_missing:block:22:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:22:text:0",
-          "source_numbers": [
-            "1987",
-            "1993",
-            "94"
-          ],
-          "returned_numbers": [
-            "1987",
-            "1993",
-            "1994"
-          ],
-          "truncated": false
-        }
-      ],
-      "project": "secondary"
-    },
-    {
-      "id": "live-05760bd055149557329447d7",
-      "reason": "ai_numbers_missing:block:5:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:5:text:0",
-          "source_numbers": [
-            "13",
-            "35",
-            "7"
-          ],
-          "returned_numbers": [
-            "13000000",
-            "35",
-            "7"
-          ],
-          "truncated": false
-        }
-      ],
-      "project": "secondary"
-    },
-    {
-      "id": "live-bc475e6bcb80f011083ed204",
-      "reason": "ai_paragraph_not_translated:block:7:text:1",
-      "validation_issues": [
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:7:text:1"
-        }
-      ],
-      "project": "secondary"
-    },
-    {
-      "id": "live-2160e7cd0781d351dac76460",
-      "reason": "ai_numbers_missing:block:18:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:18:text:0",
-          "source_numbers": [
-            "0",
-            "1989",
-            "1990",
-            "1992"
-          ],
-          "returned_numbers": [
-            "1989",
-            "1990",
-            "1992"
-          ],
-          "truncated": false
-        }
-      ],
-      "project": "secondary"
-    },
-    {
-      "id": "live-4e99d9295733c05084c2ed55",
-      "reason": "ai_numbers_missing:block:34:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:34:text:0",
-          "source_numbers": [
-            "0",
-            "10",
-            "2027",
-            "2028",
-            "3",
-            "5"
+            "46"
           ],
           "returned_numbers": [
             "10",
-            "2027",
-            "2028",
-            "3",
-            "5"
-          ],
-          "truncated": false
-        }
-      ],
-      "project": "secondary"
-    },
-    {
-      "id": "live-f0d0fe3175286a2ad93c86d8",
-      "reason": "ai_numbers_missing:block:8:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:8:text:0",
-          "source_numbers": [
-            "0",
-            "0.1",
-            "1",
-            "10",
-            "11",
-            "12",
-            "120",
-            "14",
-            "15",
-            "16",
-            "18",
-            "1862",
-            "19",
-            "2",
-            "20",
-            "2026",
-            "2600",
-            "3",
-            "30",
-            "3670",
-            "40",
-            "50",
-            "90"
-          ],
-          "returned_numbers": [
-            "0",
-            "0.1",
-            "10",
-            "11",
-            "12",
-            "120",
-            "14",
-            "15",
-            "16",
-            "18",
-            "1862",
-            "19",
-            "2",
-            "20",
-            "2026",
-            "2600",
-            "30",
-            "3670",
-            "40",
-            "50",
-            "90"
-          ],
-          "truncated": false
-        }
-      ],
-      "project": "secondary"
-    },
-    {
-      "id": "live-8a15f3275e8b65f426d8abed",
-      "reason": "ai_numbers_missing:excerpt:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "excerpt:0",
-          "source_numbers": [
-            "118.5"
-          ],
-          "returned_numbers": [
-            "118500000"
-          ],
-          "truncated": false
-        },
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:3:text:0",
-          "source_numbers": [
-            "1.17",
-            "30",
-            "7"
-          ],
-          "returned_numbers": [
-            "10",
-            "117000000",
-            "30",
-            "7"
+            "46"
           ],
           "truncated": false
         },
@@ -1602,54 +1755,19 @@
           "reason": "ai_numbers_missing",
           "key": "block:7:text:0",
           "source_numbers": [
-            "102.7",
-            "115",
-            "118.5",
-            "132.5",
-            "142.4",
-            "2.3",
-            "2026",
-            "24.2",
-            "25.9",
-            "38.6",
-            "39.3",
-            "45.2",
-            "49.4",
-            "58.9",
-            "59.3",
-            "668.6",
-            "67.6",
-            "68.2",
-            "70.2",
-            "766",
-            "81.1",
-            "88.2",
-            "93.2"
+            "13",
+            "2",
+            "2016",
+            "2017",
+            "2020",
+            "2023"
           ],
           "returned_numbers": [
-            "102700000",
-            "115000000",
-            "118500000",
-            "132500000",
-            "142400000",
-            "2026",
-            "2300000000",
-            "24200000",
-            "25900000",
-            "38600000",
-            "39300000",
-            "45200000",
-            "49400000",
-            "58900000",
-            "59300000",
-            "668600000",
-            "67600000",
-            "68200000",
-            "70200000",
-            "766000000",
-            "81100000",
-            "88200000",
-            "93200000"
+            "2",
+            "2016",
+            "2017",
+            "2020",
+            "2023"
           ],
           "truncated": false
         },
@@ -1657,14 +1775,151 @@
           "reason": "ai_numbers_missing",
           "key": "block:9:text:0",
           "source_numbers": [
-            "3",
-            "3.37",
-            "5"
+            "13"
+          ],
+          "returned_numbers": [],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:10:text:0",
+          "source_numbers": [
+            "13",
+            "1981",
+            "1982",
+            "2",
+            "2009",
+            "2027",
+            "24"
           ],
           "returned_numbers": [
-            "300000000",
-            "337000000",
-            "500000000"
+            "10",
+            "1981",
+            "1982",
+            "2009",
+            "2027",
+            "24"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "primary"
+    },
+    {
+      "id": "live-39c21622f467b6ff4f441da2",
+      "reason": "ai_numbers_missing:block:14:caption:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:14:caption:0",
+          "source_numbers": [
+            "0",
+            "3"
+          ],
+          "returned_numbers": [
+            "3"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "primary"
+    },
+    {
+      "id": "live-ee3fabeb409214e153b873d8",
+      "reason": "ai_numbers_missing:title:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "title:0",
+          "source_numbers": [
+            "2"
+          ],
+          "returned_numbers": [
+            "2000"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:1:text:0",
+          "source_numbers": [
+            "2"
+          ],
+          "returned_numbers": [
+            "2000"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:3:alt:0",
+          "source_numbers": [
+            "2"
+          ],
+          "returned_numbers": [
+            "2000"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "primary"
+    },
+    {
+      "id": "live-084578a6c52df1f89d900926",
+      "reason": "ai_numbers_missing:block:1:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:1:text:0",
+          "source_numbers": [
+            "100",
+            "1200",
+            "14",
+            "16",
+            "18.9",
+            "2025",
+            "2026",
+            "24",
+            "26",
+            "47",
+            "5",
+            "9",
+            "90",
+            "91"
+          ],
+          "returned_numbers": [
+            "100000000",
+            "1200",
+            "14",
+            "16.9",
+            "18",
+            "2025",
+            "2026",
+            "24.5",
+            "26",
+            "47500000",
+            "9",
+            "90",
+            "91900000"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "primary"
+    },
+    {
+      "id": "live-1fe6b455809eaaa0f54351a0",
+      "reason": "ai_numbers_missing:block:8:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:8:text:0",
+          "source_numbers": [
+            "2",
+            "30"
+          ],
+          "returned_numbers": [
+            "30"
           ],
           "truncated": false
         }
@@ -1672,35 +1927,554 @@
       "project": "secondary"
     },
     {
-      "id": "live-b9b2ee89209694fc4f2dfe7a",
-      "reason": "ai_numbers_missing:block:12:text:0",
+      "id": "live-52307e70ce7aef0a675077a7",
+      "reason": "ai_numbers_missing:block:2:text:0",
       "validation_issues": [
         {
           "reason": "ai_numbers_missing",
-          "key": "block:12:text:0",
+          "key": "block:2:text:0",
           "source_numbers": [
-            "5",
-            "600000",
-            "7.5"
+            "60",
+            "80000000"
           ],
           "returned_numbers": [
-            "5000000",
-            "600000",
-            "7.5"
+            "60000000",
+            "80000000"
           ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:6:text:0",
+          "source_numbers": [
+            "14700000",
+            "16",
+            "17",
+            "1914",
+            "1915",
+            "1916",
+            "1997",
+            "20",
+            "2025",
+            "21",
+            "236400000",
+            "30900000",
+            "60",
+            "80000000"
+          ],
+          "returned_numbers": [
+            "11",
+            "14700000",
+            "16",
+            "17",
+            "1914",
+            "1915",
+            "1916",
+            "1997",
+            "2025",
+            "236400000",
+            "30900000",
+            "60000000",
+            "80000000"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "secondary"
+    },
+    {
+      "id": "live-ee482fa2d66fc5faf589af9b",
+      "reason": "ai_paragraph_not_translated:block:32:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:32:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:35:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:36:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:37:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:38:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:39:text:0"
+        }
+      ],
+      "project": "secondary"
+    },
+    {
+      "id": "live-69f618fef0ae853e44784cb2",
+      "reason": "ai_numbers_missing:block:115:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:115:text:0",
+          "source_numbers": [
+            "12.5",
+            "17"
+          ],
+          "returned_numbers": [
+            "12500000",
+            "17"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "secondary"
+    },
+    {
+      "id": "live-77df3d85a9f5763d57479d65",
+      "reason": "ai_numbers_missing:excerpt:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "excerpt:0",
+          "source_numbers": [
+            "23",
+            "915"
+          ],
+          "returned_numbers": [
+            "23",
+            "5",
+            "915000000"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:2:text:0",
+          "source_numbers": [
+            "10",
+            "915"
+          ],
+          "returned_numbers": [
+            "10",
+            "8",
+            "915000000"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "secondary"
+    },
+    {
+      "id": "live-8982eebedc506b1197d00f6b",
+      "reason": "ai_numbers_missing:block:13:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:13:text:0",
+          "source_numbers": [
+            "1943",
+            "3",
+            "660"
+          ],
+          "returned_numbers": [
+            "1943",
+            "300000000",
+            "660"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "secondary"
+    },
+    {
+      "id": "live-d83aca024a4d02626d9228d1",
+      "reason": "ai_numbers_missing:excerpt:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "excerpt:0",
+          "source_numbers": [
+            "1",
+            "1981",
+            "2.3",
+            "2004"
+          ],
+          "returned_numbers": [
+            "1981",
+            "2004",
+            "2300000"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:0:text:0",
+          "source_numbers": [
+            "1",
+            "10",
+            "1981",
+            "2.3",
+            "2004",
+            "2021"
+          ],
+          "returned_numbers": [
+            "10",
+            "1981",
+            "2004",
+            "2021",
+            "2300000"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "secondary"
+    },
+    {
+      "id": "live-4b231ebbfd3d7c4ffc9c1dce",
+      "reason": "ai_numbers_missing:block:1:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:1:text:0",
+          "source_numbers": [
+            "1.8",
+            "11",
+            "1986",
+            "1991",
+            "1995",
+            "2011",
+            "350",
+            "70"
+          ],
+          "returned_numbers": [
+            "11",
+            "1800",
+            "1986",
+            "1991",
+            "1995",
+            "2011",
+            "3",
+            "350",
+            "70000"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "secondary"
+    },
+    {
+      "id": "live-87e88b04608f507b32b53a59",
+      "reason": "ai_numbers_missing:title:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "title:0",
+          "source_numbers": [
+            "2",
+            "2026"
+          ],
+          "returned_numbers": [
+            "2026"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:51:text:0",
+          "source_numbers": [
+            "20261019",
+            "3",
+            "3020093"
+          ],
+          "returned_numbers": [
+            "20261019",
+            "3020093"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "secondary"
+    },
+    {
+      "id": "live-115c065386b51e945d56d5d6",
+      "reason": "ai_numbers_missing:block:0:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:0:text:0",
+          "source_numbers": [
+            "15",
+            "20"
+          ],
+          "returned_numbers": [
+            "15000000",
+            "20"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:1:text:0",
+          "source_numbers": [
+            "1000",
+            "11.2",
+            "15",
+            "2000",
+            "2006",
+            "21.5",
+            "24",
+            "26.5",
+            "855"
+          ],
+          "returned_numbers": [
+            "1000",
+            "11200000",
+            "15000000",
+            "2000",
+            "2006",
+            "21500000",
+            "24",
+            "26500000",
+            "855"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:2:text:0",
+          "source_numbers": [
+            "11",
+            "2023",
+            "24",
+            "4000",
+            "868",
+            "9",
+            "92.8"
+          ],
+          "returned_numbers": [
+            "11",
+            "20",
+            "2023",
+            "24000000",
+            "4000",
+            "868",
+            "9",
+            "92800000"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:9:text:0",
+          "source_numbers": [
+            "20",
+            "51",
+            "69",
+            "82"
+          ],
+          "returned_numbers": [
+            "20000000",
+            "51000000",
+            "69",
+            "82000000"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:10:text:0",
+          "source_numbers": [
+            "17.5",
+            "3065",
+            "60",
+            "8",
+            "9.5"
+          ],
+          "returned_numbers": [
+            "17500000",
+            "3065",
+            "60000000",
+            "8000000",
+            "9500000"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:11:text:0",
+          "source_numbers": [
+            "78.7",
+            "8.4"
+          ],
+          "returned_numbers": [
+            "78700000",
+            "8400000"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:14:text:0",
+          "source_numbers": [
+            "101.6",
+            "20",
+            "2025",
+            "45",
+            "8.2"
+          ],
+          "returned_numbers": [
+            "10160000",
+            "20",
+            "2025",
+            "45",
+            "8200000000"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "secondary"
+    },
+    {
+      "id": "live-49d8e633659137434b13ed07",
+      "reason": "ai_numbers_missing:block:38:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:38:text:0",
+          "source_numbers": [
+            "20",
+            "9.3"
+          ],
+          "returned_numbers": [
+            "11",
+            "20",
+            "30",
+            "9"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:39:text:0",
+          "source_numbers": [
+            "14",
+            "1980",
+            "6",
+            "9"
+          ],
+          "returned_numbers": [
+            "0",
+            "11",
+            "14",
+            "1980",
+            "9"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:55:text:0",
+          "source_numbers": [
+            "19",
+            "9.32"
+          ],
+          "returned_numbers": [
+            "11",
+            "19",
+            "32",
+            "9"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "secondary"
+    },
+    {
+      "id": "live-05cb6eadaef17d128d266571",
+      "reason": "ai_numbers_missing:block:9:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:9:text:0",
+          "source_numbers": [
+            "150",
+            "1870"
+          ],
+          "returned_numbers": [
+            "150000",
+            "1870"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "secondary"
+    },
+    {
+      "id": "live-baccc44ed5350755828df14a",
+      "reason": "ai_numbers_missing:block:16:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:16:text:0",
+          "source_numbers": [
+            "126400000",
+            "186000000"
+          ],
+          "returned_numbers": [
+            "1.26",
+            "186000000",
+            "2",
+            "40000"
+          ],
+          "truncated": false
+        }
+      ],
+      "project": "secondary"
+    },
+    {
+      "id": "live-120a52664745a069fa6479f1",
+      "reason": "ai_numbers_missing:title:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "title:0",
+          "source_numbers": [
+            "124"
+          ],
+          "returned_numbers": [],
+          "truncated": false
+        }
+      ],
+      "project": "secondary"
+    },
+    {
+      "id": "live-7b1cf7beea1c861cfc06e20c",
+      "reason": "ai_numbers_missing:block:19:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:19:text:0",
+          "source_numbers": [
+            "12"
+          ],
+          "returned_numbers": [],
           "truncated": false
         }
       ],
       "project": "secondary"
     }
   ],
-  "requests": 38,
-  "input_tokens": 146617,
-  "output_tokens": 32762,
-  "requests_today": 203,
-  "unknown_usage_requests_today": 31,
+  "requests": 53,
+  "input_tokens": 274992,
+  "output_tokens": 45675,
+  "requests_today": 256,
+  "unknown_usage_requests_today": 32,
   "daily_request_limit": 1300,
-  "pending_after": 1002,
+  "pending_after": 1038,
   "continue_recommended": false,
-  "seconds": 494.79
+  "seconds": 489.04
 }

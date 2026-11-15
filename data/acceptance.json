@@ -1,14 +1,15 @@
 {
   "schema_version": 1,
-  "checked_at": "2026-11-15T08:34:11.571186+00:00",
-  "snapshot_at": "2026-11-15T08:33:50.157649+00:00",
-  "snapshot_key": "d7d1131aa756700e7a94bb2423db74d9afefdfd31b71be492723a9de7e87e1ef",
+  "checked_at": "2026-11-15T09:26:22.603602+00:00",
+  "snapshot_at": "2026-11-15T09:25:46.856425+00:00",
+  "snapshot_key": "7d5b84a1371de1a5f2ee884fb870ee52274051512210c89ebf4a23884d0ac7ee",
   "all_ready": false,
   "gates": {
     "unattended_24h": {
       "passed": false,
       "open_reasons": [
-        "current_public_snapshot_not_verified"
+        "current_public_snapshot_not_verified",
+        "stage_not_verified:collection"
       ]
     },
     "article_quality": {
@@ -22,7 +23,8 @@
       "passed": false,
       "open_reasons": [
         "foreign_full_text_backlog_remains",
-        "original_bodies_missing"
+        "original_bodies_missing",
+        "headlines_waiting_for_AI"
       ]
     },
     "coverage_gaps": {
@@ -30,13 +32,7 @@
       "open_reasons": [
         "core_source_failures",
         "enabled_source_collection_not_verified",
-        "priority_country_field_gaps",
-        "attention_source_not_current:artishock",
-        "attention_source_not_current:artthrob",
-        "attention_source_not_current:take-on-art",
-        "attention_source_not_current:zum",
-        "attention_source_not_current:artafrica",
-        "attention_source_not_current:matca"
+        "priority_country_field_gaps"
       ]
     }
   },
@@ -46,15 +42,15 @@
     "Program structure/source checks are not semantic or human translation review."
   ],
   "counts": {
-    "total": 5586,
-    "completed": 3917,
-    "api_completed": 3835,
-    "pending": 1085,
-    "without_body": 481
+    "total": 5593,
+    "completed": 3912,
+    "api_completed": 3830,
+    "pending": 1133,
+    "without_body": 445
   },
   "quality": {
-    "remote_verified": 1009,
-    "remote_unchecked": 3105,
+    "remote_verified": 1025,
+    "remote_unchecked": 3138,
     "complete": false
   },
   "trial": {

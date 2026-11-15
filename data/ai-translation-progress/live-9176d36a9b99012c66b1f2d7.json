@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "id": "live-9176d36a9b99012c66b1f2d7",
+  "input_hash": "5e494ba603889f367e445f716ee5afb5b6c8c0cd1e60a3b71ce2f328a3488b37",
+  "source_hash": "90ee0c101deeeaef264932190790689bfa7ed7d7bfd29003f9512f1ff16af710",
+  "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
+  "outputs": {
+    "title:0": "新德里将建造拥有世界最大展览面积的博物馆",
+    "block:1:text:0": "这座宏伟的新博物馆",
+    "block:3:text:0": "该博物馆将通过适应性再利用（adaptive reuse）工程进行开发，其明确目标是保留建筑的建筑特色，并将其转变为一个致力于印度历史和文化遗产的公共场所。工程预计在2030-2031财政年度内完工，而北区的第一处空间——“装饰”（Adornment）展厅预计将于2027年底左右向公众开放。据该部报道，目前正在制定分阶段增加更多主题展厅的模块化方案，其落实将包括协调的项目管理、设计和技术方面的监督、质量保证以及定期监测。",
+    "block:5:text:0": "从权力所在地到文化机构",
+    "block:6:text:0": "北区和南区这两座建筑由英国建筑师赫伯特·贝克（Herbert Baker）设计并于1927年完工，近一个世纪以来一直是该国政府行政的中心。南区曾接待过总理和政府中央办公室，而北区则曾容纳内政部和财政部等机构。随后，行政总部逐步搬迁至塞瓦蒂尔特（Seva Teerth）和卡塔维亚巴万斯（Kartavya Bhavans）的新综合体，从而腾出了空间用于其他用途。莫迪政府将中央远景（Central Vista）的整修纳入了重新定义国家身份的更广泛计划中，这一首都的纪念性和行政区域还包括议会、总统官邸以及宏大的礼仪大道卡塔维亚帕特（Kartavya Path）。该设计面临的挑战无疑是如何在保持建筑特色的同时，将这一新功能与现有结构保护协调起来，并调整室内环境以满足当代博物馆的需求。对此，政府强调该项目旨在通过微创干预来保护建筑的历史特征、外墙和建筑完整性，转而对现有空间进行战略性重新规划：庭院、走廊和房间将被改造成展廊和展览区，从而创造出统一的博物馆体验。此外，改造项目将优先考虑资源的可持续利用和普遍无障碍性。",
+    "block:7:text:0": "博物馆藏品中的五千年历史",
+    "block:8:text:0": "尤格·尤根·巴拉特博物馆的名字呼应了印度历经数世纪绵延不绝的理念，被构想为展示五千多年历史的宝库，旨在构建一段贯穿印度文明不同阶段的叙事，并将物质与非物质遗产、艺术传统、知识体系、文化实践和灵性联系起来。未来展厅确定的主题包括“建筑与城市景观”（Architecture and urban landscapes）、“数学与天文学”（Mathematics and astronomy）、“语言与文字”（Languages and scripts）、“信仰与灵性”（Faith and spirituality），以及致力于商业贸易和思想流通的“巴拉特连接——贸易与思想”（Bharat Connects – Trade and Ideas）。而首个开放的板块将是前文提到的“装饰”（Adornment），它聚焦于几个世纪以来印度美学表达自身的装饰与形式。"
+  },
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "excerpt:0",
+      "source_numbers": [
+        "178",
+        "3.23"
+      ],
+      "returned_numbers": [
+        "178000",
+        "323000000000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:0:text:0",
+      "source_numbers": [
+        "11",
+        "18",
+        "2023",
+        "3.23"
+      ],
+      "returned_numbers": [
+        "11",
+        "18",
+        "2023",
+        "323000000000",
+        "5"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:2:text:0",
+      "source_numbers": [
+        "10",
+        "100",
+        "178.509",
+        "30",
+        "66.8",
+        "70",
+        "73"
+      ],
+      "returned_numbers": [
+        "100000",
+        "10000000",
+        "178509",
+        "30000",
+        "66800",
+        "70000",
+        "73000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_paragraph_not_translated",
+      "key": "block:4:text:0"
+    }
+  ],
+  "error": "ai_numbers_missing:excerpt:0",
+  "retry_policy": "regular",
+  "retry_after": "2026-11-16T04:55:17.367122+00:00"
+}

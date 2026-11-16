@@ -3,209 +3,20 @@
   "model": "@cf/qwen/qwen3-30b-a3b-fp8",
   "configured": true,
   "requests": 8,
-  "translated": [],
+  "translated": [
+    "live-9e1537b37b416b555bed6f93",
+    "live-069f92646e17c75616165ad9"
+  ],
   "failed": [
     {
-      "id": "live-377cf19fad0ced1b3b8c8639",
-      "reason": "ai_paragraph_not_translated:block:1:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:1:text:0"
-        },
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:11:text:0",
-          "source_numbers": [
-            "5"
-          ],
-          "returned_numbers": [],
-          "truncated": false
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:12:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:14:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:15:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:18:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:21:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:23:text:0"
-        }
-      ]
-    },
-    {
-      "id": "live-140a5818f06418b7592ebe8f",
-      "reason": "ai_unit_coverage_mismatch",
+      "id": "live-965c4079026e0c5b12546e92",
+      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini",
       "validation_issues": []
     },
     {
-      "id": "live-1045d6f5674d5a6f2ac52ab4",
-      "reason": "ai_paragraph_not_translated:block:9:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:9:text:0"
-        }
-      ]
-    },
-    {
       "id": "live-1fec11da6f0f85f24cea7132",
-      "reason": "ai_numbers_missing:block:10:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:10:text:0",
-          "source_numbers": [
-            "1969",
-            "1984",
-            "1989",
-            "1997",
-            "87",
-            "98"
-          ],
-          "returned_numbers": [
-            "1969",
-            "1984",
-            "1987",
-            "1989",
-            "1997",
-            "1998"
-          ],
-          "truncated": false
-        }
-      ]
-    },
-    {
-      "id": "live-ce23ae74631c1a5a869204ff",
-      "reason": "ai_paragraph_not_translated:block:9:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:9:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:11:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:12:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:13:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:14:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:15:text:0"
-        }
-      ]
-    },
-    {
-      "id": "live-bd03c4f177df5dc1c24ac56c",
-      "reason": "ai_numbers_missing:block:8:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:8:text:0",
-          "source_numbers": [
-            "2017",
-            "2026",
-            "24",
-            "25",
-            "26",
-            "3",
-            "4",
-            "9"
-          ],
-          "returned_numbers": [
-            "2017",
-            "2024",
-            "2025",
-            "2026",
-            "4",
-            "900000000"
-          ],
-          "truncated": false
-        }
-      ]
-    },
-    {
-      "id": "live-62e979a207a72a6a98fd6266",
-      "reason": "ai_numbers_missing:block:9:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:9:text:0",
-          "source_numbers": [
-            "1980",
-            "3.3"
-          ],
-          "returned_numbers": [
-            "20",
-            "3300000",
-            "80"
-          ],
-          "truncated": false
-        }
-      ]
-    },
-    {
-      "id": "live-d2c3954f930f342308c39427",
-      "reason": "ai_numbers_missing:block:6:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:6:text:0",
-          "source_numbers": [
-            "1.98",
-            "10",
-            "1950",
-            "2",
-            "2.6",
-            "2011",
-            "2018",
-            "7.8"
-          ],
-          "returned_numbers": [
-            "1.98",
-            "1950",
-            "2.6",
-            "2011",
-            "2018",
-            "7.8"
-          ],
-          "truncated": false
-        },
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:14:text:0",
-          "source_numbers": [
-            "2"
-          ],
-          "returned_numbers": [],
-          "truncated": false
-        }
-      ]
+      "reason": "ai_unit_coverage_mismatch",
+      "validation_issues": []
     }
   ],
   "credential_checks": {
@@ -213,44 +24,44 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-11-16T18:28:24.743255+00:00",
+  "started_at": "2026-11-16T18:39:35.511389+00:00",
   "verification_run": false,
-  "status": "partial_failure",
+  "status": "daily_limit",
   "account_mode": "free-project-only",
-  "deferred": [],
-  "resumed": [
+  "deferred": [
     "live-377cf19fad0ced1b3b8c8639",
     "live-140a5818f06418b7592ebe8f",
     "live-1045d6f5674d5a6f2ac52ab4",
-    "live-1fec11da6f0f85f24cea7132",
     "live-ce23ae74631c1a5a869204ff",
-    "live-bd03c4f177df5dc1c24ac56c",
     "live-62e979a207a72a6a98fd6266",
-    "live-d2c3954f930f342308c39427"
+    "live-d2c3954f930f342308c39427",
+    "live-bd03c4f177df5dc1c24ac56c"
   ],
+  "resumed": [],
   "stale": [],
-  "input_tokens": 30436,
-  "output_tokens": 5196,
+  "input_tokens": 25330,
+  "output_tokens": 4122,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 1193,
-  "pending_after": 1193,
-  "finished_at": "2026-11-16T18:29:41.499560+00:00",
-  "seconds": 76.73,
-  "requests_today": 28,
+  "pending_before": 1249,
+  "retry_after": "2026-11-17T00:15:00+00:00",
+  "pending_after": 1247,
+  "finished_at": "2026-11-16T18:40:49.002209+00:00",
+  "seconds": 73.47,
+  "requests_today": 36,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
     "day": "2026-11-16",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 1044.74435,
+    "estimated_neurons": 1287.51355,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 0.0,
-    "requests": 28,
-    "input_tokens": 96110,
-    "output_tokens": 19696,
+    "requests": 36,
+    "input_tokens": 121440,
+    "output_tokens": 23818,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

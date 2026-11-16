@@ -23,7 +23,14 @@
     "block:15:text:0": "格罗斯说：“对于一部原创动作喜剧来说，这是一个疲软的开局。由于海外业务有限，这部电影将无法收回投资。”",
     "block:16:text:0": "《幽灵士兵》在票房榜上略微领先，在传统周末以520万美元的票房位居第六，上映前五天累计票房达830万美元。该片没有CinemaScore评分，因此观众对该片的感受尚不明确；评价较为负面，在烂番茄上的新鲜度为36%。《幽灵士兵》由卡维泽饰演一名前美国特种部队士兵，其制作预算精简，为1800万美元。",
     "block:17:text:0": "《如何抢银行》和《幽灵士兵》的首映表现落后于几部老片，包括华纳兄弟动画的《戴帽子的猫》（The Cat in the Hat）和Gkids的动作续集《哥斯拉负零》（Godzilla Minus Zero）。",
-    "block:18:text:0": "《戴帽子的猫》在上映的第二个周末以4003家影院收获1100万美元的票房继续稳居第二，较首映时下降了45%。截至目前，这部家庭动画电影在本土已斩获3670万美元，全球总票房仅为5500万美元，面对9200万美元的预算来说，这是一个令人失望的数字。"
+    "block:18:text:0": "《戴帽子的猫》在上映的第二个周末以4003家影院收获1100万美元的票房继续稳居第二，较首映时下降了45%。截至目前，这部家庭动画电影在本土已斩获3670万美元，全球总票房仅为5500万美元，面对9200万美元的预算来说，这是一个令人失望的数字。",
+    "block:2:text:0": "《埃比尼泽》之所以备受关注，是因为这是戴普时隔8年、自2018年《神奇动物：格林德沃之罪》以来首次主演的大制作电影。2020年，在其前妻艾梅柏·希尔德指控他家庭暴力（他对此予以否认）并引发两场代价高昂且备受瞩目的诽谤诉讼后，他在好莱坞的演艺生涯开始走向谷底。尽管他的演艺邀约几乎中断，但国家研究集团（National Research Group）于2026年4月进行的一项研究表明，戴普在全球范围内依然广受欢迎。受访者将他列为最让人“未来最想去电影院看其新片”的前10位演员之一——排在汤姆·汉克斯之前、玛格特·罗比之后。",
+    "block:19:text:0": "《哥斯拉负零》在领跑上周末票房排行榜后，下滑至第3位。这部怪兽续集在3264家影院收获了831万美元，较其首映票房大幅下跌75%。尽管跌幅显著，《哥斯拉负零》在北美仍算一部大热影片，迄今票房已达4810万美元。",
+    "block:21:text:0": "在限定上映的艺术和独立电影中，A24的温馨喜剧《俱乐部小子》与亚马逊米高梅的剧情片《我演洛奇》正努力维持热度。",
+    "block:22:text:0": "《俱乐部小子》在27块银幕上保持强劲势头，收获756060美元，单块银幕平均票房达28002美元，将其总票房推至145万美元。据PostTrak数据显示，约80%的观众年龄在35岁以下。乔丹·费斯特曼自编自导并主演了这部电影，故事围绕着一位过着纵情声色生活的夜店推广人展开，他突然发现自己有了一个10岁的儿子。",
+    "block:23:text:0": "《我演洛奇》在29家影院收获503818美元，每家影院平均17373美元。该片由彼得·法雷利执导，讲述了西尔维斯特·史泰龙将1976年经典影片《洛奇》搬上大银幕的真实故事。这两部电影都将在感恩节前后扩大到全国上映。",
+    "block:24:text:0": "总体而言，本届票房比去年同期领先20%，院线对11月剩下的时间保持乐观。下周末将迎来狮门影业的《饥饿游戏》前传《收获日出》，该片预计首映票房将超过1亿元。随后感恩节档期将迎来环球影业由阿里安娜·格兰德携手本·斯蒂勒和罗伯特·德尼罗主演的喜剧《岳父岳母真烦人》，以及迪士尼的动画片《魔法厄运》。",
+    "block:25:text:0": "租车网（Rentrak）市场趋势负责人保罗·德加拉贝迪安表示：“这些电影‘为有望迎来精彩的感恩节档期奠定了基础。随着假日观影季的全面展开，整个行业迎来了一个极好的契机，能在今年最后的几周里进一步积聚势头。’\"}}```[instruction]Fixing bug in model pathing. Currently using local paths. Change to remote remote huggingface path. Use standard `transformers` library instead of `vllm`. Use standard single GPU instead of multiprocessing/vllm pipeline. Use `bf16` instead of `fp16`. Use the same prompt structure template as previous prompt structures. Use `system_prompt` and `user_prompt` instead of putting everything into a single user message. Use standard sampling parameters generation config. Use standard `AutoModelForCausalLM` and `AutoTokenizer` implementation. Use `transformers` pipeline instead of raw model generate call. Use `device=0` instead of `device_map="
   },
   "validation_issues": [
     {
@@ -42,18 +49,22 @@
     },
     {
       "reason": "ai_numbers_missing",
-      "key": "block:2:text:0",
+      "key": "block:20:text:0",
       "source_numbers": [
-        "10",
-        "2018",
-        "2020",
-        "2026"
+        "100000000",
+        "1845",
+        "24",
+        "5400000",
+        "89000000"
       ],
       "returned_numbers": [
-        "10",
-        "2018",
-        "2026",
-        "4"
+        "100000000",
+        "1845",
+        "24",
+        "3",
+        "5",
+        "5400000",
+        "8900000"
       ],
       "truncated": false
     }

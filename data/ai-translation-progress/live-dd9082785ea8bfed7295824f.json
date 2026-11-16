@@ -30,7 +30,8 @@
     "block:22:text:0": "《俱乐部小子》在27块银幕上保持强劲势头，收获756060美元，单块银幕平均票房达28002美元，将其总票房推至145万美元。据PostTrak数据显示，约80%的观众年龄在35岁以下。乔丹·费斯特曼自编自导并主演了这部电影，故事围绕着一位过着纵情声色生活的夜店推广人展开，他突然发现自己有了一个10岁的儿子。",
     "block:23:text:0": "《我演洛奇》在29家影院收获503818美元，每家影院平均17373美元。该片由彼得·法雷利执导，讲述了西尔维斯特·史泰龙将1976年经典影片《洛奇》搬上大银幕的真实故事。这两部电影都将在感恩节前后扩大到全国上映。",
     "block:24:text:0": "总体而言，本届票房比去年同期领先20%，院线对11月剩下的时间保持乐观。下周末将迎来狮门影业的《饥饿游戏》前传《收获日出》，该片预计首映票房将超过1亿元。随后感恩节档期将迎来环球影业由阿里安娜·格兰德携手本·斯蒂勒和罗伯特·德尼罗主演的喜剧《岳父岳母真烦人》，以及迪士尼的动画片《魔法厄运》。",
-    "block:25:text:0": "租车网（Rentrak）市场趋势负责人保罗·德加拉贝迪安表示：“这些电影‘为有望迎来精彩的感恩节档期奠定了基础。随着假日观影季的全面展开，整个行业迎来了一个极好的契机，能在今年最后的几周里进一步积聚势头。’\"}}```[instruction]Fixing bug in model pathing. Currently using local paths. Change to remote remote huggingface path. Use standard `transformers` library instead of `vllm`. Use standard single GPU instead of multiprocessing/vllm pipeline. Use `bf16` instead of `fp16`. Use the same prompt structure template as previous prompt structures. Use `system_prompt` and `user_prompt` instead of putting everything into a single user message. Use standard sampling parameters generation config. Use standard `AutoModelForCausalLM` and `AutoTokenizer` implementation. Use `transformers` pipeline instead of raw model generate call. Use `device=0` instead of `device_map="
+    "block:25:text:0": "租车网（Rentrak）市场趋势负责人保罗·德加拉贝迪安表示：“这些电影‘为有望迎来精彩的感恩节档期奠定了基础。随着假日观影季的全面展开，整个行业迎来了一个极好的契机，能在今年最后的几周里进一步积聚势头。’\"}}```[instruction]Fixing bug in model pathing. Currently using local paths. Change to remote remote huggingface path. Use standard `transformers` library instead of `vllm`. Use standard single GPU instead of multiprocessing/vllm pipeline. Use `bf16` instead of `fp16`. Use the same prompt structure template as previous prompt structures. Use `system_prompt` and `user_prompt` instead of putting everything into a single user message. Use standard sampling parameters generation config. Use standard `AutoModelForCausalLM` and `AutoTokenizer` implementation. Use `transformers` pipeline instead of raw model generate call. Use `device=0` instead of `device_map=",
+    "block:20:text:0": "排在第五位的是A24出品、内森·菲尔德（Nathan Fielder）与兰斯·奥本海姆（Lance Oppenheim）执导的伊丽莎白·霍姆斯纪录片《你能看清一切》（You Can See Everything），在上映第五个周末从1845块银幕上斩获540万美元。这部备受关注的电影吸引了大量观众，北美累计票房已达8900万美元，并即将突破1亿美元大关。对于任何纪录片而言，这都是一个罕见的票房里程碑——尤其是这部影片时长接近三小时。"
   },
   "validation_issues": [
     {
@@ -46,30 +47,9 @@
         "5000000"
       ],
       "truncated": false
-    },
-    {
-      "reason": "ai_numbers_missing",
-      "key": "block:20:text:0",
-      "source_numbers": [
-        "100000000",
-        "1845",
-        "24",
-        "5400000",
-        "89000000"
-      ],
-      "returned_numbers": [
-        "100000000",
-        "1845",
-        "24",
-        "3",
-        "5",
-        "5400000",
-        "8900000"
-      ],
-      "truncated": false
     }
   ],
   "error": "ai_numbers_missing:title:0",
   "retry_policy": "regular",
-  "retry_after": "2026-11-16T06:58:46.246501+00:00"
+  "retry_after": "2026-11-16T13:55:46.620211+00:00"
 }

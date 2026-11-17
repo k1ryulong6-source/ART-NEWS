@@ -2,11 +2,8 @@
   "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
   "model": "@cf/qwen/qwen3-30b-a3b-fp8",
   "configured": true,
-  "requests": 8,
-  "translated": [
-    "live-9e1537b37b416b555bed6f93",
-    "live-069f92646e17c75616165ad9"
-  ],
+  "requests": 7,
+  "translated": [],
   "failed": [
     {
       "id": "live-965c4079026e0c5b12546e92",
@@ -14,9 +11,108 @@
       "validation_issues": []
     },
     {
+      "id": "live-140a5818f06418b7592ebe8f",
+      "reason": "ai_unit_coverage_mismatch",
+      "validation_issues": []
+    },
+    {
+      "id": "live-1045d6f5674d5a6f2ac52ab4",
+      "reason": "ai_paragraph_not_translated:block:9:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:9:text:0"
+        }
+      ]
+    },
+    {
       "id": "live-1fec11da6f0f85f24cea7132",
       "reason": "ai_unit_coverage_mismatch",
       "validation_issues": []
+    },
+    {
+      "id": "live-ce23ae74631c1a5a869204ff",
+      "reason": "ai_paragraph_not_translated:block:9:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:9:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:11:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:12:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:13:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:14:text:0"
+        },
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:15:text:0"
+        }
+      ]
+    },
+    {
+      "id": "live-2f0c0974a172407f146e78ff",
+      "reason": "ai_unit_coverage_mismatch",
+      "validation_issues": []
+    },
+    {
+      "id": "live-62e979a207a72a6a98fd6266",
+      "reason": "ai_numbers_missing:block:9:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:9:text:0",
+          "source_numbers": [
+            "1980",
+            "3.3"
+          ],
+          "returned_numbers": [
+            "20",
+            "3300000",
+            "80"
+          ],
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "id": "live-bd03c4f177df5dc1c24ac56c",
+      "reason": "ai_numbers_missing:block:8:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:8:text:0",
+          "source_numbers": [
+            "2017",
+            "2026",
+            "24",
+            "25",
+            "26",
+            "3",
+            "4",
+            "9"
+          ],
+          "returned_numbers": [
+            "2017",
+            "2024",
+            "2025",
+            "2026",
+            "4",
+            "900000000"
+          ],
+          "truncated": false
+        }
+      ]
     }
   ],
   "credential_checks": {
@@ -24,44 +120,41 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-11-16T18:39:35.511389+00:00",
+  "started_at": "2026-11-17T02:09:07.281167+00:00",
   "verification_run": false,
-  "status": "daily_limit",
+  "status": "partial_failure",
   "account_mode": "free-project-only",
-  "deferred": [
-    "live-377cf19fad0ced1b3b8c8639",
+  "deferred": [],
+  "resumed": [
     "live-140a5818f06418b7592ebe8f",
     "live-1045d6f5674d5a6f2ac52ab4",
     "live-ce23ae74631c1a5a869204ff",
     "live-62e979a207a72a6a98fd6266",
-    "live-d2c3954f930f342308c39427",
     "live-bd03c4f177df5dc1c24ac56c"
   ],
-  "resumed": [],
   "stale": [],
-  "input_tokens": 25330,
-  "output_tokens": 4122,
+  "input_tokens": 24006,
+  "output_tokens": 5024,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 1249,
-  "retry_after": "2026-11-17T00:15:00+00:00",
-  "pending_after": 1247,
-  "finished_at": "2026-11-16T18:40:49.002209+00:00",
-  "seconds": 73.47,
-  "requests_today": 36,
+  "pending_before": 1241,
+  "pending_after": 1241,
+  "finished_at": "2026-11-17T02:10:13.074183+00:00",
+  "seconds": 65.77,
+  "requests_today": 7,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
-    "day": "2026-11-16",
+    "day": "2026-11-17",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 1287.51355,
+    "estimated_neurons": 264.13415,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 0.0,
-    "requests": 36,
-    "input_tokens": 121440,
-    "output_tokens": 23818,
+    "requests": 7,
+    "input_tokens": 24006,
+    "output_tokens": 5024,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

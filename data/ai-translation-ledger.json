@@ -233,11 +233,11 @@
       "unknown_usage_requests": 12
     },
     "2026-11-16": {
-      "requests": 16,
-      "input_tokens": 95135,
-      "output_tokens": 5538,
-      "reserved_requests": 32,
-      "unknown_usage_requests": 5
+      "requests": 19,
+      "input_tokens": 104000,
+      "output_tokens": 8759,
+      "reserved_requests": 0,
+      "unknown_usage_requests": 6
     }
   },
   "reservations": {
@@ -5868,8 +5868,9 @@
     "43999981492:1": {
       "day": "2026-11-16",
       "allocated": 40,
-      "remaining": 32,
-      "status": "reserved"
+      "remaining": 0,
+      "status": "closed",
+      "actual_requests": 11
     }
   },
   "configuration_repair": {
@@ -5879,13 +5880,13 @@
     "reason": "Actual Google 404: old model no longer available to new users; recommended 3.5 has Free Tier. Clear only this stale configuration backoff, preserve all requests/tokens/reservations.",
     "cleared_retry_after": "2026-10-15T00:02:01.690921+00:00"
   },
-  "last_service_recovery_at": "2026-11-17T02:02:47.501867+00:00",
+  "last_service_recovery_at": "2026-11-17T02:06:40.492368+00:00",
   "last_api_error": {
     "http_status": 503,
     "category": "capacity_unavailable",
     "api_status": "UNAVAILABLE",
     "message_evidence": "high demand",
-    "occurred_at": "2026-11-16T18:39:35.148897+00:00"
+    "occurred_at": "2026-11-17T02:07:25.558050+00:00"
   },
   "service_retry": {
     "policy": "bounded-exponential-v1",
@@ -5893,8 +5894,8 @@
     "delay_seconds": 72,
     "server_retry_seconds": 0,
     "error": "ai_http_503",
-    "failed_at": "2026-11-17T02:05:10.146099+00:00",
-    "retry_after": "2026-11-17T02:06:22.146099+00:00",
+    "failed_at": "2026-11-17T02:07:25.553064+00:00",
+    "retry_after": "2026-11-17T02:08:37.553064+00:00",
     "provider_error": {
       "http_status": 503,
       "category": "capacity_unavailable",
@@ -5902,7 +5903,7 @@
       "message_evidence": "high demand"
     }
   },
-  "retry_after": "2026-11-17T02:06:22.146099+00:00",
+  "retry_after": "2026-11-17T02:08:37.553064+00:00",
   "retry_status": "service_wait",
   "retry_error": "ai_http_503"
 }

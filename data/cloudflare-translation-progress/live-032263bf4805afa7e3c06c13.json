@@ -4,5 +4,34 @@
   "input_hash": "37025399ae6db5857bd87b8d1840f0063bee3068436ac17be6798bda1b805c55",
   "source_hash": "05f3ae13da9b98cc6a310870b48a7098dd1ea7897093c0394ca496c9d0330536",
   "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
-  "outputs": {}
+  "outputs": {
+    "title:0": "惠比寿影像祭2027",
+    "block:1:text:0": "B1F・2F・3F展示室",
+    "block:2:text:0": "惠比寿影像祭2027（暂）",
+    "block:3:text:0": "2027.2.5 （金） — 2.21 （日）",
+    "block:4:text:0": "举办期间：2027年2月5日（金） ～ 2月21日（日）",
+    "block:5:text:0": "休馆日：每周星期一（若星期一为节假日则开馆，次日休馆）",
+    "block:6:text:0": "费用：未定"
+  },
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:7:text:0",
+      "source_numbers": [
+        "1",
+        "2009",
+        "22",
+        "3"
+      ],
+      "returned_numbers": [
+        "2009",
+        "22",
+        "3"
+      ],
+      "truncated": false
+    }
+  ],
+  "error": "ai_numbers_missing:block:7:text:0",
+  "retry_policy": "regular",
+  "retry_after": "2026-11-18T16:46:00.880614+00:00"
 }

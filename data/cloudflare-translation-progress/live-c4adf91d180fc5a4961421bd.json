@@ -4,8 +4,31 @@
   "input_hash": "1354df15dcfbed6bc802db1bff75ff312947d221b9c3749c244c67a92afae46d",
   "source_hash": "454cc31e61871235016cb60b85a4ed763c14bb0c160d63c7c8a7f82bf82299fb",
   "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
-  "outputs": {},
-  "error": "ai_unit_coverage_mismatch",
+  "outputs": {
+    "title:0": "迪迪埃·勒弗勒，那些令人着迷的影像：一本关于这位标志性摄影师的书和展览",
+    "excerpt:0": "通过档案图片、亲友的证言以及摄影界人士的背景补充，这本《迪迪埃·勒弗勒，那些令人着迷的影像》回顾了这位摄影师的重要历程。与此同时，这本由……出版的书也推出了，一场展览在Contemporaine举行，184, Cr Nicole Dreyfus, 92000 Nanterre，持续到2027年5月15日。",
+    "block:0:text:0": "通过档案图片、亲友的个人证言以及摄影界人士的背景补充，这本《迪迪埃·勒弗勒，那些令人着迷的影像》回顾了这位摄影师的重要历程。与此同时，这本由Fisheye出版的书也推出了，一场展览在Contemporaine举行，184, Cr Nicole Dreyfus, 92000 Nanterre，持续到2027年5月15日。",
+    "block:2:text:0": "迪迪埃·勒弗勒尤其因是漫画《摄影师》的主角而闻名——该漫画由Dupuis出版社出版，并被翻译成18种语言，由埃马纽埃尔·吉贝尔和弗雷德里克·勒梅西耶创作。这本漫画讲述了迪迪埃·勒弗勒在无国界医生组织（MSF）在阿富汗的人道主义任务中所经历的冒险，结合了绘画和照片。这本开创性的漫画获得了许多奖项，并让一位低调的摄影师得到了应有的关注，他的影像为我们讲述了非常多的故事。",
+    "block:3:caption:0": "《迪迪埃·勒弗勒，那些令人着迷的影像》一书的图片",
+    "block:4:text:0": "一位温和而严格的作品作者"
+  },
+  "error": "ai_numbers_missing:block:1:text:0",
   "retry_policy": "headline",
-  "retry_after": "2026-11-17T23:05:35.864465+00:00"
+  "retry_after": "2026-11-18T02:57:52.748481+00:00",
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:1:text:0",
+      "source_numbers": [
+        "1980",
+        "2007"
+      ],
+      "returned_numbers": [
+        "20",
+        "2007",
+        "80"
+      ],
+      "truncated": false
+    }
+  ]
 }

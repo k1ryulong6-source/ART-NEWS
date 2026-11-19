@@ -2,7 +2,7 @@
   "provider": "contextual-api:cloudflare:@cf/qwen/qwen3-30b-a3b-fp8:direct-v1",
   "model": "@cf/qwen/qwen3-30b-a3b-fp8",
   "configured": true,
-  "requests": 6,
+  "requests": 8,
   "translated": [],
   "failed": [
     {
@@ -20,6 +20,167 @@
             "70"
           ],
           "truncated": false
+        }
+      ]
+    },
+    {
+      "id": "live-c425f43ec52b0231ee904a13",
+      "reason": "ai_numbers_missing:block:4:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:4:text:0",
+          "source_numbers": [
+            "1",
+            "10000",
+            "17200000",
+            "187",
+            "1888",
+            "1935",
+            "1936",
+            "2000",
+            "2022",
+            "5000",
+            "50000",
+            "6",
+            "60000",
+            "70000",
+            "8000"
+          ],
+          "returned_numbers": [
+            "10000",
+            "100000000",
+            "17200000",
+            "18700000000",
+            "1888",
+            "1935",
+            "1936",
+            "2000",
+            "2022",
+            "5000",
+            "50000",
+            "6",
+            "60000",
+            "70000",
+            "8000"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:9:text:0",
+          "source_numbers": [
+            "1",
+            "12",
+            "287",
+            "4",
+            "50000000",
+            "717",
+            "80000000"
+          ],
+          "returned_numbers": [
+            "100000000",
+            "12",
+            "28700000000",
+            "400000000",
+            "50000000",
+            "71700000000",
+            "80000000"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:16:text:0",
+          "source_numbers": [
+            "1936",
+            "1938"
+          ],
+          "returned_numbers": [],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:17:text:0",
+          "source_numbers": [
+            "1",
+            "2",
+            "2007",
+            "2014",
+            "2017",
+            "55000000",
+            "6000000",
+            "9"
+          ],
+          "returned_numbers": [
+            "2007",
+            "2014",
+            "2017",
+            "55000000",
+            "6000000",
+            "900000000"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:21:text:0",
+          "source_numbers": [
+            "2"
+          ],
+          "returned_numbers": [],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:30:text:0",
+          "source_numbers": [
+            "10",
+            "1936"
+          ],
+          "returned_numbers": [
+            "1936"
+          ],
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "id": "live-bd03c4f177df5dc1c24ac56c",
+      "reason": "ai_numbers_missing:block:8:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:8:text:0",
+          "source_numbers": [
+            "2017",
+            "2026",
+            "24",
+            "25",
+            "26",
+            "3",
+            "4",
+            "9"
+          ],
+          "returned_numbers": [
+            "2017",
+            "2024",
+            "2025",
+            "2026",
+            "4",
+            "900000000"
+          ],
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "id": "live-1045d6f5674d5a6f2ac52ab4",
+      "reason": "ai_paragraph_not_translated:block:9:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_paragraph_not_translated",
+          "key": "block:9:text:0"
         }
       ]
     },
@@ -54,6 +215,45 @@
       ]
     },
     {
+      "id": "live-d2c3954f930f342308c39427",
+      "reason": "ai_numbers_missing:block:6:text:0",
+      "validation_issues": [
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:6:text:0",
+          "source_numbers": [
+            "1.98",
+            "10",
+            "1950",
+            "2",
+            "2.6",
+            "2011",
+            "2018",
+            "7.8"
+          ],
+          "returned_numbers": [
+            "1.98",
+            "1950",
+            "2.6",
+            "2011",
+            "2018",
+            "7",
+            "7.8"
+          ],
+          "truncated": false
+        },
+        {
+          "reason": "ai_numbers_missing",
+          "key": "block:14:text:0",
+          "source_numbers": [
+            "2"
+          ],
+          "returned_numbers": [],
+          "truncated": false
+        }
+      ]
+    },
+    {
       "id": "live-62e979a207a72a6a98fd6266",
       "reason": "ai_numbers_missing:block:9:text:0",
       "validation_issues": [
@@ -74,45 +274,6 @@
       ]
     },
     {
-      "id": "live-e8e5a8346bfa41e43756e73c",
-      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini",
-      "validation_issues": []
-    },
-    {
-      "id": "live-52307e70ce7aef0a675077a7",
-      "reason": "ai_paragraph_not_translated:block:2:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:2:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:6:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:9:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:10:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:11:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:12:text:0"
-        },
-        {
-          "reason": "ai_paragraph_not_translated",
-          "key": "block:13:text:0"
-        }
-      ]
-    },
-    {
       "id": "live-f359751c72272a7658287fe6",
       "reason": "ai_numbers_missing:block:1:text:0",
       "validation_issues": [
@@ -124,10 +285,7 @@
             "2026",
             "25"
           ],
-          "returned_numbers": [
-            "2026",
-            "25"
-          ],
+          "returned_numbers": [],
           "truncated": false
         },
         {
@@ -146,40 +304,13 @@
           ],
           "returned_numbers": [
             "10",
+            "11",
+            "12",
             "1977",
             "2026",
             "23",
-            "25"
-          ],
-          "truncated": false
-        },
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:6:text:0",
-          "source_numbers": [
-            "12",
-            "141",
-            "2026",
-            "23"
-          ],
-          "returned_numbers": [
-            "141",
-            "2026",
-            "23"
-          ],
-          "truncated": false
-        },
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:7:text:0",
-          "source_numbers": [
-            "11",
-            "2026",
-            "25"
-          ],
-          "returned_numbers": [
-            "2026",
-            "25"
+            "25",
+            "8"
           ],
           "truncated": false
         },
@@ -193,32 +324,6 @@
           "truncated": false
         }
       ]
-    },
-    {
-      "id": "live-05760bd055149557329447d7",
-      "reason": "ai_numbers_missing:block:5:text:0",
-      "validation_issues": [
-        {
-          "reason": "ai_numbers_missing",
-          "key": "block:5:text:0",
-          "source_numbers": [
-            "13",
-            "35",
-            "7"
-          ],
-          "returned_numbers": [
-            "13000000",
-            "35",
-            "7"
-          ],
-          "truncated": false
-        }
-      ]
-    },
-    {
-      "id": "live-ee482fa2d66fc5faf589af9b",
-      "reason": "cloudflare_full_context_exceeds_conservative_limit_keep_for_gemini",
-      "validation_issues": []
     }
   ],
   "credential_checks": {
@@ -226,46 +331,44 @@
     "account_id_present": true,
     "account_id_format_valid": true
   },
-  "started_at": "2026-11-19T01:35:37.950662+00:00",
+  "started_at": "2026-11-19T09:33:52.750038+00:00",
   "verification_run": false,
   "status": "partial_failure",
   "account_mode": "free-project-only",
-  "deferred": [
-    "live-c425f43ec52b0231ee904a13",
-    "live-1045d6f5674d5a6f2ac52ab4",
-    "live-bd03c4f177df5dc1c24ac56c",
-    "live-d2c3954f930f342308c39427"
-  ],
+  "deferred": [],
   "resumed": [
     "live-60fd33852bdc5026676570ba",
+    "live-c425f43ec52b0231ee904a13",
+    "live-bd03c4f177df5dc1c24ac56c",
+    "live-1045d6f5674d5a6f2ac52ab4",
     "live-ce23ae74631c1a5a869204ff",
+    "live-d2c3954f930f342308c39427",
     "live-62e979a207a72a6a98fd6266",
-    "live-52307e70ce7aef0a675077a7",
-    "live-05760bd055149557329447d7"
+    "live-f359751c72272a7658287fe6"
   ],
   "stale": [],
-  "input_tokens": 18364,
-  "output_tokens": 2563,
+  "input_tokens": 28190,
+  "output_tokens": 2921,
   "service_retry_policy": "bounded-exponential-v1",
   "inline_service_retries": 0,
   "service_failures": [],
-  "pending_before": 1458,
-  "pending_after": 1458,
-  "finished_at": "2026-11-19T01:36:35.955737+00:00",
-  "seconds": 57.98,
-  "requests_today": 14,
+  "pending_before": 1457,
+  "pending_after": 1457,
+  "finished_at": "2026-11-19T09:34:53.974661+00:00",
+  "seconds": 61.2,
+  "requests_today": 22,
   "daily_request_limit": 500,
   "unknown_usage_requests_today": 0,
   "neurons": {
     "day": "2026-11-19",
     "timezone": "UTC",
     "daily_free_protection": 10000,
-    "estimated_neurons": 405.336025,
+    "estimated_neurons": 624.73225,
     "unknown_neurons_upper_bound": 0.0,
     "reserved_neurons": 0.0,
-    "requests": 14,
-    "input_tokens": 47914,
-    "output_tokens": 6029,
+    "requests": 22,
+    "input_tokens": 76104,
+    "output_tokens": 8950,
     "scope": "repository_estimate_not_account_billing_or_other_apps"
   }
 }

@@ -1,8 +1,80 @@
 {
   "schema_version": 1,
   "id": "live-f45aef18d294affc347a770b",
-  "input_hash": "d0608f3db97a899944e3c8a997b3994a1dade2dc1193d8a0aa4bd7dfc9ed8804",
+  "input_hash": "73a939b685927f4971039bc15c9ffbf15e4608e953a469fa720adc9f9237c3f5",
   "source_hash": "b9bb6aabaa6080c3df0bb463276fb2ab25e0c02e51cd4172c63b3d98879dce1f",
-  "provider": "contextual-api:deepseek:deepseek-flash:direct-v1",
-  "outputs": {}
+  "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
+  "outputs": {
+    "title:0": "公布9件获奖作品！大奖得主为角谷纪章 “FACE展2027”将于2027年3月6日至28日在SOMPO美术馆举办",
+    "excerpt:0": "以绘画等平面作品为对象的公开征集比赛展“FACE展2027”将于2027年3月6日（周六）至3月28日（周日）在SOMPO美术馆（东京西新宿）举办。11月15日，公布了入选者及获奖作品，大奖得主为",
+    "block:0:caption:0": "大奖作品 角谷纪章“Scrawl#21”",
+    "block:2:text:0": "公开征集比赛“FACE2027” ◆大奖◆ 奖金300万元",
+    "block:3:text:0": "角谷纪章 作品名：Scrawl#21",
+    "block:4:text:0": "◆优秀奖◆ 奖金各50万元",
+    "block:5:text:0": "柳勇我 作品名：手を持たない人々 徐嘒壎 作品名：冥王星への荷造り すずきしほ 作品名：おわらない庭",
+    "block:6:caption:0": "柳勇我“手を持たない人々”",
+    "block:7:caption:0": "徐嘒壎“冥王星への荷造り”",
+    "block:8:caption:0": "すずきしほ“おわらない庭”",
+    "block:9:text:0": "◆U30新锐奖◆ 奖金30万元",
+    "block:10:text:0": "うえだふうか 作品名：まじょの室内",
+    "block:11:caption:0": "うえだふうか“まじょの室内”",
+    "block:12:text:0": "◆评审员特别奖◆ 奖金各10万元",
+    "block:13:text:0": "中平果步 作品名：Contact» 鈴木瞬大 作品名：足痕 王婧琳 作品名：浮遊 白肌４ 作品名：人生の花道",
+    "block:15:text:0": "稲岡祐慈、井上舜太、今井翔太、Went Branch、大川原千代子、大橋恵奈、及部薫、加藤公佑、かわかみさくら、岸春代、北野茜、北堀怜、木下実優、キミリ、木本匠、國松真希、久保美萌理、HUANG YUQI、蔡晨羽、作田優希、柴トラ夏子、城倉綾子、竹内三、竹重球、陳柏欣、張栖梓、塚原るな、豊田奈緒、中小路萌美、ナガタコウタロウ、ナカムラミオ、沼尾令子、野村紀子、萩原優、羽藤雅敏、馬場優亜、樋口望子、藤田遼子、藤本将伍、藤森哲、前田大介、真木智子、増岡詩乃、マルメヒビキ、もりさこりさ、Richard Violaine （读卖新闻美术展导航编辑班）",
+    "block:16:text:0": "FACE展2027／绘画的去向2026—FACE获奖作家展",
+    "block:17:text:0": "会场：SOMPO美术馆（东京都新宿区西新宿1-26-1）",
+    "block:18:text:0": "会期：2027年3月6日（周六）～ 3月28日（周日）",
+    "block:19:text:0": "闭馆日：星期一",
+    "block:20:text:0": "开馆时间：上午10时～下午6时（最终入馆时间为下午5时30分）",
+    "block:21:text:0": "门票：普通800日元（高中生及以下免费）",
+    "block:22:text:0": "详情请参阅美术馆官方网站。",
+    "block:23:text:0": "◆点击查看 FACE展2026"
+  },
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:1:text:0",
+      "source_numbers": [
+        "0",
+        "11",
+        "1272",
+        "15",
+        "2027",
+        "21",
+        "28",
+        "3",
+        "55",
+        "6",
+        "9"
+      ],
+      "returned_numbers": [
+        "11",
+        "1272",
+        "15",
+        "2027",
+        "21",
+        "28",
+        "3",
+        "55",
+        "6",
+        "9"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:14:text:0",
+      "source_numbers": [
+        "46",
+        "50"
+      ],
+      "returned_numbers": [
+        "46"
+      ],
+      "truncated": false
+    }
+  ],
+  "error": "ai_numbers_missing:block:1:text:0",
+  "retry_policy": "headline",
+  "retry_after": "2026-11-20T13:26:28.554797+00:00"
 }

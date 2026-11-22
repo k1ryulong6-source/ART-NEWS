@@ -261,10 +261,11 @@
       "unknown_usage_requests": 2
     },
     "2026-11-22": {
-      "requests": 0,
+      "requests": 1,
       "input_tokens": 0,
       "output_tokens": 0,
-      "reserved_requests": 40
+      "reserved_requests": 0,
+      "unknown_usage_requests": 1
     }
   },
   "reservations": {
@@ -5470,16 +5471,17 @@
     "45004443062:1": {
       "day": "2026-11-22",
       "allocated": 40,
-      "remaining": 40,
-      "status": "reserved"
+      "remaining": 0,
+      "status": "closed",
+      "actual_requests": 1
     }
   },
-  "retry_after": "2026-11-22T02:34:48.428668+00:00",
+  "retry_after": "2026-11-22T14:48:07.666320+00:00",
   "retry_status": "configuration_error",
   "retry_error": "ai_http_402",
   "last_api_error": {
     "http_status": 402,
     "category": "insufficient_balance",
-    "occurred_at": "2026-11-21T20:34:48.428686+00:00"
+    "occurred_at": "2026-11-22T08:48:07.666341+00:00"
   }
 }

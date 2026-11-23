@@ -275,11 +275,11 @@
       "unknown_usage_requests": 12
     },
     "2026-11-23": {
-      "requests": 16,
+      "requests": 18,
       "input_tokens": 65481,
       "output_tokens": 8869,
-      "reserved_requests": 40,
-      "unknown_usage_requests": 2
+      "reserved_requests": 38,
+      "unknown_usage_requests": 4
     }
   },
   "reservations": {
@@ -5914,7 +5914,7 @@
     "45257525835:1": {
       "day": "2026-11-23",
       "allocated": 40,
-      "remaining": 40,
+      "remaining": 38,
       "status": "reserved"
     }
   },
@@ -5928,12 +5928,12 @@
   },
   "service_retry": {
     "policy": "bounded-exponential-v1",
-    "consecutive_failures": 1,
-    "delay_seconds": 75,
+    "consecutive_failures": 2,
+    "delay_seconds": 122,
     "server_retry_seconds": 0,
     "error": "ai_http_503",
-    "failed_at": "2026-11-23T12:28:50.294452+00:00",
-    "retry_after": "2026-11-23T12:30:05.294452+00:00",
+    "failed_at": "2026-11-23T20:16:50.016397+00:00",
+    "retry_after": "2026-11-23T20:18:52.016397+00:00",
     "provider_error": {
       "http_status": 503,
       "category": "capacity_unavailable",
@@ -5941,7 +5941,7 @@
       "message_evidence": "high demand"
     }
   },
-  "retry_after": "2026-11-23T12:30:05.294452+00:00",
+  "retry_after": "2026-11-23T20:18:52.016397+00:00",
   "retry_status": "service_wait",
   "retry_error": "ai_http_503"
 }

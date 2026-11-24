@@ -3,7 +3,7 @@
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
   "model": "gemini-3.5-flash-lite",
   "account_mode": "free-project-only",
-  "started_at": "2026-11-24T17:48:35.275520+00:00",
+  "started_at": "2026-11-24T20:51:11.620885+00:00",
   "translated": [],
   "failed": [],
   "deferred": [],
@@ -17,12 +17,12 @@
   "service_failures": [
     {
       "policy": "bounded-exponential-v1",
-      "consecutive_failures": 4,
-      "delay_seconds": 490,
+      "consecutive_failures": 5,
+      "delay_seconds": 975,
       "server_retry_seconds": 0,
       "error": "ai_http_503",
-      "failed_at": "2026-11-24T17:48:48.180647+00:00",
-      "retry_after": "2026-11-24T17:56:58.180647+00:00",
+      "failed_at": "2026-11-24T20:51:17.424865+00:00",
+      "retry_after": "2026-11-24T21:07:32.424865+00:00",
       "provider_error": {
         "http_status": 503,
         "category": "capacity_unavailable",
@@ -32,7 +32,7 @@
       "inline_retry": false
     }
   ],
-  "pending_before": 653,
+  "pending_before": 979,
   "error_detail": {
     "http_status": 503,
     "category": "capacity_unavailable",
@@ -40,21 +40,21 @@
     "message_evidence": "high demand"
   },
   "error": "ai_http_503",
-  "retry_after": "2026-11-24T17:56:58.180647+00:00",
-  "pending_after": 653,
-  "finished_at": "2026-11-24T17:48:48.194973+00:00",
-  "seconds": 12.92,
-  "requests_today": 7,
+  "retry_after": "2026-11-24T21:07:32.424865+00:00",
+  "pending_after": 979,
+  "finished_at": "2026-11-24T20:51:17.433490+00:00",
+  "seconds": 5.81,
+  "requests_today": 8,
   "daily_request_limit": 500,
-  "unknown_usage_requests_today": 4,
+  "unknown_usage_requests_today": 5,
   "service_retry": {
     "policy": "bounded-exponential-v1",
-    "consecutive_failures": 4,
-    "delay_seconds": 490,
+    "consecutive_failures": 5,
+    "delay_seconds": 975,
     "server_retry_seconds": 0,
     "error": "ai_http_503",
-    "failed_at": "2026-11-24T17:48:48.180647+00:00",
-    "retry_after": "2026-11-24T17:56:58.180647+00:00",
+    "failed_at": "2026-11-24T20:51:17.424865+00:00",
+    "retry_after": "2026-11-24T21:07:32.424865+00:00",
     "provider_error": {
       "http_status": 503,
       "category": "capacity_unavailable",

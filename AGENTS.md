@@ -91,3 +91,5 @@
 26. T072用户已配置CLOUDFLARE_API_TOKEN与CLOUDFLARE_ACCOUNT_ID，授权实际试跑Cloudflare托管千问@cf/qwen/qwen3-30b-a3b-fp8作为Gemini受阻时的免费备用。独立UTC日界（东京09:00）/10000 Neurons保护、批次2000保守预留，输入UTF8字节上界+模板余量及输出上限先占用，未知请求保留，实际usage按固定官方费率估算后退款差额；这是本仓库估计而非全账号账单，禁止开付费或猜测全账号剩余额度。初次probe最多2请求/1完整文章，未有真实成功则verified_enabled=false，不冒称接通。Gemini账本/断点/日界不改；两提供商断点隔离，完整长稿不截断、超32k保守上下文留给Gemini及原队列，已有有效AI复用。后台在Gemini受阻时自动备用，不依赖ChatGPT在线，不启动会话工作者/额外模型校对，Claude前端不改。
 
 27. T081公共存档入口data/live.json支持content-shards-v1。Python必须使用backend.snapshot_files.read_snapshot/write_snapshot；不要直接把manifest当完整content。所有数据工作流同时提交data/snapshot-content，缺片/hash不符/重复ID/超限均拒绝发布。稳定ID/全部原文与译稿/原顺序/模型与审核身份保留，不删旧稿或截正文适配Git限额。说明见docs/PUBLIC_SNAPSHOT.md；静态bodies及巴别塔API协议不变。
+
+28. T082用户要求重点收集日本展览并避免信息淹没。独立展览目录默认日本、公开对账47都道府县、逐场馆补漏，保留海外和完整清单。只报告已核验的来源范围。展览不产生新闻翻译任务，重要与临近闭展独立展示；个人想去/去过/不感兴趣、独立收藏、1–5分及观后笔记只存浏览器并可备份。见docs/JAPAN_EXHIBITIONS.md。

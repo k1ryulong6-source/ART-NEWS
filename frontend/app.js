@@ -41,6 +41,9 @@
   if (!server) readLocal();
   state.mode = dataset.mode || 'demo'; state.month = (state.mode === 'demo' ? dataset.reference_date : C.localDate(preferences.reading_timezone)).slice(0, 7); sourceStatus = dataset.source_status || [];
   if (server) notifications = await api('/notifications').catch(() => []);
+  const exhibitions = window.CultureExhibitions.create({
+    C, boot, server, toast, rerender: render, isActive: () => state.view === 'exhibitions'
+  });
   function artwork(row, large = false) {
     if (!row.image_url && row.event_type) {
       const link = dataset.content_events.find(item => item.event_id === row.id);
@@ -77,7 +80,7 @@
   }
   function findBookmark(type, id) { return bookmarks.find(b => b[type === 'content' ? 'content_id' : 'event_id'] === id); }
   function nav() {
-    const labels = { today: '头版', explore: '资讯', calendar: '日历', bookmarks: '剪报' };
+    const labels = { today: '头版', explore: '资讯', exhibitions: '展览', calendar: '日历', bookmarks: '剪报' };
     const current = state.view === 'attention' ? 'explore' : state.view;
     $('navigation').innerHTML = Object.entries(labels).map(([key, label]) => `<button class="nav-button ${current === key ? 'active' : ''}" data-view="${key}" ${current === key ? 'aria-current="page"' : ''}>${label}${key === 'bookmarks' && bookmarks.length ? `<span class="nav-count">${bookmarks.length}</span>` : ''}</button>`).join('');
     const [y, m, d] = displayDate().split('-').map(Number);
@@ -283,17 +286,20 @@
     render(); window.scrollTo({ top: 0 });
   }
   let lastSpot = '';
+  function exhibitionPage() {
+    return heading('展览') + notice() + exhibitions.view(dataset, preferences);
+  }
   function render() {
     const advanced = $('advanced-filters');
     if (advanced) state.advancedOpen = advanced.open;
     document.body.dataset.page = state.view;
-    nav(); $('edition-note').textContent = state.mode === 'demo' ? '所有示例均为虚构。' : '原文与 AI 译文分开标注；配图注明来源。'; $('main').innerHTML = ({ today, explore, calendar, bookmarks: bookmarkPage, settings, coverage: coveragePage, attention: attentionPage, reader: readerPage }[state.view] || today)();
+    nav(); $('edition-note').textContent = state.mode === 'demo' ? '所有示例均为虚构。' : '原文与 AI 译文分开标注；配图注明来源。'; $('main').innerHTML = ({ today, explore, exhibitions: exhibitionPage, calendar, bookmarks: bookmarkPage, settings, coverage: coveragePage, attention: attentionPage, reader: readerPage }[state.view] || today)();
     // A new page moves focus to <main>, so keyboard and screen-reader users start at the top of it.
     const spot = state.view + (state.view === 'reader' ? ':' + state.readerId : '');
     if (lastSpot && spot !== lastSpot && document.activeElement !== $('search')) $('main').focus({ preventScroll: true });
     lastSpot = spot;
     // Tab titles name the page (and the story when reading), so history, bookmarks and shared tabs differ.
-    const pageTitles = { explore: '资讯', attention: '一種關注', calendar: '上映与展期', bookmarks: '剪报', settings: '阅读设置', coverage: '收录与译文' };
+    const pageTitles = { explore: '资讯', attention: '一種關注', exhibitions: '展览', calendar: '上映与展期', bookmarks: '剪报', settings: '阅读设置', coverage: '收录与译文' };
     const story = state.view === 'reader' && dataset.content.find(item => item.id === state.readerId);
     const pageTitle = story ? (state.readerTab === 'original' ? story.title_original : C.displayTitle(story)) : pageTitles[state.view];
     document.title = pageTitle ? `${pageTitle} · 幕间休息` : '幕间休息';

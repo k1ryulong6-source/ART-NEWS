@@ -15,6 +15,7 @@ from backend.headlines import load_headlines
 from backend.coverage import coverage_report
 from backend.priority import rank_snapshot
 from backend.presentation import browser_snapshot
+from backend.exhibitions import read_catalog
 
 
 def build():
@@ -45,6 +46,17 @@ def build():
     from backend.babel_export import export_articles, integrations
     output = ROOT / 'dist'
     output.mkdir(exist_ok=True)
+    exhibition_catalog = read_catalog()
+    bundle['japan_exhibitions'] = exhibition_catalog
+    bundle['exhibition_store'] = 'japan-exhibitions.json'
+    if exhibition_catalog['generated_at']:
+        bundle['exhibition_store'] += '?v=' + re.sub(r'[^0-9]', '', exhibition_catalog['generated_at'])
+    (output / 'japan-exhibitions.json').write_text(json.dumps(exhibition_catalog, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+    if exhibition_catalog['coverage']:
+        (output / 'reports').mkdir(exist_ok=True)
+        bundle['exhibition_report'] = 'reports/japan-exhibitions.json'
+        report = {'generated_at': exhibition_catalog['generated_at'], **exhibition_catalog['coverage']}
+        (output / bundle['exhibition_report']).write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     if bundle.get('automation', {}).get('operations'):
         (output / 'reports').mkdir(exist_ok=True)
         (output / 'reports/operations.json').write_text(json.dumps(bundle['automation']['operations'], ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
@@ -84,7 +96,7 @@ def build():
     (ROOT / "frontend/data.js").write_text(text, encoding="utf-8")
     output = ROOT / "dist"
     output.mkdir(exist_ok=True)
-    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "core.js", "ui.js", "app.js"):
+    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "core.js", "ui.js", "exhibitions.js", "app.js"):
         shutil.copy2(ROOT / "frontend" / name, output / name)
     write_split_site(bundle, output, bootstrap)
     if (output / 'fonts').exists():
@@ -108,7 +120,7 @@ def build():
         html = html.replace(f'<link rel="stylesheet" href="{name}">', '<style>' + css + '</style>')
     favicon = (output / "favicon.svg").read_bytes()
     html = html.replace('href="favicon.svg"', 'href="data:image/svg+xml;base64,' + base64.b64encode(favicon).decode('ascii') + '"')
-    for name in ("data.js", "core.js", "ui.js", "app.js"):
+    for name in ("data.js", "core.js", "ui.js", "exhibitions.js", "app.js"):
         script = (text if name == "data.js" else (output / name).read_text(encoding="utf-8")).replace('</script', '<\\/script')
         html = html.replace(f'<script defer src="{name}"></script>', '')
         html = html.replace('</body>', '<script>' + script + '</script>\n</body>')
@@ -121,6 +133,7 @@ def write_split_site(bundle, output, bootstrap):
     import hashlib
     from backend.presentation import split_bodies
     site = dict(bundle)
+    site.pop('japan_exhibitions', None)
     bodies, search = {}, {}
     if 'live' in site:
         site['live'], bodies, search = split_bodies(site['live'])

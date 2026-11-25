@@ -160,6 +160,18 @@ def create_app(db_path=None):
     async def events(mode: Literal["demo", "live"] = "live", country: str | None = None, city: str | None = None, start: str | None = None, end: str | None = None):
         return [r for r in store.dataset(mode)["events"] if matches_region(r, country, city) and (not start or (r["date_precision"] == "day" and (r["end_date"] or r["start_date"]) >= start)) and (not end or (r["date_precision"] == "day" and r["start_date"] <= end))]
 
+    @app.get("/api/japan-exhibitions")
+    async def japan_exhibitions():
+        from .exhibitions import read_catalog
+        return read_catalog()
+
+    @app.get("/reports/japan-exhibitions.json")
+    async def japan_exhibition_coverage():
+        catalogue = await japan_exhibitions()
+        if not catalogue['coverage']:
+            raise HTTPException(status_code=404, detail="展览覆盖报告尚未生成")
+        return {"generated_at": catalogue['generated_at'], **catalogue['coverage']}
+
     @app.get("/api/preferences")
     async def preferences():
         return store.preferences()
@@ -244,7 +256,7 @@ def create_app(db_path=None):
 
     # A bounded asset allowlist keeps the small local edition independent of
     # background file-worker threads and never exposes project/runtime files.
-    assets = {"index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "data.js", "core.js", "ui.js", "app.js"}
+    assets = {"index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "data.js", "core.js", "ui.js", "exhibitions.js", "app.js"}
     assets.update({'fonts/intermission-masthead-v1.woff2', 'fonts/intermission-sans-v1.woff2', 'fonts/intermission-title-v1.woff2', 'fonts/notoseriftc-OFL.txt', 'fonts/intermission-sans-tc-v1.woff2', 'fonts/notosanstc-OFL.txt',
                    'fonts/intermission-news-v1.woff2', 'fonts/mashanzheng-OFL.txt',
                    'fonts/notosanssc-OFL.txt', 'fonts/newsreader-OFL.txt'})

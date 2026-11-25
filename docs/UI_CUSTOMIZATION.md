@@ -46,6 +46,7 @@ const ui = CultureUI.create({
 - 收藏保留`data-save-type`/`data-save-id`，状态保留`data-bookmark-status`。浏览器存储键`culture-desk-v1`、schema版本1保持。
 - 阅读页保留中文/原文/资料三个tab、深链接、原标题及保存正文；未译明确待译、公开部分与缺正文如实标注。
 - 保留日历/活动当地时区、来源开关、JSON与ICS导出、覆盖进度、非日本普通展览降级和重大例外。全部来源/原文/ID不能为精简UI删掉。
+- 展览页使用 `#exhibitions` 和 `data-ui="exhibition-desk"`，由 `frontend/exhibitions.js` 管理地区筛选、重点与闭展清单、个人记录及备份。保留 `data-ex-*` 行为钩子、私人记录键 `culture-desk-exhibition-log-v1` 及原剪报键。采集和排序说明见 `docs/JAPAN_EXHIBITIONS.md`。
 
 ## 构建与验证
 

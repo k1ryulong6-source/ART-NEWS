@@ -2688,6 +2688,46 @@
         "Pages42469582274 success，公开operations.snapshot_key与main完全一致；追加抽查3篇本批AI，中文标题/全部原文与译文块/hash逐项完全匹配。",
         "真实验收报告data/repair-evidence/T081.json；本项修复done，不代表四项总体验收通过。当前442待AI/394缺正文；DeepSeek402、源与正文质量缺口仍公开，T028/T062保持doing。"
       ]
+    },
+    {
+      "id": "T082",
+      "title": "日本展览目录、重要展与闭展排序、私人观展记录",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-11-25",
+      "depends_on": [
+        "T067",
+        "T081"
+      ],
+      "scope": [
+        "backend/exhibition_sources.py",
+        "backend/exhibitions.py",
+        "backend/app.py",
+        "config/exhibitions-jp.json",
+        "data/exhibitions-jp.json",
+        "scripts/collect_exhibitions.py",
+        "scripts/build_static.py",
+        "frontend/exhibitions.js",
+        "frontend/app.js",
+        "frontend/core.js",
+        "frontend/index.html",
+        "frontend/theme.css",
+        ".github/workflows/",
+        "tests/",
+        "docs/JAPAN_EXHIBITIONS.md",
+        "docs/UI_CUSTOMIZATION.md"
+      ],
+      "acceptance": [
+        "实际按47都道府县核对公开目录分页，记录独立场馆日历、条数与缺口",
+        "合并同场同档展览并保留出处、冲突、未知展期及异城巡展；不产生新闻待译稿",
+        "展览页默认日本，可查海外、类型、展期和全量分页；重要展与闭展提示独立并限制同场馆/同地区挤占",
+        "想去、去过、不感兴趣、独立收藏、评分和笔记可在手机保存、刷新、导出恢复",
+        "GitHub独立采集与Pages发布通过，线上抽样核对目录、筛选及真实报告；不以公开目录核完声称全国无遗漏"
+      ],
+      "evidence": [
+        "首轮实抓47/47个Internet Museum地区目录及60页、Tokyo Art Beat全国加地区分区、美术展ナビ21页；修复场馆与地区选择后安排最终实抓和发布验收。"
+      ]
     }
   ]
 }

@@ -210,8 +210,10 @@
       const list = rank(C,[...current.values()],records,{...filter,labels:areas,today,preference});
       const highlights = filter.personal === 'all' && filter.stage === 'all' && !filter.query.trim();
       const leads = highlights ? spotlight(list,filter.prefecture !== 'all') : [];
-      const closing = highlights ? list.filter(r=>r.close !== null && !['uninterested','visited'].includes(r.log?.status))
-        .sort((a,b)=>Number(b.log?.status === 'want') - Number(a.log?.status === 'want') || a.close - b.close || b.score - a.score) : [];
+      const due = highlights ? list.filter(r=>r.close !== null) : [];
+      const savedDue = due.filter(r=>r.log?.status === 'want').length;
+      const closing = due.filter(r=>!['uninterested','visited'].includes(r.log?.status))
+        .sort((a,b)=>Number(b.log?.status === 'want') - Number(a.log?.status === 'want') || a.close - b.close || b.score - a.score);
       const pages = Math.max(1,Math.ceil(list.length / size));
       filter.page = Math.min(pages,Math.max(1,filter.page));
       const filterCount = ['prefecture','medium','stage','personal'].filter(key => filter[key] !== 'all').length + Number(filter.sort !== 'recommended');
@@ -223,6 +225,7 @@
           ${select('medium',[['all','全部类型'],...Object.entries(types)],'类型')}${select('stage',sections,'展期')}${select('personal',personal,'个人标签')}
           ${select('sort',[['recommended','推荐顺序'],['closing','闭展在先'],['new','最近收录']],'排序')}</div></details></div>
         ${pending ? '<p class="compact-note" role="status">正在读取日本展览目录…</p>' : failed ? '<p class="compact-note">日本目录暂未载入，以下显示现有活动。 <button class="text-link" data-ex-retry>重试</button></p>' : ''}
+        ${due.length ? `<button class="exhibition-chip exhibition-deadline-jump" data-ex-closing>7 天内闭展 · ${due.length} 场${savedDue ? ' · 想去 ' + savedDue + ' 场' : ''} ↗</button>` : ''}
         ${leads.length ? `<section class="exhibition-section"><div class="exhibition-section-head"><h2>值得留意</h2><button class="text-link" data-ex-important>查看重点展 ↗</button></div><div class="exhibition-feature-grid">${leads.map(r=>card(r,true)).join('')}</div></section>` : ''}
         ${closing.length ? `<section class="exhibition-section exhibition-deadlines"><div class="exhibition-section-head"><h2>7 天内闭展</h2><button class="text-link" data-ex-closing>查看闭展清单 ↗</button></div>
           <ul>${closing.slice(0,8).map(r=>`<li><span>${r.log?.status === 'want' ? '想去 · ' : ''}${r.close === 0 ? '今天' : r.close + ' 天后'}${r.date_conflict ? ' · 日期待核' : ''}</span>

@@ -2,7 +2,7 @@ import json
 import unittest
 from datetime import datetime, timezone
 
-from backend.exhibition_assets import compact_list, detail_view, public_items
+from backend.exhibition_assets import compact_list, detail_view, public_items, venue_reference
 from backend.exhibition_details import parse_detail, pick_intro
 from backend.exhibition_sources import date_range, museum_scan, observation, parse_official, tab_scan
 from backend.exhibitions import config, merge_observations
@@ -103,6 +103,15 @@ class ExhibitionInventoryTests(unittest.TestCase):
         return observation(source, url=url or f'https://www.example.org/{source}', title='特別展「植物と記憶」',
                            venue=venue, prefecture=prefecture, dates=(start, ending), official=official)
 
+    def test_venue_follow_uses_canonical_alias_and_confirmed_location(self):
+        aliases = self.settings['venue_aliases']
+        venue = {'venue': '国立新美術館', 'country': 'JP', 'prefecture': '13'}
+        ref = venue_reference(venue, aliases)
+        romanized = {**venue, 'venue': 'The National Art Center, Tokyo'}
+        self.assertEqual(venue_reference(romanized, aliases), ref)
+        self.assertNotEqual(venue_reference({**venue, 'prefecture': '26'}, aliases)['venue_id'], ref['venue_id'])
+        self.assertEqual(venue_reference({**venue, 'venue': '会場未定'}, aliases), {})
+
     def test_official_dates_win_without_erasing_conflict_or_changing_id(self):
         prior = merge_observations([], [self.example()], self.settings, self.instant)
         authoritative = self.example('national-art-center', '2026-12-10', official=True)
@@ -132,6 +141,7 @@ class ExhibitionInventoryTests(unittest.TestCase):
         detail = {row['id']: {'status': 'introduction', 'url': source['url'], 'source': source['source'], 'paragraphs': ['説明です。']}}
         index, = compact_list(catalogue, items)['items']
         self.assertEqual(index['id'], row['id'])
+        self.assertEqual(index['venue_id'], items[row['id']]['venue_id'])
         self.assertNotIn('evidence', index)
         payload = detail_view(row, {'entries': detail}, catalogue['coverage'])
         self.assertEqual(payload['description']['paragraphs'], ['説明です。'])

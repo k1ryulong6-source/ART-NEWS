@@ -10,6 +10,7 @@
   let notifications = [], sourceStatus = dataset.source_status || [];
   const makeId = () => typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const state = { view: 'today', channel: 'all', kind: 'all', country: 'all', city: 'all', language: 'all', query: '', mode: 'demo', month: '2026-10', selectedDate: null, bookmarkStatus: 'all', readerId: null, readerTab: 'chinese', readerReturn: 'today', editorialOnly: false, priority: 'all', advancedOpen: false, listPage: 1, sort: 'recommended' };
+  const isReader = view => view === 'reader' || view === 'exhibition';
   function readLocal() {
     try {
       const stored = JSON.parse(localStorage.getItem('culture-desk-v1') || 'null');
@@ -44,10 +45,8 @@
   if (!server) readLocal();
   state.mode = dataset.mode || 'demo'; state.month = (state.mode === 'demo' ? dataset.reference_date : C.localDate(preferences.reading_timezone)).slice(0, 7); sourceStatus = dataset.source_status || [];
   if (server) notifications = await api('/notifications').catch(() => []);
-  if (server) boot.exhibition_page = '/exhibitions/';
-  const exhibitionHref = location.protocol !== 'file:' ? boot.exhibition_page : null;
   const exhibitions = window.CultureExhibitions?.create({
-    C, boot, server, toast, rerender: render, isActive: () => ['exhibitions', 'exhibition'].includes(state.view)
+    C, boot, server, toast, rerender: render, newspaperBody, readingMinutes, isActive: () => ['exhibitions', 'exhibition'].includes(state.view)
   });
   function artwork(row, large = false) {
     if (!row.image_url && row.event_type) {
@@ -89,7 +88,6 @@
     const current = state.view === 'attention' ? 'explore' : state.view === 'exhibition' ? 'exhibitions' : state.view;
     $('navigation').innerHTML = Object.entries(labels).map(([key, label]) => {
       const attrs = `class="nav-button ${current === key ? 'active' : ''}" ${current === key ? 'aria-current="page"' : ''}`;
-      if (key === 'exhibitions' && exhibitionHref) return `<a ${attrs} href="${e(exhibitionHref)}">${label}</a>`;
       return `<button ${attrs} data-view="${key}">${label}${key === 'bookmarks' && bookmarks.length ? `<span class="nav-count">${bookmarks.length}</span>` : ''}</button>`;
     }).join('');
     const [y, m, d] = displayDate().split('-').map(Number);
@@ -286,12 +284,16 @@
     const chinese = translatedBlocks.length ? `<div class="reader-document" lang="zh-CN"><p class="reading-note">${row.language === 'zh' ? '' : !C.editorialReady(row) && C.machineReady(row) ? '自动机翻，未经人工审核，细节请对照原文。' : row.editorial_status === 'translated' ? 'AI 按全文语境翻译。' : 'AI 按全文语境翻译并校对 · 非人工译者审核。'}</p>${partial ? '<p class="article-status">来源仅取得公开部分，译文也仅包含这部分内容。</p>' : ''}${row.language !== 'zh' && notes.length ? `<div class="translation-notes"><h2>译名与表达说明</h2>${notes.map(note => `<p>${e(note)}</p>`).join('')}</div>` : ''}${headerImage}${newspaperBody(translatedBlocks, true, row.language !== 'zh' && !C.editorialReady(row) && C.machineReady(row))}</div>` : `<p class="article-status original-pending" role="status">${blocks.length ? `原文·待译 · 以下为${e(C.languageLabels[row.language] || '外文')}原文，中文译文尚未完成。` : '正文尚未取得。'}</p>${original}`;
     return `<article class="reader-page"><div class="reader-toolbar"><button class="text-link" data-action="reader-back">‹ 返回</button><button class="text-link reader-save" data-save-type="content" data-save-id="${e(row.id)}">${saved ? '★ 已剪报' : '☆ 剪报'}</button>${articleShareUrl(row) ? '<button class="text-link" data-action="share-article">分享</button>' : ''}${C.babelReaderUrl(row) ? `<a class="text-link" data-ui="babel-import" href="${e(C.babelReaderUrl(row))}" target="_blank" rel="noopener noreferrer" title="导入原文，在巴别塔查词阅读">巴别塔阅读 ↗</a>` : ''}</div><div class="eyebrow"><span class="channel-tag">${e(C.channels[row.channel] || '文化')}</span>${e(sourceName(row))} · ${e(publicationLabel(row))}${(() => { const shown = state.readerTab === 'chinese' && translatedBlocks.length ? translatedBlocks : blocks; return shown.length ? `<span class="reading-time">约 ${readingMinutes(shown, shown === blocks ? row.language : 'zh')} 分钟</span>` : ''; })()}</div>${(() => { const title = state.readerTab === 'original' ? row.title_original : C.displayTitle(row); return `<h1 lang="${e(title === row.title_original && row.language !== 'zh' ? row.language : 'zh-CN')}">${e(title)}</h1>`; })()}<div class="reader-tabs" role="tablist" aria-label="阅读内容"><button role="tab" aria-selected="${state.readerTab === 'chinese'}" data-reader-tab="chinese">${translatedBlocks.length ? '中文' : '正文'}</button><button role="tab" aria-selected="${state.readerTab === 'original'}" data-reader-tab="original">原文</button></div><div class="reader-content" role="tabpanel">${state.readerTab === 'original' ? original : chinese}</div>${!row.is_demo && url ? `<div class="reader-source-link"><span>原文</span><a href="${e(url)}" target="_blank" rel="noopener noreferrer">${e(url)}</a></div>` : ''}<div class="reader-toolbar reader-end"><button class="text-link" data-action="reader-back">‹ 返回</button><button class="text-link reader-save" data-save-type="content" data-save-id="${e(row.id)}">${saved ? '★ 已剪报' : '☆ 剪报'}</button></div></article>`;
   }
-  function openReader(id, route = true) {
-    if (state.view !== 'reader') { state.readerReturn = state.view; state.readerScroll = window.scrollY; }
-    state.readerId = id; state.readerTab = 'chinese'; state.view = 'reader';
-    const story = dataset.content.find(item => item.id === id); if (story?.body_failed) story.body_failed = false;
+  function openReader(id, route = true, view = 'reader') {
+    if (!isReader(state.view)) { state.readerReturn = state.view; state.readerScroll = window.scrollY; }
+    state.readerTab = 'chinese'; state.view = view;
+    if (view === 'exhibition') state.exhibitionId = id;
+    else {
+      state.readerId = id;
+      const story = dataset.content.find(item => item.id === id); if (story?.body_failed) story.body_failed = false;
+    }
     if ($('detail-dialog').open) $('detail-dialog').close();
-    if (route) history.pushState(null, '', C.readerRoute(id));
+    if (route) history.pushState(null, '', view === 'exhibition' ? '#exhibition/' + encodeURIComponent(id) : C.readerRoute(id));
     render(); window.scrollTo({ top: 0 });
   }
   let lastSpot = '';
@@ -323,14 +325,14 @@
   function render() {
     const advanced = $('advanced-filters');
     if (advanced) state.advancedOpen = advanced.open;
-    document.body.dataset.page = state.view;
+    document.body.dataset.page = isReader(state.view) ? 'reader' : state.view;
     const story = state.view === 'reader' && dataset.content.find(item => item.id === state.readerId);
     const needsArchive = !server && !archiveLoaded && state.mode === 'live'
       && (['explore', 'bookmarks', 'attention', 'coverage', 'calendar'].includes(state.view) || (state.view === 'reader' && !story));
     if (needsArchive && !archiveFailed) loadArchive();
     nav();
     $('edition-note').textContent = state.mode === 'demo' ? '所有示例均为虚构。' : '原文与 AI 译文分开标注；配图注明来源。';
-    const views = { today, explore, exhibitions: exhibitionPage, exhibition: () => exhibitions?.inlineReader(state.exhibitionId, dataset) || '<p>展览暂时无法载入。</p>', calendar, bookmarks: bookmarkPage, settings, coverage: coveragePage, attention: attentionPage, reader: readerPage };
+    const views = { today, explore, exhibitions: exhibitionPage, exhibition: () => exhibitions?.inlineReader(state.exhibitionId, dataset, state.readerTab) || '<p>展览暂时无法载入。</p>', calendar, bookmarks: bookmarkPage, settings, coverage: coveragePage, attention: attentionPage, reader: readerPage };
     $('main').innerHTML = needsArchive ? (archiveFailed
       ? '<p role="status">旧闻索引暂时无法载入。<button class="text-link" data-action="retry-archive">重试</button></p>'
       : '<p role="status">正在载入旧闻索引…</p>') : (views[state.view] || today)();
@@ -340,7 +342,8 @@
     lastSpot = spot;
     // Tab titles name the page (and the story when reading), so history, bookmarks and shared tabs differ.
     const pageTitles = { explore: '资讯', attention: '一種關注', exhibitions: '展览', exhibition: '展览', calendar: '上映与展期', bookmarks: '剪报', settings: '阅读设置', coverage: '收录与译文' };
-    const pageTitle = story ? (state.readerTab === 'original' ? story.title_original : C.displayTitle(story)) : pageTitles[state.view];
+    const exhibitTitle = state.view === 'exhibition' ? exhibitions?.readerTitle(state.exhibitionId, state.readerTab) : '';
+    const pageTitle = story ? (state.readerTab === 'original' ? story.title_original : C.displayTitle(story)) : exhibitTitle || pageTitles[state.view];
     document.title = pageTitle ? `${pageTitle} · 幕间休息` : '幕间休息';
     const hash = state.view === 'reader' ? C.readerRoute(state.readerId) : state.view === 'exhibition' ? '#exhibition/' + encodeURIComponent(state.exhibitionId) : '#' + state.view;
     if (location.hash !== hash) history.replaceState(null, '', hash);
@@ -435,10 +438,12 @@
       const target = anchor && document.querySelector(`.reader-content [data-block="${anchor.dataset.block}"]`);
       if (target) window.scrollBy(0, target.getBoundingClientRect().top - Math.max(offset, 60));
     }
-    else if (button.dataset.action === 'share-article') {
-      const row = dataset.content.find(item => item.id === state.readerId), url = row && articleShareUrl(row);
+    else if (['share-article','share-exhibition'].includes(button.dataset.action)) {
+      const row = state.view === 'reader' && dataset.content.find(item => item.id === state.readerId);
+      const url = state.view === 'exhibition' ? location.href : row && articleShareUrl(row);
       if (!url) return;
-      if (navigator.share) navigator.share({ title: C.displayTitle(row), url }).catch(() => {});
+      const title = row ? C.displayTitle(row) : exhibitions?.readerTitle(state.exhibitionId, state.readerTab);
+      if (navigator.share) navigator.share({ title, url }).catch(() => {});
       else navigator.clipboard?.writeText(url).then(() => toast('文章链接已复制'), () => toast(url));
     }
     else if (button.dataset.action === 'reader-back') { state.view = state.readerReturn || 'today'; render(); window.scrollTo({ top: state.readerScroll || 0 }); }
@@ -534,10 +539,9 @@
   window.addEventListener('hashchange', () => {
     if (location.hash === '#main') return;
     const route = C.parseRoute(location.hash);
-    if (route.view === 'reader') { openReader(route.id, false); return; }
-    const back = state.view === 'reader' && route.view === state.readerReturn;
+    if (isReader(route.view)) { openReader(route.id, false, route.view); return; }
+    const back = isReader(state.view) && route.view === state.readerReturn;
     state.view = route.view;
-    if (route.view === 'exhibition') state.exhibitionId = route.id;
     render();
     if (back) window.scrollTo({ top: state.readerScroll || 0 });
   });
@@ -550,12 +554,12 @@
       document.body.classList.toggle('bar-hidden', y > lastScroll + 4 && y > document.querySelector('.masthead').offsetHeight + 200 ? true : y < lastScroll - 4 ? false : document.body.classList.contains('bar-hidden'));
       lastScroll = y;
       const max = document.documentElement.scrollHeight - window.innerHeight;
-      document.querySelector('.read-progress span').style.transform = `scaleX(${state.view === 'reader' && max > 0 ? Math.min(1, y / max) : 0})`;
+      document.querySelector('.read-progress span').style.transform = `scaleX(${isReader(state.view) && max > 0 ? Math.min(1, y / max) : 0})`;
     });
   }, { passive: true });
   const initialRoute = C.parseRoute(location.hash);
   state.view = initialRoute.view;
   if (initialRoute.view === 'reader') state.readerId = initialRoute.id;
-  if (initialRoute.view === 'exhibition') state.exhibitionId = initialRoute.id;
+  if (initialRoute.view === 'exhibition') { state.exhibitionId = initialRoute.id; state.readerReturn = 'exhibitions'; }
   render();
 })();

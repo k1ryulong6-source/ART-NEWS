@@ -2758,6 +2758,18 @@
         "真实 GitHub 展览任务 45619316808 收取 172/180 个公开介绍，提交 e4ab0be14 并触发 Pages 45620372347 成功。线上报告与目录同为东京 2026-11-25 22:05:57，2190 场日本展中 2146 有图、560 有公开介绍、223 有短介、1407 仍缺文字介绍。美術展ナビ完整读取 415 条目录记录，新闻库已留存 362 条。",
         "全国目录有 9 个地区请求超时、8 个地区触及站点任务时限，本轮 30/47 复核成功。全量 2190 个既有展览 ID 保留，47 地区仍均有展览登记。"
       ]
+    },
+    {
+      "id": "T085",
+      "title": "完善展览推荐、场馆收藏并统一展览版式与阅读",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-11-25",
+      "depends_on": ["T084"],
+      "scope": ["frontend/exhibitions.js", "frontend/app.js", "frontend/theme.css", "frontend/exhibition-page.*", "backend/exhibition_assets.py", "backend/app.py", "scripts/build_static.py", "tests/", "docs/JAPAN_EXHIBITIONS.md"],
+      "acceptance": ["按重要性分开排列在展前100和即将开展，保留全量查询、闭展提醒和翻页", "不感兴趣仅在主动打开专区后列出，保留原个人记录且可撤销", "稳定场馆收藏可备份，并在展览页优先展示该馆未来和刚开幕的新展", "展览使用现有报头、频道标题和阅读流程，旧链接可直接打开，新闻版式照常通过验收"],
+      "evidence": []
     }
   ]
 }

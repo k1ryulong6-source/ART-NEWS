@@ -18,7 +18,7 @@ from backend.coverage import coverage_report
 from backend.priority import rank_snapshot, reference_time
 from backend.presentation import browser_snapshot
 from backend.exhibitions import read_catalog
-from backend.exhibition_assets import description_counts, write_exhibition_files
+from backend.exhibition_assets import description_counts, exhibition_entry, write_exhibition_files
 from backend.exhibition_details import read_details
 
 
@@ -52,11 +52,11 @@ def build():
     output.mkdir(exist_ok=True)
     exhibition_catalog = read_catalog()
     exhibition_details = read_details()
-    exhibition_revision = write_exhibition_files(output / 'exhibitions', exhibition_catalog, exhibition_details, bundle.get('live', {}))
-    bundle['japan_exhibitions'] = exhibition_catalog
+    exhibition_revision, exhibition_items = write_exhibition_files(output / 'exhibitions', exhibition_catalog, exhibition_details, bundle.get('live', {}))
+    bundle['japan_exhibitions'] = {**exhibition_catalog, 'items': exhibition_items, 'includes_legacy_events': True}
     bundle['exhibition_details'] = exhibition_details
-    bundle['exhibition_page'] = 'exhibitions/'
     bundle['exhibition_store'] = 'exhibitions/catalogue.json?v=' + exhibition_revision
+    bundle['exhibition_revision'] = exhibition_revision
     (output / 'japan-exhibitions.json').write_text(json.dumps(exhibition_catalog, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
     if exhibition_catalog['coverage']:
         (output / 'reports').mkdir(exist_ok=True)
@@ -103,8 +103,9 @@ def build():
     (ROOT / "frontend/data.js").write_text(text, encoding="utf-8")
     output = ROOT / "dist"
     output.mkdir(exist_ok=True)
-    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "core.js", "ui.js", "exhibitions.js", "exhibition-page.js", "app.js"):
+    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "core.js", "ui.js", "exhibitions.js", "app.js"):
         shutil.copy2(ROOT / "frontend" / name, output / name)
+    (output / 'exhibition-page.js').unlink(missing_ok=True)
     write_split_site(bundle, output, bootstrap)
     if (output / 'fonts').exists():
         shutil.rmtree(output / 'fonts')
@@ -114,9 +115,7 @@ def build():
         html = html.replace('</head>', '<link rel="canonical" href="' + escape(site_url, quote=True) + '">\n</head>')
     public_html = version_assets(html, output)
     (output / 'index.html').write_text(public_html, encoding='utf-8')
-    exhibition_html = (ROOT / 'frontend/exhibition-page.html').read_text(encoding='utf-8')
-    exhibition_html = exhibition_html.replace('exhibition_store:"catalogue.json"', f'exhibition_store:"catalogue.json?v={exhibition_revision}",exhibition_revision:"{exhibition_revision}"')
-    (output / 'exhibitions/index.html').write_text(version_assets(exhibition_html, output), encoding='utf-8')
+    (output / 'exhibitions/index.html').write_text(exhibition_entry(public_html), encoding='utf-8')
     if 'live' in bundle:
         from backend.share_pages import write_share_pages
         write_share_pages(output, public_html, bundle['live'], site_url, bundle.get('headlines'))
@@ -142,7 +141,7 @@ def build():
 
 def version_assets(html, output):
     versioned = {}
-    for name in ('styles.css', 'theme.css', 'data.js', 'core.js', 'ui.js', 'exhibitions.js', 'exhibition-page.js', 'app.js'):
+    for name in ('styles.css', 'theme.css', 'data.js', 'core.js', 'ui.js', 'exhibitions.js', 'app.js'):
         versioned[name] = sha256((output / name).read_bytes()).hexdigest()[:12]
     return re.sub(r'((?:src|href)="(?:\.\./)?)([^"/]+)(")',
                   lambda match: match[1] + match[2] + '?v=' + versioned[match[2]] + match[3] if match[2] in versioned else match[0], html)

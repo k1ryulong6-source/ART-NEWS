@@ -194,7 +194,8 @@ def create_app(db_path=None):
 
     @app.get("/exhibitions/")
     def exhibitions_page():
-        return Response((ROOT / "frontend/exhibition-page.html").read_bytes(), media_type="text/html")
+        from .exhibition_assets import exhibition_entry
+        return Response(exhibition_entry((ROOT / "frontend/index.html").read_text(encoding='utf-8')), media_type="text/html")
 
     @app.get("/exhibitions/catalogue.json")
     def exhibition_listing():
@@ -294,7 +295,7 @@ def create_app(db_path=None):
 
     # A bounded asset allowlist keeps the small local edition independent of
     # background file-worker threads and never exposes project/runtime files.
-    assets = {"index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "data.js", "core.js", "ui.js", "exhibitions.js", "exhibition-page.js", "app.js"}
+    assets = {"index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "data.js", "core.js", "ui.js", "exhibitions.js", "app.js"}
     assets.update({'fonts/intermission-masthead-v1.woff2', 'fonts/intermission-sans-v1.woff2', 'fonts/intermission-title-v1.woff2', 'fonts/notoseriftc-OFL.txt', 'fonts/intermission-sans-tc-v1.woff2', 'fonts/notosanstc-OFL.txt',
                    'fonts/intermission-news-v1.woff2', 'fonts/mashanzheng-OFL.txt',
                    'fonts/notosanssc-OFL.txt', 'fonts/newsreader-OFL.txt'})

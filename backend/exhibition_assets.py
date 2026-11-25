@@ -5,11 +5,26 @@ from collections import Counter
 from hashlib import sha256
 
 from .exhibition_details import pick_intro
+from .exhibitions import config, venue_key
 
 ID = re.compile(r'[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}')
 LIST_FIELDS = ('id', 'title_original', 'title_zh', 'country', 'city', 'venue', 'prefecture', 'area',
                'timezone', 'start_date', 'end_date', 'date_precision', 'date_conflict', 'status',
-               'types', 'flags', 'official', 'image_url', 'image_source', 'first_seen', 'last_seen', 'is_demo')
+               'types', 'flags', 'official', 'image_url', 'image_source', 'first_seen', 'last_seen', 'is_demo',
+               'venue_id', 'venue_name')
+
+
+def venue_reference(row, aliases):
+    name = row.get('venue')
+    country = row.get('country')
+    place = row.get('prefecture') if country == 'JP' else row.get('city')
+    if not name or not country or country == 'GLOBAL' or not place:
+        return {}
+    key = venue_key(row, aliases)
+    if key in ('', '未定', '会場未定', '未発表', '複数会場', '各会場', 'オンライン', 'online', 'tba'):
+        return {}
+    identifier = sha256(f'{country}\0{place}\0{key}'.encode()).hexdigest()[:24]
+    return {'venue_id': 'venue-' + identifier, 'venue_name': aliases.get(name, name)}
 
 
 def public_items(catalogue, events=(), legacy_images=None):
@@ -24,7 +39,21 @@ def public_items(catalogue, events=(), legacy_images=None):
         if legacy_images and (image := legacy_images.get(row['id'])):
             row['image_url'], row['image_source'] = image
         items[row['id']] = row
-    return items
+    aliases = config()['venue_aliases']
+    return {key: {**row, **venue_reference(row, aliases)} for key, row in items.items()}
+
+
+def exhibition_entry(template):
+    """Open earlier /exhibitions/ links in the standard publication shell."""
+    routing = '''<base href="../">
+  <script>
+    var exhibitionId = new URLSearchParams(location.search).get('id') || '';
+    var exhibitionRoute = /^[A-Za-z0-9][A-Za-z0-9_-]{0,99}$/.test(exhibitionId) ? '#exhibition/' + exhibitionId : '#exhibitions';
+    history.replaceState(null, '', document.baseURI + exhibitionRoute);
+  </script>'''
+    return (template.replace('<head>', '<head>\n  ' + routing, 1)
+            .replace('<title>幕间休息</title>', '<title>展览 · 幕间休息</title>', 1)
+            .replace('正在载入头版…', '正在载入展览…', 1))
 
 
 def compact_list(catalogue, items):
@@ -81,4 +110,4 @@ def write_exhibition_files(directory, catalogue, details, snapshot):
         if path.stem not in items:
             path.unlink()
     revision = {'catalogue': catalogue['generated_at'], 'details': details['generated_at'], 'snapshot': snapshot.get('snapshot_at')}
-    return sha256(index.read_bytes() + json.dumps(revision).encode()).hexdigest()[:12]
+    return sha256(index.read_bytes() + json.dumps(revision).encode()).hexdigest()[:12], list(items.values())

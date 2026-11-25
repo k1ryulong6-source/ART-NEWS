@@ -29,21 +29,44 @@ test('conflicting credible dates surface the earlier risk and keep the underlyin
   assert.equal(X.closingDays(C,exhibit,today),2);
 });
 
-test('exhibit highlights limit repeated venues and prefectures, and excluded personal states are searchable', () => {
-  const items = [
-    row('tokyo-1',{flags:['festival'],venue:'館A'}), row('tokyo-2',{flags:['festival'],venue:'館A'}),
-    row('tokyo-3',{flags:['festival']}), row('tokyo-4',{flags:['festival']}),
-    row('hiroshima',{flags:['retrospective'],prefecture:'34'}), row('regional-hidden',{flags:['festival'],prefecture:'01'})
-  ];
-  const records = new Map([['regional-hidden',{status:'uninterested',favorite:true}]]);
-  const ranked = X.rank(C,items,records,filters);
-  const picks = X.spotlight(ranked);
-  assert.ok(picks.some(r => r.id === 'hiroshima'));
-  assert.equal(picks.filter(r => r.prefecture === '13').length,2);
-  assert.equal(picks.filter(r=>r.venue === '館A').length,1);
-  assert.ok(!picks.some(r => r.id === 'regional-hidden'));
-  assert.equal(X.rank(C,items,records,{...filters,personal:'uninterested'})[0].id,'regional-hidden');
-  assert.equal(X.rank(C,items,records,{...filters,personal:'favorite'})[0].id,'regional-hidden');
+test('top 100 fills the ranking in importance order and the upcoming ranking has its own eligible shows', () => {
+  const regular = Array.from({length:110},(_,i)=>row(`tokyo-${i}`,{venue:'館A'}));
+  const top = row('festival',{flags:['festival'],venue:'館A'});
+  const special = row('special',{flags:['special']});
+  const future = row('future',{flags:['retrospective'],start_date:'2026-12-02'});
+  const next = row('opening-tomorrow',{start_date:'2026-11-26'});
+  const all = [...regular,top,special,future,next];
+  const active = X.rank(C,all,new Map(),{...filters,stage:'top'});
+  assert.equal(active.length,100);
+  assert.deepEqual(active.slice(0,2).map(r=>r.id),['festival','special']);
+  assert.ok(active.every(r=>r.phase === 'active'));
+  assert.deepEqual(X.rank(C,all,new Map(),{...filters,stage:'upcoming',sort:'new'}).map(r=>r.id),['future','opening-tomorrow']);
+  assert.equal(X.rank(C,all,new Map(),filters).length,114);
+});
+
+test('hidden shows only appear in the dedicated view, including when favorited or otherwise recommended', () => {
+  const venue_id = 'venue-' + 'a'.repeat(24);
+  const hidden = row('regional-hidden',{venue_id,flags:['festival'],end_date:'2026-11-26'});
+  const records = new Map([[hidden.id,{status:'uninterested',favorite:true}]]);
+  const venues = new Map([[venue_id,{}]]);
+  for (const options of [filters,{...filters,stage:'top'},{...filters,stage:'closing'},{...filters,query:hidden.id},
+    {...filters,personal:'favorite'},{...filters,personal:'records'},{...filters,personal:'venues',venues}]) {
+    assert.equal(X.rank(C,[hidden],records,options).length,0);
+  }
+  assert.equal(X.rank(C,[hidden],records,{...filters,personal:'uninterested'})[0].id,hidden.id);
+});
+
+test('followed venue promotes newly open and future exhibitions while preserving the general importance grades', () => {
+  const venue_id = 'venue-' + 'b'.repeat(24), venues = new Map([[venue_id,{}]]);
+  const older = row('older',{venue_id,start_date:'2026-10-01',flags:['retrospective']});
+  const newShow = row('new-show',{venue_id});
+  const future = row('future',{venue_id,start_date:'2026-12-15'});
+  const permanent = row('permanent',{venue_id,flags:['permanent']});
+  const all = [older,newShow,future,permanent];
+  const result = X.rank(C,all,new Map(),{...filters,personal:'venues',venues});
+  assert.deepEqual(result.filter(r=>r.followedNew).map(r=>r.id),['new-show','future']);
+  assert.ok(result.slice(0,2).every(r=>r.followedNew));
+  assert.equal(X.rank(C,all,new Map(),{...filters,stage:'top',venues})[0].id,'older');
 });
 
 test('private backups retain independent favorite, rating and note fields and reject invalid values', () => {
@@ -51,6 +74,10 @@ test('private backups retain independent favorite, rating and note fields and re
     { id:'jp-ex-example', status:'visited', favorite:true, rating:4, note:'展厅里的装置', title:'艺术展' }
   ]};
   assert.deepEqual(X.parseLog(value).get('jp-ex-example'), value.records[0]);
+  assert.equal(X.parseVenues(value).size,0);
+  const venue = {id:'venue-'+'a'.repeat(24),name:'国立新美術館',place:'东京'};
+  assert.deepEqual(X.parseVenues({...value,venues:[venue]}).get(venue.id),venue);
+  assert.throws(()=>X.parseVenues({...value,venues:[venue,venue]}),/无效/);
   assert.throws(()=>X.parseLog({...value,records:[{...value.records[0],rating:6}]}), /无效/);
   assert.equal(C.parseRoute('#exhibitions').view,'exhibitions');
 });

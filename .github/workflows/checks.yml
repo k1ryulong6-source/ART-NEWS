@@ -22,6 +22,7 @@ jobs:
       - run: node --test tests/core.test.js tests/ui.test.js tests/exhibitions.test.js
       - run: node --check frontend/app.js
       - run: node --check frontend/exhibitions.js
+      - run: node --check frontend/exhibition-page.js
       - run: python scripts/audit_data.py --strict
       - run: python scripts/build_static.py
       - uses: actions/upload-artifact@v4

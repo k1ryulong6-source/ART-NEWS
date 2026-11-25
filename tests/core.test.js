@@ -55,6 +55,15 @@ test('import validates references, deduplicates bookmarks and excludes gear', ()
   assert.throws(() => C.validateImport({ schema_version: 1, preferences: prefs, bookmarks: [{ ...bookmark, event_id: 'demo-film-jp' }] }, demo, prefs));
 });
 
+test('a saved article clip may predate the loaded edition while explicit imports still validate IDs', () => {
+  const archiveClip = { content_id: 'live-'+ 'b'.repeat(24), event_id: null, status: 'seen', note: '旧闻' };
+  const saved = { schema_version: 1, preferences: prefs, bookmarks: [archiveClip] };
+  assert.equal(C.validateImport(saved, demo, prefs, {allowUnloadedContent:true}).bookmarks[0].note, '旧闻');
+  assert.throws(() => C.validateImport(saved, demo, prefs));
+  assert.deepEqual(C.parseRoute('#exhibition/jp-ex-ab12'), {view:'exhibition',id:'jp-ex-ab12'});
+  assert.deepEqual(C.parseRoute('#exhibition/../demo-film'), {view:'exhibitions'});
+});
+
 test('external links and text cannot inject executable markup', () => {
   assert.equal(C.safeUrl('javascript:alert(1)'), '');
   assert.equal(C.escape('<script>'), '&lt;script&gt;');

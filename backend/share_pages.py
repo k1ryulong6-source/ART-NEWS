@@ -86,7 +86,8 @@ def article_page(template, row, site_url, headlines=None):
     link = ' · <a href="%s" rel="noopener">原文</a>' % escape(original, quote=True) if original.startswith(('https://', 'http://')) else ''
     body = '<article class="reader-page"><h1>%s</h1>%s<p><a href="#reader/%s">阅读全文</a>%s</p></article>' % (
         escape(title), '<p>%s</p>' % escape(description) if description else '', row['id'], link)
-    return html.replace('<main id="main" tabindex="-1"></main>', '<main id="main" tabindex="-1">%s</main>' % body, 1)
+    return re.sub(r'(<main id="main" tabindex="-1">).*?(</main>)',
+                  lambda match: match[1] + body + match[2], html, count=1, flags=re.S)
 
 
 def shareable(rows):

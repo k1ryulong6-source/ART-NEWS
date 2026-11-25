@@ -2,11 +2,32 @@ import json
 import unittest
 from datetime import datetime, timezone
 
+from backend.exhibition_assets import compact_list, detail_view, public_items
+from backend.exhibition_details import parse_detail, pick_intro
 from backend.exhibition_sources import date_range, museum_scan, observation, parse_official, tab_scan
 from backend.exhibitions import config, merge_observations
 
 
 class ExhibitionSourcesTests(unittest.TestCase):
+    def test_art_navi_reader_retains_nested_and_line_break_prose_without_share_text(self):
+        url = 'https://artexhibition.jp/exhibitions/20261125-AEJ1/'
+        entry = {'source': 'artexhibition', 'url': url, 'title': '今日の展覧会'}
+        html = '''<meta property="og:image" content="/share-logo.jpg"><main><article class="main-content">
+        <header class="main-content-header"><h1 class="main-content-title">今日の展覧会</h1></header>
+        <figure class="eyecatch"><img src="/exhibition.jpg"></figure>
+        <p>展覧会の最初の段落です。<p>この段落が入れ子になっています。<br>最後の展示の説明です。</p></p>
+        <div class="share"><p>Facebook に共有</p></div>
+        <div class="official"><a href="https://venue.example.jp/exhibitions/1/">公式サイト</a></div></article></main>'''
+        value = parse_detail(html, entry)
+        self.assertEqual(value['status'], 'introduction')
+        self.assertEqual(value['paragraphs'], ['展覧会の最初の段落です。', 'この段落が入れ子になっています。', '最後の展示の説明です。'])
+        self.assertEqual(value['image'], 'https://artexhibition.jp/exhibition.jpg')
+        self.assertEqual(value['official_url'], 'https://venue.example.jp/exhibitions/1/')
+        with self.assertRaisesRegex(ValueError, 'detail_identity_changed'):
+            parse_detail(html, {**entry, 'title': '別の展覧会'})
+        with self.assertRaisesRegex(ValueError, 'exhibition_detail_not_public'):
+            parse_detail('<script type="application/ld+json">{"isAccessibleForFree": false}</script>' + html, entry)
+
     def test_dates_keep_unpublished_year_and_ambiguous_rollover_unknown(self):
         self.assertEqual(date_range('2026年11月25日（水）〜12月13日（日）'), ('2026-11-25', '2026-12-13'))
         self.assertEqual(date_range('2026年12月12日[土]–27日[日]'), ('2026-12-12', '2026-12-27'))
@@ -102,6 +123,21 @@ class ExhibitionInventoryTests(unittest.TestCase):
         prior = merge_observations([], [self.example()], self.settings, self.instant)
         result = merge_observations(prior, [], self.settings, self.instant)
         self.assertEqual(result, prior)
+
+    def test_compact_catalogue_keeps_details_on_their_own_page_with_matching_provenance(self):
+        source = {**self.example(), 'intro_excerpt': '公開の短い紹介'}
+        row, = merge_observations([], [source], self.settings, self.instant)
+        catalogue = {'generated_at': None, 'items': [row], 'coverage': {'sources': {'internet-museum': {'name': 'Internet Museum'}}}}
+        items = public_items(catalogue)
+        detail = {row['id']: {'status': 'introduction', 'url': source['url'], 'source': source['source'], 'paragraphs': ['説明です。']}}
+        index, = compact_list(catalogue, items)['items']
+        self.assertEqual(index['id'], row['id'])
+        self.assertNotIn('evidence', index)
+        payload = detail_view(row, {'entries': detail}, catalogue['coverage'])
+        self.assertEqual(payload['description']['paragraphs'], ['説明です。'])
+        self.assertEqual(payload['sources'], {'internet-museum': 'Internet Museum'})
+        detail[row['id']]['url'] = 'https://example.org/stale'
+        self.assertEqual(pick_intro(row, detail)['status'], 'excerpt')
 
     def test_an_official_collection_hub_can_reuse_its_url_without_reassigning_notes(self):
         page = 'https://www.example.org/collection/?type=now'

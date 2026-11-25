@@ -1,8 +1,11 @@
 (async function () {
   'use strict';
   const C = window.CultureCore, boot = window.CULTURE_BOOTSTRAP;
+  if (!C || !boot) return;
   const $ = id => document.getElementById(id), e = C.escape;
-  let dataset = boot.live?.content?.length ? boot.live : boot.dataset, preferences = structuredClone(boot.preferences), bookmarks = [], server = false;
+  let dataset = boot.live?.content?.length || boot.archive_store ? boot.live : boot.dataset;
+  let preferences = JSON.parse(JSON.stringify(boot.preferences)), bookmarks = [], server = false;
+  let archiveLoaded = !boot.archive_store, archiveRequest, archiveFailed = false;
   let localWritable = true, toastTimer, refreshTimer;
   let notifications = [], sourceStatus = dataset.source_status || [];
   const makeId = () => typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -11,7 +14,7 @@
     try {
       const stored = JSON.parse(localStorage.getItem('culture-desk-v1') || 'null');
       if (stored) {
-        const valid = C.validateImport(stored, { ...boot.dataset, content: [...boot.dataset.content, ...(boot.live?.content || [])], events: [...boot.dataset.events, ...(boot.live?.events || [])] }, boot.preferences);
+        const valid = C.validateImport(stored, { ...boot.dataset, content: [...boot.dataset.content, ...(boot.live?.content || [])], events: [...boot.dataset.events, ...(boot.live?.events || [])] }, boot.preferences, { allowUnloadedContent: !archiveLoaded });
         preferences = valid.preferences; bookmarks = valid.bookmarks;
       }
     } catch { toast('本地记录未能读取，已使用默认设置'); }
@@ -21,7 +24,7 @@
     catch { localWritable = false; toast('浏览器禁止保存，请导出数据后再离开'); return false; }
   }
   async function api(path, options = {}) {
-    const response = await fetch(`/api${path}`, { ...options, headers: { 'Content-Type': 'application/json', ...options.headers }, signal: AbortSignal.timeout(5000) });
+    const response = await C.fetchTimed(`/api${path}`, { ...options, headers: { 'Content-Type': 'application/json', ...options.headers } }, 5000);
     if (!response.ok) { const error = await response.json().catch(() => ({})); throw new Error(typeof error.detail === 'string' ? error.detail : '保存失败，请重试'); }
     return response.json();
   }
@@ -29,9 +32,9 @@
     $('toast').textContent = message; $('toast').classList.add('show'); clearTimeout(toastTimer);
     toastTimer = setTimeout(() => $('toast').classList.remove('show'), 3500);
   }
-  if (location.protocol !== 'file:') {
+  if (location.protocol !== 'file:' && !boot.static_edition) {
     try {
-      const response = await fetch('/api/health', { signal: AbortSignal.timeout(1500) });
+      const response = await C.fetchTimed('/api/health', {}, 1500);
       if (response.ok && (await response.json()).storage === 'sqlite') {
         [dataset, preferences, bookmarks] = await Promise.all([api('/dataset'), api('/preferences'), api('/bookmarks')]);
         server = true;
@@ -41,8 +44,10 @@
   if (!server) readLocal();
   state.mode = dataset.mode || 'demo'; state.month = (state.mode === 'demo' ? dataset.reference_date : C.localDate(preferences.reading_timezone)).slice(0, 7); sourceStatus = dataset.source_status || [];
   if (server) notifications = await api('/notifications').catch(() => []);
-  const exhibitions = window.CultureExhibitions.create({
-    C, boot, server, toast, rerender: render, isActive: () => state.view === 'exhibitions'
+  if (server) boot.exhibition_page = '/exhibitions/';
+  const exhibitionHref = location.protocol !== 'file:' ? boot.exhibition_page : null;
+  const exhibitions = window.CultureExhibitions?.create({
+    C, boot, server, toast, rerender: render, isActive: () => ['exhibitions', 'exhibition'].includes(state.view)
   });
   function artwork(row, large = false) {
     if (!row.image_url && row.event_type) {
@@ -81,14 +86,18 @@
   function findBookmark(type, id) { return bookmarks.find(b => b[type === 'content' ? 'content_id' : 'event_id'] === id); }
   function nav() {
     const labels = { today: '头版', explore: '资讯', exhibitions: '展览', calendar: '日历', bookmarks: '剪报' };
-    const current = state.view === 'attention' ? 'explore' : state.view;
-    $('navigation').innerHTML = Object.entries(labels).map(([key, label]) => `<button class="nav-button ${current === key ? 'active' : ''}" data-view="${key}" ${current === key ? 'aria-current="page"' : ''}>${label}${key === 'bookmarks' && bookmarks.length ? `<span class="nav-count">${bookmarks.length}</span>` : ''}</button>`).join('');
+    const current = state.view === 'attention' ? 'explore' : state.view === 'exhibition' ? 'exhibitions' : state.view;
+    $('navigation').innerHTML = Object.entries(labels).map(([key, label]) => {
+      const attrs = `class="nav-button ${current === key ? 'active' : ''}" ${current === key ? 'aria-current="page"' : ''}`;
+      if (key === 'exhibitions' && exhibitionHref) return `<a ${attrs} href="${e(exhibitionHref)}">${label}</a>`;
+      return `<button ${attrs} data-view="${key}">${label}${key === 'bookmarks' && bookmarks.length ? `<span class="nav-count">${bookmarks.length}</span>` : ''}</button>`;
+    }).join('');
     const [y, m, d] = displayDate().split('-').map(Number);
     $('edition-date').innerHTML = `<b class="edition-day">${d}</b><span>${y}年${m}月</span><span>星期${'日一二三四五六'[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]}</span>`;
     $('edition-date').setAttribute('aria-label', `${y}年${m}月${d}日`);
     $('film-edge-print').textContent = Array.from({ length: 24 }, (_, i) => (i % 6 ? '' : '幕間休息　') + `▸ ${d + i}　${d + i}A`).join('　　');
     $('edition-date').dateTime = displayDate();
-    const last = sourceStatus.map(source => source.last_success_at).filter(Boolean).sort().at(-1);
+    const [last] = sourceStatus.map(source => source.last_success_at).filter(Boolean).sort().slice(-1);
     $('edition-updated').textContent = state.mode === 'demo' ? '示例版 · 内容虚构' : last ? '更新 ' + new Intl.DateTimeFormat('zh-CN', { timeZone: displayZone(), month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(last)) : '';
     document.querySelector('.refresh-control').hidden = !server;
     const unread = notifications.filter(row => !row.read).length;
@@ -287,26 +296,56 @@
   }
   let lastSpot = '';
   function exhibitionPage() {
-    return heading('展览') + notice() + exhibitions.view(dataset, preferences);
+    return heading('展览') + notice() + (exhibitions?.view(dataset, preferences) || '<p>展览目录暂时无法载入。</p>');
+  }
+  function loadArchive() {
+    if (server || archiveLoaded) return Promise.resolve(true);
+    if (archiveRequest) return archiveRequest;
+    archiveFailed = false;
+    archiveRequest = C.fetchTimed(boot.archive_store, {}, 60000).then(response => {
+      if (!response.ok) throw new Error('archive_unavailable');
+      return response.json();
+    }).then(value => {
+      if (value?.schema_version !== 1 || !Array.isArray(value.live?.content) || !value.priorities || !value.headlines) throw new Error('archive_invalid');
+      // Preserve bodies already opened from today's edition before replacing its shorter index.
+      const recent = new Map(boot.live.content.map(row => [row.id, row]));
+      value.live.content = value.live.content.map(row => recent.get(row.id) || row);
+      Object.assign(boot, {live: value.live, priorities: value.priorities, headlines: value.headlines});
+      if (dataset.mode === 'live') dataset = boot.live;
+      archiveLoaded = true;
+      return true;
+    }).catch(() => { archiveFailed = true; return false; }).finally(() => {
+      archiveRequest = null;
+      render();
+    });
+    return archiveRequest;
   }
   function render() {
     const advanced = $('advanced-filters');
     if (advanced) state.advancedOpen = advanced.open;
     document.body.dataset.page = state.view;
-    nav(); $('edition-note').textContent = state.mode === 'demo' ? '所有示例均为虚构。' : '原文与 AI 译文分开标注；配图注明来源。'; $('main').innerHTML = ({ today, explore, exhibitions: exhibitionPage, calendar, bookmarks: bookmarkPage, settings, coverage: coveragePage, attention: attentionPage, reader: readerPage }[state.view] || today)();
+    const story = state.view === 'reader' && dataset.content.find(item => item.id === state.readerId);
+    const needsArchive = !server && !archiveLoaded && state.mode === 'live'
+      && (['explore', 'bookmarks', 'attention', 'coverage', 'calendar'].includes(state.view) || (state.view === 'reader' && !story));
+    if (needsArchive && !archiveFailed) loadArchive();
+    nav();
+    $('edition-note').textContent = state.mode === 'demo' ? '所有示例均为虚构。' : '原文与 AI 译文分开标注；配图注明来源。';
+    const views = { today, explore, exhibitions: exhibitionPage, exhibition: () => exhibitions?.inlineReader(state.exhibitionId, dataset) || '<p>展览暂时无法载入。</p>', calendar, bookmarks: bookmarkPage, settings, coverage: coveragePage, attention: attentionPage, reader: readerPage };
+    $('main').innerHTML = needsArchive ? (archiveFailed
+      ? '<p role="status">旧闻索引暂时无法载入。<button class="text-link" data-action="retry-archive">重试</button></p>'
+      : '<p role="status">正在载入旧闻索引…</p>') : (views[state.view] || today)();
     // A new page moves focus to <main>, so keyboard and screen-reader users start at the top of it.
-    const spot = state.view + (state.view === 'reader' ? ':' + state.readerId : '');
+    const spot = state.view + (state.view === 'reader' ? ':' + state.readerId : state.view === 'exhibition' ? ':' + state.exhibitionId : '');
     if (lastSpot && spot !== lastSpot && document.activeElement !== $('search')) $('main').focus({ preventScroll: true });
     lastSpot = spot;
     // Tab titles name the page (and the story when reading), so history, bookmarks and shared tabs differ.
-    const pageTitles = { explore: '资讯', attention: '一種關注', exhibitions: '展览', calendar: '上映与展期', bookmarks: '剪报', settings: '阅读设置', coverage: '收录与译文' };
-    const story = state.view === 'reader' && dataset.content.find(item => item.id === state.readerId);
+    const pageTitles = { explore: '资讯', attention: '一種關注', exhibitions: '展览', exhibition: '展览', calendar: '上映与展期', bookmarks: '剪报', settings: '阅读设置', coverage: '收录与译文' };
     const pageTitle = story ? (state.readerTab === 'original' ? story.title_original : C.displayTitle(story)) : pageTitles[state.view];
     document.title = pageTitle ? `${pageTitle} · 幕间休息` : '幕间休息';
-    const hash = state.view === 'reader' ? C.readerRoute(state.readerId) : '#' + state.view;
+    const hash = state.view === 'reader' ? C.readerRoute(state.readerId) : state.view === 'exhibition' ? '#exhibition/' + encodeURIComponent(state.exhibitionId) : '#' + state.view;
     if (location.hash !== hash) history.replaceState(null, '', hash);
     loadBodies(C.takeWantedBodies());
-    if (state.query.trim() && dataset.content.some(C.bodyPending)) loadSearchIndex();
+    if (!needsArchive && state.view === 'explore' && state.query.trim() && dataset.content.some(C.bodyPending)) loadSearchIndex();
   }
   // Static builds: fetch the article bodies the last render asked for, then render once more.
   const bodyRequests = new Map();
@@ -381,6 +420,7 @@
   }
   document.addEventListener('click', async event => {
     const button = event.target.closest('button'); if (!button) return;
+    if (button.dataset.action === 'retry-archive') { loadArchive(); render(); return; }
     if (button.dataset.listPage) { state.listPage = Number(button.dataset.listPage); render(); $('main').scrollIntoView(); return; }
     if (button.dataset.view || button.dataset.channel || button.dataset.kind || button.dataset.scope || ['editorial-news','all-news','reset-filters','mode'].includes(button.dataset.action)) state.listPage = 1;
     if (button.dataset.view) { state.editorialOnly = false; state.kind = 'all'; state.view = button.dataset.view; state.selectedDate = null; render(); window.scrollTo({ top: 0 }); }
@@ -465,10 +505,12 @@
     }
     else if (input.id === 'import-input' && input.files?.[0]) {
       try {
-        if (input.files[0].size > 2_000_000) throw new Error('文件过大，请使用 2 MB 以内的导出文件');
+        const file = input.files[0];
+        if (file.size > 2_000_000) throw new Error('文件过大，请使用 2 MB 以内的导出文件');
+        if (!server && !await loadArchive()) throw new Error('请在旧闻索引载入后重试导入');
         const allData = server ? await api('/dataset?mode=demo') : { ...boot.dataset, content: [...boot.dataset.content, ...(boot.live?.content || [])], events: [...boot.dataset.events, ...(boot.live?.events || [])] };
         if (server) { const live = await api('/dataset?mode=live'); allData.content.push(...live.content); allData.events.push(...live.events); }
-        const imported = C.validateImport(JSON.parse(await input.files[0].text()), allData, boot.preferences);
+        const imported = C.validateImport(JSON.parse(await file.text()), allData, boot.preferences);
         if (server) { await api('/import', { method: 'POST', body: JSON.stringify(imported) }); [preferences, bookmarks] = await Promise.all([api('/preferences'), api('/bookmarks')]); }
         else { preferences = imported.preferences; const map = new Map(bookmarks.map(row => [row.content_id ? `content:${row.content_id}` : `event:${row.event_id}`, row])); for (const row of imported.bookmarks) { const key = row.content_id ? `content:${row.content_id}` : `event:${row.event_id}`; map.set(key, { ...row, id: map.get(key)?.id || makeId() }); } bookmarks = [...map.values()]; }
         const persisted = server || writeLocal(); render(); if (persisted) toast(`已恢复 ${imported.bookmarks.length} 条收藏和偏好`);
@@ -489,7 +531,16 @@
   $('coordinate-button').addEventListener('click', () => { state.view = 'settings'; render(); });
   $('close-detail').addEventListener('click', () => $('detail-dialog').close());
   $('detail-dialog').addEventListener('click', event => { if (event.target === $('detail-dialog')) { const r = $('detail-dialog').getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) $('detail-dialog').close(); } });
-  window.addEventListener('hashchange', () => { if (location.hash === '#main') return; const route = C.parseRoute(location.hash); if (route.view === 'reader') openReader(route.id, false); else { const back = state.view === 'reader' && route.view === state.readerReturn; state.view = route.view; render(); if (back) window.scrollTo({ top: state.readerScroll || 0 }); } });
+  window.addEventListener('hashchange', () => {
+    if (location.hash === '#main') return;
+    const route = C.parseRoute(location.hash);
+    if (route.view === 'reader') { openReader(route.id, false); return; }
+    const back = state.view === 'reader' && route.view === state.readerReturn;
+    state.view = route.view;
+    if (route.view === 'exhibition') state.exhibitionId = route.id;
+    render();
+    if (back) window.scrollTo({ top: state.readerScroll || 0 });
+  });
   let lastScroll = 0, scrollFrame = 0;
   window.addEventListener('scroll', () => {
     if (scrollFrame) return;
@@ -502,6 +553,9 @@
       document.querySelector('.read-progress span').style.transform = `scaleX(${state.view === 'reader' && max > 0 ? Math.min(1, y / max) : 0})`;
     });
   }, { passive: true });
-  const initialRoute = C.parseRoute(location.hash); state.view = initialRoute.view; if (initialRoute.id) state.readerId = initialRoute.id;
+  const initialRoute = C.parseRoute(location.hash);
+  state.view = initialRoute.view;
+  if (initialRoute.view === 'reader') state.readerId = initialRoute.id;
+  if (initialRoute.view === 'exhibition') state.exhibitionId = initialRoute.id;
   render();
 })();

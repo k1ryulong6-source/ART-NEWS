@@ -1,3 +1,7 @@
+> 2026-11-25 JST，T083 已发布。讣告降为短讯且全版最多 1 条，查询和留存照常。规则见 `backend/priority.py`、`backend/frontpage.py`、`frontend/core.js` 和 `config/preferences.json`，选稿一致性见 `tests/test_frontpage.py`。
+
+> T084 正在验收。展览入口 `/exhibitions/`，单场 `/exhibitions/?id=<展览ID>`。公开介绍按批补采，来源状态见 `/reports/japan-exhibitions.json`。首页使用轻量近稿索引，旧稿、找展和单篇分享各按需加载。页面可在移动端跳过封面，展览留用原观展记录键。采集和日常 AI 翻译的请求上限沿用现行设置。
+
 > T074更新（2026-10-17，Claude）：自动翻译默认DeepSeek+两路免费Gemini并行（ai_pool三路互斥分配，Gemini 503只影响本路），AI_TRANSLATION_PROVIDER=deepseek/gemini可只用一家。见D080。
 
 > T078草稿（2026-10-17，Claude前端）：站点体检后的小修。①开场页（index.html内联脚本）打开期间把`.skip-link`和`.paper-shell`设为inert，键盘监听改挂document，翻开后焦点移到`main`——此前Tab会进入被盖住的导航，Enter触发看不见的导航而开场页关不掉。②`render()`在页面（视图或文章）变化时把焦点移到`main`，搜索框输入时不动。③开场页“翻頁”提示#9b9892→#6d6a64（原对比度约2.9:1）。体检里需用户决定、本次未改：单篇文章分享卡片/sitemap（要改构建）、报头日期是否按上海时区（现按浏览器时区，app.js displayZone）。清单：/mnt/project-files/audit/site-audit-2026-10-16.md。

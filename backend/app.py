@@ -167,10 +167,48 @@ def create_app(db_path=None):
 
     @app.get("/reports/japan-exhibitions.json")
     async def japan_exhibition_coverage():
+        from .exhibition_assets import description_counts
+        from .exhibition_details import read_details
         catalogue = await japan_exhibitions()
         if not catalogue['coverage']:
             raise HTTPException(status_code=404, detail="展览覆盖报告尚未生成")
-        return {"generated_at": catalogue['generated_at'], **catalogue['coverage']}
+        return {"generated_at": catalogue['generated_at'], **catalogue['coverage'],
+                'public_descriptions': description_counts(catalogue, read_details())}
+
+    def exhibition_records():
+        from .exhibition_assets import fill_detail_images, public_items
+        from .exhibition_details import read_details
+        from .exhibitions import read_catalog
+        with store.connect() as db:
+            events = [dict(row) for row in db.execute("SELECT * FROM events WHERE is_demo=0 AND event_type='exhibition' ORDER BY start_date")]
+            images = {row[0]: (row[1], row[2]) for row in db.execute("""
+                SELECT e.id, c.image_url, c.source_id FROM events AS e
+                JOIN content_events AS link ON link.event_id=e.id JOIN content AS c ON c.id=link.content_id
+                WHERE e.is_demo=0 AND e.event_type='exhibition' AND c.image_url<>''
+                ORDER BY c.published_at
+            """)}
+        catalogue, details = read_catalog(), read_details()
+        items = public_items(catalogue, events, images)
+        fill_detail_images(items, details)
+        return catalogue, details, items
+
+    @app.get("/exhibitions/")
+    def exhibitions_page():
+        return Response((ROOT / "frontend/exhibition-page.html").read_bytes(), media_type="text/html")
+
+    @app.get("/exhibitions/catalogue.json")
+    def exhibition_listing():
+        from .exhibition_assets import compact_list
+        catalogue, _, items = exhibition_records()
+        return compact_list(catalogue, items)
+
+    @app.get("/exhibitions/items/{item_id}.json")
+    def exhibition_item(item_id: str):
+        from .exhibition_assets import detail_view
+        catalogue, details, items = exhibition_records()
+        if item_id not in items:
+            raise HTTPException(404, "展览不存在")
+        return detail_view(items[item_id], details, catalogue['coverage'])
 
     @app.get("/api/preferences")
     async def preferences():
@@ -256,7 +294,7 @@ def create_app(db_path=None):
 
     # A bounded asset allowlist keeps the small local edition independent of
     # background file-worker threads and never exposes project/runtime files.
-    assets = {"index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "data.js", "core.js", "ui.js", "exhibitions.js", "app.js"}
+    assets = {"index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "data.js", "core.js", "ui.js", "exhibitions.js", "exhibition-page.js", "app.js"}
     assets.update({'fonts/intermission-masthead-v1.woff2', 'fonts/intermission-sans-v1.woff2', 'fonts/intermission-title-v1.woff2', 'fonts/notoseriftc-OFL.txt', 'fonts/intermission-sans-tc-v1.woff2', 'fonts/notosanstc-OFL.txt',
                    'fonts/intermission-news-v1.woff2', 'fonts/mashanzheng-OFL.txt',
                    'fonts/notosanssc-OFL.txt', 'fonts/newsreader-OFL.txt'})

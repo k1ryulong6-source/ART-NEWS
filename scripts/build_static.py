@@ -4,6 +4,8 @@ import re
 import base64
 import shutil
 import sys
+from datetime import timedelta
+from hashlib import sha256
 from html import escape
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -13,9 +15,11 @@ sys.path.insert(0, str(ROOT))
 from backend.snapshot_files import read_snapshot
 from backend.headlines import load_headlines
 from backend.coverage import coverage_report
-from backend.priority import rank_snapshot
+from backend.priority import rank_snapshot, reference_time
 from backend.presentation import browser_snapshot
 from backend.exhibitions import read_catalog
+from backend.exhibition_assets import description_counts, write_exhibition_files
+from backend.exhibition_details import read_details
 
 
 def build():
@@ -47,15 +51,18 @@ def build():
     output = ROOT / 'dist'
     output.mkdir(exist_ok=True)
     exhibition_catalog = read_catalog()
+    exhibition_details = read_details()
+    exhibition_revision = write_exhibition_files(output / 'exhibitions', exhibition_catalog, exhibition_details, bundle.get('live', {}))
     bundle['japan_exhibitions'] = exhibition_catalog
-    bundle['exhibition_store'] = 'japan-exhibitions.json'
-    if exhibition_catalog['generated_at']:
-        bundle['exhibition_store'] += '?v=' + re.sub(r'[^0-9]', '', exhibition_catalog['generated_at'])
+    bundle['exhibition_details'] = exhibition_details
+    bundle['exhibition_page'] = 'exhibitions/'
+    bundle['exhibition_store'] = 'exhibitions/catalogue.json?v=' + exhibition_revision
     (output / 'japan-exhibitions.json').write_text(json.dumps(exhibition_catalog, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
     if exhibition_catalog['coverage']:
         (output / 'reports').mkdir(exist_ok=True)
         bundle['exhibition_report'] = 'reports/japan-exhibitions.json'
-        report = {'generated_at': exhibition_catalog['generated_at'], **exhibition_catalog['coverage']}
+        report = {'generated_at': exhibition_catalog['generated_at'], **exhibition_catalog['coverage'],
+                  'public_descriptions': description_counts(exhibition_catalog, exhibition_details)}
         (output / bundle['exhibition_report']).write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     if bundle.get('automation', {}).get('operations'):
         (output / 'reports').mkdir(exist_ok=True)
@@ -96,7 +103,7 @@ def build():
     (ROOT / "frontend/data.js").write_text(text, encoding="utf-8")
     output = ROOT / "dist"
     output.mkdir(exist_ok=True)
-    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "core.js", "ui.js", "exhibitions.js", "app.js"):
+    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "core.js", "ui.js", "exhibitions.js", "exhibition-page.js", "app.js"):
         shutil.copy2(ROOT / "frontend" / name, output / name)
     write_split_site(bundle, output, bootstrap)
     if (output / 'fonts').exists():
@@ -105,11 +112,16 @@ def build():
     html = (output / "index.html").read_text(encoding="utf-8")
     if site_url:
         html = html.replace('</head>', '<link rel="canonical" href="' + escape(site_url, quote=True) + '">\n</head>')
-        (output / 'index.html').write_text(html, encoding='utf-8')
+    public_html = version_assets(html, output)
+    (output / 'index.html').write_text(public_html, encoding='utf-8')
+    exhibition_html = (ROOT / 'frontend/exhibition-page.html').read_text(encoding='utf-8')
+    exhibition_html = exhibition_html.replace('exhibition_store:"catalogue.json"', f'exhibition_store:"catalogue.json?v={exhibition_revision}",exhibition_revision:"{exhibition_revision}"')
+    (output / 'exhibitions/index.html').write_text(version_assets(exhibition_html, output), encoding='utf-8')
     if 'live' in bundle:
         from backend.share_pages import write_share_pages
-        write_share_pages(output, html, bundle['live'], site_url, bundle.get('headlines'))
+        write_share_pages(output, public_html, bundle['live'], site_url, bundle.get('headlines'))
     # The portable edition embeds its own fonts, without external requests.
+    html = html.replace('href="exhibitions/"', 'href="#exhibitions"')
     html = html.replace('<link rel="preload" href="fonts/intermission-masthead-v1.woff2" as="font" type="font/woff2" crossorigin>', '')
     for name in ('styles.css', 'theme.css'):
         css = (output / name).read_text(encoding='utf-8')
@@ -128,15 +140,58 @@ def build():
     print("Static edition built in dist/ (public live snapshot + separate demo; browser storage)")
 
 
+def version_assets(html, output):
+    versioned = {}
+    for name in ('styles.css', 'theme.css', 'data.js', 'core.js', 'ui.js', 'exhibitions.js', 'exhibition-page.js', 'app.js'):
+        versioned[name] = sha256((output / name).read_bytes()).hexdigest()[:12]
+    return re.sub(r'((?:src|href)="(?:\.\./)?)([^"/]+)(")',
+                  lambda match: match[1] + match[2] + '?v=' + versioned[match[2]] + match[3] if match[2] in versioned else match[0], html)
+
+
+def first_edition(snapshot, priorities, preferences, now):
+    config = preferences.get('frontpage', {})
+    # Keep a day of room for readers whose clocks differ from the build machine.
+    cutoff = now - timedelta(hours=config.get('fallback_hours', 168) + 24)
+    days = config.get('undated_event_days', 2)
+
+    def belongs(row):
+        if row.get('published_at'):
+            try:
+                return reference_time(row['published_at']) >= cutoff
+            except (TypeError, ValueError):
+                pass
+        due = priorities.get(row['id'], {}).get('due') or {}
+        return 0 <= due.get('days', 999) <= days
+
+    recent = [row for row in snapshot['content'] if belongs(row)]
+    identifiers = {row['id'] for row in recent}
+    links = [link for link in snapshot['content_events'] if link['content_id'] in identifiers]
+    return {**snapshot, 'content': recent, 'content_events': links}, identifiers
+
+
 def write_split_site(bundle, output, bootstrap):
-    """Publish an article index in data.js plus per-article bodies and a lazy search index."""
-    import hashlib
+    """Publish the current edition first, with complete indexes and bodies available on demand."""
     from backend.presentation import split_bodies
     site = dict(bundle)
     site.pop('japan_exhibitions', None)
+    site.pop('exhibition_details', None)
+    site['static_edition'] = True
     bodies, search = {}, {}
     if 'live' in site:
-        site['live'], bodies, search = split_bodies(site['live'])
+        live, bodies, search = split_bodies(site['live'])
+        priorities, headlines = site['priorities'], site['headlines']
+        recent, selected = first_edition(live, priorities, site['preferences'], reference_time())
+        if len(recent['content']) < len(live['content']):
+            archive = json.dumps({'schema_version': 1, 'live': live, 'priorities': priorities, 'headlines': headlines}, ensure_ascii=False, separators=(',', ':'))
+            (output / 'news-archive.json').write_text(archive, encoding='utf-8')
+            site['archive_store'] = 'news-archive.json?v=' + sha256(archive.encode()).hexdigest()[:12]
+            site['live'] = recent
+            site['priorities'] = {key: priorities[key] for key in selected if key in priorities}
+            site['headlines'] = {key: value for key, value in headlines.items() if key in selected or key not in priorities}
+        else:
+            site['live'] = live
+    if 'archive_store' not in site:
+        (output / 'news-archive.json').unlink(missing_ok=True)
     store = output / 'bodies'
     store.mkdir(exist_ok=True)
     for path in store.glob('*.json'):
@@ -148,7 +203,7 @@ def write_split_site(bundle, output, bootstrap):
     index = json.dumps(search, ensure_ascii=False, separators=(',', ':'), sort_keys=True)
     (output / 'search-index.json').write_text(index, encoding='utf-8')
     if bodies:
-        site['body_store'] = {'bodies': 'bodies/', 'search': 'search-index.json?v=' + hashlib.sha256(index.encode('utf-8')).hexdigest()[:12]}
+        site['body_store'] = {'bodies': 'bodies/', 'search': 'search-index.json?v=' + sha256(index.encode('utf-8')).hexdigest()[:12]}
     (output / 'data.js').write_text(bootstrap(site), encoding='utf-8')
 
 

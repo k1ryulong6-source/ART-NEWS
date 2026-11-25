@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08",
+  "updated_at": "2026-11-25",
   "status_values": [
     "todo",
     "doing",
@@ -2730,6 +2730,30 @@
         "Pages 45612376562成功，线上覆盖报告与本轮数据生成时刻一致。东京11月25日21:17登记2,190条，2,042条在展或待开展，47都道府县均有记录，仍有36个都道府县未直连场馆官网。",
         "Project checks 45611859300、45612336133均成功。线上浏览器验证桌面和390px手机、装置展筛选、德岛与海外数据、翻页、独立收藏、标签、评分笔记、刷新及导出和重新导入；首屏可直接进入7天内闭展清单。"
       ]
+    },
+    {
+      "id": "T083",
+      "title": "重排头版并限制讣告挤占新闻席位",
+      "milestone": "M6",
+      "status": "done",
+      "owner": "Codex",
+      "updated_at": "2026-11-25",
+      "depends_on": ["T061", "T066"],
+      "scope": ["backend/priority.py", "backend/frontpage.py", "config/preferences.json", "config/translation-priority.json", "frontend/core.js", "tests/test_frontpage.py"],
+      "acceptance": ["新旧讣告仍可查询，头条先完成有效中文全文", "讣告不竞争主头条或栏目头条，头版短讯合计最多一条", "浏览器与后台候选逻辑和测试一致"],
+      "evidence": ["3cc701889 已进 main。项目检查 45615584065 与 Pages 45615583970 成功。此前主头条与电影栏头条均为讣告，同一库重排后入选 20 篇、讣告 0 篇。"]
+    },
+    {
+      "id": "T084",
+      "title": "展览实图、独立正文页和手机首屏提速",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-11-25",
+      "depends_on": ["T081", "T082"],
+      "scope": ["backend/exhibition_assets.py", "backend/exhibition_details.py", "backend/exhibition_sources.py", "backend/share_pages.py", "backend/app.py", "data/exhibitions-jp.json", "data/exhibition-details.json", "scripts/collect_exhibition_details.py", "scripts/build_static.py", "frontend/", ".github/workflows/", "tests/", "docs/JAPAN_EXHIBITIONS.md"],
+      "acceptance": ["展图、标题和详情链接进入可分享的正文页，标明介绍与实际出处", "美術展ナビ新闻和展讯均有公开采集证据，批量介绍独立续跑", "手机和桌面浏览器验证首页、展览、笔记和旧闻剪报，保留单篇分享页", "线上 Pages 及实际采集工作流成功"],
+      "evidence": ["本地公开快照 2190 场日本展，独立目录约 0.25 MB gzip。7113 篇资讯全部仍可浏览，首屏压缩数据量由约 4.7 MB 降至 0.77 MB。Chromium 320/390/1360px 验证目录→展图→正文和评分笔记保存，390px 验证旧闻及剪报。"]
     }
   ]
 }

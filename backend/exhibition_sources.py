@@ -227,9 +227,13 @@ def parse_aepage(payload, url, config):
         area = node_text(card.select_one('.article-detail > span:not([class])'))
         tags = [node_text(tag).lstrip('#') for tag in card.select('.tag-name')]
         img = card.select_one('figure img')
-        rows.append(observation('artexhibition', url=target, title=node_text(a), venue=venue,
-                                prefecture=prefecture_of(area, config), area=area, raw_date=raw_date, tags=tags,
-                                image=linked_url(url, img.get('data-src') or img.get('src')) if img else None))
+        row = observation('artexhibition', url=target, title=node_text(a), venue=venue,
+                          prefecture=prefecture_of(area, config), area=area, raw_date=raw_date, tags=tags,
+                          image=linked_url(url, img.get('data-src') or img.get('src')) if img else None)
+        intro = node_text(card.select_one('.body-txt'))
+        if intro:
+            row['intro_excerpt'] = intro[:800]
+        rows.append(row)
     nxt = soup.select_one('a.next.page-numbers[href]')
     follow = linked_url(url, nxt['href'], host_only=True) if nxt else None
     if nxt and (not follow or not re.fullmatch(r'/exhibitions/page/\d+/?', urlsplit(follow).path)):

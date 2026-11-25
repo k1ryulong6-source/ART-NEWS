@@ -90,7 +90,19 @@
   function parseRoute(hash) {
     const value = (hash || '').replace(/^#/, '');
     if (value.startsWith('reader/')) { try { const id = decodeURIComponent(value.slice(7)); return id ? { view: 'reader', id } : { view: 'today' }; } catch { return { view: 'today' }; } }
+    if (value.startsWith('exhibition/')) {
+      const id = value.slice(11);
+      return /^[A-Za-z0-9][A-Za-z0-9_-]{0,99}$/.test(id) ? { view: 'exhibition', id } : { view: 'exhibitions' };
+    }
     return { view: ['today','explore','exhibitions','calendar','bookmarks','settings','coverage','attention'].includes(value) ? value : 'today' };
+  }
+  async function fetchTimed(url, options = {}, milliseconds = 8000) {
+    if (typeof AbortController !== 'function') return fetch(url, options);
+    if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') return fetch(url, {...options, signal: AbortSignal.timeout(milliseconds)});
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), milliseconds);
+    try { return await fetch(url, {...options, signal: controller.signal}); }
+    finally { clearTimeout(timer); }
   }
   const reviewedHeadline = row => { const pack = root.CULTURE_BOOTSTRAP?.headlines?.[row.id]; return pack?.source_title === row.title_original ? pack.title_zh : null; };
   const displayTitle = row => (editorialReady(row) ? row.editorial_title_zh : null) || reviewedHeadline(row) || row.title_zh || (machineReady(row) ? row.translated_title_zh : null) || row.title_original || '标题未取得';
@@ -227,7 +239,7 @@
     if (event.event_type === 'exhibition') return { label: '正在展出', tone: 'active' };
     return { label: untilStart === 0 ? '今日开始' : '已开始', tone: 'active' };
   }
-  function validateImport(data, dataset, defaults) {
+  function validateImport(data, dataset, defaults, { allowUnloadedContent = false } = {}) {
     if (!data || data.schema_version !== 1 || !Array.isArray(data.bookmarks) || !data.preferences || data.bookmarks.length > 5000) throw new Error('不是兼容的幕间休息导出文件');
     const preferences = { ...defaults, ...data.preferences };
     if (!Number.isInteger(preferences.daily_selection_limit) || preferences.daily_selection_limit < 1 || preferences.daily_selection_limit > 50) throw new Error('精选数量无效');
@@ -243,9 +255,9 @@
     const seen = new Map();
     for (const row of data.bookmarks) {
       const type = row.content_id ? 'content' : 'event', id = row.content_id || row.event_id;
-      if (Boolean(row.content_id) === Boolean(row.event_id) || !statusNames[row.status]) throw new Error('收藏格式无效');
+      if (Boolean(row.content_id) === Boolean(row.event_id) || typeof id !== 'string' || id.length > 200 || !Object.prototype.hasOwnProperty.call(statusNames, row.status)) throw new Error('收藏格式无效');
       const records = type === 'content' ? dataset.content : dataset.events;
-      if (!records.some(x => x.id === id)) throw new Error('收藏引用了不存在的内容，请先恢复对应内容库');
+      if (!(allowUnloadedContent && type === 'content') && !records.some(x => x.id === id)) throw new Error('收藏引用了不存在的内容，请先恢复对应内容库');
       if (typeof (row.note || '') !== 'string' || (row.note || '').length > 2000) throw new Error('收藏备注无效');
       seen.set(`${type}:${id}`, { ...row, note: row.note || '' });
     }
@@ -268,7 +280,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { bodyPending, needBody, takeWantedBodies, attachBody, setSearchTexts, frontpageRows, babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, headlineReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { fetchTimed, bodyPending, needBody, takeWantedBodies, attachBody, setSearchTexts, frontpageRows, babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, headlineReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

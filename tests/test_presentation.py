@@ -1,4 +1,5 @@
 import copy,json,unittest
+from datetime import datetime, timezone
 from backend.presentation import browser_snapshot
 
 class BrowserPayloadTests(unittest.TestCase):
@@ -18,6 +19,19 @@ class BrowserPayloadTests(unittest.TestCase):
 
 
 class SplitBodyTests(unittest.TestCase):
+    def test_first_edition_keeps_recent_and_verified_upcoming_stories_and_their_calendar_links(self):
+        from scripts.build_static import first_edition
+        rows = [{'id': 'now', 'published_at': '2026-11-25T02:00:00Z'}, {'id': 'old', 'published_at': '2026-11-04T00:00:00Z'},
+                {'id': 'event-news'}, {'id': 'unknown'}]
+        links = [{'content_id': 'old', 'event_id': 'event'}, {'content_id': 'event-news', 'event_id': 'event'}]
+        original = {'content': rows, 'content_events': links, 'events': [{'id': 'event'}]}
+        priorities = {'event-news': {'due': {'days': 2}}, 'old': {'due': {'days': 0}}}
+        initial, ids = first_edition(original, priorities, {}, datetime(2026, 11, 25, 12, tzinfo=timezone.utc))
+        self.assertEqual(ids, {'now', 'event-news'})
+        self.assertEqual(initial['content_events'], links[1:])
+        self.assertEqual(initial['events'], original['events'])
+        self.assertEqual(len(original['content']), 4)
+
     def test_bodies_move_out_with_flags_preview_and_search_text(self):
         from backend.presentation import split_bodies
         blocks=[{'type':'paragraph','text':'Original paragraph.'},{'type':'image','url':'https://example.org/p','caption':'Credit'}]

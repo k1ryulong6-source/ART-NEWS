@@ -13,6 +13,7 @@
   const logFormat = 'culture-desk-exhibition-log-v1';
   const validId = /^[A-Za-z0-9][A-Za-z0-9_-]{0,99}$/;
   const paused = ['cancelled', 'postponed', 'needs_confirmation'];
+  const own = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
   const normal = value => String(value || '').normalize('NFKC').toLowerCase();
   const ageOf = (C, timestamp, today) => C.daysBetween(timestamp?.slice(0, 10), today);
 
@@ -39,7 +40,7 @@
     const state = phase(C,row,today), close = closingDays(C,row,today), start = C.daysBetween(today,row.start_date);
     const flags = new Set(row.flags || []), fresh = ageOf(C,row.last_seen,today) <= 14;
     const reasons = Object.keys(signals).filter(key => flags.has(key));
-    const sources = new Set((row.evidence || []).map(item => item.source)).size;
+    const sources = row.source_count ?? new Set((row.evidence || []).map(item => item.source)).size;
     const important = reasons.some(key => key !== 'special') || (flags.has('special') && row.official);
     let score = reasons.reduce((sum,key) => sum + signals[key][0], 0) + (row.official ? 5 : 0) + Math.min(2, Math.max(0,sources - 1));
     if (close !== null) score += 9 - close;
@@ -66,7 +67,7 @@
       if (filters.medium !== 'all' && !(row.types || []).includes(filters.medium)) return false;
       const log = records.get(row.id);
       if ((filters.personal === 'favorite' && !log?.favorite) || (filters.personal === 'records' && !log)) return false;
-      if (Object.hasOwn(statuses,filters.personal) && log?.status !== filters.personal) return false;
+      if (own(statuses,filters.personal) && log?.status !== filters.personal) return false;
       const pref = filters.labels?.get(row.prefecture);
       const query = normal([row.title_original,row.title_zh,row.venue,row.area,row.city,pref?.name,pref?.original,
         ...(row.types || []).map(key => types[key])].join(' '));
@@ -109,7 +110,7 @@
     const result = new Map();
     for (const r of value.records) {
       if (!r || typeof r.id !== 'string' || !validId.test(r.id) || result.has(r.id) ||
-          !(r.status === null || Object.hasOwn(statuses,r.status)) || typeof r.favorite !== 'boolean' ||
+          !(r.status === null || own(statuses,r.status)) || typeof r.favorite !== 'boolean' ||
           !(r.rating === null || Number.isInteger(r.rating) && r.rating >= 1 && r.rating <= 5) ||
           typeof r.note !== 'string' || r.note.length > 4000 || typeof r.title !== 'string' || r.title.length > 600)
         throw new Error('观展记录中有无效的标签、评分或笔记');
@@ -139,7 +140,7 @@
       const url = server ? '/api/japan-exhibitions' : boot.exhibition_store;
       if (!url) return;
       pending = true;
-      fetch(url,{signal:AbortSignal.timeout(15000)}).then(response => {
+      C.fetchTimed(url, {}, 15000).then(response => {
         if (!response.ok) throw new Error('catalogue_unavailable');
         return response.json();
       }).then(data => {
@@ -148,27 +149,31 @@
       }).catch(() => { failed = true; }).finally(() => { pending = false; if (isActive()) rerender(); });
     }
     const title = row => row.title_zh || row.title_original || '未命名展览';
-    const town = row => [areas.get(row.prefecture)?.name || row.city || C.countryLabels[row.country] || row.country,row.venue].filter(Boolean).join(' · ');
+    const detailHref = row => (boot.exhibition_page && location.protocol !== 'file:' && !row.is_demo ? boot.exhibition_page + '?id=' : '#exhibition/') + encodeURIComponent(row.id);
+    const town = row => [row.prefecture_name || areas.get(row.prefecture)?.name || row.city || C.countryLabels[row.country] || row.country,row.venue].filter(Boolean).join(' · ');
     const schedule = row => row.start_date
       ? C.dateLabel(row.start_date) + (row.end_date ? ' — ' + C.dateLabel(row.end_date) : row.date_precision === 'day' ? ' 起 · 闭展日期未公布' : ' · 具体日期待定')
       : '展期未公布';
     const option = (value,name,selected) => `<option value="${e(value)}" ${selected === value ? 'selected' : ''}>${e(name)}</option>`;
     const select = (field,pairs,label) => `<label class="exhibition-select">${label}<select data-ex-filter="${field}">${pairs.map(([v,n])=>option(v,n,filter[field])).join('')}</select></label>`;
-    function card(row, featured = false) {
+    function card(row, featured = false, lead = false) {
       const due = row.close === null ? phases[row.phase] : (row.date_conflict ? '有来源显示' : '') + (row.close === 0 ? '今日闭展' : `${row.close} 天后闭展`);
       const tags = (row.types || []).filter(kind => kind !== 'other').map(kind => types[kind]);
       if (featured) tags.push(...row.reasons.map(key => signals[key][1]));
-      return `<article class="exhibition-card${featured ? ' exhibition-card--feature' : ''}">
+      const picture = C.safeImageUrl(row.image_url), credit = catalog?.coverage?.sources?.[row.image_source]?.name;
+      return `<article class="exhibition-card${featured ? ' exhibition-card--feature' : ''}${lead ? ' exhibition-card--lead' : ''}${picture ? ' exhibition-card--pictured' : ''}">
+        ${picture ? `<a class="exhibition-card-image" href="${e(detailHref(row))}" aria-label="查看${e(title(row))}"><img src="${e(picture)}" alt="" loading="${lead ? 'eager' : 'lazy'}" decoding="async" referrerpolicy="no-referrer" data-ex-image></a>` : ''}
         <div class="exhibition-card-body"><p class="exhibition-kicker"><span class="${row.close !== null ? 'exhibition-urgent' : ''}">${e(due)}</span>
         ${row.date_conflict ? '<span>日期有出入</span>' : ''}${row.status === 'tentative' ? '<span>暂定</span>' : ''}${row.official ? '<span>场馆官网</span>' : ''}</p>
-        <h3><button class="exhibition-title" data-ex-detail="${e(row.id)}">${e(title(row))}</button></h3>
+        <h3><a class="exhibition-title" href="${e(detailHref(row))}" data-ex-detail="${e(row.id)}">${e(title(row))}</a></h3>
         <p class="exhibition-place">${e(town(row))}</p><p class="exhibition-dates">${e(schedule(row))}</p>
         ${tags.length ? `<p class="exhibition-kicker">${[...new Set(tags)].map(tag => `<span>${e(tag)}</span>`).join('')}</p>` : ''}
         ${row.log?.rating ? `<p class="exhibition-kicker">我的评分 ${row.log.rating} / 5</p>` : ''}
+        ${credit && picture ? `<p class="exhibition-image-credit">图源 ${e(credit)}</p>` : ''}
         <div class="exhibition-actions">
           <button class="exhibition-chip" data-ex-want="${e(row.id)}" aria-pressed="${row.log?.status === 'want'}">${row.log?.status === 'want' ? '✓ 想去' : '想去'}</button>
           <button class="exhibition-chip" data-ex-favorite="${e(row.id)}" aria-pressed="${Boolean(row.log?.favorite)}">${row.log?.favorite ? '★ 已收藏' : '☆ 收藏'}</button>
-          <button class="exhibition-chip" data-ex-detail="${e(row.id)}">${row.log?.status === 'visited' ? '✓ 去过 · 笔记' : row.log?.status === 'uninterested' ? '不感兴趣 · 设置' : '详情与笔记'}</button>
+          <a class="exhibition-chip" href="${e(detailHref(row))}" data-ex-detail="${e(row.id)}">${row.log?.status === 'visited' ? '✓ 去过 · 笔记' : row.log?.status === 'uninterested' ? '不感兴趣 · 设置' : '阅读展览详情 ↗'}</a>
         </div></div></article>`;
     }
 
@@ -194,7 +199,7 @@
       const items = live && catalog ? [...catalog.items] : [];
       const urlKey = url => String(url || '').replace(/\/$/,'');
       const urls = new Set(items.flatMap(row => (row.evidence || []).map(item => urlKey(item.url))));
-      for (const event of dataset.events || []) {
+      for (const event of live && catalog?.includes_legacy_events ? [] : dataset.events || []) {
         if (event.event_type !== 'exhibition' || urls.has(urlKey(event.evidence_url))) continue;
         items.push({ ...event, official:event.evidence_status === 'official_confirmed', types:[event.channel === 'photography' ? 'photography' : 'other'], status:'scheduled' });
       }
@@ -209,7 +214,7 @@
       };
       const list = rank(C,[...current.values()],records,{...filter,labels:areas,today,preference});
       const highlights = filter.personal === 'all' && filter.stage === 'all' && !filter.query.trim();
-      const leads = highlights ? spotlight(list,filter.prefecture !== 'all') : [];
+      const leads = highlights ? spotlight(list,filter.prefecture !== 'all',5) : [];
       const due = highlights ? list.filter(r=>r.close !== null) : [];
       const savedDue = due.filter(r=>r.log?.status === 'want').length;
       const closing = due.filter(r=>!['uninterested','visited'].includes(r.log?.status))
@@ -226,10 +231,10 @@
           ${select('sort',[['recommended','推荐顺序'],['closing','闭展在先'],['new','最近收录']],'排序')}</div></details></div>
         ${pending ? '<p class="compact-note" role="status">正在读取日本展览目录…</p>' : failed ? '<p class="compact-note">日本目录暂未载入，以下显示现有活动。 <button class="text-link" data-ex-retry>重试</button></p>' : ''}
         ${due.length ? `<button class="exhibition-chip exhibition-deadline-jump" data-ex-closing>7 天内闭展 · ${due.length} 场${savedDue ? ' · 想去 ' + savedDue + ' 场' : ''} ↗</button>` : ''}
-        ${leads.length ? `<section class="exhibition-section"><div class="exhibition-section-head"><h2>值得留意</h2><button class="text-link" data-ex-important>查看重点展 ↗</button></div><div class="exhibition-feature-grid">${leads.map(r=>card(r,true)).join('')}</div></section>` : ''}
+        ${leads.length ? `<section class="exhibition-section"><div class="exhibition-section-head"><h2>值得留意</h2><button class="text-link" data-ex-important>查看重点展 ↗</button></div><div class="exhibition-feature-grid">${leads.map((r, i)=>card(r,true,i===0)).join('')}</div></section>` : ''}
         ${closing.length ? `<section class="exhibition-section exhibition-deadlines"><div class="exhibition-section-head"><h2>7 天内闭展</h2><button class="text-link" data-ex-closing>查看闭展清单 ↗</button></div>
           <ul>${closing.slice(0,8).map(r=>`<li><span>${r.log?.status === 'want' ? '想去 · ' : ''}${r.close === 0 ? '今天' : r.close + ' 天后'}${r.date_conflict ? ' · 日期待核' : ''}</span>
-          <button class="exhibition-title" data-ex-detail="${e(r.id)}">${e(title(r))}</button><span>${e(town(r))}</span></li>`).join('')}</ul></section>` : ''}
+          <a class="exhibition-title" href="${e(detailHref(r))}" data-ex-detail="${e(r.id)}">${e(title(r))}</a><span>${e(town(r))}</span></li>`).join('')}</ul></section>` : ''}
         <section class="exhibition-section" id="exhibition-results"><div class="exhibition-section-head"><h2>${filter.personal === 'all' ? '展览清单' : personal.find(([k])=>k===filter.personal)?.[1]}</h2><span class="count-label">${list.length} 场</span></div>
           <div class="exhibition-list">${list.slice(size*(filter.page-1),size*filter.page).map(r=>card(r)).join('') || '<p class="exhibition-empty">当前筛选没有展览。</p>'}</div>
           ${pages > 1 ? `<div class="exhibition-pager"><button class="exhibition-chip" data-ex-page="${filter.page-1}" ${filter.page===1?'disabled':''}>上一页</button>
@@ -241,29 +246,48 @@
         </details></div>`;
     }
 
-    function showDetail(id) {
-      const row = current.get(id);
-      if (!row) return;
-      const record = records.get(id), dialog = $('detail-dialog');
+    function reader(row, description = {}, names = {}) {
+      const id = row.id, record = records.get(id);
+      current.set(id, row);
       const origin = C.safeUrl(row.evidence_url);
-      const image = C.safeImageUrl(row.image_url), credit = catalog?.coverage?.sources?.[row.image_source]?.name;
+      const sourceName = id => names[id] || catalog?.coverage?.sources?.[id]?.name || id;
+      const image = C.safeImageUrl(description.image || row.image_url), credit = sourceName(description.image ? description.source : row.image_source);
+      const official = C.safeUrl(description.official_url);
+      const introUrl = C.safeUrl(description.url);
       const sourceList = (row.evidence || []).map(item => {
-        const link = C.safeUrl(item.url), label = catalog?.coverage?.sources?.[item.source]?.name || item.source;
+        const link = C.safeUrl(item.url), label = sourceName(item.source);
         return link ? `<li><a href="${e(link)}" target="_blank" rel="noopener noreferrer">${e(label)}${item.official ? ' · 场馆官网' : ''} ↗</a><span>${e(item.date_text)}</span></li>` : '';
       }).join('');
-      $('detail-body').innerHTML = `<section class="exhibition-detail"><div class="detail-tag">展览</div><h2 id="detail-title" class="detail-title">${e(title(row))}</h2>
-        <p class="exhibition-place">${e(town(row))}</p><p>${e(schedule(row))}</p>
-        ${image ? `<figure class="detail-art"><img class="exhibition-detail-image" src="${e(image)}" alt="" referrerpolicy="no-referrer" data-source-photo>${credit ? `<figcaption>图源 ${e(credit)}</figcaption>` : ''}</figure>` : ''}
-        ${row.date_conflict ? '<p class="compact-note">来源所列日期有出入，请优先核对场馆官网。</p>' : ''}
-        ${sourceList ? `<ul class="exhibition-evidence">${sourceList}</ul>` : origin && !row.is_demo ? `<p><a href="${e(origin)}" target="_blank" rel="noopener noreferrer">查看展览来源 ↗</a></p>` : ''}
+      const paragraphs = Array.isArray(description.paragraphs) ? description.paragraphs.filter(text => typeof text === 'string' && text.trim()) : [];
+      return `<article class="exhibition-reader" data-ui="exhibition-reader">
+        <header class="exhibition-reader-head"><p class="exhibition-kicker">展览 ${row.types?.map(key => types[key]).filter(Boolean).join(' · ') || ''}</p>
+          <h1>${e(title(row))}</h1><p class="exhibition-reader-deck">${e(town(row))} <span>${e(schedule(row))}</span></p></header>
+        ${image ? `<figure class="exhibition-reader-figure"><img src="${e(image)}" alt="${e(title(row))}" decoding="async" referrerpolicy="no-referrer" data-ex-image>${credit ? `<figcaption>图源 ${e(credit)}</figcaption>` : ''}</figure>` : ''}
+        <div class="exhibition-reader-grid"><section class="exhibition-introduction">
+          <h2>${description.status === 'excerpt' ? '展讯摘要' : '展览介绍'}</h2>
+          ${paragraphs.length ? `<div class="exhibition-prose" lang="ja">${paragraphs.map(line=>`<p>${e(line)}</p>`).join('')}</div>
+            ${introUrl ? `<p class="exhibition-kicker"><a href="${e(introUrl)}" target="_blank" rel="noopener noreferrer">${e(sourceName(description.source))} · 来源原文 ↗</a></p>` : ''}`
+            : `<p>暂未取得公开展览介绍。${origin && !row.is_demo ? `<a href="${e(origin)}" target="_blank" rel="noopener noreferrer">查看来源展讯 ↗</a>` : ''}</p>`}
+          </section><aside class="exhibition-visit-info"><h2>观展信息</h2><p>${e(town(row))}</p><p>${e(schedule(row))}</p>
+            ${row.date_conflict ? '<p class="compact-note">来源日期有出入，请核对场馆官网。</p>' : ''}
+            ${official ? `<p><a href="${e(official)}" target="_blank" rel="noopener noreferrer">场馆官方展讯 ↗</a></p>` : ''}
+            ${sourceList ? `<ul class="exhibition-evidence">${sourceList}</ul>` : origin && !row.is_demo ? `<p><a href="${e(origin)}" target="_blank" rel="noopener noreferrer">查看展览来源 ↗</a></p>` : ''}
+          </aside></div>
         <form id="exhibition-record" data-ex-id="${e(id)}"><h3>我的观展记录</h3><div class="exhibition-record-fields">
           <label>标签<select name="status">${[['','未设置'],...Object.entries(statuses)].map(([v,n])=>option(v,n,record?.status || '')).join('')}</select></label>
           <label>评分<select name="rating">${[['','未评分'],...[1,2,3,4,5].map(n=>[n,n+' / 5'])].map(([v,n])=>option(v,n,record?.rating || '')).join('')}</select></label>
           <label class="exhibition-checkbox"><input type="checkbox" name="favorite" ${record?.favorite?'checked':''}> 收藏</label>
         </div><label class="exhibition-note">观后笔记<textarea name="note" rows="5" maxlength="4000" placeholder="记下作品和观感">${e(record?.note || '')}</textarea></label>
-        <button class="button secondary" type="submit">保存记录</button></form></section>`;
-      dialog.dataset.type = 'exhibition'; dialog.dataset.recordId = id;
-      if (!dialog.open) dialog.showModal();
+        <button class="button secondary" type="submit">保存记录</button></form></article>`;
+    }
+    function inlineReader(id, dataset) {
+      if (dataset.mode !== 'demo') load();
+      const row = catalog?.items?.find(item => item.id === id) || dataset.events?.find(item => item.id === id && item.event_type === 'exhibition');
+      const stored = boot.exhibition_details?.entries?.[id];
+      const excerpt = row?.evidence?.find(item => item.intro_excerpt);
+      const description = stored?.paragraphs?.length && row?.evidence?.some(item => item.url === stored.url) ? stored
+        : excerpt ? {status:'excerpt',paragraphs:[excerpt.intro_excerpt],source:excerpt.source,url:excerpt.url} : {};
+      return '<a class="text-link exhibition-back" href="#exhibitions">← 返回展览目录</a>' + (row ? reader(row, description) : '<p role="status">正在查找展览，或该展览暂时无法读取。</p>');
     }
     function update(id, changes) {
       if (!current.has(id)) return;
@@ -273,6 +297,13 @@
       persist('观展记录已保存'); rerender();
     }
     function goToResults() { $('exhibition-results')?.scrollIntoView({block:'start'}); }
+    document.addEventListener('error', event => {
+      if (event.target.matches?.('[data-ex-image]')) {
+        const image = event.target.closest('a,figure');
+        if (image) image.hidden = true;
+        event.target.closest('.exhibition-card')?.classList.remove('exhibition-card--pictured');
+      }
+    }, true);
     document.addEventListener('toggle', event => {
       if (event.target.matches?.('.exhibition-filter-panel') && event.target.isConnected) filtersOpen = event.target.open;
     }, true);
@@ -288,7 +319,6 @@
       }
       else if ('exWant' in d) update(d.exWant,{ status:records.get(d.exWant)?.status === 'want' ? null : 'want' });
       else if ('exFavorite' in d) update(d.exFavorite,{favorite:!records.get(d.exFavorite)?.favorite});
-      else if ('exDetail' in d) showDetail(d.exDetail);
       else if ('exClosing' in d) { filter.stage='closing'; filter.page=1; rerender(); goToResults(); }
       else if ('exImportant' in d) { filter.stage='important'; filter.page=1; rerender(); goToResults(); }
       else if ('exPage' in d && !button.disabled) { filter.page=Number(d.exPage); rerender(); goToResults(); }
@@ -304,7 +334,7 @@
       const input = event.target;
       if (!isActive()) return;
       const field = input.dataset.exFilter;
-      if (Object.hasOwn(filter,field)) {
+      if (own(filter,field)) {
         filter[field]=field === 'page' ? Number(input.value) : input.value;
         if (field !== 'page') filter.page=1;
         rerender();
@@ -333,9 +363,8 @@
       const data = new FormData(event.target);
       update(event.target.dataset.exId,{status:data.get('status') || null,rating:Number(data.get('rating')) || null,
         favorite:data.has('favorite'),note:String(data.get('note')).trim()});
-      $('detail-dialog').close();
     });
-    return { view };
+    return { view, reader, inlineReader };
   }
   const api = { create, phase, closingDays, rank, spotlight, parseLog };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

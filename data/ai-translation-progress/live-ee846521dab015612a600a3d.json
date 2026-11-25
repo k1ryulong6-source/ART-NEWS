@@ -4,5 +4,113 @@
   "input_hash": "56458a5e51a27420165dc22480649348870ad7d7c24496369d3270e4619b69fa",
   "source_hash": "27a7bd5721c90677c6cee62657fb607ffb4f3e2dcb088311ba417144fefb82c3",
   "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
-  "outputs": {}
+  "outputs": {
+    "block:5:text:0": "电影",
+    "block:6:text:0": "你可以看到一切",
+    "block:7:text:0": "电影产业",
+    "block:8:text:0": "纪录片",
+    "block:9:text:0": "内森·菲尔德",
+    "block:10:text:0": "伊丽莎白·霍姆斯",
+    "block:11:text:0": "新闻"
+  },
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "title:0",
+      "source_numbers": [
+        "100"
+      ],
+      "returned_numbers": [
+        "1000000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "excerpt:0",
+      "source_numbers": [
+        "100"
+      ],
+      "returned_numbers": [
+        "1000000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:0:text:0",
+      "source_numbers": [
+        "100"
+      ],
+      "returned_numbers": [
+        "1000000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:1:text:0",
+      "source_numbers": [
+        "102.5",
+        "2.5",
+        "9",
+        "93.5"
+      ],
+      "returned_numbers": [
+        "1025000",
+        "25000",
+        "90000",
+        "935000"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:2:text:0",
+      "source_numbers": [
+        "11",
+        "2009",
+        "267.9",
+        "9"
+      ],
+      "returned_numbers": [
+        "11",
+        "2009",
+        "2679000",
+        "9"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:3:text:0",
+      "source_numbers": [
+        "2.4",
+        "3.2",
+        "590"
+      ],
+      "returned_numbers": [
+        "24000",
+        "32000",
+        "590"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:4:text:0",
+      "source_numbers": [
+        "24",
+        "7"
+      ],
+      "returned_numbers": [
+        "24",
+        "70000"
+      ],
+      "truncated": false
+    }
+  ],
+  "error": "ai_numbers_missing:title:0",
+  "retry_policy": "regular",
+  "retry_after": "2026-11-25T13:14:19.057879+00:00"
 }

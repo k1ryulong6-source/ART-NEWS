@@ -1,6 +1,10 @@
+> T086 正在发布，日历使用地区、活动、日期独立筛选，默认东京电影。采集设置与证据链见 `docs/FILM_CALENDAR.md` 和 `data/film-calendar.json`。
+
+> T085 已发布。展览和新闻共用报头与读栏，旧展览地址仍可直接进入。站内 `/#exhibitions` 默认在展前100，即将开展另排，隐藏展仅在「不感兴趣」区查看。正文收藏场馆后，可在站内优先查看其新展。线上手机验收覆盖翻页、标签恢复、场馆收藏、草稿和路由，见 T085。
+
 > 2026-11-25 JST，T083 已发布。讣告降为短讯且全版最多 1 条，查询和留存照常。规则见 `backend/priority.py`、`backend/frontpage.py`、`frontend/core.js` 和 `config/preferences.json`，选稿一致性见 `tests/test_frontpage.py`。
 
-> T084 已发布并核对真实采集 45619316808、Pages 45620372347。展览入口 `/exhibitions/`，单场 `/exhibitions/?id=<展览ID>`，公开介绍分批补采。东京 11 月 25 日 22:06 的 2190 场日本展中，2146 有图、560 有公开介绍、223 有短介。Internet Museum 本轮 30/47 完整复核，超时地区的库存保留。线上状态见 `/reports/japan-exhibitions.json`。首页首屏数据约 0.79 MB gzip，旧稿、找展、单篇分享按需加载。手机直接进入内容。视觉接手可编辑 `frontend/exhibition-page.html` 和 `frontend/theme.css` 的展览段，目录与单场资料由 `backend/exhibition_assets.py` 输出。旧观展记录仍用 `culture-desk-exhibition-log-v1`。
+> T084 已发布并核对真实采集 45619316808、Pages 45620372347。展览入口 `/exhibitions/`，单场 `/exhibitions/?id=<展览ID>`，公开介绍分批补采。东京 11 月 25 日 22:06 的 2190 场日本展中，2146 有图、560 有公开介绍、223 有短介。Internet Museum 本轮 30/47 完整复核，超时地区的库存保留。线上状态见 `/reports/japan-exhibitions.json`。首页首屏数据约 0.79 MB gzip，旧稿、找展、单篇分享按需加载。手机直接进入内容。视觉接手可编辑 `frontend/exhibitions.js` 和 `frontend/theme.css` 的展览段，目录与单场资料由 `backend/exhibition_assets.py` 输出。旧观展记录仍用 `culture-desk-exhibition-log-v1`。
 
 > T074更新（2026-10-17，Claude）：自动翻译默认DeepSeek+两路免费Gemini并行（ai_pool三路互斥分配，Gemini 503只影响本路），AI_TRANSLATION_PROVIDER=deepseek/gemini可只用一家。见D080。
 

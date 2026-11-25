@@ -20,6 +20,7 @@ from backend.presentation import browser_snapshot
 from backend.exhibitions import read_catalog
 from backend.exhibition_assets import description_counts, exhibition_entry, write_exhibition_files
 from backend.exhibition_details import read_details
+from backend.film_calendar import read_calendar
 
 
 def build():
@@ -50,6 +51,17 @@ def build():
     from backend.babel_export import export_articles, integrations
     output = ROOT / 'dist'
     output.mkdir(exist_ok=True)
+    bundle['film_calendar'] = read_calendar()
+    calendar_data = json.dumps(bundle['film_calendar'], ensure_ascii=False, separators=(',', ':'))
+    (output / 'film-calendar.json').write_text(calendar_data, encoding='utf-8')
+    bundle['film_store'] = 'film-calendar.json?v=' + sha256(calendar_data.encode()).hexdigest()[:12]
+    event_sources = {}
+    for snapshot in (bundle.get('live', {}), bundle['dataset']):
+        source_of = {row['id']: row.get('source_id') for row in snapshot.get('content', [])}
+        for link in snapshot.get('content_events', []):
+            if source := source_of.get(link['content_id']):
+                event_sources.setdefault(link['event_id'], set()).add(source)
+    bundle['calendar_event_sources'] = {event_id: sorted(sources) for event_id, sources in event_sources.items()}
     exhibition_catalog = read_catalog()
     exhibition_details = read_details()
     exhibition_revision, exhibition_items = write_exhibition_files(output / 'exhibitions', exhibition_catalog, exhibition_details, bundle.get('live', {}))
@@ -103,7 +115,7 @@ def build():
     (ROOT / "frontend/data.js").write_text(text, encoding="utf-8")
     output = ROOT / "dist"
     output.mkdir(exist_ok=True)
-    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "core.js", "ui.js", "exhibitions.js", "app.js"):
+    for name in ("index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "core.js", "ui.js", "exhibitions.js", "calendar.js", "app.js"):
         shutil.copy2(ROOT / "frontend" / name, output / name)
     (output / 'exhibition-page.js').unlink(missing_ok=True)
     write_split_site(bundle, output, bootstrap)
@@ -131,7 +143,7 @@ def build():
         html = html.replace(f'<link rel="stylesheet" href="{name}">', '<style>' + css + '</style>')
     favicon = (output / "favicon.svg").read_bytes()
     html = html.replace('href="favicon.svg"', 'href="data:image/svg+xml;base64,' + base64.b64encode(favicon).decode('ascii') + '"')
-    for name in ("data.js", "core.js", "ui.js", "exhibitions.js", "app.js"):
+    for name in ("data.js", "core.js", "ui.js", "exhibitions.js", "calendar.js", "app.js"):
         script = (text if name == "data.js" else (output / name).read_text(encoding="utf-8")).replace('</script', '<\\/script')
         html = html.replace(f'<script defer src="{name}"></script>', '')
         html = html.replace('</body>', '<script>' + script + '</script>\n</body>')
@@ -141,7 +153,7 @@ def build():
 
 def version_assets(html, output):
     versioned = {}
-    for name in ('styles.css', 'theme.css', 'data.js', 'core.js', 'ui.js', 'exhibitions.js', 'app.js'):
+    for name in ('styles.css', 'theme.css', 'data.js', 'core.js', 'ui.js', 'exhibitions.js', 'calendar.js', 'app.js'):
         versioned[name] = sha256((output / name).read_bytes()).hexdigest()[:12]
     return re.sub(r'((?:src|href)="(?:\.\./)?)([^"/]+)(")',
                   lambda match: match[1] + match[2] + '?v=' + versioned[match[2]] + match[3] if match[2] in versioned else match[0], html)
@@ -174,6 +186,7 @@ def write_split_site(bundle, output, bootstrap):
     site = dict(bundle)
     site.pop('japan_exhibitions', None)
     site.pop('exhibition_details', None)
+    site.pop('film_calendar', None)
     site['static_edition'] = True
     bodies, search = {}, {}
     if 'live' in site:

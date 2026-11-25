@@ -211,6 +211,11 @@ def create_app(db_path=None):
             raise HTTPException(404, "展览不存在")
         return detail_view(items[item_id], details, catalogue['coverage'])
 
+    @app.get("/film-calendar.json")
+    def film_calendar():
+        from .film_calendar import read_calendar
+        return read_calendar()
+
     @app.get("/api/preferences")
     async def preferences():
         return store.preferences()
@@ -295,7 +300,7 @@ def create_app(db_path=None):
 
     # A bounded asset allowlist keeps the small local edition independent of
     # background file-worker threads and never exposes project/runtime files.
-    assets = {"index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "data.js", "core.js", "ui.js", "exhibitions.js", "app.js"}
+    assets = {"index.html", "styles.css", "theme.css", "favicon.svg", "apple-touch-icon.png", "og-image.png", "data.js", "core.js", "ui.js", "exhibitions.js", "calendar.js", "app.js"}
     assets.update({'fonts/intermission-masthead-v1.woff2', 'fonts/intermission-sans-v1.woff2', 'fonts/intermission-title-v1.woff2', 'fonts/notoseriftc-OFL.txt', 'fonts/intermission-sans-tc-v1.woff2', 'fonts/notosanstc-OFL.txt',
                    'fonts/intermission-news-v1.woff2', 'fonts/mashanzheng-OFL.txt',
                    'fonts/notosanssc-OFL.txt', 'fonts/newsreader-OFL.txt'})

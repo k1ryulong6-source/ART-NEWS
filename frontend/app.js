@@ -9,7 +9,7 @@
   let localWritable = true, toastTimer, refreshTimer;
   let notifications = [], sourceStatus = dataset.source_status || [];
   const makeId = () => typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  const state = { view: 'today', channel: 'all', kind: 'all', country: 'all', city: 'all', language: 'all', query: '', mode: 'demo', month: '2026-10', selectedDate: null, bookmarkStatus: 'all', readerId: null, readerTab: 'chinese', readerReturn: 'today', editorialOnly: false, priority: 'all', advancedOpen: false, listPage: 1, sort: 'recommended' };
+  const state = { view: 'today', channel: 'all', kind: 'all', country: 'all', city: 'all', language: 'all', query: '', mode: 'demo', bookmarkStatus: 'all', readerId: null, readerTab: 'chinese', readerReturn: 'today', editorialOnly: false, priority: 'all', advancedOpen: false, listPage: 1, sort: 'recommended' };
   const isReader = view => view === 'reader' || view === 'exhibition';
   function readLocal() {
     try {
@@ -43,10 +43,13 @@
     } catch { /* Static hosting deliberately uses the browser storage adapter. */ }
   }
   if (!server) readLocal();
-  state.mode = dataset.mode || 'demo'; state.month = (state.mode === 'demo' ? dataset.reference_date : C.localDate(preferences.reading_timezone)).slice(0, 7); sourceStatus = dataset.source_status || [];
+  state.mode = dataset.mode || 'demo'; sourceStatus = dataset.source_status || [];
   if (server) notifications = await api('/notifications').catch(() => []);
   const exhibitions = window.CultureExhibitions?.create({
-    C, boot, server, toast, rerender: render, newspaperBody, readingMinutes, isActive: () => ['exhibitions', 'exhibition'].includes(state.view)
+    C, boot, server, toast, rerender: render, newspaperBody, readingMinutes, isActive: () => ['exhibitions', 'exhibition', 'calendar'].includes(state.view)
+  });
+  const schedule = window.CultureCalendar?.create({
+    C, boot, server, exhibitions, rerender: render, isActive: () => state.view === 'calendar'
   });
   function artwork(row, large = false) {
     if (!row.image_url && row.event_type) {
@@ -107,7 +110,7 @@
     return `<div class="notice"><span><b>示例版</b> · 内容与日期均为虚构。</span><button class="text-link" data-action="mode">返回真实资讯</button></div>`;
   }
   function filterBar(withTabs = true) {
-    return `<div class="filters">${withTabs ? `<div class="tabs" role="group" aria-label="频道筛选">${[['all', '综合'], ...['art','film','photography'].map(key=>[key,C.channels[key]])].map(([key, label]) => `<button class="tab ${state.channel === key && state.kind !== 'industry_buzz' && state.view !== 'attention' ? 'active' : ''}" data-channel="${key}" aria-pressed="${state.channel === key && state.kind !== 'industry_buzz' && state.view !== 'attention'}">${label}</button>`).join('')}<button class="tab ${state.kind === 'industry_buzz' && state.view !== 'attention' ? 'active' : ''}" data-kind="industry_buzz" aria-pressed="${state.kind === 'industry_buzz' && state.view !== 'attention'}">圈内</button>${state.view === 'explore' || state.view === 'attention' ? attentionTab() : ''}</div>` : ''}<div class="scope-links"><button class="text-link" data-scope="global" aria-pressed="${state.country === 'all'}">全球</button><button class="text-link" data-scope="japan" aria-pressed="${state.country === 'JP'}">日本</button></div><details class="advanced-filters" id="advanced-filters" ${state.advancedOpen ? 'open' : ''}><summary>筛选${[state.city,state.language].filter(v=>v!=='all').length || state.kind!=='all' ? ' · 已启用' : ''}</summary><div class="filter-selects"><select id="country-filter" aria-label="国家筛选"><option value="all">所有地区</option>${Object.entries(C.countryLabels).map(([code, label]) => `<option value="${code}" ${state.country === code ? 'selected' : ''}>${e(label)}</option>`).join('')}<option value="unknown" ${state.country === 'unknown' ? 'selected' : ''}>地点未说明</option></select><select id="city-filter" aria-label="城市筛选"><option value="all">所有城市</option>${Object.keys(C.cityCountries).filter(city => state.country === 'all' || C.cityCountries[city] === state.country).map(city => `<option ${state.city === city ? 'selected' : ''}>${e(city)}</option>`).join('')}</select>${state.view !== 'calendar' ? `<select id="language-filter" aria-label="资讯原文语言"><option value="all">原文语言 · 全部</option>${Object.entries(C.languageLabels).map(([code, label]) => `<option value="${code}" ${state.language === code ? 'selected' : ''}>${e(label)}</option>`).join('')}</select>` : ''}<button class="text-link" data-action="photo-calls">摄影征集</button>${state.mode !== 'demo' ? `<button class="text-link" data-action="${state.editorialOnly ? 'all-news' : 'editorial-news'}" aria-pressed="${state.editorialOnly}">只看AI译文</button>` : ''}${state.view === 'calendar' ? `<select id="event-type-filter" aria-label="活动类型"><option value="all">全部活动类型</option>${Object.entries(C.eventTypes).map(([code,label]) => `<option value="${code}" ${state.kind === code ? 'selected' : ''}>${e(label)}</option>`).join('')}</select>` : ''}<label class="toggle-label"><input id="buzz-filter" type="checkbox" ${preferences.industry_buzz.enabled ? 'checked' : ''}>圈内动态</label></div></details></div>`;
+    return `<div class="filters">${withTabs ? `<div class="tabs" role="group" aria-label="频道筛选">${[['all', '综合'], ...['art','film','photography'].map(key=>[key,C.channels[key]])].map(([key, label]) => `<button class="tab ${state.channel === key && state.kind !== 'industry_buzz' && state.view !== 'attention' ? 'active' : ''}" data-channel="${key}" aria-pressed="${state.channel === key && state.kind !== 'industry_buzz' && state.view !== 'attention'}">${label}</button>`).join('')}<button class="tab ${state.kind === 'industry_buzz' && state.view !== 'attention' ? 'active' : ''}" data-kind="industry_buzz" aria-pressed="${state.kind === 'industry_buzz' && state.view !== 'attention'}">圈内</button>${state.view === 'explore' || state.view === 'attention' ? attentionTab() : ''}</div>` : ''}<div class="scope-links"><button class="text-link" data-scope="global" aria-pressed="${state.country === 'all'}">全球</button><button class="text-link" data-scope="japan" aria-pressed="${state.country === 'JP'}">日本</button></div><details class="advanced-filters" id="advanced-filters" ${state.advancedOpen ? 'open' : ''}><summary>筛选${[state.city,state.language].filter(v=>v!=='all').length || state.kind!=='all' ? ' · 已启用' : ''}</summary><div class="filter-selects"><select id="country-filter" aria-label="国家筛选"><option value="all">所有地区</option>${Object.entries(C.countryLabels).map(([code, label]) => `<option value="${code}" ${state.country === code ? 'selected' : ''}>${e(label)}</option>`).join('')}<option value="unknown" ${state.country === 'unknown' ? 'selected' : ''}>地点未说明</option></select><select id="city-filter" aria-label="城市筛选"><option value="all">所有城市</option>${Object.keys(C.cityCountries).filter(city => state.country === 'all' || C.cityCountries[city] === state.country).map(city => `<option ${state.city === city ? 'selected' : ''}>${e(city)}</option>`).join('')}</select>${state.view !== 'calendar' ? `<select id="language-filter" aria-label="资讯原文语言"><option value="all">原文语言 · 全部</option>${Object.entries(C.languageLabels).map(([code, label]) => `<option value="${code}" ${state.language === code ? 'selected' : ''}>${e(label)}</option>`).join('')}</select>` : ''}<button class="text-link" data-action="photo-calls">摄影征集</button>${state.mode !== 'demo' ? `<button class="text-link" data-action="${state.editorialOnly ? 'all-news' : 'editorial-news'}" aria-pressed="${state.editorialOnly}">只看AI译文</button>` : ''}<label class="toggle-label"><input id="buzz-filter" type="checkbox" ${preferences.industry_buzz.enabled ? 'checked' : ''}>圈内动态</label></div></details></div>`;
   }
   function empty(title, text, action = '') { return `<div class="empty"><h2>${title}</h2>${text ? `<p>${text}</p>` : ''}${action}</div>`; }
   function meta(row) { return ui.meta(row); }
@@ -176,29 +179,8 @@
     const pageRows = rows.slice((state.listPage - 1) * size, state.listPage * size);
     return heading(state.query ? `检索：${state.query}` : state.editorialOnly ? 'AI译文' : '资讯') + notice() + filterBar() + `<div class="filter-summary"><span>共 ${rows.length} 篇</span><label class="sort-control">排序 <select id="sort-order" aria-label="排序">${Object.entries(sortLabels).map(([key, label]) => `<option value="${key}" ${state.sort === key ? 'selected' : ''}>${label}</option>`).join('')}</select></label></div>` + (rows.length ? `<div class="card-grid">${pageRows.map(row => card(row)).join('')}</div>${ui.pagination(rows.length,state.listPage,size)}` : empty('没有符合条件的报道', '', '<button class="text-link" data-action="reset-filters">清除筛选</button>'));
   }
-  // A day cell names what happens on that day — screenings, openings, closings, deadlines — rather
-  // than repeating every exhibition that is merely running; the day list still shows all of them.
-  function dayMarks(rows, day) {
-    const count = test => rows.filter(row => row.date_precision === 'day' && test(row)).length;
-    const screening = ['cinema_release', 'festival_screening', 'streaming_release'];
-    return [['film', '放映', count(row => screening.includes(row.event_type) && row.start_date === day)],
-      ['art', '开展', count(row => row.event_type === 'exhibition' && row.start_date === day)],
-      ['art', '闭展', count(row => row.event_type === 'exhibition' && row.end_date === day && row.end_date !== row.start_date)],
-      ['photography', '截止', count(row => row.event_type === 'call_deadline' && row.start_date === day)]]
-      .filter(([, , n]) => n).map(([tone, label, n]) => `<span class="calendar-dot ${tone}">${label} ${n}</span>`).join('');
-  }
   function calendar() {
-    const [year, month] = state.month.split('-').map(Number), first = new Date(Date.UTC(year, month - 1, 1)).getUTCDay(), count = new Date(Date.UTC(year, month, 0)).getUTCDate();
-    const scope = filters(), rows = dataset.events.filter(row => C.matches(row, scope));
-    const activeOn = day => rows.filter(row => row.date_precision === 'day' && row.start_date <= day && (row.end_date || row.start_date) >= day);
-    const days = Array.from({ length: first }, () => '<div class="calendar-day blank" aria-hidden="true"></div>');
-    for (let n = 1; n <= count; n++) {
-      const day = `${state.month}-${String(n).padStart(2, '0')}`, active = activeOn(day);
-      days.push(`<button class="calendar-day ${day === displayDate() ? 'reference' : ''} ${day === state.selectedDate ? 'selected' : ''}" data-date="${day}" aria-label="${day}，${active.length} 项活动" aria-pressed="${day === state.selectedDate}"><span>${n}</span>${dayMarks(rows, day)}</button>`);
-    }
-    while (days.length % 7) days.push('<div class="calendar-day blank" aria-hidden="true"></div>');
-    const visible = state.selectedDate ? activeOn(state.selectedDate) : rows.filter(row => row.start_date?.slice(0, 7) === state.month || row.end_date?.slice(0, 7) === state.month || (row.date_precision === 'day' && row.start_date < state.month + '-01' && row.end_date >= state.month + '-01'));
-    return heading('上映与展期') + notice() + filterBar() + `<div class="calendar-layout"><div><div class="calendar-panel"><div class="calendar-toolbar"><h2>${year} 年 ${month} 月</h2><div class="month-controls"><button data-month="-1" aria-label="上个月">←</button><button data-action="reference-month">参考月</button><button data-month="1" aria-label="下个月">→</button></div></div><div class="week-row">${['日', '一', '二', '三', '四', '五', '六'].map(day => `<div>${day}</div>`).join('')}</div><div class="calendar-days">${days.join('')}</div></div><section class="event-list"><div class="section-title"><h2>${state.selectedDate ? C.dateLabel(state.selectedDate) : '本月活动'}<span class="count-label">${visible.length} 项</span></h2>${state.selectedDate ? '<button class="text-link" data-action="clear-date">显示全月</button>' : ''}</div>${visible.map(row => eventRow(row)).join('') || '<p class="compact-note">该日期范围内没有符合条件的活动。</p>'}</section></div>${agenda()}</div><details class="explanation"><summary>日期说明</summary><p>仅公布月份的活动列在清单，不填入具体日期；展览日期范围不代表每天开放，请查看休馆说明。</p></details>`;
+    return heading('日历') + notice() + (schedule?.view(dataset, preferences.disabled_sources || []) || '<p>日历暂时无法载入。</p>');
   }
   function bookmarkPage() {
     const saved = bookmarks.filter(row => state.bookmarkStatus === 'all' || row.status === state.bookmarkStatus);
@@ -328,7 +310,7 @@
     document.body.dataset.page = isReader(state.view) ? 'reader' : state.view;
     const story = state.view === 'reader' && dataset.content.find(item => item.id === state.readerId);
     const needsArchive = !server && !archiveLoaded && state.mode === 'live'
-      && (['explore', 'bookmarks', 'attention', 'coverage', 'calendar'].includes(state.view) || (state.view === 'reader' && !story));
+      && (['explore', 'bookmarks', 'attention', 'coverage'].includes(state.view) || (state.view === 'reader' && !story));
     if (needsArchive && !archiveFailed) loadArchive();
     nav();
     $('edition-note').textContent = state.mode === 'demo' ? '所有示例均为虚构。' : '原文与 AI 译文分开标注；配图注明来源。';
@@ -341,7 +323,7 @@
     if (lastSpot && spot !== lastSpot && document.activeElement !== $('search')) $('main').focus({ preventScroll: true });
     lastSpot = spot;
     // Tab titles name the page (and the story when reading), so history, bookmarks and shared tabs differ.
-    const pageTitles = { explore: '资讯', attention: '一種關注', exhibitions: '展览', exhibition: '展览', calendar: '上映与展期', bookmarks: '剪报', settings: '阅读设置', coverage: '收录与译文' };
+    const pageTitles = { explore: '资讯', attention: '一種關注', exhibitions: '展览', exhibition: '展览', calendar: '日历', bookmarks: '剪报', settings: '阅读设置', coverage: '收录与译文' };
     const exhibitTitle = state.view === 'exhibition' ? exhibitions?.readerTitle(state.exhibitionId, state.readerTab) : '';
     const pageTitle = story ? (state.readerTab === 'original' ? story.title_original : C.displayTitle(story)) : exhibitTitle || pageTitles[state.view];
     document.title = pageTitle ? `${pageTitle} · 幕间休息` : '幕间休息';
@@ -426,7 +408,7 @@
     if (button.dataset.action === 'retry-archive') { loadArchive(); render(); return; }
     if (button.dataset.listPage) { state.listPage = Number(button.dataset.listPage); render(); $('main').scrollIntoView(); return; }
     if (button.dataset.view || button.dataset.channel || button.dataset.kind || button.dataset.scope || ['editorial-news','all-news','reset-filters','mode'].includes(button.dataset.action)) state.listPage = 1;
-    if (button.dataset.view) { state.editorialOnly = false; state.kind = 'all'; state.view = button.dataset.view; state.selectedDate = null; render(); window.scrollTo({ top: 0 }); }
+    if (button.dataset.view) { state.editorialOnly = false; state.kind = 'all'; state.view = button.dataset.view; render(); window.scrollTo({ top: 0 }); }
     else if (button.dataset.action === 'editorial-news') { state.view = 'explore'; state.editorialOnly = true; state.channel = state.kind = state.country = state.city = state.language = state.priority = 'all'; state.query = ''; $('search').value = ''; render(); }
     else if (button.dataset.action === 'all-news') { state.editorialOnly = false; state.priority = 'all'; state.view = 'explore'; render(); }
     else if (button.dataset.readerTab) {
@@ -453,18 +435,20 @@
     else if (button.dataset.saveId) await toggleSave(button.dataset.saveType, button.dataset.saveId);
     else if (button.dataset.detailSave) await toggleSave(button.dataset.type, button.dataset.detailSave);
     else if (button.dataset.status) { state.bookmarkStatus = button.dataset.status; render(); }
-    else if (button.dataset.date) { state.selectedDate = state.selectedDate === button.dataset.date ? null : button.dataset.date; render(); }
-    else if (button.dataset.month) { const [y, m] = state.month.split('-').map(Number); const date = new Date(Date.UTC(y, m - 1 + Number(button.dataset.month), 1)); state.month = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`; state.selectedDate = null; render(); }
-    else if (button.dataset.action === 'photo-calls') { state.view = 'calendar'; state.channel = 'photography'; state.kind = 'call_deadline'; state.query = ''; $('search').value = ''; state.country = state.city = state.language = 'all'; state.selectedDate = null; const next = dataset.events.filter(e => e.event_type === 'call_deadline' && e.start_date >= readingDate()).sort((a,b) => a.start_date.localeCompare(b.start_date))[0]; if (next) state.month = next.start_date.slice(0,7); render(); }
+    else if (button.dataset.action === 'photo-calls') {
+      state.view = 'calendar';
+      const next = dataset.events.filter(row => row.event_type === 'call_deadline' && row.start_date >= readingDate())
+        .sort((a,b) => a.start_date.localeCompare(b.start_date))[0];
+      schedule?.open(dataset, 'call_deadline', 'global', next?.start_date);
+      render();
+    }
     else if (button.dataset.scope) { state.country = button.dataset.scope === 'japan' ? 'JP' : 'all'; state.city = 'all'; state.language = 'all'; render(); }
     else if (button.dataset.action === 'reset-filters') { state.channel = state.kind = state.country = state.city = state.language = state.priority = 'all'; state.query = ''; $('search').value = ''; render(); }
     else if (button.dataset.action === 'mode') {
       const next = state.mode === 'demo' ? 'live' : 'demo'; button.disabled = true;
-      try { dataset = server ? await api(`/dataset?mode=${next}`) : next === 'demo' ? boot.dataset : boot.live || { ...boot.dataset, mode: 'live', content: [], events: [], content_events: [], sources: [], reference_date: C.localDate(preferences.reading_timezone) }; state.mode = next; sourceStatus = dataset.source_status || []; state.month = (state.mode === 'demo' ? dataset.reference_date : C.localDate(preferences.reading_timezone)).slice(0, 7); state.selectedDate = null; render(); }
+      try { dataset = server ? await api(`/dataset?mode=${next}`) : next === 'demo' ? boot.dataset : boot.live || { ...boot.dataset, mode: 'live', content: [], events: [], content_events: [], sources: [], reference_date: C.localDate(preferences.reading_timezone) }; state.mode = next; sourceStatus = dataset.source_status || []; render(); }
       catch (error) { button.disabled = false; toast(error.message); }
     }
-    else if (button.dataset.action === 'reference-month') { state.month = (state.mode === 'demo' ? dataset.reference_date : C.localDate(preferences.reading_timezone)).slice(0, 7); state.selectedDate = null; render(); }
-    else if (button.dataset.action === 'clear-date') { state.selectedDate = null; render(); }
     else if (button.dataset.action === 'export') {
       const blob = new Blob([JSON.stringify({ schema_version: 1, exported_at: new Date().toISOString(), preferences, bookmarks }, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob), link = document.createElement('a'); link.href = url; link.download = `幕间休息-${new Date().toISOString().slice(0, 10)}.json`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 3000); toast('收藏与偏好已导出');
@@ -488,9 +472,8 @@
   document.addEventListener('change', async event => {
     const input = event.target;
     if (input.id === 'article-page') { state.listPage = Number(input.value); render(); $('main').scrollIntoView(); return; }
-    if (['country-filter','city-filter','language-filter','event-type-filter','buzz-filter'].includes(input.id)) state.listPage = 1;
+    if (['country-filter','city-filter','language-filter','buzz-filter'].includes(input.id)) state.listPage = 1;
     if (input.id === 'sort-order') { state.sort = sortLabels[input.value] ? input.value : 'recommended'; state.listPage = 1; render(); return; }
-    if (input.id === 'event-type-filter') { state.kind = input.value; if (['cinema_release','festival_screening','streaming_release'].includes(input.value)) state.channel = 'film'; else if (input.value === 'call_deadline') state.channel = 'photography'; else if (input.value === 'exhibition' && state.channel === 'film') state.channel = 'all'; render(); }
     if (input.id === 'language-filter') { state.language = input.value; render(); }
     if (input.id === 'country-filter') { state.country = input.value; state.city = 'all'; render(); }
     else if (input.id === 'city-filter') { state.city = input.value; render(); }

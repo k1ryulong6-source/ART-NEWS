@@ -41,12 +41,12 @@ const ui = CultureUI.create({
 - 标题、摘要和图片为同一`#reader/ID`链接；收藏按钮为链接的兄弟元素，不能嵌套在链接内。支持键盘与新标签打开。
 - 主页面容器`#main`；搜索`#search`；导航`#navigation`；偏好入口`#coordinate-button`；提醒`#inbox-button`；日期`#edition-date`；页脚说明`#edition-note`；弹窗`#detail-dialog`/`#detail-body`/`#close-detail`；消息`#toast`。
 - 导航按钮`data-view`使用today/explore/calendar/bookmarks/settings/coverage。路由键不随中文标签改变；“剪报”仍是bookmarks。
-- 折叠筛选`#advanced-filters`；保留country-filter/city-filter/language-filter/priority-filter/event-type-filter/buzz-filter及原事件绑定。全球/日本用`data-scope`；频道`data-channel`；种类`data-kind`。
+- 资讯折叠筛选`#advanced-filters`保留国家、城市、语言和圈内动态等行为。全球/日本用`data-scope`；频道`data-channel`；种类`data-kind`。日历独立使用`data-cal-area`、`data-cal-kind`、`data-cal-day`和`data-cal-page`。
 - 分页默认18条。`data-list-page`按钮与`#article-page`跳页选择器；筛选/搜索时回第一页。搜索查全部库存，不只当前页；所有记录通过分页可达。页面状态在当前会话中保存，不改变收藏格式。
 - 收藏保留`data-save-type`/`data-save-id`，状态保留`data-bookmark-status`。浏览器存储键`culture-desk-v1`、schema版本1保持。
 - 阅读页保留中文/原文/资料三个tab、深链接、原标题及保存正文；未译明确待译、公开部分与缺正文如实标注。
 - 保留日历/活动当地时区、来源开关、JSON与ICS导出、覆盖进度、非日本普通展览降级和重大例外。全部来源/原文/ID不能为精简UI删掉。
-- 展览页使用 `#exhibitions` 和 `data-ui="exhibition-desk"`，由 `frontend/exhibitions.js` 管理地区筛选、重点与闭展清单、个人记录及备份。保留 `data-ex-*` 行为钩子、私人记录键 `culture-desk-exhibition-log-v1` 及原剪报键。采集和排序说明见 `docs/JAPAN_EXHIBITIONS.md`。
+- 展览页使用 `#exhibitions` 和 `data-ui="exhibition-desk"`，由 `frontend/exhibitions.js` 管理地区筛选、分档推荐、个人记录及备份。正文 `#exhibition/<id>` 复用站内阅读器样式与返回流程。日历 `#calendar` 由 `frontend/calendar.js` 管理排期及日期列表。保留 `data-ex-*` 行为钩子、私人记录键 `culture-desk-exhibition-log-v1` 及原剪报键。见 `docs/JAPAN_EXHIBITIONS.md` 和 `docs/FILM_CALENDAR.md`。
 
 ## 构建与验证
 

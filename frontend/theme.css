@@ -804,3 +804,23 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
   .exhibition-chip { min-height: 42px; }
   .exhibition-search, .exhibition-select select, .exhibition-record-fields select, .exhibition-note textarea { font-size: 16px; }
 }
+
+/* Calendar desk */
+.calendar-desk { max-width: 1030px; margin: 0 auto; }
+.calendar-pickers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 540px; margin: 0 0 18px; }
+.calendar-pickers label { display: grid; gap: 5px; min-width: 0; font: 700 13px var(--sans); }
+.calendar-pickers select { width: 100%; min-height: 40px; padding: 5px 8px; border: var(--rule); background: var(--paper); }
+.calendar-desk .calendar-day { min-height: clamp(47px,6vw,66px); }
+.calendar-desk .event-list { margin-top: 20px; }
+.calendar-entry { display: grid; grid-template-columns: minmax(68px, 105px) minmax(0,1fr); gap: 12px; padding: 11px 0; border-bottom: var(--rule); }
+.calendar-entry-time { font: 750 15px/1.4 var(--sans); font-variant-numeric: tabular-nums; }
+.calendar-entry-time small { display: block; font-weight: 500; color: var(--muted); margin-top: 3px; }
+.calendar-entry-body { min-width: 0; overflow-wrap: anywhere; }
+.calendar-entry h3 { margin: 0 0 3px; font-size: 16px; line-height: 1.42; }
+.calendar-entry h3 a, .calendar-entry h3 button { color: inherit; font: inherit; text-align: left; }
+.calendar-entry-body p, .calendar-entry-links { margin: 0; font: 500 12px/1.6 var(--sans); color: var(--muted); }
+.calendar-entry-links a + a { margin-left: .75em; }
+@media (max-width: 700px) {
+  .calendar-pickers select { font-size: 16px; }
+  .calendar-entry { grid-template-columns: 67px minmax(0,1fr); }
+}

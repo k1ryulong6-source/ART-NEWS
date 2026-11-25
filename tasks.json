@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-25",
+  "updated_at": "2026-11-26",
   "status_values": [
     "todo",
     "doing",
@@ -2763,13 +2763,25 @@
       "id": "T085",
       "title": "完善展览推荐、场馆收藏并统一展览版式与阅读",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
-      "updated_at": "2026-11-25",
+      "updated_at": "2026-11-26",
       "depends_on": ["T084"],
       "scope": ["frontend/exhibitions.js", "frontend/app.js", "frontend/theme.css", "frontend/exhibition-page.*", "backend/exhibition_assets.py", "backend/app.py", "scripts/build_static.py", "tests/", "docs/JAPAN_EXHIBITIONS.md"],
       "acceptance": ["按重要性分开排列在展前100和即将开展，保留全量查询、闭展提醒和翻页", "不感兴趣仅在主动打开专区后列出，保留原个人记录且可撤销", "稳定场馆收藏可备份，并在展览页优先展示该馆未来和刚开幕的新展", "展览使用现有报头、频道标题和阅读流程，旧链接可直接打开，新闻版式照常通过验收"],
-      "evidence": []
+      "evidence": ["34a0f6b0d 已发布，项目检查 45653588765 和 Pages 45653588762 成功。线上 390px 验证在展前100分为六页、即将开展按等级降序、隐藏和撤销、相同站内报头与读栏、旧链接、观展草稿保存、场馆收藏和刷新后新展优先。"]
+    },
+    {
+      "id": "T086",
+      "title": "东京电影日历、展览联动与全球流媒体排期",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-11-26",
+      "depends_on": ["T085"],
+      "scope": ["frontend/calendar.js", "frontend/app.js", "frontend/exhibitions.js", "frontend/theme.css", "backend/film_calendar.py", "config/film-calendar.json", "data/film-calendar.json", "scripts/collect_film_calendar.py", ".github/workflows/film-calendar.yml", "tests/"],
+      "acceptance": ["地区在活动前，默认东京电影，按日查看和按月分页", "复用现有活动与展览开闭展，展览正文与不感兴趣标签连通", "开放官网的艺术影院场次及跨地区的流媒体日期，来源、时刻、地区与缺口可核对", "合并同场同地同时段并保留各来源，保留不同影院、时间、平台和上映地区", "手机、独立采集和 Pages 实测成功"],
+      "evidence": ["东京 01:44 真实采集 4 家影院 554 个场次及 143 条官方流媒体排期或片单。Netflix Tudum 自动读取受 robots 限制，另从 About Netflix 官网验证电影上线日期。"]
     }
   ]
 }

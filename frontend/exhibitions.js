@@ -134,7 +134,7 @@
     const filter = { scope:'JP', prefecture:'all', medium:'all', stage:'top', personal:'all', sort:'recommended', query:'', page:1 };
     const sections = [['top','在展推荐'],['upcoming','即将开展'],['all','所有展期'],['active','正在展出（全部）'],['closing','7 天内闭展'],['important','重点展'],['ended','已闭展'],['unknown','展期待定']];
     const personal = [['all','全部展览'],['records','我的观展记录'],...Object.entries(statuses),['favorite','收藏的展览'],['venues','收藏场馆']];
-    let catalog = boot.japan_exhibitions || null, pending = false, failed = false, records = new Map(), current = new Map(), areas = new Map();
+    let catalog = !server && boot.japan_exhibitions || null, pending = false, failed = false, records = new Map(), current = new Map(), areas = new Map();
     let venues = new Map();
     const details = new Map(), detailPending = new Set(), detailFailed = new Set();
     let filtersOpen = matchMedia('(min-width: 840px)').matches;
@@ -469,7 +469,16 @@
       const row = current.get(id);
       return row ? (tab === 'original' ? row.title_original || title(row) : title(row)) : '';
     };
-    return { view, inlineReader, readerTitle };
+    function calendarInventory() {
+      load();
+      const labels = new Map((catalog?.coverage?.prefectures || []).map(region=>[region.code,region.name]));
+      const entries = (catalog?.items || []).filter(row=>records.get(row.id)?.status !== 'uninterested').map(row=>({
+        ...row, event_type:'exhibition', exhibition_id:row.id, prefecture_name:labels.get(row.prefecture), source_name:catalog.coverage?.sources?.[row.source_id]?.name,
+      }));
+      return {entries,pending,failed,includesLegacy:catalog?.includes_legacy_events};
+    }
+    const hidden = id => records.get(id)?.status === 'uninterested';
+    return { view, inlineReader, readerTitle, calendarInventory, hidden };
   }
   const api = { create, phase, closingDays, rank, parseLog, parseVenues };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

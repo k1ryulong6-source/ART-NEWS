@@ -26,4 +26,6 @@
 
 图片、标题及详情链接都指向 `/#exhibition/<展览ID>`。正文使用新闻阅读器的标题、正文与原文切换、分享和返回控件。站内正文只请求该场 JSON，标注来源、图源、公开日文介绍或列表短介。来源仅公布时间地点时直接展示资料与出处。覆盖报告的 `public_descriptions` 按公开介绍、短介、待补统计。
 
+日历的「展览开幕与闭展」读取同一目录。标题打开同一篇展览正文，返回时回到所选日期。
+
 `config/exhibitions-jp.json` 管理公开目录、地区表、场馆页和别名。`python scripts/collect_exhibitions.py` 更新 `data/exhibitions-jp.json`。`python scripts/collect_exhibition_details.py` 按近期闭展、重要展与场馆官网优先补 `data/exhibition-details.json`，失败的来源 URL 五天后可再尝试。美術展ナビ的 `/exhibitions/` 提供展讯，`/topics/` 继续提供新闻。独立 GitHub Actions 按东京 06:20 和 18:20 调度，分站限流，跨站并行，发布展览、正文和覆盖报告。便携单文件预览内联展览和已取得的介绍，本地 FastAPI 同样支持独立目录及单场地址。

@@ -11,7 +11,7 @@ ID = re.compile(r'[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}')
 LIST_FIELDS = ('id', 'title_original', 'title_zh', 'country', 'city', 'venue', 'prefecture', 'area',
                'timezone', 'start_date', 'end_date', 'date_precision', 'date_conflict', 'status',
                'types', 'flags', 'official', 'image_url', 'image_source', 'first_seen', 'last_seen', 'is_demo',
-               'venue_id', 'venue_name')
+               'venue_id', 'venue_name', 'evidence_url', 'source_id', 'evidence_status')
 
 
 def venue_reference(row, aliases):

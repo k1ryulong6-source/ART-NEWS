@@ -21,6 +21,8 @@ def reference_time(value=None):
 def classify(row, events=(), reference=None, rules=None):
     rules = rules or policy(); instant = reference_time(reference)
     text = ' '.join(str(row.get(k) or '') for k in ('title_original', 'title_zh', 'editorial_title_zh'))
+    obituary = bool(re.search(rules.get('obituary_pattern', r'(?!)'),
+                              row.get('title_original') or row.get('title_zh') or '', re.I))
     reasons = []; importance = 'normal'
     if re.search(rules['major_events_pattern'], text, re.I):
         importance = 'high'; reasons.append('重大影展／奖项相关信号，自动初判')
@@ -39,6 +41,9 @@ def classify(row, events=(), reference=None, rules=None):
     exhibit_region = 'japan' if preferred in countries else 'outside_japan' if countries else 'unknown'
     if exhibition and re.search(exhibit_rules.get('major_pattern', r'(?!)'), text, re.I):
         importance = 'high'; reasons.append('重大双年展／奖项展／重要回顾展相关信号，自动初判')
+    if obituary:
+        importance = 'normal'
+        reasons = ['讣告及追思报道按普通新闻排队；头版仅保留短讯名额']
     override = rules.get('manual_overrides', {}).get(row['id'])
     if override and override.get('importance') in ('high', 'medium', 'normal'):
         importance = override['importance']
@@ -94,7 +99,7 @@ def classify(row, events=(), reference=None, rules=None):
     return {'priority': rank, 'label': rules['labels'][rank], 'importance': importance,
             'time_sensitive': bool(due), 'due': due, 'fresh': fresh, 'archive': archive,
             'reasons': reasons or ['一般资讯；未确认临近活动日期'],
-            'source_title': row.get('title_original'), 'model_route': 'fast-direct',
+            'source_title': row.get('title_original'), 'model_route': 'fast-direct', 'obituary': obituary,
             'exhibition': exhibition, 'exhibition_region': exhibit_region if exhibition else None,
             'exhibition_deprioritized': deprioritized,
             'recommendation_penalty': exhibit_rules.get('homepage_penalty', 12) if deprioritized else 0}

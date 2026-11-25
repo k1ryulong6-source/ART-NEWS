@@ -36,6 +36,23 @@ class FrontpagePriorityTests(unittest.TestCase):
         major = self.story('major', '2026-10-15T10:00:00Z', 'A major museum declares bankruptcy', 'art')
         self.assertEqual(self.pick(interests + [major])[0]['id'], 'major')
 
+    def test_obituaries_never_take_headlines_and_have_one_shared_brief_slot(self):
+        published = '2026-10-15T11:00:00Z'
+        lead = self.story('major', published, 'Museum announces return of stolen paintings', 'art')
+        films = [self.story('film-debut', published, 'The new film opens in Tokyo')]
+        photos = [self.story('photo-debut', published, 'A new photobook', 'photography')]
+        deaths = [self.story('memo-1', published, 'Cannes Festival award winner, Dies at 91'),
+                  self.story('memo-2', published, '米国の写真家が死去', 'photography'),
+                  self.story('memo-3', published, '訃報：画家 生前の作品', 'art')]
+        snapshot = {'content': [lead, *films, *photos, *deaths], 'events': [], 'content_events': []}
+        ranks = rank_snapshot(snapshot, REFERENCE)
+        slots = headline_slots(snapshot, ranks, reference_time(REFERENCE))
+        rows = frontpage_rows(snapshot, ranks, reference_time(REFERENCE))
+        self.assertTrue(all(ranks[r['id']]['obituary'] and ranks[r['id']]['priority'] == 'P2' for r in deaths))
+        self.assertEqual([aid for aid, _ in slots], ['major', 'film-debut', 'photo-debut'])
+        self.assertEqual(sum(r['frontpage_obituary'] for r in rows), 1)
+        self.assertEqual(self.pick(deaths), [])
+
     def test_week_old_award_and_old_column_fallback_cannot_displace_new_reports(self):
         old = self.story('old-award', '2026-10-08T11:00:00Z', 'PhotoBook Awards shortlist', 'photography')
         archive = self.story('archive', '2026-09-24T00:00:00Z', 'A photobook exhibition', 'photography')
@@ -84,6 +101,8 @@ class FrontpagePriorityTests(unittest.TestCase):
         rows[6].update(published_at='2020-01-01')
         rows[7].update(title_original='A painting exhibition', country='GB')
         rows[8].update(title_original='摄影集', language='zh')
+        rows[9].update(title_original='Oscar-winning production designer, Dies at 91')
+        rows[10].update(title_original='訃報：アンディ・チャン')
         return {'content': rows, 'events': [], 'content_events': []}
 
     @unittest.skipUnless(shutil.which('node'), 'Node is only needed for browser/backend parity testing')

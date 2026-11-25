@@ -53,6 +53,7 @@ def frontpage_rows(snapshot, priorities, instant, preferences=None, headlines=No
     decay = cfg.get('freshness_decay_hours', 2)
     importance = cfg.get('importance_boost', {'high': 24, 'medium': 8, 'normal': 0})
     urgency = cfg.get('priority_boost', {'P0': 12, 'P1': 6, 'P2': 0, 'P3': -12})
+    obituary_limit = cfg.get('obituary_limit', 1)
     known, undated = [], []
     for original in snapshot.get('content', []):
         if original.get('is_demo') or original.get('evidence_status') == 'unverified':
@@ -74,13 +75,19 @@ def frontpage_rows(snapshot, priorities, instant, preferences=None, headlines=No
         score = importance.get(rank.get('importance'), 0) + urgency.get(rank.get('priority'), 0)
         score -= (age if age is not None else fallback_hours) / decay
         score -= rank.get('recommendation_penalty', 0)
+        obituary = bool(rank.get('obituary'))
+        if obituary:
+            score -= cfg.get('obituary_penalty', 32)
         row.update(frontpage_score=score, frontpage_age_hours=age,
+                   frontpage_obituary=obituary,
                    frontpage_basis='published_at' if age is not None else 'confirmed_upcoming_event')
         (known if age is not None else undated).append(row)
     ready = lambda r: candidates or headline_ready(r)
-    eligible = [r for r in known if r.get('kind') != 'industry_buzz' and ready(r)]
+    def is_headline(row):
+        return row.get('kind') != 'industry_buzz' and not row['frontpage_obituary'] and ready(row)
+    eligible = [r for r in known if is_headline(r)]
     recent = [r for r in eligible if r['frontpage_age_hours'] <= lead_hours]
-    lead_pool = recent or eligible or [r for r in undated if r.get('kind') != 'industry_buzz' and ready(r)]
+    lead_pool = recent or eligible or [r for r in undated if is_headline(r)]
     if not lead_pool:
         return []
     order = lambda r: (-r['frontpage_score'], r['frontpage_age_hours'] if r['frontpage_age_hours'] is not None else fallback_hours, r['id'])
@@ -88,6 +95,7 @@ def frontpage_rows(snapshot, priorities, instant, preferences=None, headlines=No
     result, seen_ids = [lead], {lead['id']}
     seen_titles = {display_title(lead, headlines)}
     counts = {lead.get('source_id'): 1}
+    obituary_count = 0
     for channel, count in [('film', 5), ('art', 5), ('photography', 5), ('industry_buzz', 4)]:
         if channel == 'industry_buzz' and not (preferences.get('industry_buzz') or {}).get('enabled', True):
             continue
@@ -98,12 +106,14 @@ def frontpage_rows(snapshot, priorities, instant, preferences=None, headlines=No
             pool = [r for r in pool if r['id'] not in seen_ids and display_title(r, headlines) not in seen_titles]
             # Only the desk's first (headline) story needs this extra gate.
             # Do not hide untranslated briefs beneath an eligible headline.
-            choices = [r for r in pool if ready(r)] if index == 0 and channel != 'industry_buzz' else pool
+            choices = ([r for r in pool if is_headline(r)] if index == 0 and channel != 'industry_buzz'
+                       else [r for r in pool if not r['frontpage_obituary'] or obituary_count < obituary_limit])
             if not choices:
                 break
             row = min(choices, key=lambda r: (-(r['frontpage_score'] - counts.get(r.get('source_id'), 0) * cfg.get('source_repeat_penalty', 6)), *order(r)[1:]))
             seen_ids.add(row['id']); seen_titles.add(display_title(row, headlines))
             counts[row.get('source_id')] = counts.get(row.get('source_id'), 0) + 1
+            obituary_count += row['frontpage_obituary']
             result.append(row)
     return result
 

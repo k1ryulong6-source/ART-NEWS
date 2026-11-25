@@ -178,27 +178,33 @@
         if (elapsed < -2 || elapsed > fallbackHours) continue;
         age = Math.max(0, elapsed);
       } else if (!rank.due || !Number.isFinite(rank.due.days) || rank.due.days < 0 || rank.due.days > (cfg.undated_event_days ?? 2)) continue;
-      const score = (importance[rank.importance] || 0) + (urgency[rank.priority] || 0) - (age ?? fallbackHours) / (cfg.freshness_decay_hours ?? 2) - (rank.recommendation_penalty || 0);
-      const row = {...original, frontpage_score:score, frontpage_age_hours:age, frontpage_basis:age === null ? 'confirmed_upcoming_event' : 'published_at'};
+      const obituary = Boolean(rank.obituary);
+      const score = (importance[rank.importance] || 0) + (urgency[rank.priority] || 0) - (age ?? fallbackHours) / (cfg.freshness_decay_hours ?? 2)
+        - (rank.recommendation_penalty || 0) - (obituary ? cfg.obituary_penalty ?? 32 : 0);
+      const row = {...original, frontpage_score:score, frontpage_age_hours:age, frontpage_obituary:obituary, frontpage_basis:age === null ? 'confirmed_upcoming_event' : 'published_at'};
       (age === null ? undated : known).push(row);
     }
-    const eligible = known.filter(r=>r.kind !== 'industry_buzz' && headlineReady(r)), recent = eligible.filter(r=>r.frontpage_age_hours <= leadHours);
-    const leadPool = recent.length ? recent : eligible.length ? eligible : undated.filter(r=>r.kind !== 'industry_buzz' && headlineReady(r));
+    const isHeadline = r=>r.kind !== 'industry_buzz' && !r.frontpage_obituary && headlineReady(r);
+    const eligible = known.filter(isHeadline), recent = eligible.filter(r=>r.frontpage_age_hours <= leadHours);
+    const leadPool = recent.length ? recent : eligible.length ? eligible : undated.filter(isHeadline);
     const tailCompare = (a,b)=>(a.frontpage_age_hours ?? fallbackHours)-(b.frontpage_age_hours ?? fallbackHours) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
     const lead = [...leadPool].sort((a,b)=>b.frontpage_score-a.frontpage_score || tailCompare(a,b))[0];
     if (!lead) return [];
     const rows = [lead], seenIds = new Set([lead.id]), seenTitles = new Set([displayTitle(lead)]), counts = {[lead.source_id]:1};
+    let obituaries = 0;
     for (const [channel,count] of [['film',5],['art',5],['photography',5],['industry_buzz',4]]) {
       if (channel === 'industry_buzz' && preferences.industry_buzz?.enabled === false) continue;
       const matches = r=>channel === 'industry_buzz' ? r.kind === 'industry_buzz' : r.kind !== 'industry_buzz' && r.channel === channel;
       let candidates = known.filter(matches); if (!candidates.length) candidates = undated.filter(matches);
       for (let i=0;i<count;i++) {
         candidates = candidates.filter(r=>!seenIds.has(r.id) && !seenTitles.has(displayTitle(r)));
-        const choices=i === 0 && channel !== 'industry_buzz' ? candidates.filter(headlineReady) : candidates;
+        const choices = i === 0 && channel !== 'industry_buzz' ? candidates.filter(isHeadline)
+          : candidates.filter(r=>!r.frontpage_obituary || obituaries < (cfg.obituary_limit ?? 1));
         if (!choices.length) break;
         const adjusted = r=>r.frontpage_score-(counts[r.source_id]||0)*(cfg.source_repeat_penalty ?? 6);
         const row = choices.sort((a,b)=>adjusted(b)-adjusted(a) || tailCompare(a,b))[0];
         rows.push(row); seenIds.add(row.id); seenTitles.add(displayTitle(row)); counts[row.source_id]=(counts[row.source_id]||0)+1;
+        obituaries += Number(row.frontpage_obituary);
       }
     }
     return rows;

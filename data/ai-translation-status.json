@@ -5,15 +5,15 @@
   "translation_provider": "deepseek+gemini",
   "account_mode": "user-authorized-prepaid",
   "pool_mode": "parallel_disjoint_articles",
-  "started_at": "2026-11-25T14:24:47.393150+00:00",
-  "finished_at": "2026-11-25T14:24:57.179103+00:00",
+  "started_at": "2026-11-25T14:53:32.128490+00:00",
+  "finished_at": "2026-11-25T14:58:41.150787+00:00",
   "projects": [
     {
       "status": "configuration_error",
       "provider": "contextual-api:deepseek:deepseek-flash:direct-v1",
       "model": "deepseek-flash",
       "account_mode": "user-authorized-prepaid",
-      "started_at": "2026-11-25T14:24:47.394221+00:00",
+      "started_at": "2026-11-25T14:53:32.129603+00:00",
       "translated": [],
       "failed": [],
       "deferred": [],
@@ -27,8 +27,8 @@
       "service_failures": [],
       "retry_after": "2026-11-25T18:38:38.316169+00:00",
       "error": "ai_http_402",
-      "finished_at": "2026-11-25T14:24:50.055625+00:00",
-      "seconds": 2.66,
+      "finished_at": "2026-11-25T14:53:35.496117+00:00",
+      "seconds": 3.37,
       "requests_today": 1,
       "daily_request_limit": 300,
       "unknown_usage_requests_today": 1,
@@ -40,7 +40,7 @@
       "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
       "model": "gemini-3.5-flash-lite",
       "account_mode": "free-project-only",
-      "started_at": "2026-11-25T14:24:47.394551+00:00",
+      "started_at": "2026-11-25T14:53:32.129499+00:00",
       "translated": [],
       "failed": [],
       "deferred": [],
@@ -54,12 +54,12 @@
       "service_failures": [
         {
           "policy": "bounded-exponential-v1",
-          "consecutive_failures": 4,
-          "delay_seconds": 490,
+          "consecutive_failures": 5,
+          "delay_seconds": 975,
           "server_retry_seconds": 0,
           "error": "ai_http_503",
-          "failed_at": "2026-11-25T14:24:57.144352+00:00",
-          "retry_after": "2026-11-25T14:33:07.144352+00:00",
+          "failed_at": "2026-11-25T14:53:37.951278+00:00",
+          "retry_after": "2026-11-25T15:09:52.951278+00:00",
           "provider_error": {
             "http_status": 503,
             "category": "capacity_unavailable",
@@ -77,21 +77,21 @@
         "message_evidence": "high demand"
       },
       "error": "ai_http_503",
-      "retry_after": "2026-11-25T14:33:07.144352+00:00",
+      "retry_after": "2026-11-25T15:09:52.951278+00:00",
       "pending_after": 1007,
-      "finished_at": "2026-11-25T14:24:57.157970+00:00",
-      "seconds": 9.76,
-      "requests_today": 5,
+      "finished_at": "2026-11-25T14:53:37.959742+00:00",
+      "seconds": 5.83,
+      "requests_today": 6,
       "daily_request_limit": 500,
-      "unknown_usage_requests_today": 4,
+      "unknown_usage_requests_today": 5,
       "service_retry": {
         "policy": "bounded-exponential-v1",
-        "consecutive_failures": 4,
-        "delay_seconds": 490,
+        "consecutive_failures": 5,
+        "delay_seconds": 975,
         "server_retry_seconds": 0,
         "error": "ai_http_503",
-        "failed_at": "2026-11-25T14:24:57.144352+00:00",
-        "retry_after": "2026-11-25T14:33:07.144352+00:00",
+        "failed_at": "2026-11-25T14:53:37.951278+00:00",
+        "retry_after": "2026-11-25T15:09:52.951278+00:00",
         "provider_error": {
           "http_status": 503,
           "category": "capacity_unavailable",
@@ -107,9 +107,15 @@
       "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
       "model": "gemini-3.5-flash-lite",
       "account_mode": "free-project-only",
-      "started_at": "2026-11-25T14:24:47.394872+00:00",
+      "started_at": "2026-11-25T14:53:32.129691+00:00",
       "translated": [],
-      "failed": [],
+      "failed": [
+        {
+          "id": "live-d19a566c379d00b45201254d",
+          "reason": "block_not_chinese",
+          "validation_issues": []
+        }
+      ],
       "deferred": [
         "live-6a919d22eb959a0bc70c91e1",
         "live-1045d6f5674d5a6f2ac52ab4",
@@ -117,20 +123,52 @@
       ],
       "resumed": [],
       "stale": [],
-      "requests": 1,
-      "input_tokens": 0,
-      "output_tokens": 0,
+      "requests": 4,
+      "input_tokens": 2113,
+      "output_tokens": 737,
       "service_retry_policy": "bounded-exponential-v1",
-      "inline_service_retries": 0,
+      "inline_service_retries": 2,
       "service_failures": [
         {
           "policy": "bounded-exponential-v1",
-          "consecutive_failures": 4,
-          "delay_seconds": 492,
+          "consecutive_failures": 1,
+          "delay_seconds": 75,
           "server_retry_seconds": 0,
           "error": "ai_http_503",
-          "failed_at": "2026-11-25T14:24:55.859089+00:00",
-          "retry_after": "2026-11-25T14:33:07.859089+00:00",
+          "failed_at": "2026-11-25T14:54:22.478539+00:00",
+          "retry_after": "2026-11-25T14:55:37.478539+00:00",
+          "provider_error": {
+            "http_status": 503,
+            "category": "capacity_unavailable",
+            "api_status": "UNAVAILABLE",
+            "message_evidence": "high demand"
+          },
+          "inline_retry": true
+        },
+        {
+          "policy": "bounded-exponential-v1",
+          "consecutive_failures": 2,
+          "delay_seconds": 122,
+          "server_retry_seconds": 0,
+          "error": "ai_http_503",
+          "failed_at": "2026-11-25T14:56:11.262752+00:00",
+          "retry_after": "2026-11-25T14:58:13.262752+00:00",
+          "provider_error": {
+            "http_status": 503,
+            "category": "capacity_unavailable",
+            "api_status": "UNAVAILABLE",
+            "message_evidence": "high demand"
+          },
+          "inline_retry": true
+        },
+        {
+          "policy": "bounded-exponential-v1",
+          "consecutive_failures": 3,
+          "delay_seconds": 242,
+          "server_retry_seconds": 0,
+          "error": "ai_http_503",
+          "failed_at": "2026-11-25T14:58:39.236676+00:00",
+          "retry_after": "2026-11-25T15:02:41.236676+00:00",
           "provider_error": {
             "http_status": 503,
             "category": "capacity_unavailable",
@@ -148,21 +186,21 @@
         "message_evidence": "high demand"
       },
       "error": "ai_http_503",
-      "retry_after": "2026-11-25T14:33:07.859089+00:00",
+      "retry_after": "2026-11-25T15:02:41.236676+00:00",
       "pending_after": 1007,
-      "finished_at": "2026-11-25T14:24:55.889349+00:00",
-      "seconds": 8.49,
-      "requests_today": 8,
+      "finished_at": "2026-11-25T14:58:41.123061+00:00",
+      "seconds": 308.99,
+      "requests_today": 12,
       "daily_request_limit": 500,
-      "unknown_usage_requests_today": 4,
+      "unknown_usage_requests_today": 7,
       "service_retry": {
         "policy": "bounded-exponential-v1",
-        "consecutive_failures": 4,
-        "delay_seconds": 492,
+        "consecutive_failures": 3,
+        "delay_seconds": 242,
         "server_retry_seconds": 0,
         "error": "ai_http_503",
-        "failed_at": "2026-11-25T14:24:55.859089+00:00",
-        "retry_after": "2026-11-25T14:33:07.859089+00:00",
+        "failed_at": "2026-11-25T14:58:39.236676+00:00",
+        "retry_after": "2026-11-25T15:02:41.236676+00:00",
         "provider_error": {
           "http_status": 503,
           "category": "capacity_unavailable",
@@ -177,16 +215,16 @@
   "pending_before": 2014,
   "configured_projects": 3,
   "service_retry_policy": "bounded-exponential-v1",
-  "inline_service_retries": 0,
+  "inline_service_retries": 2,
   "service_failures": [
     {
       "policy": "bounded-exponential-v1",
-      "consecutive_failures": 4,
-      "delay_seconds": 490,
+      "consecutive_failures": 5,
+      "delay_seconds": 975,
       "server_retry_seconds": 0,
       "error": "ai_http_503",
-      "failed_at": "2026-11-25T14:24:57.144352+00:00",
-      "retry_after": "2026-11-25T14:33:07.144352+00:00",
+      "failed_at": "2026-11-25T14:53:37.951278+00:00",
+      "retry_after": "2026-11-25T15:09:52.951278+00:00",
       "provider_error": {
         "http_status": 503,
         "category": "capacity_unavailable",
@@ -198,12 +236,46 @@
     },
     {
       "policy": "bounded-exponential-v1",
-      "consecutive_failures": 4,
-      "delay_seconds": 492,
+      "consecutive_failures": 1,
+      "delay_seconds": 75,
       "server_retry_seconds": 0,
       "error": "ai_http_503",
-      "failed_at": "2026-11-25T14:24:55.859089+00:00",
-      "retry_after": "2026-11-25T14:33:07.859089+00:00",
+      "failed_at": "2026-11-25T14:54:22.478539+00:00",
+      "retry_after": "2026-11-25T14:55:37.478539+00:00",
+      "provider_error": {
+        "http_status": 503,
+        "category": "capacity_unavailable",
+        "api_status": "UNAVAILABLE",
+        "message_evidence": "high demand"
+      },
+      "inline_retry": true,
+      "project": "secondary"
+    },
+    {
+      "policy": "bounded-exponential-v1",
+      "consecutive_failures": 2,
+      "delay_seconds": 122,
+      "server_retry_seconds": 0,
+      "error": "ai_http_503",
+      "failed_at": "2026-11-25T14:56:11.262752+00:00",
+      "retry_after": "2026-11-25T14:58:13.262752+00:00",
+      "provider_error": {
+        "http_status": 503,
+        "category": "capacity_unavailable",
+        "api_status": "UNAVAILABLE",
+        "message_evidence": "high demand"
+      },
+      "inline_retry": true,
+      "project": "secondary"
+    },
+    {
+      "policy": "bounded-exponential-v1",
+      "consecutive_failures": 3,
+      "delay_seconds": 242,
+      "server_retry_seconds": 0,
+      "error": "ai_http_503",
+      "failed_at": "2026-11-25T14:58:39.236676+00:00",
+      "retry_after": "2026-11-25T15:02:41.236676+00:00",
       "provider_error": {
         "http_status": 503,
         "category": "capacity_unavailable",
@@ -222,14 +294,21 @@
     "live-e8e5a8346bfa41e43756e73c"
   ],
   "stale": [],
-  "failed": [],
-  "requests": 2,
-  "input_tokens": 0,
-  "output_tokens": 0,
-  "requests_today": 14,
-  "unknown_usage_requests_today": 9,
+  "failed": [
+    {
+      "id": "live-d19a566c379d00b45201254d",
+      "reason": "block_not_chinese",
+      "validation_issues": [],
+      "project": "secondary"
+    }
+  ],
+  "requests": 5,
+  "input_tokens": 2113,
+  "output_tokens": 737,
+  "requests_today": 19,
+  "unknown_usage_requests_today": 13,
   "daily_request_limit": 1300,
   "pending_after": 2014,
   "continue_recommended": false,
-  "seconds": 9.76
+  "seconds": 308.99
 }

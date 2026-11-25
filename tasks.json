@@ -2747,13 +2747,17 @@
       "id": "T084",
       "title": "展览实图、独立正文页和手机首屏提速",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-11-25",
       "depends_on": ["T081", "T082"],
       "scope": ["backend/exhibition_assets.py", "backend/exhibition_details.py", "backend/exhibition_sources.py", "backend/share_pages.py", "backend/app.py", "data/exhibitions-jp.json", "data/exhibition-details.json", "scripts/collect_exhibition_details.py", "scripts/build_static.py", "frontend/", ".github/workflows/", "tests/", "docs/JAPAN_EXHIBITIONS.md"],
       "acceptance": ["展图、标题和详情链接进入可分享的正文页，标明介绍与实际出处", "美術展ナビ新闻和展讯均有公开采集证据，批量介绍独立续跑", "手机和桌面浏览器验证首页、展览、笔记和旧闻剪报，保留单篇分享页", "线上 Pages 及实际采集工作流成功"],
-      "evidence": ["本地公开快照 2190 场日本展，独立目录约 0.25 MB gzip。7113 篇资讯全部仍可浏览，首屏压缩数据量由约 4.7 MB 降至 0.77 MB。Chromium 320/390/1360px 验证目录→展图→正文和评分笔记保存，390px 验证旧闻及剪报。"]
+      "evidence": [
+        "项目检查 45619261240 成功，274 项 Python、34 项 JavaScript、无第三方依赖静态构建和数据严格审计通过。线上 Chromium 320/390/1360px 核对点图进入正文、评分笔记持久化和旧闻剪报，旧版首屏约 4.7 MB gzip，线上新版约 0.79 MB。",
+        "真实 GitHub 展览任务 45619316808 收取 172/180 个公开介绍，提交 e4ab0be14 并触发 Pages 45620372347 成功。线上报告与目录同为东京 2026-11-25 22:05:57，2190 场日本展中 2146 有图、560 有公开介绍、223 有短介、1407 仍缺文字介绍。美術展ナビ完整读取 415 条目录记录，新闻库已留存 362 条。",
+        "全国目录有 9 个地区请求超时、8 个地区触及站点任务时限，本轮 30/47 复核成功。全量 2190 个既有展览 ID 保留，47 地区仍均有展览登记。"
+      ]
     }
   ]
 }

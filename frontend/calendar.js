@@ -107,9 +107,10 @@
         : [place,row.venue,row.auditorium];
       const timing = row.start_at ? row.start_at.slice(11,16) : '';
       const time = [!chosenDay && day ? C.dateLabel(day).slice(5) : '',timing].filter(Boolean).join(' ');
+      const shortLabel = label === activity.cinema_screening ? '艺术影院' : label;
       const sources = row.origins?.map(({url,name})=>C.safeUrl(url) ? `<a class="text-link" ${ref(C.safeUrl(url))}>${e(name || '来源')} ↗</a>` : '').filter(Boolean).join(' ');
       return `<article class="calendar-entry" data-cal-id="${e(row.id)}" data-cal-kind="${e(row.event_type)}">
-        <div class="calendar-entry-time"><span>${e(time || label)}</span>${time ? `<small>${e(label)}</small>` : ''}</div>
+        <div class="calendar-entry-time"><span>${e(time || shortLabel)}</span>${time ? `<small>${e(shortLabel)}</small>` : ''}</div>
         <div class="calendar-entry-body"><h3>${titleLink}</h3><p>${subtitle.filter(Boolean).map(e).join(' · ')}${row.date_conflict ? ' · 展期有出入' : ''}</p>
         ${sources || booking || watch ? `<div class="calendar-entry-links">${sources || ''}${booking ? ` <a class="text-link" ${ref(booking)}>购票 ↗</a>` : ''}${watch ? ` <a class="text-link" ${ref(watch)}>平台 ↗</a>` : ''}</div>` : ''}</div></article>`;
     }
@@ -170,7 +171,7 @@
       return `<div class="calendar-desk" data-ui="calendar"><div class="calendar-pickers">
         ${select('area','地区',regions,kind==='streaming_release'?'global':area,kind==='streaming_release')}
         ${select('kind','活动',Object.entries(activity),kind)}</div>
-        <div class="calendar-panel"><div class="calendar-toolbar"><h2>${year} 年 ${m} 月</h2><div class="month-controls"><button data-cal-month="-1" aria-label="上个月">←</button><button data-cal-today>今天</button><button data-cal-month="1" aria-label="下个月">→</button></div></div>
+        <div class="calendar-panel"><div class="calendar-toolbar"><h2>${year} 年 ${m} 月</h2><div class="month-controls"><button data-cal-month="-1" aria-label="上个月">←</button><button data-cal-today>东京今天</button><button data-cal-month="1" aria-label="下个月">→</button></div></div>
         <div class="week-row">${['日','一','二','三','四','五','六'].map(day=>'<div>'+day+'</div>').join('')}</div><div class="calendar-days">${days.join('')}</div></div>
         <section class="event-list" id="calendar-results"><div class="section-title"><h2>${chosenDay?e(C.dateLabel(chosenDay)):'本月排期'} <span class="count-label" data-cal-count="${visible.length}">${visible.length} 项</span></h2>
         <button class="text-link" ${chosenDay?'data-cal-whole':'data-cal-today'}>${chosenDay?'看本月清单':'回到今天'}</button></div>

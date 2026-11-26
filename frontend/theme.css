@@ -763,7 +763,7 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
 .exhibition-card::before { content: ''; position: absolute; inset-block: 0; inset-inline-start: calc(var(--exhibition-column-gap) / -2); border-inline-start: var(--rule); pointer-events: none; }
 .exhibition-card:nth-child(3n + 1)::before { display: none; }
 .exhibition-art { margin: 0 0 7px; }
-.exhibition-card-image img { display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.exhibition-card-image img { display: block; width: 100%; height: auto; aspect-ratio: auto 4 / 3; }
 .exhibition-card h3 { margin: 3px 0 5px; font: 800 19px/1.36 var(--sans); text-wrap: pretty; }
 .exhibition-card .exhibition-actions { margin-top: 4px; }
 .exhibition-card .exhibition-action { font-size: 12px; padding-block: 4px; }

@@ -2775,13 +2775,17 @@
       "id": "T086",
       "title": "东京电影日历、展览联动与全球流媒体排期",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-11-26",
       "depends_on": ["T085"],
       "scope": ["frontend/calendar.js", "frontend/app.js", "frontend/exhibitions.js", "frontend/theme.css", "backend/film_calendar.py", "config/film-calendar.json", "data/film-calendar.json", "scripts/collect_film_calendar.py", ".github/workflows/film-calendar.yml", "tests/"],
       "acceptance": ["地区在活动前，默认东京电影，按日查看和按月分页", "复用现有活动与展览开闭展，展览正文与不感兴趣标签连通", "开放官网的艺术影院场次及跨地区的流媒体日期，来源、时刻、地区与缺口可核对", "合并同场同地同时段并保留各来源，保留不同影院、时间、平台和上映地区", "手机、独立采集和 Pages 实测成功"],
-      "evidence": ["东京 01:44 真实采集 4 家影院 554 个场次及 143 条官方流媒体排期或片单。Netflix Tudum 自动读取受 robots 限制，另从 About Netflix 官网验证电影上线日期。"]
+      "evidence": [
+        "东京 01:44 首次实际采集 4 家影院 554 个场次和 143 条官方流媒体排期或片单。定时任务 45754335715 实跑成功，提交 3cd6e8f1b，Pages 45754417253 成功。线上排期时间与提交一致，为东京 11 月 26 日 13:18，11 月 26 日有 33 条东京影院场次。",
+        "定时任务读到了 Eurospace、Theatre Image Forum、新文芸坐、Apple TV、Disney+／Hulu 和 About Netflix。Cinema Vera 自动读取 robots 文件失败、Criterion 返回 403，均继续刊载此前核验的记录。Netflix Tudum 当前限制自动读取。",
+        "280 项 Python、39 项 JavaScript、静态构建与 GitHub Project checks 45657565399 成功。线上 Chromium 390px 和 1280px 核对按日列表、全月分页、跨地区流媒体、展览正文和返回。展览不感兴趣隐藏已做联动实测。"
+      ]
     }
   ]
 }

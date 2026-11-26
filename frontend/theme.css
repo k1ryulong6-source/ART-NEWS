@@ -727,11 +727,11 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
   a{color:#000!important}
 }
 /* Exhibition directory and visit records */
-.exhibition-controls { margin-bottom: 12px; }
-.exhibition-search-field { flex: 1 1 132px; max-width: 220px; min-width: 0; }
-.exhibition-search-field input { width: 100%; }
+.exhibition-controls { margin-bottom: 12px; justify-content: space-between; }
 .exhibition-personal, .exhibition-actions, .exhibition-pager { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.exhibition-controls .tab, .exhibition-controls .text-link, .exhibition-filter-panel summary { padding-block: 6px; white-space: nowrap; }
+.exhibition-personal { margin-left: 0; }
+.exhibition-controls .text-link, .exhibition-filter-panel summary { padding-block: 6px; white-space: nowrap; }
+.exhibition-filter-panel > summary { width: fit-content; margin-inline-start: auto; }
 .exhibition-action { color: var(--muted); white-space: nowrap; }
 .exhibition-deadline-jump { color: var(--accent); padding-block: 3px; }
 .exhibition-action[aria-pressed="true"] { color: var(--ink); font-weight: 700; }
@@ -798,8 +798,7 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
 }
 @media (max-width: 700px) {
   .exhibition-controls { gap: 2px 12px; }
-  .exhibition-search-field { flex: 1 1 0; max-width: none; }
-  .exhibition-personal { flex: 1 0 65%; gap: 12px; margin-left: 0; }
+  .exhibition-personal { gap: 12px; }
   .exhibition-stage-switch { gap: 4px 10px; }
   .exhibition-list { --exhibition-column-gap: 20px; }
   .exhibition-card h3 { font-size: 15px; }
@@ -810,7 +809,7 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
   .exhibition-deadlines li { grid-template-columns: minmax(4rem,auto) minmax(0,1fr); }
   .exhibition-deadlines li>span:last-child { grid-column: 2; }
   .exhibition-chip { min-height: 42px; }
-  .exhibition-search, .exhibition-select select, .exhibition-record-fields select, .exhibition-note textarea { font-size: 16px; }
+  .exhibition-select select, .exhibition-record-fields select, .exhibition-note textarea { font-size: 16px; }
 }
 
 /* Calendar desk */

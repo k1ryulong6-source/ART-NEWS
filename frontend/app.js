@@ -3,6 +3,7 @@
   const C = window.CultureCore, boot = window.CULTURE_BOOTSTRAP;
   if (!C || !boot) return;
   const $ = id => document.getElementById(id), e = C.escape;
+  const searchInput = $('search');
   let dataset = boot.live?.content?.length || boot.archive_store ? boot.live : boot.dataset;
   let preferences = JSON.parse(JSON.stringify(boot.preferences)), bookmarks = [], server = false;
   let archiveLoaded = !boot.archive_store, archiveRequest, archiveFailed = false;
@@ -11,6 +12,7 @@
   const makeId = () => typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const state = { view: 'today', channel: 'all', kind: 'all', country: 'all', city: 'all', language: 'all', query: '', mode: 'demo', bookmarkStatus: 'all', readerId: null, readerTab: 'chinese', readerReturn: 'today', editorialOnly: false, priority: 'all', advancedOpen: false, listPage: 1, sort: 'recommended' };
   const isReader = view => view === 'reader' || view === 'exhibition';
+  const isExhibition = view => view === 'exhibitions' || view === 'exhibition';
   function readLocal() {
     try {
       const stored = JSON.parse(localStorage.getItem('culture-desk-v1') || 'null');
@@ -46,7 +48,7 @@
   state.mode = dataset.mode || 'demo'; sourceStatus = dataset.source_status || [];
   if (server) notifications = await api('/notifications').catch(() => []);
   const exhibitions = window.CultureExhibitions?.create({
-    C, boot, server, toast, rerender: render, newspaperBody, readingMinutes, isActive: () => ['exhibitions', 'exhibition', 'calendar'].includes(state.view)
+    C, boot, server, toast, rerender: render, newspaperBody, readingMinutes, isActive: () => isExhibition(state.view) || state.view === 'calendar'
   });
   const schedule = window.CultureCalendar?.create({
     C, boot, server, exhibitions, rerender: render, isActive: () => state.view === 'calendar'
@@ -313,6 +315,11 @@
       && (['explore', 'bookmarks', 'attention', 'coverage'].includes(state.view) || (state.view === 'reader' && !story));
     if (needsArchive && !archiveFailed) loadArchive();
     nav();
+    const searchingExhibitions = exhibitions && isExhibition(state.view);
+    const query = searchingExhibitions ? exhibitions.searchQuery() : state.query;
+    if (searchInput.value !== query) searchInput.value = query;
+    searchInput.placeholder = searchingExhibitions ? '检索展览' : '检索';
+    searchInput.setAttribute('aria-label', searchingExhibitions ? '搜索展名、场馆' : '搜索资讯');
     $('edition-note').textContent = state.mode === 'demo' ? '所有示例均为虚构。' : '原文与 AI 译文分开标注；配图注明来源。';
     const views = { today, explore, exhibitions: exhibitionPage, exhibition: () => exhibitions?.inlineReader(state.exhibitionId, dataset, state.readerTab) || '<p>展览暂时无法载入。</p>', calendar, bookmarks: bookmarkPage, settings, coverage: coveragePage, attention: attentionPage, reader: readerPage };
     $('main').innerHTML = needsArchive ? (archiveFailed
@@ -320,7 +327,7 @@
       : '<p role="status">正在载入旧闻索引…</p>') : (views[state.view] || today)();
     // A new page moves focus to <main>, so keyboard and screen-reader users start at the top of it.
     const spot = state.view + (state.view === 'reader' ? ':' + state.readerId : state.view === 'exhibition' ? ':' + state.exhibitionId : '');
-    if (lastSpot && spot !== lastSpot && document.activeElement !== $('search')) $('main').focus({ preventScroll: true });
+    if (lastSpot && spot !== lastSpot && document.activeElement !== searchInput) $('main').focus({ preventScroll: true });
     lastSpot = spot;
     // Tab titles name the page (and the story when reading), so history, bookmarks and shared tabs differ.
     const pageTitles = { explore: '资讯', attention: '一種關注', exhibitions: '展览', exhibition: '展览', calendar: '日历', bookmarks: '剪报', settings: '阅读设置', coverage: '收录与译文' };
@@ -409,7 +416,7 @@
     if (button.dataset.listPage) { state.listPage = Number(button.dataset.listPage); render(); $('main').scrollIntoView(); return; }
     if (button.dataset.view || button.dataset.channel || button.dataset.kind || button.dataset.scope || ['editorial-news','all-news','reset-filters','mode'].includes(button.dataset.action)) state.listPage = 1;
     if (button.dataset.view) { state.editorialOnly = false; state.kind = 'all'; state.view = button.dataset.view; render(); window.scrollTo({ top: 0 }); }
-    else if (button.dataset.action === 'editorial-news') { state.view = 'explore'; state.editorialOnly = true; state.channel = state.kind = state.country = state.city = state.language = state.priority = 'all'; state.query = ''; $('search').value = ''; render(); }
+    else if (button.dataset.action === 'editorial-news') { state.view = 'explore'; state.editorialOnly = true; state.channel = state.kind = state.country = state.city = state.language = state.priority = 'all'; state.query = ''; render(); }
     else if (button.dataset.action === 'all-news') { state.editorialOnly = false; state.priority = 'all'; state.view = 'explore'; render(); }
     else if (button.dataset.readerTab) {
       // Translations are stored block for block, so switching 中文/原文 mid-article lands on the same paragraph.
@@ -443,7 +450,7 @@
       render();
     }
     else if (button.dataset.scope) { state.country = button.dataset.scope === 'japan' ? 'JP' : 'all'; state.city = 'all'; state.language = 'all'; render(); }
-    else if (button.dataset.action === 'reset-filters') { state.channel = state.kind = state.country = state.city = state.language = state.priority = 'all'; state.query = ''; $('search').value = ''; render(); }
+    else if (button.dataset.action === 'reset-filters') { state.channel = state.kind = state.country = state.city = state.language = state.priority = 'all'; state.query = ''; render(); }
     else if (button.dataset.action === 'mode') {
       const next = state.mode === 'demo' ? 'live' : 'demo'; button.disabled = true;
       try { dataset = server ? await api(`/dataset?mode=${next}`) : next === 'demo' ? boot.dataset : boot.live || { ...boot.dataset, mode: 'live', content: [], events: [], content_events: [], sources: [], reference_date: C.localDate(preferences.reading_timezone) }; state.mode = next; sourceStatus = dataset.source_status || []; render(); }
@@ -515,7 +522,17 @@
   // Start fetching a story's body as soon as a pointer or focus lands on its link.
   const prefetchBody = event => { const route = C.parseRoute(event.target.closest?.('a[href^="#reader/"]')?.getAttribute('href')); const row = route.view === 'reader' && dataset.content.find(item => item.id === route.id); if (row && C.bodyPending(row) && !row.body_failed) loadBodies([row], false); };
   document.addEventListener('pointerover', prefetchBody, { passive: true }); document.addEventListener('focusin', prefetchBody);
-  $('search').addEventListener('input', event => { state.listPage = 1; state.query = event.target.value; state.view = 'explore'; render(); });
+  searchInput.addEventListener('input', () => {
+    if (exhibitions && isExhibition(state.view)) {
+      exhibitions.setSearchQuery(searchInput.value);
+      state.view = 'exhibitions';
+    } else {
+      state.listPage = 1;
+      state.query = searchInput.value;
+      state.view = 'explore';
+    }
+    render();
+  });
   $('coordinate-button').addEventListener('click', () => { state.view = 'settings'; render(); });
   $('close-detail').addEventListener('click', () => $('detail-dialog').close());
   $('detail-dialog').addEventListener('click', event => { if (event.target === $('detail-dialog')) { const r = $('detail-dialog').getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) $('detail-dialog').close(); } });

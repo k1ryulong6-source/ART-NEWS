@@ -132,6 +132,7 @@
   function create({ C, boot, server, toast, rerender, isActive, newspaperBody, readingMinutes }) {
     const e = C.escape, $ = id => document.getElementById(id), size = 18;
     const filter = { scope:'JP', prefecture:'all', medium:'all', stage:'top', personal:'all', sort:'recommended', query:'', page:1 };
+    const scopes = [['JP','日本'],['world','日本以外'],['all','全球']];
     const sections = [['top','在展推荐'],['upcoming','即将开展'],['all','所有展期'],['active','正在展出（全部）'],['closing','7 天内闭展'],['important','重点展'],['ended','已闭展'],['unknown','展期待定']];
     const personal = [['all','全部展览'],['records','我的观展记录'],...Object.entries(statuses),['favorite','收藏的展览'],['venues','收藏场馆']];
     let catalog = !server && boot.japan_exhibitions || null, pending = false, failed = false, records = new Map(), current = new Map(), areas = new Map();
@@ -235,29 +236,29 @@
         if (!dates.has(zone)) dates.set(zone,live ? C.localDate(zone) : dataset.reference_date);
         return dates.get(zone);
       };
-      const stage = filter.stage === 'top' && filter.query.trim() ? 'all' : filter.stage;
+      const searching = Boolean(filter.query.trim());
+      const stage = filter.stage === 'top' && searching ? 'all' : filter.stage;
       const options = {...filter,stage,labels:areas,today,preference,venues};
       const all = [...current.values()];
       const list = rank(C,all,records,options);
-      const highlights = filter.personal === 'all' && !filter.query.trim() && ['top','upcoming','all'].includes(stage);
+      const highlights = filter.personal === 'all' && !searching && ['top','upcoming','all'].includes(stage);
       const closing = highlights ? rank(C,all,records,{...options,stage:'closing'}).filter(r=>r.log?.status !== 'visited') : [];
       const savedDue = closing.filter(r=>r.log?.status === 'want').length;
       const followed = highlights && venues.size ? rank(C,all,records,{...options,scope:'all',prefecture:'all',medium:'all',stage:'all',personal:'venues',sort:'recommended'}).filter(row=>row.followedNew) : [];
-      const hiddenCount = [...records.values()].filter(row=>row.status === 'uninterested').length;
       const showImportance = ['top','upcoming','important'].includes(stage);
       const counts = importanceLabels.map((label, tier)=>list.filter(row=>row.importance === tier).length);
       const pages = Math.max(1,Math.ceil(list.length / size));
       filter.page = Math.min(pages,Math.max(1,filter.page));
-      const filterCount = ['prefecture','medium','personal'].filter(key => filter[key] !== 'all').length + Number(filter.sort !== 'recommended' && !showImportance);
-      const sectionName = filter.personal === 'all' ? ({top:`正在展出 · 推荐前 ${activeLimit}`,all:'全部展览'})[stage] || sections.find(([key])=>key===stage)?.[1]
+      const filterCount = Number(filter.scope !== 'JP') + ['prefecture','medium','personal'].filter(key => filter[key] !== 'all').length
+        + Number(filter.sort !== 'recommended' && !showImportance);
+      const sectionName = filter.personal === 'all' ? ({top:`正在展出 · 推荐前 ${activeLimit}`,all:searching ? '展览检索结果' : '全部展览'})[stage] || sections.find(([key])=>key===stage)?.[1]
         : filter.personal === 'venues' ? '收藏场馆的展览' : personal.find(([key])=>key===filter.personal)?.[1];
       const personalButton = (key, label, count = 0) => `<button class="text-link exhibition-action" data-ex-personal="${key}"${key === 'records' ? ' data-ex-mine' : ''} aria-pressed="${filter.personal === key}">${label}${count ? ' · ' + count : ''}</button>`;
       return `<div class="exhibition-page" data-ui="exhibition-desk"><div class="filters exhibition-controls">
-        <div class="tabs exhibition-scopes" role="group" aria-label="展览地区">${[['JP','日本'],['world','日本以外'],['all','全球']].map(([k,n])=>`<button class="tab${filter.scope === k ? ' active' : ''}" data-ex-scope="${k}" aria-pressed="${filter.scope === k}">${n}</button>`).join('')}</div>
-        <label class="search-field exhibition-search-field"><input class="exhibition-search" type="search" aria-label="搜索展览" data-ex-search maxlength="180" placeholder="搜展名、场馆" value="${e(filter.query)}"></label>
-        <div class="scope-links exhibition-personal" role="group" aria-label="个人展览">${personalButton('records','观展记录')}${personalButton('venues','收藏场馆',venues.size)}${personalButton('uninterested','不感兴趣',hiddenCount)}</div>
+        <div class="scope-links exhibition-personal" role="group" aria-label="个人展览">${personalButton('records','观展记录')}${personalButton('venues','收藏场馆',venues.size)}</div>
         <details class="advanced-filters exhibition-filter-panel" ${filtersOpen?'open':''}><summary>筛选${filterCount ? ' · ' + filterCount : ''}</summary>
-        <div class="filter-selects exhibition-selects">${filter.scope !== 'world' ? select('prefecture',[['all','全部地区'],...[...areas.values()].map(a=>[a.code,a.name]),['unknown','地点待确认']],'都道府县') : ''}
+        <div class="filter-selects exhibition-selects">${select('scope',scopes,'地区')}
+          ${filter.scope !== 'world' ? select('prefecture',[['all','全部地区'],...[...areas.values()].map(a=>[a.code,a.name]),['unknown','地点待确认']],'都道府县') : ''}
           ${select('medium',[['all','全部类型'],...Object.entries(types)],'类型')}${select('stage',sections,'展期',stage)}${select('personal',personal,'个人标签')}
           ${showImportance ? '' : select('sort',[['recommended','推荐顺序'],['closing','闭展在先'],['new','最近收录']],'排序')}</div></details></div>
         ${pending ? '<p class="compact-note" role="status">正在读取日本展览目录…</p>' : failed ? '<p class="compact-note">日本目录暂未载入，以下显示现有活动。 <button class="text-link" data-ex-retry>重试</button></p>' : ''}
@@ -385,6 +386,10 @@
         stage:personal === 'all' ? 'top' : 'all',query:'',sort:'recommended',page:1});
       rerender();
     }
+    function setSearchQuery(query) {
+      filter.query = query;
+      filter.page = 1;
+    }
     window.addEventListener('storage',event => {
       if (event.key !== logFormat) return;
       try { restore(event.newValue); if (isActive()) rerender(); } catch { /* Keep the last valid private log. */ }
@@ -403,8 +408,7 @@
       const button = event.target.closest?.('button');
       if (!button || !isActive()) return;
       const d = button.dataset;
-      if ('exScope' in d) { filter.scope=d.exScope; filter.prefecture='all'; filter.page=1; rerender(); }
-      else if ('exPersonal' in d) personalView(filter.personal === d.exPersonal ? 'all' : d.exPersonal);
+      if ('exPersonal' in d) personalView(filter.personal === d.exPersonal ? 'all' : d.exPersonal);
       else if ('exStage' in d) { filter.stage=d.exStage; filter.sort='recommended'; filter.page=1; rerender(); }
       else if ('exVenue' in d) toggleVenue(d.exVenue);
       else if ('exHide' in d) update(d.exHide,{status:records.get(d.exHide)?.status === 'uninterested' ? null : 'uninterested'});
@@ -432,11 +436,16 @@
       if (!isActive()) return;
       const field = input.dataset.exFilter;
       if (own(filter,field)) {
-        if (field === 'personal') { personalView(input.value); return; }
-        filter[field]=field === 'page' ? Number(input.value) : input.value;
-        if (field !== 'page') filter.page=1;
-        rerender();
+        const focused = document.activeElement === input;
+        if (field === 'personal') personalView(input.value);
+        else {
+          filter[field]=field === 'page' ? Number(input.value) : input.value;
+          if (field === 'scope') filter.prefecture='all';
+          if (field !== 'page') filter.page=1;
+          rerender();
+        }
         if (field === 'page') goToResults();
+        else if (focused) document.querySelector(`[data-ex-filter="${field}"]`)?.focus({preventScroll:true});
       }
       if (input.id === 'exhibition-import' && input.files?.[0]) try {
         if (input.files[0].size > 25_000_000) throw new Error('观展记录文件过大');
@@ -445,16 +454,6 @@
         if (combined.size > 5000 || combinedVenues.size > 5000) throw new Error('备份超过观展记录或场馆上限');
         records=combined; venues=combinedVenues; persist('观展备份已导入，原有记录优先'); rerender();
       } catch (error) { toast(error.message); input.value=''; }
-    });
-    document.addEventListener('input',event => {
-      const input = event.target;
-      if (!input.hasAttribute?.('data-ex-search') || !isActive() || event.isComposing) return;
-      filter.query=input.value; filter.page=1;
-      const end = input.selectionEnd;
-      rerender();
-      const next=document.querySelector('[data-ex-search]');
-      next?.focus({preventScroll:true});
-      if (end !== null) next?.setSelectionRange(end,end);
     });
     document.addEventListener('submit',event => {
       if (event.target.id !== 'exhibition-record') return;
@@ -476,7 +475,7 @@
       return {entries,pending,failed,includesLegacy:catalog?.includes_legacy_events};
     }
     const hidden = id => records.get(id)?.status === 'uninterested';
-    return { view, inlineReader, readerTitle, calendarInventory, hidden };
+    return { view, inlineReader, readerTitle, calendarInventory, hidden, searchQuery: () => filter.query, setSearchQuery };
   }
   const api = { create, phase, closingDays, rank, parseLog, parseVenues };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

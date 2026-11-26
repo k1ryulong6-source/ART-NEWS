@@ -137,7 +137,7 @@
     let catalog = !server && boot.japan_exhibitions || null, pending = false, failed = false, records = new Map(), current = new Map(), areas = new Map();
     let venues = new Map();
     const details = new Map(), detailPending = new Set(), detailFailed = new Set();
-    let filtersOpen = matchMedia('(min-width: 840px)').matches;
+    let filtersOpen = false;
     function restore(value) {
       if (!value) { records.clear(); venues.clear(); return; }
       const saved = JSON.parse(value);
@@ -175,29 +175,28 @@
       : '展期未公布';
     const option = (value,name,selected) => `<option value="${e(value)}" ${selected === value ? 'selected' : ''}>${e(name)}</option>`;
     const select = (field,pairs,label,selected = filter[field]) => `<label class="exhibition-select">${label}<select data-ex-filter="${field}">${pairs.map(([v,n])=>option(v,n,selected)).join('')}</select></label>`;
-    const venueButton = (id, name) => id ? `<button class="exhibition-chip" data-ex-venue="${e(id)}" aria-label="${e((venues.has(id) ? '取消收藏场馆 ' : '收藏场馆 ') + name)}" aria-pressed="${venues.has(id)}">${venues.has(id) ? '★ 已收藏场馆' : '☆ 收藏场馆'}</button>` : '';
-    function card(row, showImportance) {
-      const due = row.close === null ? phases[row.phase] : (row.date_conflict ? '有来源显示' : '') + (row.close === 0 ? '今日闭展' : `${row.close} 天后闭展`);
-      const tags = (row.types || []).filter(kind => kind !== 'other').map(kind => types[kind]);
-      if (showImportance) tags.push(...row.reasons.map(key => signals[key][1]));
+    const venueButton = (id, name) => id ? `<button class="text-link exhibition-action" data-ex-venue="${e(id)}" aria-label="${e((venues.has(id) ? '取消收藏场馆 ' : '收藏场馆 ') + name)}" aria-pressed="${venues.has(id)}">${venues.has(id) ? '★ 已收藏场馆' : '☆ 收藏场馆'}</button>` : '';
+    function card(row, showImportance, stage, eagerImage) {
+      const phaseShown = stage === row.phase || (stage === 'top' && row.phase === 'active');
+      const due = row.close === null ? (phaseShown ? '' : phases[row.phase]) : (row.date_conflict ? '或' : '') + (row.close === 0 ? '今日闭展' : `${row.close} 天后闭展`);
       const picture = C.safeImageUrl(row.image_url), credit = catalog?.coverage?.sources?.[row.image_source]?.name;
       const hidden = row.log?.status === 'uninterested';
-      return `<article class="exhibition-card${picture ? ' exhibition-card--pictured' : ''}" data-ex-id="${e(row.id)}" data-importance="${row.importance}">
-        ${picture ? `<a class="exhibition-card-image" href="${e(detailHref(row))}" aria-label="查看${e(title(row))}"><img src="${e(picture)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-ex-image></a>` : ''}
-        <div class="exhibition-card-body"><p class="exhibition-kicker"><span class="${row.close !== null ? 'exhibition-urgent' : ''}">${e(due)}</span>
-        ${showImportance ? `<span class="exhibition-importance">${importanceLabels[row.importance]}</span>` : ''}
-        ${row.followedNew ? '<span>收藏场馆新展</span>' : ''}
-        ${row.date_conflict ? '<span>日期有出入</span>' : ''}${row.status === 'tentative' ? '<span>暂定</span>' : ''}${row.official ? '<span>场馆官网</span>' : ''}</p>
-        <h3><a class="exhibition-title" href="${e(detailHref(row))}" data-ex-detail="${e(row.id)}">${e(title(row))}</a></h3>
+      const name = e(title(row)), destination = e(detailHref(row)), id = e(row.id);
+      const notes = [row.followedNew && '收藏场馆新展', row.date_conflict && '日期有出入', row.status === 'tentative' && '暂定',
+        row.log?.status === 'visited' && '去过', row.log?.rating && `我的评分 ${row.log.rating}/5`].filter(Boolean);
+      const importanceReason = row.reasons.map(key => signals[key][1]).join(' · ');
+      return `<article class="exhibition-card" data-ex-id="${id}" data-importance="${row.importance}">
+        ${picture ? `<figure class="exhibition-art"><a class="card-image-link exhibition-card-image" href="${destination}" data-ex-detail="${id}" tabindex="-1" aria-label="查看展览 ${name}"><img src="${e(picture)}" alt="" loading="${eagerImage ? 'eager' : 'lazy'}" decoding="async" referrerpolicy="no-referrer" data-ex-image></a>${credit ? `<figcaption class="image-caption">图／${e(credit)}</figcaption>` : ''}</figure>` : ''}
+        <div class="exhibition-card-body">${due || showImportance || notes.length ? `<div class="meta exhibition-kicker">
+        ${due ? `<span class="${row.close !== null ? 'exhibition-urgent' : ''}">${e(due)}</span>` : ''}
+        ${showImportance ? `<span class="exhibition-importance" title="${e(importanceReason)}">${importanceLabels[row.importance]}</span>` : ''}
+        ${notes.map(note=>`<span>${e(note)}</span>`).join('')}</div>` : ''}
+        <h3><a class="card-title exhibition-title" href="${destination}" data-ex-detail="${id}">${name}</a></h3>
         <p class="exhibition-place">${e(town(row))}</p><p class="exhibition-dates">${e(schedule(row))}</p>
-        ${tags.length ? `<p class="exhibition-kicker">${[...new Set(tags)].map(tag => `<span>${e(tag)}</span>`).join('')}</p>` : ''}
-        ${row.log?.rating ? `<p class="exhibition-kicker">我的评分 ${row.log.rating} / 5</p>` : ''}
-        ${credit && picture ? `<p class="exhibition-image-credit">图源 ${e(credit)}</p>` : ''}
-        <div class="exhibition-actions">
-          ${hidden ? '' : `<button class="exhibition-chip" data-ex-want="${e(row.id)}" aria-pressed="${row.log?.status === 'want'}">${row.log?.status === 'want' ? '✓ 想去' : '想去'}</button>`}
-          <button class="exhibition-chip" data-ex-favorite="${e(row.id)}" aria-pressed="${Boolean(row.log?.favorite)}">${row.log?.favorite ? '★ 已收藏' : '☆ 收藏'}</button>
-          <button class="exhibition-chip exhibition-hide" data-ex-hide="${e(row.id)}">${hidden ? '取消不感兴趣' : '不感兴趣'}</button>
-          <a class="exhibition-chip" href="${e(detailHref(row))}" data-ex-detail="${e(row.id)}">${row.log?.status === 'visited' ? '✓ 去过 · 笔记' : '阅读展览详情 ↗'}</a>
+        <div class="card-footer exhibition-actions">
+          ${hidden ? '' : `<button class="text-link exhibition-action" data-ex-want="${id}" aria-pressed="${row.log?.status === 'want'}">${row.log?.status === 'want' ? '✓ 想去' : '想去'}</button>`}
+          <button class="text-link exhibition-action" data-ex-favorite="${id}" aria-pressed="${Boolean(row.log?.favorite)}">${row.log?.favorite ? '★ 已收藏' : '☆ 收藏'}</button>
+          <button class="text-link exhibition-action" data-ex-hide="${id}">${hidden ? '取消不感兴趣' : '不感兴趣'}</button>
         </div></div></article>`;
     }
 
@@ -252,32 +251,32 @@
       const filterCount = ['prefecture','medium','personal'].filter(key => filter[key] !== 'all').length + Number(filter.sort !== 'recommended' && !showImportance);
       const sectionName = filter.personal === 'all' ? ({top:`正在展出 · 推荐前 ${activeLimit}`,all:'全部展览'})[stage] || sections.find(([key])=>key===stage)?.[1]
         : filter.personal === 'venues' ? '收藏场馆的展览' : personal.find(([key])=>key===filter.personal)?.[1];
-      const personalButton = (key, label, count = 0) => `<button class="exhibition-chip" data-ex-personal="${key}"${key === 'records' ? ' data-ex-mine' : ''} aria-pressed="${filter.personal === key}">${label}${count ? ' · ' + count : ''}</button>`;
-      return `<div class="exhibition-page" data-ui="exhibition-desk"><div class="exhibition-controls"><div class="exhibition-toolbar">
-        <div class="exhibition-scopes" role="group" aria-label="展览地区">${[['JP','日本'],['world','日本以外'],['all','全球']].map(([k,n])=>`<button class="exhibition-chip" data-ex-scope="${k}" aria-pressed="${filter.scope === k}">${n}</button>`).join('')}</div>
-        <input class="exhibition-search" type="search" aria-label="搜索展览" data-ex-search maxlength="180" placeholder="搜展名、场馆、都道府县" value="${e(filter.query)}"></div>
-        <div class="exhibition-actions" role="group" aria-label="个人展览">${personalButton('records','我的观展记录')}${personalButton('venues','收藏场馆',venues.size)}${personalButton('uninterested','不感兴趣',hiddenCount)}</div>
-        <details class="exhibition-filter-panel" ${filtersOpen?'open':''}><summary>筛选展览${filterCount ? ' · 已启用 ' + filterCount : ''}</summary>
-        <div class="exhibition-selects">${filter.scope !== 'world' ? select('prefecture',[['all','全部地区'],...[...areas.values()].map(a=>[a.code,a.name]),['unknown','地点待确认']],'都道府县') : ''}
+      const personalButton = (key, label, count = 0) => `<button class="text-link exhibition-action" data-ex-personal="${key}"${key === 'records' ? ' data-ex-mine' : ''} aria-pressed="${filter.personal === key}">${label}${count ? ' · ' + count : ''}</button>`;
+      return `<div class="exhibition-page" data-ui="exhibition-desk"><div class="filters exhibition-controls">
+        <div class="tabs exhibition-scopes" role="group" aria-label="展览地区">${[['JP','日本'],['world','日本以外'],['all','全球']].map(([k,n])=>`<button class="tab${filter.scope === k ? ' active' : ''}" data-ex-scope="${k}" aria-pressed="${filter.scope === k}">${n}</button>`).join('')}</div>
+        <label class="search-field exhibition-search-field"><input class="exhibition-search" type="search" aria-label="搜索展览" data-ex-search maxlength="180" placeholder="搜展名、场馆" value="${e(filter.query)}"></label>
+        <div class="scope-links exhibition-personal" role="group" aria-label="个人展览">${personalButton('records','观展记录')}${personalButton('venues','收藏场馆',venues.size)}${personalButton('uninterested','不感兴趣',hiddenCount)}</div>
+        <details class="advanced-filters exhibition-filter-panel" ${filtersOpen?'open':''}><summary>筛选${filterCount ? ' · ' + filterCount : ''}</summary>
+        <div class="filter-selects exhibition-selects">${filter.scope !== 'world' ? select('prefecture',[['all','全部地区'],...[...areas.values()].map(a=>[a.code,a.name]),['unknown','地点待确认']],'都道府县') : ''}
           ${select('medium',[['all','全部类型'],...Object.entries(types)],'类型')}${select('stage',sections,'展期',stage)}${select('personal',personal,'个人标签')}
           ${showImportance ? '' : select('sort',[['recommended','推荐顺序'],['closing','闭展在先'],['new','最近收录']],'排序')}</div></details></div>
         ${pending ? '<p class="compact-note" role="status">正在读取日本展览目录…</p>' : failed ? '<p class="compact-note">日本目录暂未载入，以下显示现有活动。 <button class="text-link" data-ex-retry>重试</button></p>' : ''}
         ${followed.length ? `<section class="exhibition-section exhibition-deadlines" data-ui="venue-updates"><div class="exhibition-section-head"><h2>收藏场馆新展</h2><button class="text-link" data-ex-personal="venues">查看全部 ↗</button></div>
-          <ul>${followed.slice(0,5).map(r=>`<li data-ex-id="${e(r.id)}"><span>${e(C.dateLabel(r.start_date))} ${r.phase === 'upcoming' ? '开展' : '已开展'}</span><a class="exhibition-title" href="${e(detailHref(r))}">${e(title(r))}</a><span>${e(town(r))}</span></li>`).join('')}</ul></section>` : ''}
+          <ul>${followed.slice(0,5).map(r=>`<li data-ex-id="${e(r.id)}"><span>${e(C.dateLabel(r.start_date))} ${r.phase === 'upcoming' ? '开展' : '已开展'}</span><a class="card-title exhibition-title" href="${e(detailHref(r))}">${e(title(r))}</a><span>${e(town(r))}</span></li>`).join('')}</ul></section>` : ''}
         ${filter.personal === 'venues' ? `<section class="exhibition-section"><div class="exhibition-section-head"><h2>收藏场馆</h2><span class="count-label">${venues.size} 个</span></div><ul class="exhibition-venue-list">
           ${[...venues.values()].map(venue=>`<li><span>${e(venue.name)}${venue.place ? `<small>${e(venue.place)}</small>` : ''}</span>${venueButton(venue.id,venue.name)}</li>`).join('')}</ul>
           ${venues.size ? '' : '<p class="compact-note">在展览正文的观展信息中，可以收藏这场展览的场馆。</p>'}</section>` : ''}
         ${filter.personal === 'all' ? `<div class="exhibition-stage-switch"><div class="tabs" role="group" aria-label="展览清单">${[['top','在展推荐'],['upcoming','即将开展'],['all','全部展览']].map(([key,label])=>`<button class="tab ${stage===key?'active':''}" data-ex-stage="${key}" aria-pressed="${stage===key}">${label}</button>`).join('')}</div>
-          ${closing.length ? `<button class="exhibition-chip exhibition-deadline-jump" data-ex-closing>7 天内闭展 · ${closing.length} 场${savedDue ? ' · 想去 ' + savedDue + ' 场' : ''} ↗</button>` : ''}</div>` : ''}
+          ${closing.length ? `<button class="text-link exhibition-deadline-jump" data-ex-closing>7 天内闭展 · ${closing.length} 场${savedDue ? ' · 想去 ' + savedDue + ' 场' : ''}</button>` : ''}</div>` : ''}
         <section class="exhibition-section" id="exhibition-results"><div class="exhibition-section-head"><h2>${e(sectionName || '展览清单')}</h2><span class="count-label" data-ex-count="${list.length}">${list.length} 场</span></div>
           ${showImportance && list.length ? `<p class="exhibition-tier-counts">${counts.map((amount,tier)=>amount ? `<span>${importanceLabels[tier]} ${amount}</span>` : '').reverse().join('')}</p>` : ''}
-          <div class="exhibition-list">${list.slice(size*(filter.page-1),size*filter.page).map(r=>card(r, showImportance)).join('') || '<p class="exhibition-empty">当前筛选没有展览。</p>'}</div>
-          ${pages > 1 ? `<div class="exhibition-pager"><button class="exhibition-chip" data-ex-page="${filter.page-1}" ${filter.page===1?'disabled':''}>上一页</button>
+          <div class="exhibition-list">${list.slice(size*(filter.page-1),size*filter.page).map((row,index)=>card(row, showImportance, stage, index < 3)).join('') || '<p class="exhibition-empty">当前筛选没有展览。</p>'}</div>
+          ${pages > 1 ? `<nav class="news-pagination" aria-label="展览分页"><button class="text-link" data-ex-page="${filter.page-1}" ${filter.page===1?'disabled':''}>‹ 上一页</button>
             <label>第 <select data-ex-filter="page" aria-label="展览页码">${Array.from({length:pages},(_,i)=>option(i+1,i+1,filter.page)).join('')}</select> / ${pages} 页</label>
-            <button class="exhibition-chip" data-ex-page="${filter.page+1}" ${filter.page===pages?'disabled':''}>下一页</button></div>` : ''}
+            <button class="text-link" data-ex-page="${filter.page+1}" ${filter.page===pages?'disabled':''}>下一页 ›</button></nav>` : ''}
         </section>${live ? coverage() : ''}
         <details class="exhibition-coverage"><summary>备份我的观展记录</summary><p>笔记、评分、标签和收藏场馆保存在本浏览器。换设备可导出再导入。</p>
-          <div class="exhibition-actions"><button class="exhibition-chip" data-ex-export>导出</button><button class="exhibition-chip" data-ex-import>导入</button><input type="file" id="exhibition-import" accept=".json,application/json" hidden></div>
+          <div class="exhibition-actions"><button class="text-link exhibition-action" data-ex-export>导出</button><button class="text-link exhibition-action" data-ex-import>导入</button><input type="file" id="exhibition-import" accept=".json,application/json" hidden></div>
         </details></div>`;
     }
 
@@ -393,9 +392,8 @@
     function goToResults() { $('exhibition-results')?.scrollIntoView({block:'start'}); }
     document.addEventListener('error', event => {
       if (event.target.matches?.('[data-ex-image]')) {
-        const image = event.target.closest('a,figure');
+        const image = event.target.closest('figure');
         if (image) image.hidden = true;
-        event.target.closest('.exhibition-card')?.classList.remove('exhibition-card--pictured');
       }
     }, true);
     document.addEventListener('toggle', event => {

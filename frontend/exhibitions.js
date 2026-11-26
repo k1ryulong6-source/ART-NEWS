@@ -180,14 +180,14 @@
     function card(row, showImportance, stage, eagerImage) {
       const phaseShown = stage === row.phase || (stage === 'top' && row.phase === 'active');
       const due = row.close === null ? (phaseShown ? '' : phases[row.phase]) : (row.date_conflict ? '或' : '') + (row.close === 0 ? '今日闭展' : `${row.close} 天后闭展`);
-      const picture = C.safeImageUrl(row.image_url), credit = catalog?.coverage?.sources?.[row.image_source]?.name;
+      const picture = C.safeImageUrl(row.image_url);
       const hidden = row.log?.status === 'uninterested';
       const name = e(title(row)), destination = e(detailHref(row)), id = e(row.id);
       const notes = [row.followedNew && '收藏场馆新展', row.date_conflict && '日期有出入', row.status === 'tentative' && '暂定',
         row.log?.status === 'visited' && '去过', row.log?.rating && `我的评分 ${row.log.rating}/5`].filter(Boolean);
       const importanceReason = row.reasons.map(key => signals[key][1]).join(' · ');
       return `<article class="exhibition-card" data-ex-id="${id}" data-importance="${row.importance}">
-        ${picture ? `<figure class="exhibition-art"><a class="card-image-link exhibition-card-image" href="${destination}" data-ex-detail="${id}" tabindex="-1" aria-label="查看展览 ${name}"><img src="${e(picture)}" alt="" loading="${eagerImage ? 'eager' : 'lazy'}" decoding="async" referrerpolicy="no-referrer" data-ex-image></a>${credit ? `<figcaption class="image-caption">图／${e(credit)}</figcaption>` : ''}</figure>` : ''}
+        ${picture ? `<figure class="exhibition-art"><a class="card-image-link exhibition-card-image" href="${destination}" data-ex-detail="${id}" tabindex="-1" aria-label="查看展览 ${name}"><img src="${e(picture)}" alt="" loading="${eagerImage ? 'eager' : 'lazy'}" decoding="async" referrerpolicy="no-referrer" data-ex-image></a></figure>` : ''}
         <div class="exhibition-card-body">${due || showImportance || notes.length ? `<div class="meta exhibition-kicker">
         ${due ? `<span class="${row.close !== null ? 'exhibition-urgent' : ''}">${e(due)}</span>` : ''}
         ${showImportance ? `<span class="exhibition-importance" title="${e(importanceReason)}">${importanceLabels[row.importance]}</span>` : ''}

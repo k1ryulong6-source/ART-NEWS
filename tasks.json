@@ -2898,13 +2898,17 @@
       "id": "T094",
       "title": "按节目与来源证据重写展览推荐",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-11-27",
       "depends_on": ["T093"],
       "scope": ["backend/exhibition_priority.py", "backend/exhibition_assets.py", "config/exhibition-priority.json", "frontend/exhibitions.js", "tests/", "docs/JAPAN_EXHIBITIONS.md"],
       "acceptance": ["重点展具备可核验的节目依据，类型词和临期不决定重点档", "核对秋川、同场重复的水木茂、川口开馆展及讲座误标", "在展推荐与即将开展依新规则排序，保留闭展提醒、原有记录与日历入口", "本地、静态发布与网站实测"],
-      "evidence": []
+      "evidence": [
+        "提交 25498d314，Pages 45870929574 和 Project checks 45870929558 成功。284 项 Python、42 项 JavaScript 测试及静态构建通过。",
+        "东京时间 2026-11-27 的同目录复算，旧版 14 条重点全来自艺术节信号。新版日本在展推荐 100 场里有 4 场有重点依据，另有 2 场即将开展。前桥两条展讯合一，秋川与水木茂归常规，川口开馆展入重点。",
+        "线上 Chromium 390px、1440px 核对推荐依据与官网链接、两条水木茂展讯合一而两来源可查、旧阅读地址、即将展出与闭展提醒。日历输入只保留一条同场展讯，并排除已核实的早稻田讲座。样例规则核对普通单日展、旧观展记录、个人隐藏和收藏场馆。"
+      ]
     }
   ]
 }

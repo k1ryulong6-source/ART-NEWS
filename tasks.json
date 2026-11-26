@@ -2852,13 +2852,16 @@
       "id": "T091",
       "title": "移除展览列表海报下方的图源小字",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-11-26",
       "depends_on": ["T090"],
       "scope": ["frontend/exhibitions.js"],
       "acceptance": ["展览列表的海报下方直接显示展览信息", "海报和标题可打开正文并查看完整配图与图源"],
-      "evidence": []
+      "evidence": [
+        "提交 362d6fd55，Pages 45823108487 与 Project checks 45823108305 成功。",
+        "线上 Chromium 390px、1440px 核对列表无图片说明，点击海报打开对应展览正文，正文可查配图来源。"
+      ]
     }
   ]
 }

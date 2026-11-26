@@ -249,8 +249,9 @@
       filter.page = Math.min(pages,Math.max(1,filter.page));
       const filterCount = Number(filter.scope !== 'JP') + ['prefecture','medium','personal'].filter(key => filter[key] !== 'all').length
         + Number(filter.sort !== 'recommended' && !showImportance);
-      const sectionName = filter.personal === 'all' ? ({top:`正在展出 · 推荐前 ${activeLimit}`,all:searching ? '展览检索结果' : '全部展览'})[stage] || sections.find(([key])=>key===stage)?.[1]
+      const sectionName = filter.personal === 'all' ? ({top:'正在展出',all:searching ? '展览检索结果' : '全部展览'})[stage] || sections.find(([key])=>key===stage)?.[1]
         : filter.personal === 'venues' ? '收藏场馆的展览' : personal.find(([key])=>key===filter.personal)?.[1];
+      const resultCount = stage === 'top' ? '' : `<span class="count-label">${list.length} 场</span>`;
       const personalButton = (key, label, count = 0) => `<button class="text-link exhibition-action" data-ex-personal="${key}"${key === 'records' ? ' data-ex-mine' : ''} aria-pressed="${filter.personal === key}">${label}${count ? ' · ' + count : ''}</button>`;
       return `<div class="exhibition-page" data-ui="exhibition-desk"><div class="filters exhibition-controls">
         <div class="scope-links exhibition-personal" role="group" aria-label="个人展览">${personalButton('records','观展记录')}${personalButton('venues','收藏场馆',venues.size)}</div>
@@ -267,7 +268,7 @@
           ${venues.size ? '' : '<p class="compact-note">在展览正文的观展信息中，可以收藏这场展览的场馆。</p>'}</section>` : ''}
         ${filter.personal === 'all' ? `<div class="exhibition-stage-switch"><div class="tabs" role="group" aria-label="展览清单">${[['top','在展推荐'],['upcoming','即将开展'],['all','全部展览']].map(([key,label])=>`<button class="tab ${stage===key?'active':''}" data-ex-stage="${key}" aria-pressed="${stage===key}">${label}</button>`).join('')}</div>
           ${closing.length ? `<button class="text-link exhibition-deadline-jump" data-ex-closing>7 天内闭展 · ${closing.length} 场${savedDue ? ' · 想去 ' + savedDue + ' 场' : ''}</button>` : ''}</div>` : ''}
-        <section class="exhibition-section" id="exhibition-results"><div class="exhibition-section-head"><h2>${e(sectionName || '展览清单')}</h2><span class="count-label" data-ex-count="${list.length}">${list.length} 场</span></div>
+        <section class="exhibition-section" id="exhibition-results"><div class="exhibition-section-head" data-ex-count="${list.length}"><h2>${e(sectionName || '展览清单')}</h2>${resultCount}</div>
           ${showImportance && list.length ? `<p class="exhibition-tier-counts">${counts.map((amount,tier)=>amount ? `<span>${importanceLabels[tier]} ${amount}</span>` : '').reverse().join('')}</p>` : ''}
           <div class="exhibition-list">${list.slice(size*(filter.page-1),size*filter.page).map((row,index)=>card(row, showImportance, stage, index < 3)).join('') || '<p class="exhibition-empty">当前筛选没有展览。</p>'}</div>
           ${pages > 1 ? `<nav class="news-pagination" aria-label="展览分页"><button class="text-link" data-ex-page="${filter.page-1}" ${filter.page===1?'disabled':''}>‹ 上一页</button>

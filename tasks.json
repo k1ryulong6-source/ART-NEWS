@@ -2807,13 +2807,16 @@
       "id": "T088",
       "title": "合并展览筛选和顶部检索入口",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-11-26",
       "depends_on": ["T087"],
       "scope": ["frontend/app.js", "frontend/exhibitions.js", "frontend/theme.css", "docs/JAPAN_EXHIBITIONS.md"],
       "acceptance": ["日本、日本以外、全球及不感兴趣的查看入口合入筛选", "共用顶部检索，展览可搜展名和场馆，资讯可继续查原有索引", "手机和桌面验证地区选择、隐藏与恢复、检索和阅读返回"],
-      "evidence": []
+      "evidence": [
+        "改动提交 e0e7df511，Project checks 45820532611 与 Pages 45820532723 成功。项目检查、39 项 JavaScript 测试及静态构建通过。",
+        "正式网站 Chromium 390px、1440px 通过三种地区切换、展名及场馆检索、两类关键词恢复、正文回返、标记不感兴趣及撤销。320px 核对顶部检索和展开筛选无横向溢出。"
+      ]
     }
   ]
 }

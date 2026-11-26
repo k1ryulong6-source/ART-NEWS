@@ -730,8 +730,13 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
 .exhibition-controls { margin-bottom: 12px; justify-content: space-between; }
 .exhibition-personal, .exhibition-actions, .exhibition-pager { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .exhibition-personal { margin-left: 0; }
-.exhibition-controls .text-link, .exhibition-filter-panel summary { padding-block: 6px; white-space: nowrap; }
-.exhibition-filter-panel > summary { width: fit-content; margin-inline-start: auto; }
+.exhibition-controls .text-link { padding-block: 6px; white-space: nowrap; }
+.exhibition-filter-toggle { color: var(--muted); font-size: inherit; }
+.exhibition-filter-toggle span { display: inline-block; width: 1em; text-align: end; }
+.exhibition-filter-toggle span::before { content: '▾'; }
+.exhibition-filter-toggle[aria-expanded="true"] span::before { content: '▴'; }
+.exhibition-filter-panel { flex: 1 0 100%; border-top: var(--rule); }
+.exhibition-filter-panel[hidden] { display: none; }
 .exhibition-action { color: var(--muted); white-space: nowrap; }
 .exhibition-deadline-jump { color: var(--accent); padding-block: 3px; }
 .exhibition-action[aria-pressed="true"] { color: var(--ink); font-weight: 700; }

@@ -215,8 +215,6 @@
     }
 
     function view(dataset, preference) {
-      const previousFilters = document.querySelector('.exhibition-filter-panel');
-      if (previousFilters) filtersOpen = previousFilters.open;
       const live = dataset.mode !== 'demo';
       if (live) load();
       areas = new Map((live ? catalog?.coverage?.prefectures || [] : []).map(area => [area.code,area]));
@@ -256,11 +254,11 @@
       const personalButton = (key, label, count = 0) => `<button class="text-link exhibition-action" data-ex-personal="${key}"${key === 'records' ? ' data-ex-mine' : ''} aria-pressed="${filter.personal === key}">${label}${count ? ' · ' + count : ''}</button>`;
       return `<div class="exhibition-page" data-ui="exhibition-desk"><div class="filters exhibition-controls">
         <div class="scope-links exhibition-personal" role="group" aria-label="个人展览">${personalButton('records','观展记录')}${personalButton('venues','收藏场馆',venues.size)}</div>
-        <details class="advanced-filters exhibition-filter-panel" ${filtersOpen?'open':''}><summary>筛选${filterCount ? ' · ' + filterCount : ''}</summary>
-        <div class="filter-selects exhibition-selects">${select('scope',scopes,'地区')}
+        <button type="button" class="text-link exhibition-filter-toggle" data-ex-toggle-filters aria-controls="exhibition-filter-panel" aria-expanded="${filtersOpen}">筛选${filterCount ? ' · ' + filterCount : ''}<span aria-hidden="true"></span></button>
+        <div id="exhibition-filter-panel" class="filter-selects exhibition-selects exhibition-filter-panel"${filtersOpen ? '' : ' hidden'}>${select('scope',scopes,'地区')}
           ${filter.scope !== 'world' ? select('prefecture',[['all','全部地区'],...[...areas.values()].map(a=>[a.code,a.name]),['unknown','地点待确认']],'都道府县') : ''}
           ${select('medium',[['all','全部类型'],...Object.entries(types)],'类型')}${select('stage',sections,'展期',stage)}${select('personal',personal,'个人标签')}
-          ${showImportance ? '' : select('sort',[['recommended','推荐顺序'],['closing','闭展在先'],['new','最近收录']],'排序')}</div></details></div>
+          ${showImportance ? '' : select('sort',[['recommended','推荐顺序'],['closing','闭展在先'],['new','最近收录']],'排序')}</div></div>
         ${pending ? '<p class="compact-note" role="status">正在读取日本展览目录…</p>' : failed ? '<p class="compact-note">日本目录暂未载入，以下显示现有活动。 <button class="text-link" data-ex-retry>重试</button></p>' : ''}
         ${followed.length ? `<section class="exhibition-section exhibition-deadlines" data-ui="venue-updates"><div class="exhibition-section-head"><h2>收藏场馆新展</h2><button class="text-link" data-ex-personal="venues">查看全部 ↗</button></div>
           <ul>${followed.slice(0,5).map(r=>`<li data-ex-id="${e(r.id)}"><span>${e(C.dateLabel(r.start_date))} ${r.phase === 'upcoming' ? '开展' : '已开展'}</span><a class="card-title exhibition-title" href="${e(detailHref(r))}">${e(title(r))}</a><span>${e(town(r))}</span></li>`).join('')}</ul></section>` : ''}
@@ -401,14 +399,16 @@
         if (image) image.hidden = true;
       }
     }, true);
-    document.addEventListener('toggle', event => {
-      if (event.target.matches?.('.exhibition-filter-panel') && event.target.isConnected) filtersOpen = event.target.open;
-    }, true);
     document.addEventListener('click', event => {
       const button = event.target.closest?.('button');
       if (!button || !isActive()) return;
       const d = button.dataset;
-      if ('exPersonal' in d) personalView(filter.personal === d.exPersonal ? 'all' : d.exPersonal);
+      if ('exToggleFilters' in d) {
+        filtersOpen = !filtersOpen;
+        button.setAttribute('aria-expanded', String(filtersOpen));
+        $('exhibition-filter-panel').hidden = !filtersOpen;
+      }
+      else if ('exPersonal' in d) personalView(filter.personal === d.exPersonal ? 'all' : d.exPersonal);
       else if ('exStage' in d) { filter.stage=d.exStage; filter.sort='recommended'; filter.page=1; rerender(); }
       else if ('exVenue' in d) toggleVenue(d.exVenue);
       else if ('exHide' in d) update(d.exHide,{status:records.get(d.exHide)?.status === 'uninterested' ? null : 'uninterested'});

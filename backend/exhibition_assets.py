@@ -5,13 +5,15 @@ from collections import Counter
 from hashlib import sha256
 
 from .exhibition_details import pick_intro
+from .exhibition_priority import add_recommendations
 from .exhibitions import config, venue_key
 
 ID = re.compile(r'[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}')
 LIST_FIELDS = ('id', 'title_original', 'title_zh', 'country', 'city', 'venue', 'prefecture', 'area',
                'timezone', 'start_date', 'end_date', 'date_precision', 'date_conflict', 'status',
                'types', 'flags', 'official', 'image_url', 'image_source', 'first_seen', 'last_seen', 'is_demo',
-               'venue_id', 'venue_name', 'evidence_url', 'source_id', 'evidence_status')
+               'venue_id', 'venue_name', 'evidence_url', 'source_id', 'evidence_status',
+               'recommendation', 'duplicate_group', 'related_event')
 
 
 def venue_reference(row, aliases):
@@ -40,7 +42,9 @@ def public_items(catalogue, events=(), legacy_images=None):
             row['image_url'], row['image_source'] = image
         items[row['id']] = row
     aliases = config()['venue_aliases']
-    return {key: {**row, **venue_reference(row, aliases)} for key, row in items.items()}
+    items = {key: {**row, **venue_reference(row, aliases)} for key, row in items.items()}
+    add_recommendations(items)
+    return items
 
 
 def exhibition_entry(template):
@@ -73,7 +77,8 @@ def detail_view(row, details, coverage):
     description = pick_intro(row, details['entries'])
     description = {key: value for key, value in description.items() if key != 'failed'}
     sources = (coverage or {}).get('sources', {})
-    identifiers = {entry['source'] for entry in row.get('evidence') or []} | {row.get('image_source'), description.get('source')}
+    evidence = (row.get('evidence') or []) + (row.get('related_sources') or [])
+    identifiers = {entry.get('source') for entry in evidence} | {row.get('image_source'), description.get('source')}
     names = {sid: sources[sid]['name'] for sid in identifiers if sid in sources}
     prefecture = next((area['name'] for area in (coverage or {}).get('prefectures', []) if area['code'] == row.get('prefecture')), None)
     return {'schema_version': 1, 'item': {**row, 'prefecture_name': prefecture}, 'description': description, 'sources': names}

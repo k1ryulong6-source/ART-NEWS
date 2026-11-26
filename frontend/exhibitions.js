@@ -8,9 +8,8 @@
   const statuses = { want: '想去', visited: '去过', uninterested: '不感兴趣' };
   const phases = { active: '正在展出', upcoming: '即将开幕', ended: '已闭展', unknown: '展期待定',
     cancelled: '已取消', postponed: '已延期', needs_confirmation: '展期待核对' };
-  const signals = { festival: [20, '艺术节／双年展'], retrospective: [18, '回顾展'],
-    milestone: [12, '重要周年或规模'], special: [6, '特别展／企划展'] };
   const importanceLabels = ['常设展', '常规展', '专题与企划', '重点展'];
+  const phaseOrder = { active: 0, upcoming: 1, unknown: 2, ended: 3, cancelled: 3, postponed: 3, needs_confirmation: 3 };
   const activeLimit = 100;
   const logFormat = 'culture-desk-exhibition-log-v1';
   const validId = /^[A-Za-z0-9][A-Za-z0-9_-]{0,99}$/;
@@ -30,7 +29,7 @@
   }
 
   function closingDays(C, row, today) {
-    if (row.date_precision !== 'day' || [...paused, 'tentative'].includes(row.status) || ageOf(C,row.last_seen,today) > 14) return null;
+    if (row.related_event || row.date_precision !== 'day' || [...paused, 'tentative'].includes(row.status) || ageOf(C,row.last_seen,today) > 14) return null;
     const windows = row.date_conflict
       ? (row.evidence || []).filter(x => x.status === 'scheduled' && ageOf(C,x.last_seen,today) <= 14).map(x => [x.start,x.end])
       : [[row.start_date,row.end_date]];
@@ -41,36 +40,59 @@
 
   function decorate(C, row, log, today, venues, preference = {}) {
     const state = phase(C,row,today), close = closingDays(C,row,today), start = C.daysBetween(today,row.start_date);
-    const flags = new Set(row.flags || []), fresh = ageOf(C,row.last_seen,today) <= 14;
-    const reasons = Object.keys(signals).filter(key => flags.has(key));
-    const sources = row.source_count ?? new Set((row.evidence || []).map(item => item.source)).size;
-    const importance = flags.has('permanent') ? 0 : (reasons.some(key => key !== 'special') ? 3 : flags.has('special') ? 2 : 1);
+    const recommendation = row.recommendation || {};
+    const importance = recommendation.tier ?? (row.flags?.includes('permanent') ? 0 : 1);
+    const programme = recommendation.programme ?? 0;
+    const sourceSupport = recommendation.support ?? Number(Boolean(row.official));
+    const firmDates = Number(!row.date_conflict && row.status !== 'tentative' && ageOf(C,row.last_seen,today) <= 14);
     const followed = venues?.has(row.venue_id) || false;
-    const followedNew = followed && importance > 0 && row.status !== 'tentative' && log?.status !== 'visited'
+    const followedNew = followed && importance > 0 && !row.related_event && row.status !== 'tentative' && log?.status !== 'visited'
       && (state === 'upcoming' || (state === 'active' && start >= -14));
-    let score = reasons.reduce((sum,key) => sum + signals[key][0], 0) + (row.official ? 5 : 0) + Math.min(2, Math.max(0,sources - 1));
-    if (close !== null) score += 9 - close;
-    if (start !== null && Math.abs(start) <= 7) score += 4;
-    if (log?.status === 'want') score += 5;
-    if ((preference.followed_entities || []).some(value => {
+    const followedEntity = (preference.followed_entities || []).some(value => {
       const name = normal(value).trim();
       return name && normal(row.title_original + ' ' + (row.venue || '')).includes(name);
-    })) score += 5;
-    if (row.types?.includes('photography') && preference.interests?.includes('photography')) score += 3;
-    if (row.date_conflict || row.status === 'tentative' || !fresh) score -= 9;
-    return { ...row, phase: state, close, start, score, importance, log, reasons, followedNew };
+    });
+    const photoInterest = row.types?.includes('photography') && (preference.interests || []).some(value => value === 'photography' || value === '摄影展' || value === '摄影');
+    const personalInterest = Number(log?.status === 'want') * 2 + Number(followedEntity) + Number(Boolean(photoInterest));
+    return { ...row, phase: state, close, start, importance, programme, sourceSupport, firmDates, personalInterest, log, followedNew };
+  }
+
+  function groupsWithStatus(items, records, status) {
+    return new Set(items.filter(row => row.duplicate_group && records.get(row.id)?.status === status).map(row => row.duplicate_group));
+  }
+
+  function onePerEdition(rows, records) {
+    const editions = new Map();
+    const choice = row => Number(records.get(row.id)?.status === 'want') * 4 + Number(records.has(row.id)) * 2 + Number(row.id === row.duplicate_group);
+    for (const row of rows) {
+      const key = row.duplicate_group || row.id, selected = editions.get(key);
+      if (!selected || choice(row) > choice(selected)) editions.set(key,row);
+    }
+    return [...editions.values()];
+  }
+
+  function compareRecommendation(a,b) {
+    const opening = String(a.start_date || '').localeCompare(String(b.start_date || ''));
+    return phaseOrder[a.phase] - phaseOrder[b.phase] || b.importance - a.importance || b.programme - a.programme
+      || b.sourceSupport - a.sourceSupport || b.firmDates - a.firmDates || b.personalInterest - a.personalInterest
+      || (a.phase === 'upcoming' ? opening : -opening) || a.id.localeCompare(b.id);
   }
 
   function rank(C, items, records, filters) {
     const needles = normal(filters.query).trim().split(/\s+/).filter(Boolean);
     const importanceOrder = ['top','upcoming','important'].includes(filters.stage);
+    const publicList = ['all','venues'].includes(filters.personal);
+    const hiddenGroups = groupsWithStatus(items,records,'uninterested');
+    const visitedGroups = filters.stage === 'top' ? groupsWithStatus(items,records,'visited') : new Set();
     const ranked = items.filter(row => {
+      if (publicList && row.related_event) return false;
       if (filters.scope === 'JP' && row.country !== 'JP') return false;
       if (filters.scope === 'world' && row.country === 'JP') return false;
       if (filters.prefecture !== 'all' && (row.prefecture || 'unknown') !== filters.prefecture) return false;
       if (filters.medium !== 'all' && !(row.types || []).includes(filters.medium)) return false;
       const log = records.get(row.id);
       if ((log?.status === 'uninterested') !== (filters.personal === 'uninterested')) return false;
+      if (filters.personal !== 'uninterested' && hiddenGroups.has(row.duplicate_group)) return false;
       if (filters.personal === 'venues' && !filters.venues?.has(row.venue_id)) return false;
       if ((filters.personal === 'favorite' && !log?.favorite) || (filters.personal === 'records' && !log)) return false;
       if (own(statuses,filters.personal) && log?.status !== filters.personal) return false;
@@ -80,8 +102,8 @@
       return needles.every(needle => query.includes(needle));
     }).map(row => decorate(C,row,records.get(row.id),filters.today(row.timezone),filters.venues,filters.preference))
       .filter(row => filters.stage === 'all' || (filters.stage === 'closing' && row.close !== null)
-        || (filters.stage === 'top' && row.phase === 'active' && row.status !== 'tentative' && row.log?.status !== 'visited')
-        || (filters.stage === 'important' && row.importance === 3 && ['active','upcoming'].includes(row.phase)) || filters.stage === row.phase)
+        || (filters.stage === 'top' && row.phase === 'active' && row.status !== 'tentative' && row.log?.status !== 'visited' && !visitedGroups.has(row.duplicate_group))
+        || (filters.stage === 'important' && row.importance === 3 && row.status !== 'tentative' && ['active','upcoming'].includes(row.phase)) || filters.stage === row.phase)
       .sort((a,b) => {
         if (filters.stage === 'closing' || (!importanceOrder && filters.sort === 'closing')) {
           const planned = filters.stage === 'closing' ? Number(b.log?.status === 'want') - Number(a.log?.status === 'want') : 0;
@@ -94,12 +116,10 @@
           if (date) return date;
         }
         if (filters.personal === 'venues' && a.followedNew !== b.followedNew) return Number(b.followedNew) - Number(a.followedNew);
-        const band = { active: 0, upcoming: 0, unknown: 1, ended: 2, cancelled: 2, postponed: 2, needs_confirmation: 2 };
-        return band[a.phase] - band[b.phase] || b.importance - a.importance || b.score - a.score
-          || (a.close ?? 999) - (b.close ?? 999)
-          || String(a.start_date || '').localeCompare(String(b.start_date || '')) || a.id.localeCompare(b.id);
+        return compareRecommendation(a,b);
       });
-    return filters.stage === 'top' ? ranked.slice(0,activeLimit) : ranked;
+    const results = publicList ? onePerEdition(ranked,records) : ranked;
+    return filters.stage === 'top' ? results.slice(0,activeLimit) : results;
   }
 
   function parseLog(value) {
@@ -188,24 +208,26 @@
     const place = row => row.prefecture_name || areas.get(row.prefecture)?.name || row.city || C.countryLabels[row.country] || row.country || '';
     const town = row => [place(row),row.venue].filter(Boolean).join(' · ');
     const schedule = row => row.start_date
-      ? C.dateLabel(row.start_date) + (row.end_date ? ' — ' + C.dateLabel(row.end_date) : row.date_precision === 'day' ? ' 起 · 闭展日期未公布' : ' · 具体日期待定')
+      ? C.dateLabel(row.start_date) + (row.end_date === row.start_date ? '' : row.end_date ? ' — ' + C.dateLabel(row.end_date) : row.date_precision === 'day' ? ' 起 · 闭展日期未公布' : ' · 具体日期待定')
       : '展期未公布';
     const option = (value,name,selected) => `<option value="${e(value)}" ${selected === value ? 'selected' : ''}>${e(name)}</option>`;
     const select = (field,pairs,label,selected = filter[field]) => `<label class="exhibition-select">${label}<select data-ex-filter="${field}">${pairs.map(([v,n])=>option(v,n,selected)).join('')}</select></label>`;
     const venueButton = (id, name) => id ? `<button class="text-link exhibition-action" data-ex-venue="${e(id)}" aria-label="${e((venues.has(id) ? '取消收藏场馆 ' : '收藏场馆 ') + name)}" aria-pressed="${venues.has(id)}">${venues.has(id) ? '★ 已收藏场馆' : '☆ 收藏场馆'}</button>` : '';
     function card(row, showImportance, stage, eagerImage) {
       const phaseShown = stage === row.phase || (stage === 'top' && row.phase === 'active');
-      const due = row.close === null ? (phaseShown ? '' : phases[row.phase]) : (row.date_conflict ? '或' : '') + (row.close === 0 ? '今日闭展' : `${row.close} 天后闭展`);
+      const closing = row.phase === 'active' && row.close !== null;
+      const due = row.related_event || (closing ? (row.date_conflict ? '或' : '') + (row.close === 0 ? '今日闭展' : `${row.close} 天后闭展`)
+        : phaseShown ? '' : phases[row.phase]);
       const picture = C.safeImageUrl(row.image_url);
       const hidden = row.log?.status === 'uninterested';
       const name = e(title(row)), destination = e(detailHref(row)), id = e(row.id);
       const notes = [row.followedNew && '收藏场馆新展', row.date_conflict && '日期有出入', row.status === 'tentative' && '暂定',
         row.log?.status === 'visited' && '去过', row.log?.rating && `我的评分 ${row.log.rating}/5`].filter(Boolean);
-      const importanceReason = row.reasons.map(key => signals[key][1]).join(' · ');
+      const importanceReason = row.recommendation?.reason || '';
       return `<article class="exhibition-card" data-ex-id="${id}" data-importance="${row.importance}">
         ${picture ? `<figure class="exhibition-art"><a class="card-image-link exhibition-card-image" href="${destination}" data-ex-detail="${id}" tabindex="-1" aria-label="查看展览 ${name}"><img src="${e(picture)}" alt="" loading="${eagerImage ? 'eager' : 'lazy'}" decoding="async" referrerpolicy="no-referrer" data-ex-image></a></figure>` : ''}
         <div class="exhibition-card-body">${due || showImportance || notes.length ? `<div class="meta exhibition-kicker">
-        ${due ? `<span class="${row.close !== null ? 'exhibition-urgent' : ''}">${e(due)}</span>` : ''}
+        ${due ? `<span class="${closing ? 'exhibition-urgent' : ''}">${e(due)}</span>` : ''}
         ${showImportance ? `<span class="exhibition-importance" title="${e(importanceReason)}">${importanceLabels[row.importance]}</span>` : ''}
         ${notes.map(note=>`<span>${e(note)}</span>`).join('')}</div>` : ''}
         <h3><a class="card-title exhibition-title" href="${destination}" data-ex-detail="${id}">${name}</a></h3>
@@ -305,10 +327,12 @@
       const sourceName = id => names[id] || catalog?.coverage?.sources?.[id]?.name || id;
       const image = C.safeImageUrl(description.image || row.image_url), credit = sourceName(description.image ? description.source : row.image_source);
       const official = C.safeUrl(description.official_url);
+      const recommendation = row.recommendation;
+      const recommendationUrl = C.safeUrl(recommendation?.url);
       const introUrl = C.safeUrl(description.url) || origin;
       const source = sourceName(description.source || row.source_id);
-      const sourceList = (row.evidence || []).map(item => {
-        const link = C.safeUrl(item.url), label = sourceName(item.source);
+      const sourceList = [...(row.evidence || []),...(row.related_sources || [])].map(item => {
+        const link = C.safeUrl(item.url), label = sourceName(item.source) || '展讯来源';
         return link ? `<li><a href="${e(link)}" target="_blank" rel="noopener noreferrer">${e(label)}${item.official ? ' · 场馆官网' : ''} ↗</a><span>${e(item.date_text)}</span></li>` : '';
       }).join('');
       const paragraphs = Array.isArray(description.paragraphs) ? description.paragraphs.filter(text => typeof text === 'string' && text.trim()) : [];
@@ -319,14 +343,14 @@
       const back = '<button class="text-link" data-action="reader-back">‹ 返回</button>';
       return `<article class="reader-page exhibition-reader" data-ui="exhibition-reader">
         <div class="reader-toolbar">${back}${save}${!row.is_demo && location.protocol !== 'file:' ? '<button class="text-link" data-action="share-exhibition">分享</button>' : ''}</div>
-        <div class="eyebrow"><span class="channel-tag">展览</span>${source ? `<span>${e(source)}</span>` : ''}<span>${e(schedule(row))}</span>${blocks.length ? `<span class="reading-time">约 ${readingMinutes(blocks, language)} 分钟</span>` : ''}</div>
+        <div class="eyebrow"><span class="channel-tag">${e(row.related_event || '展览')}</span>${source ? `<span>${e(source)}</span>` : ''}<span>${e(schedule(row))}</span>${blocks.length ? `<span class="reading-time">约 ${readingMinutes(blocks, language)} 分钟</span>` : ''}</div>
         <h1 lang="${e(shownTitle === row.title_zh ? 'zh-CN' : language)}">${e(shownTitle)}</h1>
         <div class="reader-tabs" role="tablist" aria-label="阅读内容"><button role="tab" aria-selected="${tab === 'chinese'}" data-reader-tab="chinese">正文</button><button role="tab" aria-selected="${tab === 'original'}" data-reader-tab="original">原文</button></div>
         <div class="reader-content" role="tabpanel">
           ${blocks.length && (tab !== 'original' || description.status === 'excerpt') ? `<p class="article-status original-pending">${description.status === 'excerpt' ? '来源短介' : '原文 · ' + e(C.languageLabels[language] || '外文')}</p>` : ''}
           <div class="reader-document" lang="${e(language)}">
             ${image ? `<figure class="article-image exhibition-reader-figure"><img src="${e(image)}" alt="${e(shownTitle)}" decoding="async" referrerpolicy="no-referrer"><figcaption>图片来源：${e(credit || source || '展览来源')}</figcaption></figure>` : ''}
-            ${blocks.length ? newspaperBody(blocks) : '<div class="original-unavailable"><h2>暂未取得公开展览介绍</h2><p>展期、场馆和来源见下方。</p></div>'}
+            ${blocks.length ? newspaperBody(blocks) : `<div class="original-unavailable"><h2>暂未取得公开${row.related_event ? '活动' : '展览'}介绍</h2><p>日期、场馆和来源见下方。</p></div>`}
           </div>
         </div>
         ${introUrl && !row.is_demo ? `<div class="reader-source-link"><span>原文</span><a href="${e(introUrl)}" target="_blank" rel="noopener noreferrer">${e(introUrl)}</a></div>` : ''}
@@ -334,6 +358,7 @@
           ${venueButton(row.venue_id,row.venue_name || row.venue)}
           ${row.date_conflict ? '<p class="compact-note">来源日期有出入，请核对场馆官网。</p>' : ''}
           ${official ? `<p><a href="${e(official)}" target="_blank" rel="noopener noreferrer">场馆官方展讯 ↗</a></p>` : ''}
+          ${recommendation?.reason ? `<details class="exhibition-coverage"><summary>推荐依据</summary><p>${e(recommendation.reason)}${recommendationUrl ? ` <a href="${e(recommendationUrl)}" target="_blank" rel="noopener noreferrer">核对来源 ↗</a>` : ''}</p></details>` : ''}
           ${sourceList ? `<ul class="exhibition-evidence">${sourceList}</ul>` : ''}
         </section>
         <form id="exhibition-record" data-ex-id="${e(id)}"><h3>我的观展记录</h3><div class="exhibition-record-fields">
@@ -487,7 +512,9 @@
     function calendarInventory() {
       load();
       const labels = new Map((catalog?.coverage?.prefectures || []).map(region=>[region.code,region.name]));
-      const entries = (catalog?.items || []).filter(row=>records.get(row.id)?.status !== 'uninterested').map(row=>({
+      const items = catalog?.items || [], hiddenGroups = groupsWithStatus(items,records,'uninterested');
+      const eligible = items.filter(row=>!row.related_event && !hiddenGroups.has(row.duplicate_group) && records.get(row.id)?.status !== 'uninterested');
+      const entries = onePerEdition(eligible,records).map(row=>({
         ...row, event_type:'exhibition', exhibition_id:row.id, prefecture_name:labels.get(row.prefecture), source_name:catalog.coverage?.sources?.[row.source_id]?.name,
       }));
       return {entries,pending,failed,includesLegacy:catalog?.includes_legacy_events};

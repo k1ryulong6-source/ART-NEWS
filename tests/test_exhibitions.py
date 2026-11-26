@@ -3,6 +3,7 @@ import unittest
 from datetime import datetime, timezone
 
 from backend.exhibition_assets import compact_list, detail_view, public_items, venue_reference
+from backend.exhibition_priority import add_recommendations
 from backend.exhibition_details import parse_detail, pick_intro
 from backend.exhibition_sources import date_range, museum_scan, observation, parse_official, tab_scan
 from backend.exhibitions import config, merge_observations
@@ -127,6 +128,54 @@ class ExhibitionInventoryTests(unittest.TestCase):
         records = [self.example(), self.example('artexhibition', start='2027-11-01', ending='2027-12-12'),
                    self.example('tokyo-art-beat', venue='大阪の画廊', prefecture='27')]
         self.assertEqual(len(merge_observations([], records, self.settings, self.instant)), 3)
+
+    def test_seasonal_title_variants_share_a_recommendation_without_replacing_reading_ids(self):
+        source = self.example()
+        title = '青年武良茂（水木しげる）と戦争'
+        rows = [
+            {**source, 'id': 'variant', 'title_original': f'秋の企画展「{title}」', 'start_date': source['start'],
+             'end_date': source['end'], 'country': 'JP', 'flags': ['special'], 'evidence': [{**source, 'title': f'秋の企画展「{title}」'}]},
+            {**source, 'id': 'original', 'title_original': f'「{title}」', 'start_date': source['start'],
+             'end_date': source['end'], 'country': 'JP', 'evidence': [{**source, 'title': title, 'url': 'https://other.example/show'}]},
+        ]
+        items = public_items({'items': rows})
+        self.assertEqual(set(items), {'variant', 'original'})
+        self.assertEqual(items['variant']['duplicate_group'], items['original']['duplicate_group'])
+        self.assertEqual(items['variant']['recommendation'], items['original']['recommendation'])
+        self.assertEqual(items['variant']['recommendation']['tier'], 1)
+        self.assertEqual([source['url'] for source in items['variant']['related_sources']], ['https://other.example/show'])
+
+    def test_programme_evidence_requires_a_matching_claim_from_independent_sources_for_the_top_tier(self):
+        title = '北湾国際芸術祭 2027'
+        source = {'title': title, 'url': 'https://www.directory.example/1', 'official': False}
+        row = {'id': 'festival', 'title_original': title, 'evidence': [source]}
+        add_recommendations({'festival': row})
+        self.assertEqual(row['recommendation']['tier'], 2)
+        row['evidence'] += [{**source, 'url': 'https://directory.example/2'},
+                            {**source, 'title': '芸術祭', 'url': 'https://other.example/1'}]
+        add_recommendations({'festival': row})
+        self.assertEqual(row['recommendation']['tier'], 2)
+        row['evidence'].append({**source, 'url': 'https://another.example/1'})
+        add_recommendations({'festival': row})
+        self.assertEqual(row['recommendation']['tier'], 3)
+
+    def test_verified_programme_applies_to_its_reviewed_dates(self):
+        row = {'id': 'survey', 'title_original': '展覧会', 'start_date': '2026-11-01', 'end_date': '2026-11-30'}
+        policy = {'verified_programmes': [{'ids': ['survey'], 'url': 'https://museum.example/programme',
+                  'start_date': row['start_date'], 'end_date': row['end_date'], 'reason': '主办方确认馆藏联展。'}], 'related_events': []}
+        add_recommendations({'survey': row}, policy)
+        self.assertEqual(row['recommendation']['tier'], 3)
+        row['end_date'] = '2027-01-20'
+        add_recommendations({'survey': row}, policy)
+        self.assertEqual(row['recommendation']['tier'], 1)
+
+    def test_standalone_one_day_talk_and_a_one_day_exhibition_are_distinct(self):
+        dates = {'start_date': '2026-11-27', 'end_date': '2026-11-27'}
+        items = {'lecture': {'id': 'lecture', 'title_original': '連続講座「収集史」', **dates},
+                 'show': {'id': 'show', 'title_original': '作品展「一日の絵」', **dates}}
+        add_recommendations(items)
+        self.assertEqual(items['lecture']['related_event'], '讲座')
+        self.assertNotIn('related_event', items['show'])
 
     def test_missing_source_on_next_run_preserves_the_archived_exhibition(self):
         prior = merge_observations([], [self.example()], self.settings, self.instant)

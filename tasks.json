@@ -2893,6 +2893,18 @@
         "线上 320、390、768、880、1440px 核对分栏、原图比例、卡片推荐顺序和间距。390px 首排右侧操作行到下一张海报从约 163px 缩为 25px。验证切换宽度、翻页、点图进正文。",
         "线上收藏页实测两类收藏、刷新恢复、分别取消，以及收藏场馆的新展入口。本地模拟图片加载失败和浏览器不支持 ResizeObserver 的情况。"
       ]
+    },
+    {
+      "id": "T094",
+      "title": "按节目与来源证据重写展览推荐",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-11-27",
+      "depends_on": ["T093"],
+      "scope": ["backend/exhibition_priority.py", "backend/exhibition_assets.py", "config/exhibition-priority.json", "frontend/exhibitions.js", "tests/", "docs/JAPAN_EXHIBITIONS.md"],
+      "acceptance": ["重点展具备可核验的节目依据，类型词和临期不决定重点档", "核对秋川、同场重复的水木茂、川口开馆展及讲座误标", "在展推荐与即将开展依新规则排序，保留闭展提醒、原有记录与日历入口", "本地、静态发布与网站实测"],
+      "evidence": []
     }
   ]
 }

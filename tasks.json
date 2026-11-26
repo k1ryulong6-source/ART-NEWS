@@ -2882,13 +2882,17 @@
       "id": "T093",
       "title": "合并展览收藏并调整横竖海报的分栏",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-11-26",
       "depends_on": ["T092"],
       "scope": ["frontend/exhibitions.js", "frontend/app.js", "frontend/theme.css", "docs/JAPAN_EXHIBITIONS.md"],
       "acceptance": ["收藏入口同页显示已收藏的展览和场馆，已有收藏可用", "横版与竖版海报按原比例显示，各栏卡片接着上一张往下排", "验证排序、分页、窗口尺寸变化、打开正文和收藏操作"],
-      "evidence": []
+      "evidence": [
+        "提交 e29364d7c，Pages 45843811570 与 Project checks 45843811655 成功。静态构建、项目检查及 39 项 JavaScript 测试通过。",
+        "线上 320、390、768、880、1440px 核对分栏、原图比例、卡片推荐顺序和间距。390px 首排右侧操作行到下一张海报从约 163px 缩为 25px。验证切换宽度、翻页、点图进正文。",
+        "线上收藏页实测两类收藏、刷新恢复、分别取消，以及收藏场馆的新展入口。本地模拟图片加载失败和浏览器不支持 ResizeObserver 的情况。"
+      ]
     }
   ]
 }

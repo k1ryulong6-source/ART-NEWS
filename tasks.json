@@ -2837,13 +2837,16 @@
       "id": "T090",
       "title": "精简在展推荐的标题行",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-11-26",
       "depends_on": ["T089"],
       "scope": ["frontend/exhibitions.js"],
       "acceptance": ["在展推荐标题行只显示正在展出", "核对在展推荐分页及其他清单的结果数量"],
-      "evidence": []
+      "evidence": [
+        "提交 c1720452b，Pages 45822430500 与 Project checks 45822430477 成功。",
+        "线上 Chromium 390px、1440px 的在展推荐标题行只有「正在展出」。实测第六页仍可访问最后十场，即将开展继续显示实际场数。"
+      ]
     }
   ]
 }

@@ -325,6 +325,7 @@
     $('main').innerHTML = needsArchive ? (archiveFailed
       ? '<p role="status">旧闻索引暂时无法载入。<button class="text-link" data-action="retry-archive">重试</button></p>'
       : '<p role="status">正在载入旧闻索引…</p>') : (views[state.view] || today)();
+    exhibitions?.layoutCards?.();
     // A new page moves focus to <main>, so keyboard and screen-reader users start at the top of it.
     const spot = state.view + (state.view === 'reader' ? ':' + state.readerId : state.view === 'exhibition' ? ':' + state.exhibitionId : '');
     if (lastSpot && spot !== lastSpot && document.activeElement !== searchInput) $('main').focus({ preventScroll: true });

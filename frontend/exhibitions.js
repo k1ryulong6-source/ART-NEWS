@@ -134,11 +134,27 @@
     const filter = { scope:'JP', prefecture:'all', medium:'all', stage:'top', personal:'all', sort:'recommended', query:'', page:1 };
     const scopes = [['JP','日本'],['world','日本以外'],['all','全球']];
     const sections = [['top','在展推荐'],['upcoming','即将开展'],['all','所有展期'],['active','正在展出（全部）'],['closing','7 天内闭展'],['important','重点展'],['ended','已闭展'],['unknown','展期待定']];
-    const personal = [['all','全部展览'],['records','我的观展记录'],...Object.entries(statuses),['favorite','收藏的展览'],['venues','收藏场馆']];
+    const personal = [['all','全部展览'],['records','我的观展记录'],...Object.entries(statuses),['favorite','收藏'],['venues','收藏场馆的展览']];
     let catalog = !server && boot.japan_exhibitions || null, pending = false, failed = false, records = new Map(), current = new Map(), areas = new Map();
     let venues = new Map();
     const details = new Map(), detailPending = new Set(), detailFailed = new Set();
     let filtersOpen = false;
+    const galleryRowHeight = 12;
+    const cardSizes = typeof root.ResizeObserver === 'function' ? new root.ResizeObserver(entries => {
+      const sizes = entries.map(({target, borderBoxSize}) => ({
+        card: target, height: borderBoxSize?.[0]?.blockSize ?? target.getBoundingClientRect().height
+      }));
+      // Each card occupies enough grid rows for its contents, so the next card can follow the shorter column.
+      for (const {card, height} of sizes) {
+        card.style.setProperty('--exhibition-card-span', `span ${Math.ceil(height / galleryRowHeight)}`);
+      }
+      sizes[0].card.parentElement.style.setProperty('--exhibition-row-height', `${galleryRowHeight}px`);
+    }) : null;
+    function layoutCards() {
+      if (!cardSizes) return;
+      cardSizes.disconnect();
+      document.querySelectorAll('.exhibition-list > .exhibition-card').forEach(card => cardSizes.observe(card, {box:'border-box'}));
+    }
     function restore(value) {
       if (!value) { records.clear(); venues.clear(); return; }
       const saved = JSON.parse(value);
@@ -249,12 +265,13 @@
       filter.page = Math.min(pages,Math.max(1,filter.page));
       const filterCount = Number(filter.scope !== 'JP') + ['prefecture','medium','personal'].filter(key => filter[key] !== 'all').length
         + Number(filter.sort !== 'recommended' && !showImportance);
+      const showingFavorites = filter.personal === 'favorite';
       const sectionName = filter.personal === 'all' ? ({top:'正在展出',all:searching ? '展览检索结果' : '全部展览'})[stage] || sections.find(([key])=>key===stage)?.[1]
-        : filter.personal === 'venues' ? '收藏场馆的展览' : personal.find(([key])=>key===filter.personal)?.[1];
+        : showingFavorites ? '收藏的展览' : personal.find(([key])=>key===filter.personal)?.[1];
       const resultCount = stage === 'top' ? '' : `<span class="count-label">${list.length} 场</span>`;
-      const personalButton = (key, label, count = 0) => `<button class="text-link exhibition-action" data-ex-personal="${key}"${key === 'records' ? ' data-ex-mine' : ''} aria-pressed="${filter.personal === key}">${label}${count ? ' · ' + count : ''}</button>`;
+      const personalButton = (key, label) => `<button class="text-link exhibition-action" data-ex-personal="${key}"${key === 'records' ? ' data-ex-mine' : ''} aria-pressed="${filter.personal === key}">${label}</button>`;
       return `<div class="exhibition-page" data-ui="exhibition-desk"><div class="filters exhibition-controls">
-        <div class="scope-links exhibition-personal" role="group" aria-label="个人展览">${personalButton('records','观展记录')}${personalButton('venues','收藏场馆',venues.size)}</div>
+        <div class="scope-links exhibition-personal" role="group" aria-label="个人展览">${personalButton('records','观展记录')}${personalButton('favorite','收藏')}</div>
         <button type="button" class="text-link exhibition-filter-toggle" data-ex-toggle-filters aria-controls="exhibition-filter-panel" aria-expanded="${filtersOpen}">筛选${filterCount ? ' · ' + filterCount : ''}<span aria-hidden="true"></span></button>
         <div id="exhibition-filter-panel" class="filter-selects exhibition-selects exhibition-filter-panel"${filtersOpen ? '' : ' hidden'}>${select('scope',scopes,'地区')}
           ${filter.scope !== 'world' ? select('prefecture',[['all','全部地区'],...[...areas.values()].map(a=>[a.code,a.name]),['unknown','地点待确认']],'都道府县') : ''}
@@ -263,14 +280,14 @@
         ${pending ? '<p class="compact-note" role="status">正在读取日本展览目录…</p>' : failed ? '<p class="compact-note">日本目录暂未载入，以下显示现有活动。 <button class="text-link" data-ex-retry>重试</button></p>' : ''}
         ${followed.length ? `<section class="exhibition-section exhibition-deadlines" data-ui="venue-updates"><div class="exhibition-section-head"><h2>收藏场馆新展</h2><button class="text-link" data-ex-personal="venues">查看全部 ↗</button></div>
           <ul>${followed.slice(0,5).map(r=>`<li data-ex-id="${e(r.id)}"><span>${e(C.dateLabel(r.start_date))} ${r.phase === 'upcoming' ? '开展' : '已开展'}</span><a class="card-title exhibition-title" href="${e(detailHref(r))}">${e(title(r))}</a><span>${e(town(r))}</span></li>`).join('')}</ul></section>` : ''}
-        ${filter.personal === 'venues' ? `<section class="exhibition-section"><div class="exhibition-section-head"><h2>收藏场馆</h2><span class="count-label">${venues.size} 个</span></div><ul class="exhibition-venue-list">
-          ${[...venues.values()].map(venue=>`<li><span>${e(venue.name)}${venue.place ? `<small>${e(venue.place)}</small>` : ''}</span>${venueButton(venue.id,venue.name)}</li>`).join('')}</ul>
-          ${venues.size ? '' : '<p class="compact-note">在展览正文的观展信息中，可以收藏这场展览的场馆。</p>'}</section>` : ''}
+        ${showingFavorites ? `<section class="exhibition-section"><div class="exhibition-section-head"><h2>收藏的场馆</h2><span class="count-label">${venues.size} 个</span></div>
+          ${venues.size ? `<ul class="exhibition-venue-list">${[...venues.values()].map(venue=>`<li><span>${e(venue.name)}${venue.place ? `<small>${e(venue.place)}</small>` : ''}</span>${venueButton(venue.id,venue.name)}</li>`).join('')}</ul>`
+            : '<p class="compact-note">可在展览正文中收藏场馆。</p>'}</section>` : ''}
         ${filter.personal === 'all' ? `<div class="exhibition-stage-switch"><div class="tabs" role="group" aria-label="展览清单">${[['top','在展推荐'],['upcoming','即将开展'],['all','全部展览']].map(([key,label])=>`<button class="tab ${stage===key?'active':''}" data-ex-stage="${key}" aria-pressed="${stage===key}">${label}</button>`).join('')}</div>
           ${closing.length ? `<button class="text-link exhibition-deadline-jump" data-ex-closing>7 天内闭展 · ${closing.length} 场${savedDue ? ' · 想去 ' + savedDue + ' 场' : ''}</button>` : ''}</div>` : ''}
         <section class="exhibition-section" id="exhibition-results"><div class="exhibition-section-head" data-ex-count="${list.length}"><h2>${e(sectionName || '展览清单')}</h2>${resultCount}</div>
           ${showImportance && list.length ? `<p class="exhibition-tier-counts">${counts.map((amount,tier)=>amount ? `<span>${importanceLabels[tier]} ${amount}</span>` : '').reverse().join('')}</p>` : ''}
-          <div class="exhibition-list">${list.slice(size*(filter.page-1),size*filter.page).map((row,index)=>card(row, showImportance, stage, index < 3)).join('') || '<p class="exhibition-empty">当前筛选没有展览。</p>'}</div>
+          <div class="exhibition-list">${list.slice(size*(filter.page-1),size*filter.page).map((row,index)=>card(row, showImportance, stage, index < 3)).join('') || `<p class="exhibition-empty">${showingFavorites ? '没有符合条件的收藏展览。' : '当前筛选没有展览。'}</p>`}</div>
           ${pages > 1 ? `<nav class="news-pagination" aria-label="展览分页"><button class="text-link" data-ex-page="${filter.page-1}" ${filter.page===1?'disabled':''}>‹ 上一页</button>
             <label>第 <select data-ex-filter="page" aria-label="展览页码">${Array.from({length:pages},(_,i)=>option(i+1,i+1,filter.page)).join('')}</select> / ${pages} 页</label>
             <button class="text-link" data-ex-page="${filter.page+1}" ${filter.page===pages?'disabled':''}>下一页 ›</button></nav>` : ''}
@@ -476,7 +493,7 @@
       return {entries,pending,failed,includesLegacy:catalog?.includes_legacy_events};
     }
     const hidden = id => records.get(id)?.status === 'uninterested';
-    return { view, inlineReader, readerTitle, calendarInventory, hidden, searchQuery: () => filter.query, setSearchQuery };
+    return { view, layoutCards, inlineReader, readerTitle, calendarInventory, hidden, searchQuery: () => filter.query, setSearchQuery };
   }
   const api = { create, phase, closingDays, rank, parseLog, parseVenues };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

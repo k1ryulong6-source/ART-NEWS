@@ -2877,6 +2877,18 @@
         "提交 183656c5a，Pages 45825344335 与 Project checks 45825344355 成功。",
         "正式站 320、390、768、1440px 核对横版与竖版实际显示比例、两栏或三栏及页面宽度。390px 的原始 1200×1500 海报显示为约 169×211，原始 3162×1264 画面显示为约 169×68。手机和桌面均验证点击图片打开正文。"
       ]
+    },
+    {
+      "id": "T093",
+      "title": "合并展览收藏并调整横竖海报的分栏",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-11-26",
+      "depends_on": ["T092"],
+      "scope": ["frontend/exhibitions.js", "frontend/app.js", "frontend/theme.css", "docs/JAPAN_EXHIBITIONS.md"],
+      "acceptance": ["收藏入口同页显示已收藏的展览和场馆，已有收藏可用", "横版与竖版海报按原比例显示，各栏卡片接着上一张往下排", "验证排序、分页、窗口尺寸变化、打开正文和收藏操作"],
+      "evidence": []
     }
   ]
 }

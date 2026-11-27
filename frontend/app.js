@@ -7,7 +7,7 @@
   let dataset = boot.live?.content?.length || boot.archive_store ? boot.live : boot.dataset;
   let preferences = JSON.parse(JSON.stringify(boot.preferences)), bookmarks = [], server = false;
   let archiveLoaded = !boot.archive_store, archiveRequest, archiveFailed = false;
-  let localWritable = true, toastTimer, refreshTimer;
+  let localWritable = true, toastTimer, refreshTimer, scrollToRestore;
   let notifications = [], sourceStatus = dataset.source_status || [];
   const makeId = () => typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const state = { view: 'today', channel: 'all', kind: 'all', country: 'all', city: 'all', language: 'all', query: '', mode: 'demo', bookmarkStatus: 'all', readerId: null, readerTab: 'chinese', editorialOnly: false, priority: 'all', advancedOpen: false, listPage: 1, sort: 'recommended' };
@@ -274,9 +274,19 @@
     return '#' + view;
   }
   const historyEntry = () => history.state?.cultureDesk || {};
-  function rememberPage() {
+  function rememberPage(exhibitionId) {
+    scrollToRestore = undefined;
     const entry = { ...historyEntry(), scrollTop: window.scrollY };
-    if (state.view === 'exhibitions') entry.exhibitionList = exhibitions?.listState();
+    if (state.view === 'exhibitions') {
+      entry.exhibitionList = exhibitions?.listState();
+      // Poster sizes can change while the catalogue reloads. Keep a visible card as the scroll anchor.
+      const opened = exhibitionId && document.querySelector(`.exhibition-card[data-ex-id="${CSS.escape(exhibitionId)}"]`);
+      const card = opened || Array.from(document.querySelectorAll('.exhibition-card')).find(card => {
+        const box = card.getBoundingClientRect();
+        return box.bottom > 0 && box.top < window.innerHeight;
+      });
+      entry.exhibitionAnchor = card ? {id: card.dataset.exId, offset: card.getBoundingClientRect().top} : null;
+    }
     if (state.view === 'explore') entry.newsPage = state.listPage;
     history.replaceState({ ...history.state, cultureDesk: entry }, '', routeHash());
   }
@@ -295,7 +305,7 @@
   }
   function openReader(id, recordVisit = true, view = 'reader') {
     if (recordVisit && routeHash() !== routeHash(view, id)) {
-      rememberPage();
+      rememberPage(view === 'exhibition' ? id : undefined);
       history.pushState({cultureDesk: {inSiteReader: true}}, '', routeHash(view, id));
     }
     state.readerTab = 'chinese'; state.view = view;
@@ -354,6 +364,12 @@
       ? '<p role="status">旧闻索引暂时无法载入。<button class="text-link" data-action="retry-archive">重试</button></p>'
       : '<p role="status">正在载入旧闻索引…</p>') : (views[state.view] || today)();
     exhibitions?.layoutCards?.();
+    if (scrollToRestore && !needsArchive && (state.view !== 'exhibitions' || !exhibitions?.isLoading())) {
+      const {top, anchor} = scrollToRestore;
+      const card = anchor && document.querySelector(`.exhibition-card[data-ex-id="${CSS.escape(anchor.id)}"]`);
+      window.scrollTo({ top: card ? window.scrollY + card.getBoundingClientRect().top - anchor.offset : top });
+      scrollToRestore = undefined;
+    }
     // A new page moves focus to <main>, so keyboard and screen-reader users start at the top of it.
     const spot = state.view + (state.view === 'reader' ? ':' + state.readerId : state.view === 'exhibition' ? ':' + state.exhibitionId : '');
     if (lastSpot && spot !== lastSpot && document.activeElement !== searchInput) $('main').focus({ preventScroll: true });
@@ -583,12 +599,12 @@
   function restorePage() {
     const route = C.parseRoute(location.hash);
     const entry = historyEntry();
+    scrollToRestore = Number.isFinite(entry.scrollTop) ? {top: entry.scrollTop, anchor: entry.exhibitionAnchor} : undefined;
     if (route.view === 'exhibitions' && entry.exhibitionList) exhibitions?.restoreList(entry.exhibitionList);
     if (route.view === 'explore' && entry.newsPage) state.listPage = entry.newsPage;
     if ($('detail-dialog').open) $('detail-dialog').close();
     if (isReader(route.view)) openReader(route.id, false, route.view);
     else { state.view = route.view; render(); }
-    if (Number.isFinite(entry.scrollTop)) window.scrollTo({ top: entry.scrollTop });
   }
   window.addEventListener('popstate', () => { if (location.hash !== '#main') restorePage(); });
   window.addEventListener('hashchange', () => {

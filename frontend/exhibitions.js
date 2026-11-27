@@ -577,7 +577,7 @@
       return {entries,pending,failed,includesLegacy:catalog?.includes_legacy_events};
     }
     const hidden = id => records.get(id)?.status === 'uninterested';
-    return { view, layoutCards, inlineReader, readerTitle, calendarInventory, hidden, searchQuery: () => filter.query, setSearchQuery, listState: () => ({...filter, filtersOpen}), restoreList };
+    return { view, layoutCards, inlineReader, readerTitle, calendarInventory, hidden, searchQuery: () => filter.query, setSearchQuery, listState: () => ({...filter, filtersOpen}), restoreList, isLoading: () => pending };
   }
   const api = { create, phase, closingDays, rank, parseLog, parseVenues };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

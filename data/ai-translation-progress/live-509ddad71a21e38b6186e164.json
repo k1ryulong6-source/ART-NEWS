@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "id": "live-509ddad71a21e38b6186e164",
+  "input_hash": "9ba73609da91566fc7ea19faa22537030ac18000099163519a45012973e06cc7",
+  "source_hash": "f0abccae862f9e9af2e7d562f6e4083f23db805fdd55623c1839804cadd07a35",
+  "provider": "contextual-api:gemini:gemini-3.5-flash-lite:direct-v1",
+  "outputs": {
+    "title:0": "Canal+ 在南非总统支持下成立学院，向非洲创意界释放信号",
+    "block:0:text:0": "南非总统今天与 Canal+ 负责人马克西姆·萨达（Maxime Saada）共同启动了一所技能学院，Canal+ 希望该学院在创办第一年能使 800 至 1,000 人受益。",
+    "block:2:text:0": "他是此次在约翰内斯堡举行并发布 Canal+ 学院（Canal+ Academy）活动的荣誉嘉宾。",
+    "block:3:text:0": "该学院将 Canal+ 现有的大学模式与 MultiChoice 人才工厂（MultiChoice Talent Factory，简称 MTF）相结合，两者在过去 8 年中共同培训了约 10,500 人。",
+    "block:4:text:0": "在 Deadline 上观看",
+    "block:5:text:0": "相关报道",
+    "block:6:alt:0": "TF1 的",
+    "block:7:text:0": "Canal+ 正就反对法国增值税上调“取得进展”，称该涨幅将迫使订阅费上涨并导致裁员",
+    "block:8:alt:0": "《Shaka iLembe》",
+    "block:9:text:0": "《Shaka iLembe》：即将亮相 MIPCOM 的非洲祖鲁国王剧集第 3 季首发剧照",
+    "block:10:text:0": "全新的 Canal+ 学院项目旨在第一年培训 800 至 1,000 人，并将继续保留 MTF 作为内部的发展项目。",
+    "block:11:text:0": "明年的项目将包括 6 门强化培训课程和 6 场公开大师班，涵盖表演、非洲剧集制作、人工智能、数字电影制作和体育视频新闻等学科。",
+    "block:12:text:0": "“非洲从不缺乏人才和故事，”Canal+ 非洲企业社会责任（CSR）总监格雷斯·卢巴苏（Grace Loubassou）表示。“我们需要持续构建的是能让这些人才大放异彩的技能、机遇和能力。通过 Canal+ 学院，我们不仅在投资于人，也是在投资非洲创意产业的未来。强大的创意产业能够创造就业、吸引投资、巩固本土制作生态系统，并助力非洲故事走向世界。”",
+    "block:13:text:0": "Canal+ 希望今天的宣布以及拉马福萨的亮相能向非洲创意界释放强烈的信号。",
+    "block:14:text:0": "去年 Canal+ 收购 MultiChoice 时，萨达曾表示，这家全新的强大实体将“加倍投入”由巨额资金打造的本土内容，如热门历史剧《Shaka iLembe》，但此后的信号却颇为混杂。交易完成不久后，Canal+ 便关闭了处于亏损状态的非洲流媒体平台 Showmax，并且据萨达几个月前透露，该公司一直在大肆谈论该地区的协同效应，总额达 2.5 亿欧元，且正在稳步实现中。"
+  },
+  "validation_issues": [
+    {
+      "reason": "ai_numbers_missing",
+      "key": "excerpt:0",
+      "source_numbers": [
+        "1000",
+        "2",
+        "800"
+      ],
+      "returned_numbers": [
+        "1000",
+        "2000000000",
+        "800"
+      ],
+      "truncated": false
+    },
+    {
+      "reason": "ai_numbers_missing",
+      "key": "block:1:text:0",
+      "source_numbers": [
+        "2",
+        "20"
+      ],
+      "returned_numbers": [
+        "20",
+        "2000000000"
+      ],
+      "truncated": false
+    }
+  ],
+  "error": "ai_numbers_missing:excerpt:0",
+  "retry_policy": "regular",
+  "retry_after": "2026-11-27T20:07:27.659436+00:00"
+}

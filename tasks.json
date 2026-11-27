@@ -2929,7 +2929,7 @@
       "id": "T096",
       "title": "收紧展览推荐页末尾的空白",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-11-27",
       "depends_on": ["T095"],
@@ -2937,8 +2937,9 @@
       "acceptance": ["展览列表末尾没有整栏空白，翻页紧接最后一排", "横竖图片完整显示，保留推荐顺序、读文和收藏入口"],
       "evidence": [
         "本地 Chromium 复现最后一页空栏，390px 约 317px，1440px 约 700px。",
-        "本地 Chromium 390px、1440px 逐页核对共 100 条推荐的原顺序、海报比例和末排对齐。320px、768px、880px 核对首末页，翻页上边缘距离末排 18px。点图进正文、调整窗口和收藏页实测通过。",
-        "静态构建、42 项 JavaScript 测试、项目检查和 git diff --check 通过。待 Pages 部署后验证正式站。"
+        "提交 e160ad33b，Pages 45924584747 与 Project checks 45924584824 成功，线上 CSS 与 JS 的 SHA-256 和提交一致。",
+        "线上 Chromium 390px、1440px 逐页核对 100 条推荐顺序、原图比例和末排对齐。末排底部距翻页 18px，点末张海报打开正文，缩放后重新分组。另在本地核对 320px、768px、880px 首末页、失败图片和收藏。",
+        "静态构建、42 项 JavaScript 测试、项目检查和 git diff --check 通过。"
       ]
     }
   ]

@@ -159,22 +159,68 @@
     let venues = new Map();
     const details = new Map(), detailPending = new Set(), detailFailed = new Set();
     let filtersOpen = false;
-    const galleryRowHeight = 12;
-    const cardSizes = typeof root.ResizeObserver === 'function' ? new root.ResizeObserver(entries => {
-      const sizes = entries.map(({target, borderBoxSize}) => ({
-        card: target, height: borderBoxSize?.[0]?.blockSize ?? target.getBoundingClientRect().height
-      }));
-      // Each card occupies enough grid rows for its contents, so the next card can follow the shorter column.
-      for (const {card, height} of sizes) {
-        card.style.setProperty('--exhibition-card-span', `span ${Math.ceil(height / galleryRowHeight)}`);
-      }
-      sizes[0].card.parentElement.style.setProperty('--exhibition-row-height', `${galleryRowHeight}px`);
-    }) : null;
+    let layoutFrame = 0;
     function layoutCards() {
-      if (!cardSizes) return;
-      cardSizes.disconnect();
-      document.querySelectorAll('.exhibition-list > .exhibition-card').forEach(card => cardSizes.observe(card, {box:'border-box'}));
+      const list = document.querySelector('.exhibition-list');
+      const width = list?.clientWidth;
+      if (!width) return;
+      const cards = [...list.querySelectorAll('.exhibition-card')];
+      if (!cards.length) return;
+      const style = root.getComputedStyle(list);
+      const columns = Number(style.getPropertyValue('--exhibition-columns')) || 3;
+      const gap = parseFloat(style.getPropertyValue('--exhibition-column-gap')) || 0;
+      const columnWidth = (width - gap * (columns - 1)) / columns;
+      const ratios = cards.map(card => {
+        const img = card.querySelector('figure:not([hidden]) img');
+        return img ? (img.naturalWidth / img.naturalHeight || 4 / 3) : 0;
+      });
+      // Plan from the bottom so a full row above cannot unnecessarily strand one poster at the end.
+      const plan = Array(cards.length + 1);
+      plan[cards.length] = {cost:0};
+      for (let start = cards.length - 1; start >= 0; start--) {
+        const maxCount = Math.min(columns, cards.length - start);
+        for (let count = maxCount; count > 0; count--) {
+          const line = ratios.slice(start, start + count);
+          const height = (width - gap * (count - 1)) / line.reduce((sum, ratio) => sum + ratio, 0);
+          if (count > 1 && (height > columnWidth * 1.6 || height * Math.min(...line) < columnWidth * 0.66)) continue;
+          const cost = plan[start + count].cost + 1 + (count === 1 ? cards.length : 0);
+          if (!plan[start] || cost < plan[start].cost) plan[start] = {count,cost};
+        }
+      }
+      const rows = [];
+      for (let start = 0; start < cards.length; start += plan[start].count) {
+        const end = start + plan[start].count;
+        rows.push({cards:cards.slice(start, end), ratios:ratios.slice(start, end)});
+      }
+      const existing = [...list.children].filter(node => node.classList.contains('exhibition-row'));
+      const regroup = existing.length !== rows.length || rows.some((row, i) =>
+        row.cards.length !== existing[i].children.length || row.cards.some((card, j) => card !== existing[i].children[j]));
+      const focused = regroup && list.contains(document.activeElement) ? document.activeElement : null;
+      const lines = rows.map((row, i) => {
+        const line = regroup ? document.createElement('div') : existing[i];
+        if (regroup) {
+          line.className = 'exhibition-row';
+          line.append(...row.cards);
+        }
+        line.style.setProperty('--exhibition-tracks', row.cards.length > 1
+          ? row.ratios.map(ratio => `minmax(0, ${ratio}fr)`).join(' ') : 'minmax(0, 1fr)');
+        if (row.cards.length === 1) line.style.setProperty('--exhibition-single-ratio', row.ratios[0] || 4 / 3);
+        return line;
+      });
+      if (regroup) list.replaceChildren(...lines);
+      focused?.focus({preventScroll:true});
     }
+    function scheduleLayout() {
+      if (layoutFrame) return;
+      layoutFrame = root.requestAnimationFrame(() => {
+        layoutFrame = 0;
+        layoutCards();
+      });
+    }
+    root.addEventListener('resize', scheduleLayout);
+    document.addEventListener('load', event => {
+      if (event.target.matches?.('.exhibition-card img')) scheduleLayout();
+    }, true);
     function restore(value) {
       if (!value) { records.clear(); venues.clear(); return; }
       const saved = JSON.parse(value);
@@ -440,6 +486,7 @@
       if (event.target.matches?.('[data-ex-image]')) {
         const image = event.target.closest('figure');
         if (image) image.hidden = true;
+        if (event.target.closest('.exhibition-card')) scheduleLayout();
       }
     }, true);
     document.addEventListener('click', event => {

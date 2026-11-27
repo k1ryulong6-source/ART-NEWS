@@ -2941,6 +2941,22 @@
         "线上 Chromium 390px、1440px 逐页核对 100 条推荐顺序、原图比例和末排对齐。末排底部距翻页 18px，点末张海报打开正文，缩放后重新分组。另在本地核对 320px、768px、880px 首末页、失败图片和收藏。",
         "静态构建、42 项 JavaScript 测试、项目检查和 git diff --check 通过。"
       ]
+    },
+    {
+      "id": "T097",
+      "title": "恢复手机浏览器的站内前进和返回",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-11-27",
+      "depends_on": ["T096"],
+      "scope": ["frontend/app.js", "frontend/exhibitions.js", "docs/UI_CUSTOMIZATION.md"],
+      "acceptance": ["跨栏目返回到上一站内页面", "翻页和正文返回还原展览筛选、页码与滚动位置", "外部直达正文时可用页内返回"],
+      "evidence": [
+        "线上 Chromium 手机宽度复现从外部进入头版、点击展览后历史中仅有外部和展览，浏览器返回直接离站。",
+        "本地 iPhone 13 尺寸 Chromium 与 WebKit 核对栏目前进与后退、东京展览第 2／3 页、刷新、从海报及日历进正文和返回位置、资讯正文和旧分享链接。",
+        "静态构建、42 项 JavaScript 测试、项目检查与 git diff --check 通过。"
+      ]
     }
   ]
 }

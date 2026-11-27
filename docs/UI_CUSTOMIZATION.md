@@ -47,6 +47,7 @@ const ui = CultureUI.create({
 - 阅读页保留中文/原文/资料三个tab、深链接、原标题及保存正文；未译明确待译、公开部分与缺正文如实标注。
 - 保留日历/活动当地时区、来源开关、JSON与ICS导出、覆盖进度、非日本普通展览降级和重大例外。全部来源/原文/ID不能为精简UI删掉。
 - 展览页使用 `#exhibitions` 和 `data-ui="exhibition-desk"`，由 `frontend/exhibitions.js` 管理地区筛选、分档推荐、个人记录及备份。正文 `#exhibition/<id>` 复用站内阅读器样式与返回流程。日历 `#calendar` 由 `frontend/calendar.js` 管理排期及日期列表。保留 `data-ex-*` 行为钩子、私人记录键 `culture-desk-exhibition-log-v1` 及原剪报键。见 `docs/JAPAN_EXHIBITIONS.md` 和 `docs/FILM_CALENDAR.md`。
+- 栏目切换、站内正文与展览分页在 `frontend/app.js` 写入浏览器历史。原生前进和后退交由 `popstate` 恢复，正文按钮用 `data-action="reader-back"`。展览列表筛选和页码随对应历史条目保存。
 - 顶部 `#search` 在展览目录和展览正文中搜索展览，其他页面搜索资讯。展览工具栏的 `data-ex-toggle-filters` 按钮控制下方 `#exhibition-filter-panel`。地区和个人标签使用 `data-ex-filter="scope"` 与 `data-ex-filter="personal"`。
 
 ## 构建与验证

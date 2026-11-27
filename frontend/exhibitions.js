@@ -149,7 +149,7 @@
     return result;
   }
 
-  function create({ C, boot, server, toast, rerender, isActive, newspaperBody, readingMinutes }) {
+  function create({ C, boot, server, toast, rerender, paginate, isActive, newspaperBody, readingMinutes }) {
     const e = C.escape, $ = id => document.getElementById(id), size = 18;
     const filter = { scope:'JP', prefecture:'all', medium:'all', stage:'top', personal:'all', sort:'recommended', query:'', page:1 };
     const scopes = [['JP','日本'],['world','日本以外'],['all','全球']];
@@ -330,7 +330,8 @@
       const showImportance = ['top','upcoming','important'].includes(stage);
       const counts = importanceLabels.map((label, tier)=>list.filter(row=>row.importance === tier).length);
       const pages = Math.max(1,Math.ceil(list.length / size));
-      filter.page = Math.min(pages,Math.max(1,filter.page));
+      const page = Math.min(pages,Math.max(1,filter.page));
+      if (!pending) filter.page = page;
       const filterCount = Number(filter.scope !== 'JP') + ['prefecture','medium','personal'].filter(key => filter[key] !== 'all').length
         + Number(filter.sort !== 'recommended' && !showImportance);
       const showingFavorites = filter.personal === 'favorite';
@@ -355,10 +356,10 @@
           ${closing.length ? `<button class="text-link exhibition-deadline-jump" data-ex-closing>7 天内闭展 · ${closing.length} 场${savedDue ? ' · 想去 ' + savedDue + ' 场' : ''}</button>` : ''}</div>` : ''}
         <section class="exhibition-section" id="exhibition-results"><div class="exhibition-section-head" data-ex-count="${list.length}"><h2>${e(sectionName || '展览清单')}</h2>${resultCount}</div>
           ${showImportance && list.length ? `<p class="exhibition-tier-counts">${counts.map((amount,tier)=>amount ? `<span>${importanceLabels[tier]} ${amount}</span>` : '').reverse().join('')}</p>` : ''}
-          <div class="exhibition-list">${list.slice(size*(filter.page-1),size*filter.page).map((row,index)=>card(row, showImportance, stage, index < 3)).join('') || `<p class="exhibition-empty">${showingFavorites ? '没有符合条件的收藏展览。' : '当前筛选没有展览。'}</p>`}</div>
-          ${pages > 1 ? `<nav class="news-pagination" aria-label="展览分页"><button class="text-link" data-ex-page="${filter.page-1}" ${filter.page===1?'disabled':''}>‹ 上一页</button>
-            <label>第 <select data-ex-filter="page" aria-label="展览页码">${Array.from({length:pages},(_,i)=>option(i+1,i+1,filter.page)).join('')}</select> / ${pages} 页</label>
-            <button class="text-link" data-ex-page="${filter.page+1}" ${filter.page===pages?'disabled':''}>下一页 ›</button></nav>` : ''}
+          <div class="exhibition-list">${list.slice(size*(page-1),size*page).map((row,index)=>card(row, showImportance, stage, index < 3)).join('') || `<p class="exhibition-empty">${showingFavorites ? '没有符合条件的收藏展览。' : '当前筛选没有展览。'}</p>`}</div>
+          ${pages > 1 ? `<nav class="news-pagination" aria-label="展览分页"><button class="text-link" data-ex-page="${page-1}" ${page===1?'disabled':''}>‹ 上一页</button>
+            <label>第 <select data-ex-filter="page" aria-label="展览页码">${Array.from({length:pages},(_,i)=>option(i+1,i+1,page)).join('')}</select> / ${pages} 页</label>
+            <button class="text-link" data-ex-page="${page+1}" ${page===pages?'disabled':''}>下一页 ›</button></nav>` : ''}
         </section>${live && !showingFavorites ? coverage() : ''}
         <details class="exhibition-coverage"><summary>备份我的观展记录</summary><p>笔记、评分、标签和收藏场馆保存在本浏览器。换设备可导出再导入。</p>
           <div class="exhibition-actions"><button class="text-link exhibition-action" data-ex-export>导出</button><button class="text-link exhibition-action" data-ex-import>导入</button><input type="file" id="exhibition-import" accept=".json,application/json" hidden></div>
@@ -482,6 +483,15 @@
       try { restore(event.newValue); if (isActive()) rerender(); } catch { /* Keep the last valid private log. */ }
     });
     function goToResults() { $('exhibition-results')?.scrollIntoView({block:'start'}); }
+    function changeListPage(page) {
+      if (!Number.isSafeInteger(page) || page < 1 || page === filter.page) return;
+      paginate(() => { filter.page = page; });
+      goToResults();
+    }
+    function restoreList(selection) {
+      for (const field of Object.keys(filter)) if (own(selection,field)) filter[field] = selection[field];
+      filtersOpen = Boolean(selection.filtersOpen);
+    }
     document.addEventListener('error', event => {
       if (event.target.matches?.('[data-ex-image]')) {
         const image = event.target.closest('figure');
@@ -511,7 +521,7 @@
       }
       else if ('exClosing' in d) { filter.stage='closing'; filter.page=1; rerender(); goToResults(); }
       else if ('exImportant' in d) { filter.stage='important'; filter.page=1; rerender(); goToResults(); }
-      else if ('exPage' in d && !button.disabled) { filter.page=Number(d.exPage); rerender(); goToResults(); }
+      else if ('exPage' in d && !button.disabled) changeListPage(Number(d.exPage));
       else if ('exRetry' in d) { failed=false; rerender(); }
       else if ('exDetailRetry' in d) { detailFailed.delete(d.exDetailRetry); rerender(); }
       else if ('exImport' in d) $('exhibition-import').click();
@@ -526,16 +536,16 @@
       if (!isActive()) return;
       const field = input.dataset.exFilter;
       if (own(filter,field)) {
+        if (field === 'page') { changeListPage(Number(input.value)); return; }
         const focused = document.activeElement === input;
         if (field === 'personal') personalView(input.value);
         else {
-          filter[field]=field === 'page' ? Number(input.value) : input.value;
+          filter[field]=input.value;
           if (field === 'scope') filter.prefecture='all';
-          if (field !== 'page') filter.page=1;
+          filter.page=1;
           rerender();
         }
-        if (field === 'page') goToResults();
-        else if (focused) document.querySelector(`[data-ex-filter="${field}"]`)?.focus({preventScroll:true});
+        if (focused) document.querySelector(`[data-ex-filter="${field}"]`)?.focus({preventScroll:true});
       }
       if (input.id === 'exhibition-import' && input.files?.[0]) try {
         if (input.files[0].size > 25_000_000) throw new Error('观展记录文件过大');
@@ -567,7 +577,7 @@
       return {entries,pending,failed,includesLegacy:catalog?.includes_legacy_events};
     }
     const hidden = id => records.get(id)?.status === 'uninterested';
-    return { view, layoutCards, inlineReader, readerTitle, calendarInventory, hidden, searchQuery: () => filter.query, setSearchQuery };
+    return { view, layoutCards, inlineReader, readerTitle, calendarInventory, hidden, searchQuery: () => filter.query, setSearchQuery, listState: () => ({...filter, filtersOpen}), restoreList };
   }
   const api = { create, phase, closingDays, rank, parseLog, parseVenues };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

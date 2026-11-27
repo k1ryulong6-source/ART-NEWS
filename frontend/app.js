@@ -10,7 +10,7 @@
   let localWritable = true, toastTimer, refreshTimer;
   let notifications = [], sourceStatus = dataset.source_status || [];
   const makeId = () => typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  const state = { view: 'today', channel: 'all', kind: 'all', country: 'all', city: 'all', language: 'all', query: '', mode: 'demo', bookmarkStatus: 'all', readerId: null, readerTab: 'chinese', readerReturn: 'today', editorialOnly: false, priority: 'all', advancedOpen: false, listPage: 1, sort: 'recommended' };
+  const state = { view: 'today', channel: 'all', kind: 'all', country: 'all', city: 'all', language: 'all', query: '', mode: 'demo', bookmarkStatus: 'all', readerId: null, readerTab: 'chinese', editorialOnly: false, priority: 'all', advancedOpen: false, listPage: 1, sort: 'recommended' };
   const isReader = view => view === 'reader' || view === 'exhibition';
   const isExhibition = view => view === 'exhibitions' || view === 'exhibition';
   function readLocal() {
@@ -48,7 +48,7 @@
   state.mode = dataset.mode || 'demo'; sourceStatus = dataset.source_status || [];
   if (server) notifications = await api('/notifications').catch(() => []);
   const exhibitions = window.CultureExhibitions?.create({
-    C, boot, server, toast, rerender: render, newspaperBody, readingMinutes, isActive: () => isExhibition(state.view) || state.view === 'calendar'
+    C, boot, server, toast, rerender: render, paginate: pageExhibitions, newspaperBody, readingMinutes, isActive: () => isExhibition(state.view) || state.view === 'calendar'
   });
   const schedule = window.CultureCalendar?.create({
     C, boot, server, exhibitions, rerender: render, isActive: () => state.view === 'calendar'
@@ -268,8 +268,36 @@
     const chinese = translatedBlocks.length ? `<div class="reader-document" lang="zh-CN"><p class="reading-note">${row.language === 'zh' ? '' : !C.editorialReady(row) && C.machineReady(row) ? '自动机翻，未经人工审核，细节请对照原文。' : row.editorial_status === 'translated' ? 'AI 按全文语境翻译。' : 'AI 按全文语境翻译并校对 · 非人工译者审核。'}</p>${partial ? '<p class="article-status">来源仅取得公开部分，译文也仅包含这部分内容。</p>' : ''}${row.language !== 'zh' && notes.length ? `<div class="translation-notes"><h2>译名与表达说明</h2>${notes.map(note => `<p>${e(note)}</p>`).join('')}</div>` : ''}${headerImage}${newspaperBody(translatedBlocks, true, row.language !== 'zh' && !C.editorialReady(row) && C.machineReady(row))}</div>` : `<p class="article-status original-pending" role="status">${blocks.length ? `原文·待译 · 以下为${e(C.languageLabels[row.language] || '外文')}原文，中文译文尚未完成。` : '正文尚未取得。'}</p>${original}`;
     return `<article class="reader-page"><div class="reader-toolbar"><button class="text-link" data-action="reader-back">‹ 返回</button><button class="text-link reader-save" data-save-type="content" data-save-id="${e(row.id)}">${saved ? '★ 已剪报' : '☆ 剪报'}</button>${articleShareUrl(row) ? '<button class="text-link" data-action="share-article">分享</button>' : ''}${C.babelReaderUrl(row) ? `<a class="text-link" data-ui="babel-import" href="${e(C.babelReaderUrl(row))}" target="_blank" rel="noopener noreferrer" title="导入原文，在巴别塔查词阅读">巴别塔阅读 ↗</a>` : ''}</div><div class="eyebrow"><span class="channel-tag">${e(C.channels[row.channel] || '文化')}</span>${e(sourceName(row))} · ${e(publicationLabel(row))}${(() => { const shown = state.readerTab === 'chinese' && translatedBlocks.length ? translatedBlocks : blocks; return shown.length ? `<span class="reading-time">约 ${readingMinutes(shown, shown === blocks ? row.language : 'zh')} 分钟</span>` : ''; })()}</div>${(() => { const title = state.readerTab === 'original' ? row.title_original : C.displayTitle(row); return `<h1 lang="${e(title === row.title_original && row.language !== 'zh' ? row.language : 'zh-CN')}">${e(title)}</h1>`; })()}<div class="reader-tabs" role="tablist" aria-label="阅读内容"><button role="tab" aria-selected="${state.readerTab === 'chinese'}" data-reader-tab="chinese">${translatedBlocks.length ? '中文' : '正文'}</button><button role="tab" aria-selected="${state.readerTab === 'original'}" data-reader-tab="original">原文</button></div><div class="reader-content" role="tabpanel">${state.readerTab === 'original' ? original : chinese}</div>${!row.is_demo && url ? `<div class="reader-source-link"><span>原文</span><a href="${e(url)}" target="_blank" rel="noopener noreferrer">${e(url)}</a></div>` : ''}<div class="reader-toolbar reader-end"><button class="text-link" data-action="reader-back">‹ 返回</button><button class="text-link reader-save" data-save-type="content" data-save-id="${e(row.id)}">${saved ? '★ 已剪报' : '☆ 剪报'}</button></div></article>`;
   }
-  function openReader(id, route = true, view = 'reader') {
-    if (!isReader(state.view)) { state.readerReturn = state.view; state.readerScroll = window.scrollY; }
+  function routeHash(view = state.view, id = view === 'reader' ? state.readerId : state.exhibitionId) {
+    if (view === 'reader') return C.readerRoute(id);
+    if (view === 'exhibition') return '#exhibition/' + encodeURIComponent(id);
+    return '#' + view;
+  }
+  const historyEntry = () => history.state?.cultureDesk || {};
+  function rememberPage() {
+    const entry = { ...historyEntry(), scrollTop: window.scrollY };
+    if (state.view === 'exhibitions') entry.exhibitionList = exhibitions?.listState();
+    if (state.view === 'explore') entry.newsPage = state.listPage;
+    history.replaceState({ ...history.state, cultureDesk: entry }, '', routeHash());
+  }
+  function enterView(view) {
+    if (state.view === view) return;
+    rememberPage();
+    history.pushState(null, '', routeHash(view));
+    state.view = view;
+  }
+  function pageExhibitions(changePage) {
+    rememberPage();
+    changePage();
+    // Pagination shares #exhibitions. Its history state identifies the selected page.
+    history.pushState({cultureDesk: {exhibitionList: exhibitions.listState()}}, '', routeHash());
+    render();
+  }
+  function openReader(id, recordVisit = true, view = 'reader') {
+    if (recordVisit && routeHash() !== routeHash(view, id)) {
+      rememberPage();
+      history.pushState({cultureDesk: {inSiteReader: true}}, '', routeHash(view, id));
+    }
     state.readerTab = 'chinese'; state.view = view;
     if (view === 'exhibition') state.exhibitionId = id;
     else {
@@ -277,8 +305,8 @@
       const story = dataset.content.find(item => item.id === id); if (story?.body_failed) story.body_failed = false;
     }
     if ($('detail-dialog').open) $('detail-dialog').close();
-    if (route) history.pushState(null, '', view === 'exhibition' ? '#exhibition/' + encodeURIComponent(id) : C.readerRoute(id));
-    render(); window.scrollTo({ top: 0 });
+    render();
+    if (recordVisit) window.scrollTo({ top: 0 });
   }
   let lastSpot = '';
   function exhibitionPage() {
@@ -335,8 +363,8 @@
     const exhibitTitle = state.view === 'exhibition' ? exhibitions?.readerTitle(state.exhibitionId, state.readerTab) : '';
     const pageTitle = story ? (state.readerTab === 'original' ? story.title_original : C.displayTitle(story)) : exhibitTitle || pageTitles[state.view];
     document.title = pageTitle ? `${pageTitle} · 幕间休息` : '幕间休息';
-    const hash = state.view === 'reader' ? C.readerRoute(state.readerId) : state.view === 'exhibition' ? '#exhibition/' + encodeURIComponent(state.exhibitionId) : '#' + state.view;
-    if (location.hash !== hash) history.replaceState(null, '', hash);
+    const hash = routeHash();
+    if (location.hash !== hash) history.replaceState(history.state, '', hash);
     loadBodies(C.takeWantedBodies());
     if (!needsArchive && state.view === 'explore' && state.query.trim() && dataset.content.some(C.bodyPending)) loadSearchIndex();
   }
@@ -412,13 +440,25 @@
     if (!$('detail-dialog').open) $('detail-dialog').showModal();
   }
   document.addEventListener('click', async event => {
+    const link = event.target.closest('a[href^="#"]');
+    if (link && !link.target && !event.defaultPrevented && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+      const hash = link.getAttribute('href'), route = C.parseRoute(hash);
+      if (hash === routeHash(route.view, route.id)) {
+        event.preventDefault();
+        if (isReader(route.view)) openReader(route.id, true, route.view);
+        else { enterView(route.view); render(); window.scrollTo({ top: 0 }); }
+        return;
+      }
+    }
     const button = event.target.closest('button'); if (!button) return;
     if (button.dataset.action === 'retry-archive') { loadArchive(); render(); return; }
     if (button.dataset.listPage) { state.listPage = Number(button.dataset.listPage); render(); $('main').scrollIntoView(); return; }
+    if (button.dataset.view) enterView(button.dataset.view);
+    else if (button.dataset.kind || ['editorial-news','all-news'].includes(button.dataset.action) || (button.dataset.channel && state.view === 'attention')) enterView('explore');
     if (button.dataset.view || button.dataset.channel || button.dataset.kind || button.dataset.scope || ['editorial-news','all-news','reset-filters','mode'].includes(button.dataset.action)) state.listPage = 1;
-    if (button.dataset.view) { state.editorialOnly = false; state.kind = 'all'; state.view = button.dataset.view; render(); window.scrollTo({ top: 0 }); }
-    else if (button.dataset.action === 'editorial-news') { state.view = 'explore'; state.editorialOnly = true; state.channel = state.kind = state.country = state.city = state.language = state.priority = 'all'; state.query = ''; render(); }
-    else if (button.dataset.action === 'all-news') { state.editorialOnly = false; state.priority = 'all'; state.view = 'explore'; render(); }
+    if (button.dataset.view) { state.editorialOnly = false; state.kind = 'all'; render(); window.scrollTo({ top: 0 }); }
+    else if (button.dataset.action === 'editorial-news') { state.editorialOnly = true; state.channel = state.kind = state.country = state.city = state.language = state.priority = 'all'; state.query = ''; render(); }
+    else if (button.dataset.action === 'all-news') { state.editorialOnly = false; state.priority = 'all'; render(); }
     else if (button.dataset.readerTab) {
       // Translations are stored block for block, so switching 中文/原文 mid-article lands on the same paragraph.
       const tabs = document.querySelector('.reader-tabs'), passed = tabs && tabs.getBoundingClientRect().bottom < 0;
@@ -436,15 +476,18 @@
       if (navigator.share) navigator.share({ title, url }).catch(() => {});
       else navigator.clipboard?.writeText(url).then(() => toast('文章链接已复制'), () => toast(url));
     }
-    else if (button.dataset.action === 'reader-back') { state.view = state.readerReturn || 'today'; render(); window.scrollTo({ top: state.readerScroll || 0 }); }
-    else if (button.dataset.channel) { state.channel = button.dataset.channel; state.kind = 'all'; if (state.view === 'attention') state.view = 'explore'; render(); }
-    else if (button.dataset.kind) { state.kind = state.kind === button.dataset.kind ? 'all' : button.dataset.kind; state.channel = 'all'; state.view = 'explore'; render(); }
+    else if (button.dataset.action === 'reader-back') {
+      if (historyEntry().inSiteReader) history.back();
+      else { enterView(state.view === 'exhibition' ? 'exhibitions' : 'today'); render(); window.scrollTo({ top: 0 }); }
+    }
+    else if (button.dataset.channel) { state.channel = button.dataset.channel; state.kind = 'all'; render(); }
+    else if (button.dataset.kind) { state.kind = state.kind === button.dataset.kind ? 'all' : button.dataset.kind; state.channel = 'all'; render(); }
     else if (button.dataset.detail) showDetail(button.dataset.type, button.dataset.detail);
     else if (button.dataset.saveId) await toggleSave(button.dataset.saveType, button.dataset.saveId);
     else if (button.dataset.detailSave) await toggleSave(button.dataset.type, button.dataset.detailSave);
     else if (button.dataset.status) { state.bookmarkStatus = button.dataset.status; render(); }
     else if (button.dataset.action === 'photo-calls') {
-      state.view = 'calendar';
+      enterView('calendar');
       const next = dataset.events.filter(row => row.event_type === 'call_deadline' && row.start_date >= readingDate())
         .sort((a,b) => a.start_date.localeCompare(b.start_date))[0];
       schedule?.open(dataset, 'call_deadline', 'global', next?.start_date);
@@ -525,26 +568,32 @@
   document.addEventListener('pointerover', prefetchBody, { passive: true }); document.addEventListener('focusin', prefetchBody);
   searchInput.addEventListener('input', () => {
     if (exhibitions && isExhibition(state.view)) {
+      enterView('exhibitions');
       exhibitions.setSearchQuery(searchInput.value);
-      state.view = 'exhibitions';
     } else {
+      enterView('explore');
       state.listPage = 1;
       state.query = searchInput.value;
-      state.view = 'explore';
     }
     render();
   });
-  $('coordinate-button').addEventListener('click', () => { state.view = 'settings'; render(); });
+  $('coordinate-button').addEventListener('click', () => { enterView('settings'); render(); });
   $('close-detail').addEventListener('click', () => $('detail-dialog').close());
   $('detail-dialog').addEventListener('click', event => { if (event.target === $('detail-dialog')) { const r = $('detail-dialog').getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) $('detail-dialog').close(); } });
-  window.addEventListener('hashchange', () => {
-    if (location.hash === '#main') return;
+  function restorePage() {
     const route = C.parseRoute(location.hash);
-    if (isReader(route.view)) { openReader(route.id, false, route.view); return; }
-    const back = isReader(state.view) && route.view === state.readerReturn;
-    state.view = route.view;
-    render();
-    if (back) window.scrollTo({ top: state.readerScroll || 0 });
+    const entry = historyEntry();
+    if (route.view === 'exhibitions' && entry.exhibitionList) exhibitions?.restoreList(entry.exhibitionList);
+    if (route.view === 'explore' && entry.newsPage) state.listPage = entry.newsPage;
+    if ($('detail-dialog').open) $('detail-dialog').close();
+    if (isReader(route.view)) openReader(route.id, false, route.view);
+    else { state.view = route.view; render(); }
+    if (Number.isFinite(entry.scrollTop)) window.scrollTo({ top: entry.scrollTop });
+  }
+  window.addEventListener('popstate', () => { if (location.hash !== '#main') restorePage(); });
+  window.addEventListener('hashchange', () => {
+    // A traversal can fire both events. Render the entry only once.
+    if (location.hash !== '#main' && location.hash !== routeHash()) restorePage();
   });
   let lastScroll = 0, scrollFrame = 0;
   window.addEventListener('scroll', () => {
@@ -558,9 +607,5 @@
       document.querySelector('.read-progress span').style.transform = `scaleX(${isReader(state.view) && max > 0 ? Math.min(1, y / max) : 0})`;
     });
   }, { passive: true });
-  const initialRoute = C.parseRoute(location.hash);
-  state.view = initialRoute.view;
-  if (initialRoute.view === 'reader') state.readerId = initialRoute.id;
-  if (initialRoute.view === 'exhibition') { state.exhibitionId = initialRoute.id; state.readerReturn = 'exhibitions'; }
-  render();
+  restorePage();
 })();

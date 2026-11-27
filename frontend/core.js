@@ -178,44 +178,80 @@
   }
   function frontpageRows(available, preferences, context) {
     const cfg = preferences.frontpage || {}, leadHours = cfg.lead_hours ?? 72, fallbackHours = cfg.fallback_hours ?? 168;
-    const importance = cfg.importance_boost || {high:24,medium:8,normal:0}, urgency = cfg.priority_boost || {P0:12,P1:6,P2:0,P3:-12};
+    const importance = {major:56,outcome:46,programme:30,reporting:22,ordinary:16,service:6,...cfg.editorial_points};
+    const freshnessHours = Math.max(1, cfg.freshness_hours ?? 72), eventWindowDays = Math.max(1, cfg.event_window_days ?? 7);
     const instant = context?.mode === 'demo' && context.reference_date ? new Date(context.reference_date + 'T12:00:00Z') : new Date();
-    const known = [], undated = [];
+    const eventDays = due => {
+      if (due?.date && due.timezone) {
+        try { return daysBetween(localDate(due.timezone, instant), due.date); }
+        catch { return null; }
+      }
+      return Number.isFinite(due?.days) ? due.days : null;
+    };
+    const sameStory = (first, second) => {
+      const a = first.frontpage_editorial, b = second.frontpage_editorial;
+      if (!a.story || a.story !== b.story) return false;
+      if (a.edition_year && b.edition_year && a.edition_year !== b.edition_year) return false;
+      const age = first.frontpage_age_hours, otherAge = second.frontpage_age_hours;
+      return age === null || otherAge === null || Math.abs(age - otherAge) <= (cfg.story_window_hours ?? fallbackHours);
+    };
+    const titleKeys = row => [row.title_original,displayTitle(row)].filter(Boolean).map(title => title.normalize('NFKC').toLowerCase().trim());
+    let known = [], undated = [];
     for (const original of available) {
       if ((original.is_demo && context?.mode !== 'demo') || original.evidence_status === 'unverified') continue;
       const rank = priorityOf(original) || {}, published = Date.parse(original.published_at || '');
+      const days = eventDays(rank.due);
       let age = null;
       if (Number.isFinite(published)) {
         const elapsed = (instant.getTime() - published) / 3600000;
         if (elapsed < -2 || elapsed > fallbackHours) continue;
         age = Math.max(0, elapsed);
-      } else if (!rank.due || !Number.isFinite(rank.due.days) || rank.due.days < 0 || rank.due.days > (cfg.undated_event_days ?? 2)) continue;
+      } else if (days === null || days < 0 || days > (cfg.undated_event_days ?? 2)) continue;
       const obituary = Boolean(rank.obituary);
-      const score = (importance[rank.importance] || 0) + (urgency[rank.priority] || 0) - (age ?? fallbackHours) / (cfg.freshness_decay_hours ?? 2)
+      const editorial = rank.frontpage_editorial || {};
+      const freshness = age === null ? 0 : (cfg.freshness_points ?? 20) * Math.max(0, 1 - age / freshnessHours);
+      const event = days !== null && days >= 0 && days <= eventWindowDays ? (cfg.event_points ?? 8) * (1 - days / eventWindowDays) : 0;
+      const score = (importance[editorial.category] ?? importance.ordinary) + freshness + event
         - (rank.recommendation_penalty || 0) - (obituary ? cfg.obituary_penalty ?? 32 : 0);
-      const row = {...original, frontpage_score:score, frontpage_age_hours:age, frontpage_obituary:obituary, frontpage_basis:age === null ? 'confirmed_upcoming_event' : 'published_at'};
+      const row = {...original, frontpage_score:score, frontpage_age_hours:age, frontpage_obituary:obituary, frontpage_editorial:editorial, frontpage_basis:age === null ? 'confirmed_upcoming_event' : 'published_at'};
       (age === null ? undated : known).push(row);
     }
-    const isHeadline = r=>r.kind !== 'industry_buzz' && !r.frontpage_obituary && headlineReady(r);
+    const tailCompare = (a,b)=>(a.frontpage_age_hours ?? fallbackHours)-(b.frontpage_age_hours ?? fallbackHours) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+    const compare = (a,b)=>b.frontpage_score-a.frontpage_score || tailCompare(a,b);
+    const versions = [...known,...undated].filter(r=>r.frontpage_editorial.story).sort((a,b)=>
+      Number(headlineReady(b))-Number(headlineReady(a)) || Number(a.frontpage_age_hours === null)-Number(b.frontpage_age_hours === null) || compare(a,b));
+    const representatives = [], redundant = new Set();
+    for (const row of versions) {
+      if (representatives.some(other=>other.channel !== row.channel && sameStory(row,other))) redundant.add(row.id);
+      else representatives.push(row);
+    }
+    known = known.filter(r=>!redundant.has(r.id));
+    undated = undated.filter(r=>!redundant.has(r.id));
+    const isHeadline = r=>r.kind !== 'industry_buzz' && !r.frontpage_obituary && r.frontpage_editorial.category !== 'service' && headlineReady(r);
     const eligible = known.filter(isHeadline), recent = eligible.filter(r=>r.frontpage_age_hours <= leadHours);
     const leadPool = recent.length ? recent : eligible.length ? eligible : undated.filter(isHeadline);
-    const tailCompare = (a,b)=>(a.frontpage_age_hours ?? fallbackHours)-(b.frontpage_age_hours ?? fallbackHours) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
-    const lead = [...leadPool].sort((a,b)=>b.frontpage_score-a.frontpage_score || tailCompare(a,b))[0];
+    const lead = [...leadPool].sort(compare)[0];
     if (!lead) return [];
-    const rows = [lead], seenIds = new Set([lead.id]), seenTitles = new Set([displayTitle(lead)]), counts = {[lead.source_id]:1};
+    const rows = [lead], seenIds = new Set([lead.id]), seenTitles = new Set(titleKeys(lead)), counts = {[lead.source_id]:1};
     let obituaries = 0;
-    for (const [channel,count] of [['film',5],['art',5],['photography',5],['industry_buzz',4]]) {
-      if (channel === 'industry_buzz' && preferences.industry_buzz?.enabled === false) continue;
+    for (const [channel,maximum] of [['film',5],['art',5],['photography',5],['industry_buzz',4]]) {
+      let count = maximum;
+      if (channel === 'industry_buzz') {
+        if (preferences.industry_buzz?.enabled === false) continue;
+        const share = Math.max(0, Math.min(1, preferences.industry_buzz?.max_share ?? 0.1));
+        if (share < 1) count = Math.min(count, Math.floor(rows.length * share / (1 - share)));
+      }
       const matches = r=>channel === 'industry_buzz' ? r.kind === 'industry_buzz' : r.kind !== 'industry_buzz' && r.channel === channel;
       let candidates = known.filter(matches); if (!candidates.length) candidates = undated.filter(matches);
       for (let i=0;i<count;i++) {
-        candidates = candidates.filter(r=>!seenIds.has(r.id) && !seenTitles.has(displayTitle(r)));
+        candidates = candidates.filter(r=>!seenIds.has(r.id) && !titleKeys(r).some(title=>seenTitles.has(title))
+          && !rows.some(picked=>sameStory(r,picked)));
         const choices = i === 0 && channel !== 'industry_buzz' ? candidates.filter(isHeadline)
           : candidates.filter(r=>!r.frontpage_obituary || obituaries < (cfg.obituary_limit ?? 1));
         if (!choices.length) break;
         const adjusted = r=>r.frontpage_score-(counts[r.source_id]||0)*(cfg.source_repeat_penalty ?? 6);
         const row = choices.sort((a,b)=>adjusted(b)-adjusted(a) || tailCompare(a,b))[0];
-        rows.push(row); seenIds.add(row.id); seenTitles.add(displayTitle(row)); counts[row.source_id]=(counts[row.source_id]||0)+1;
+        rows.push(row); seenIds.add(row.id); titleKeys(row).forEach(title=>seenTitles.add(title)); counts[row.source_id]=(counts[row.source_id]||0)+1;
         obituaries += Number(row.frontpage_obituary);
       }
     }

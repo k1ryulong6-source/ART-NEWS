@@ -112,8 +112,11 @@ def rank_snapshot(snapshot, reference=None):
         if link['event_id'] in events: related.setdefault(link['content_id'], []).append(events[link['event_id']])
     result = {row['id']: classify(row, related.get(row['id'], []), instant, rules)
               for row in snapshot.get('content', []) if not row.get('is_demo')}
+    from .frontpage import frontpage_signals, headline_slots
+    for row in snapshot.get('content', []):
+        if not row.get('is_demo'):
+            result[row['id']]['frontpage_editorial'] = frontpage_signals(row, result[row['id']])
     if rules.get('headline_first', True):
-        from .frontpage import headline_slots
         for index, (identifier, slot) in enumerate(headline_slots(snapshot, result, instant, candidates=True)):
             result[identifier]['headline_order'] = index
             result[identifier]['headline_slot'] = slot

@@ -3012,6 +3012,23 @@
         "正式站 Chromium 390px、1440px 验证正文分项、权重、来源、回列表、想去标签和奥赛旧地址。静态与 FastAPI 认定一致，原目录 2290 个 ID 及分档相符。",
         "提交 f583bd647，Pages 45976938966 和 Project checks 45976938954 成功。288 项 Python、44 项 JavaScript、静态构建、项目检查与 diff 检查通过。"
       ]
+    },
+    {
+      "id": "T101",
+      "title": "按新闻进展重新计算头版推荐",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-11-27",
+      "depends_on": ["T100", "T083", "T066"],
+      "scope": ["backend/frontpage.py", "backend/priority.py", "config/preferences.json", "config/translation-priority.json", "frontend/core.js", "scripts/check_project.py", "tests/test_frontpage.py", "docs/PRODUCT.md"],
+      "acceptance": ["报告当前头版实际选稿与权重", "新闻事实、时效、活动日期各只计一次", "修正漏判讣告与同次任命／奖项的重复报道", "验证浏览器、翻译候选队列和正式站"],
+      "evidence": [
+        "东京时间 11 月 27 日 19:29 正式站复算 20 条，主头条为莫伦讣告，艺术栏五条有四条为同一次威尼斯策展人任命，圈内动态四条。",
+        "同一快照与时刻，Chrome 正文入口与 Python 选稿的 17 个 ID 和顺序一致。更新后主头条为威尼斯任命，同次任命只出现一次，当届观众奖独立刊出。两栏重复的 Jarman 奖和 Eye Art & Film Prize 各保留一条，圈内动态由 4/20 降至 1/17。",
+        "四个上版头条符合中文全文门槛。翻译队列实测优先补马拉喀什 Atlas 奖结果、Eye Art & Film Prize 两篇候选稿。",
+        "291 项 Python 单测、44 项 JavaScript 单测、静态构建、项目检查与 diff 检查通过。"
+      ]
     }
   ]
 }

@@ -64,7 +64,13 @@ def check_config():
     ZoneInfo(prefs["reading_timezone"])
     frontpage = prefs['frontpage']
     require(0 < frontpage['lead_hours'] <= frontpage['fallback_hours'] <= 30 * 24, 'Invalid frontpage age windows')
-    require(frontpage['freshness_decay_hours'] > 0 and frontpage['source_repeat_penalty'] >= 0, 'Invalid frontpage decay/diversity penalty')
+    require(frontpage['freshness_hours'] > 0 and frontpage['event_window_days'] > 0
+            and 0 < frontpage['story_window_hours'] <= frontpage['fallback_hours'], 'Invalid frontpage scoring windows')
+    require(all(frontpage[key] >= 0 for key in ('freshness_points', 'event_points', 'source_repeat_penalty', 'obituary_penalty')),
+            'Invalid frontpage scoring points')
+    editorial_points = frontpage['editorial_points']
+    require(set(editorial_points) == {'major', 'outcome', 'programme', 'reporting', 'ordinary', 'service'}
+            and all(points >= 0 for points in editorial_points.values()), 'Invalid frontpage editorial points')
     sources = read_json("config/sources.json")["sources"]
     regional = read_json('config/editorial-regions.json')
     regions = {row['id'] for row in regional['world_regions']}

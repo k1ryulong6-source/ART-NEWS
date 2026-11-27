@@ -53,6 +53,53 @@ class FrontpagePriorityTests(unittest.TestCase):
         self.assertEqual(sum(r['frontpage_obituary'] for r in rows), 1)
         self.assertEqual(self.pick(deaths), [])
 
+    def test_colon_obituary_and_award_predictions_cannot_take_headlines(self):
+        published = '2026-10-15T11:00:00Z'
+        news = self.story('major', published, 'Museum announces return of stolen paintings', 'art')
+        film = self.story('festival', published, 'A new director opens a film')
+        obituary = self.story('death', published, 'Gerald R. Molen Dies: Oscar-Winning Producer Was 91')
+        forecast = self.story('forecast', published, 'Which film will win an Oscar? Award winner predictions')
+        snapshot = {'content': [obituary, forecast, film, news], 'events': [], 'content_events': []}
+        ranks = rank_snapshot(snapshot, REFERENCE)
+        self.assertTrue(ranks['death']['obituary'])
+        self.assertEqual(ranks['forecast']['priority'], 'P0')
+        self.assertEqual(ranks['forecast']['frontpage_editorial']['category'], 'service')
+        self.assertEqual(headline_slots(snapshot, ranks, reference_time(REFERENCE)), [('major', 'lead'), ('festival', 'film')])
+
+    def test_same_news_development_occupies_one_slot_across_publishers_and_languages(self):
+        published = '2026-10-15T11:00:00Z'
+        appointed = self.story('appointment', published, 'Hoor Al Qasimi Appointed Curator of the 2028 Venice Biennale', 'art')
+        alias = self.story('pending-report', '2026-10-15T11:30:00Z', '2028年のヴェネチア・ビエンナーレ芸術監督にフール・アル・カシミが就任',
+                           'art', editorial_status=None, editorial_blocks_json=None)
+        different_updates = [
+            self.story('awards', published, 'Visitors’ Lions of the 2026 Venice Biennale announced', 'art'),
+            self.story('architecture', published, 'Venice Architecture Biennale Names Its Curator for 2028', 'art'),
+            self.story('film-prize', published, 'Alia Syed wins £10,000 Jarman award', 'film'),
+            self.story('art-prize', published, 'Alia Syed wins Jarman Award', 'art'),
+        ]
+        snapshot = {'content': [appointed, alias, *different_updates], 'events': [], 'content_events': []}
+        ranks = rank_snapshot(snapshot, REFERENCE)
+        self.assertEqual(ranks['appointment']['frontpage_editorial']['story'], 'venice:curator')
+        self.assertEqual(ranks['architecture']['frontpage_editorial']['story'], 'venice-architecture:curator')
+        selected = [row['id'] for row in frontpage_rows(snapshot, ranks, reference_time(REFERENCE))]
+        self.assertIn('appointment', selected)
+        self.assertNotIn('pending-report', selected)
+        self.assertIn('awards', selected)
+        self.assertIn('architecture', selected)
+        self.assertEqual(len(set(selected) & {'film-prize', 'art-prize'}), 1)
+        candidates = {identifier for identifier, _ in headline_slots(snapshot, ranks, reference_time(REFERENCE), candidates=True)}
+        self.assertIn('appointment', candidates)
+        self.assertNotIn('pending-report', candidates)
+
+    def test_buzz_uses_the_share_of_the_actual_edition(self):
+        published = '2026-10-15T11:00:00Z'
+        rows = [self.story(f'{desk}-{i}', published, f'{desk} cultural report {i}', desk)
+                for desk in ('film', 'art', 'photography') for i in range(6)]
+        rows += [self.story(f'buzz-{i}', published, f'Industry note {i}', kind='industry_buzz') for i in range(6)]
+        selected = self.pick(rows)
+        self.assertEqual(len(selected), 17)
+        self.assertEqual(sum(row['kind'] == 'industry_buzz' for row in selected), 1)
+
     def test_week_old_award_and_old_column_fallback_cannot_displace_new_reports(self):
         old = self.story('old-award', '2026-10-08T11:00:00Z', 'PhotoBook Awards shortlist', 'photography')
         archive = self.story('archive', '2026-09-24T00:00:00Z', 'A photobook exhibition', 'photography')

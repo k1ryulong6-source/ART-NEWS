@@ -188,7 +188,7 @@ def create_app(db_path=None):
                 ORDER BY c.published_at
             """)}
         catalogue, details = read_catalog(), read_details()
-        items = public_items(catalogue, events, images)
+        items = public_items(catalogue, events, images, details=details)
         fill_detail_images(items, details)
         return catalogue, details, items
 

@@ -21,6 +21,12 @@ PROGRAMMES = (
     (1, '场馆周年专题', re.compile(r'(?:開館|創立)\s*[1-9]\d*\s*周年記念')),
     (1, '特别展', re.compile(r'特別展|特別企画展')),
 )
+OFFICIAL_INTRO_PROGRAMME = re.compile(
+    r'(?:本展(?:覧会)?|この展覧会)[はが][^。！？]{0,140}?'
+    r'(?:(?P<retrospective>大回顧展|(?:過去最大|大規模)[^。！？]{0,16}回顧展)'
+    r'|(?P<first_major>初の大規模[^。！？]{0,16}展))'
+    r'(?:です|となります)\s*(?:。|$)'
+)
 EVENT_LABELS = {'講座': '讲座', '連続講座': '讲座', '講演会': '讲座', 'トークイベント': '讲座',
                 'ワークショップ': '工作坊', 'シンポジウム': '座谈会'}
 EVENT_TITLE = re.compile(r'^(' + '|'.join(EVENT_LABELS) + r')(?:[\s:「『【(]|$)')
@@ -70,7 +76,27 @@ def related_event(row, evidence):
     return None
 
 
-def programme_grade(members, evidence, verified):
+def official_intro_programme(members, introductions):
+    for row in members:
+        intro = introductions.get(row['id'], {})
+        if intro.get('status') != 'introduction':
+            continue
+        url, source = intro.get('url'), intro.get('source')
+        if not url or not source or not any(
+            item.get('official') and not item.get('shared_index_url')
+            and item.get('url') == url and item.get('source') == source
+            for item in observations(row)
+        ):
+            continue
+        # Limit the match to a sentence describing the current exhibition.
+        for paragraph in intro.get('paragraphs', [])[:12]:
+            if match := OFFICIAL_INTRO_PROGRAMME.search(edition_text(paragraph)):
+                label = '大型回顾展' if match.group('retrospective') else '首次大型展览'
+                return {'tier': 3, 'programme': 3, 'reason': label + '，场馆本届展览介绍确认。', 'url': url}
+    return {}
+
+
+def programme_grade(members, evidence, verified, introductions):
     support = min(2, max(0, len(hosts(evidence)) - 1)) + int(any(item.get('official') for item in evidence) or bool(verified))
     if verified:
         return {'tier': 3, 'programme': verified.get('programme', 3), 'support': support,
@@ -92,13 +118,16 @@ def programme_grade(members, evidence, verified):
             continue
         reason = label + ('，场馆官网确认。' if official else '，多个来源佐证。' if confirmed else '，来源展讯注明。')
         best = {**result, 'tier': tier, 'programme': strength, 'reason': reason, 'url': (official or matching[0]).get('url')}
+    if best['tier'] < 3 and (confirmed_intro := official_intro_programme(members, introductions)):
+        return {**result, **confirmed_intro}
     return best
 
 
-def add_recommendations(items, policy=None):
+def add_recommendations(items, policy=None, *, introductions=None):
     """Annotate public copies while retaining every source row and its reading URL."""
     if policy is None:
         policy = json.loads(POLICY.read_text(encoding='utf-8'))
+    introductions = introductions or {}
     reviews = {identifier: entry for group in ('verified_programmes', 'related_events')
                for entry in policy[group] for identifier in entry['ids']}
     groups = defaultdict(list)
@@ -116,7 +145,7 @@ def add_recommendations(items, policy=None):
         ))
         review = next((review for _, review in group if review), None)
         label = review.get('label') if review else related_event(ordered[0], evidence)
-        recommendation = programme_grade(members, evidence, review) if not label else None
+        recommendation = programme_grade(members, evidence, review, introductions) if not label else None
         for row in members:
             row['recommendation'] = recommendation
             if len(members) > 1:

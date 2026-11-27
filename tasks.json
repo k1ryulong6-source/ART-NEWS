@@ -2977,6 +2977,23 @@
         "正式站 Chromium 390px、1440px 核对四个首位展及依据。两条奥赛阅读地址可查，东京日历 11 月 14 日的排期开幕只出现一次。",
         "提交 684cbe527，Pages 45927846935、Project checks 45927846986 成功。16 项展览 Python 测试、43 项 JS、全量项目检查和静态构建通过。"
       ]
+    },
+    {
+      "id": "T099",
+      "title": "补核东京重大展并识别馆方展览介绍",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-11-27",
+      "depends_on": ["T098"],
+      "scope": ["backend/exhibition_priority.py", "backend/exhibition_assets.py", "backend/app.py", "config/exhibition-priority.json", "tests/test_exhibitions.py", "docs/JAPAN_EXHIBITIONS.md"],
+      "acceptance": ["按馆方核对漏判的在展与待开展节目", "从本届展览的馆方介绍识别明确的大型节目", "过往展览、转载介绍与节展单元不误升档", "静态版和本地 API 使用同一排序依据"],
+      "evidence": [
+        "抽查东京在展和待开展项目，馆方确认泰特透纳大回顾展、日本首次阿斯特鲁普回顾展、惠比寿影像祭及冈田敦摄影展。",
+        "东京时间 11 月 27 日同一线上目录复算，在展透纳与阿斯特鲁普从前 100 之外到第 2、第 5，待开展冈田敦与影像祭从第 9、第 46 到第 1、第 2。",
+        "独立馆方介绍自动确认冈田敦及已闭展的出光真子回顾展。影像祭委约项目仍为暂定常规。静态与 FastAPI 实测五条记录同一推荐依据，保有 2290 个目录 ID。",
+        "287 项 Python、43 项 JavaScript、静态构建及项目检查通过。本地 Chromium 390px、1440px 核对推荐、官方依据、正文返回、透纳旧地址，以及日历单一开幕。"
+      ]
     }
   ]
 }

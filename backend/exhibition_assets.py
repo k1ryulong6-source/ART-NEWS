@@ -29,7 +29,7 @@ def venue_reference(row, aliases):
     return {'venue_id': 'venue-' + identifier, 'venue_name': aliases.get(name, name)}
 
 
-def public_items(catalogue, events=(), legacy_images=None):
+def public_items(catalogue, events=(), legacy_images=None, *, details=None):
     items = {row['id']: row for row in catalogue['items'] if ID.fullmatch(row['id'])}
     known_urls = {entry['url'].rstrip('/') for row in items.values() for entry in row.get('evidence', [])}
     for event in events:
@@ -43,7 +43,7 @@ def public_items(catalogue, events=(), legacy_images=None):
         items[row['id']] = row
     aliases = config()['venue_aliases']
     items = {key: {**row, **venue_reference(row, aliases)} for key, row in items.items()}
-    add_recommendations(items)
+    add_recommendations(items, introductions=details['entries'] if details else None)
     return items
 
 
@@ -102,7 +102,7 @@ def write_exhibition_files(directory, catalogue, details, snapshot):
     content = {r['id']: r for r in snapshot.get('content', []) if r.get('image_url')}
     images = {link['event_id']: (content[link['content_id']]['image_url'], content[link['content_id']].get('source_id'))
               for link in snapshot.get('content_events', []) if link['content_id'] in content}
-    items = public_items(catalogue, snapshot.get('events', []), images)
+    items = public_items(catalogue, snapshot.get('events', []), images, details=details)
     fill_detail_images(items, details)
     index = directory / 'catalogue.json'
     index.write_text(json.dumps(compact_list(catalogue, items), ensure_ascii=False, separators=(',', ':')), encoding='utf-8')

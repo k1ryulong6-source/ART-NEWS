@@ -182,6 +182,39 @@ class ExhibitionInventoryTests(unittest.TestCase):
         self.assertEqual(row['recommendation']['tier'], 2)
         self.assertEqual(row['recommendation']['programme'], 1)
 
+    def test_current_official_introduction_can_confirm_a_major_programme(self):
+        url = 'https://museum.example/exhibitions/okada'
+        source = {'url': url, 'source': 'test-museum', 'title': '幻の馬', 'official': True}
+        row = {'id': 'photo-show', 'title_original': source['title'], 'evidence': [source]}
+        intro = {'url': url, 'source': source['source'], 'status': 'introduction',
+                 'paragraphs': ['集大成となる本展は、東京の美術館で開催する初の大規模展です。']}
+        public = public_items({'items': [row]}, details={'entries': {row['id']: intro}})
+        self.assertEqual(public[row['id']]['recommendation'], {
+            'tier': 3, 'programme': 3, 'support': 1, 'url': url, 'reason': '首次大型展览，场馆本届展览介绍确认。',
+        })
+
+    def test_intro_promotion_requires_current_first_party_programme_evidence(self):
+        url = 'https://museum.example/exhibitions/subject'
+        source = {'url': url, 'source': 'test-museum', 'title': '作品と資料', 'official': True}
+        row = {'id': 'survey', 'title_original': source['title']}
+        major = {'url': url, 'source': source['source'], 'status': 'introduction',
+                 'paragraphs': ['本展は、待望の大回顧展です。']}
+        cases = {
+            'current major': (source, major, 3),
+            'previous show': (source, {**major, 'paragraphs': ['本展は、2018年の大回顧展で出版された資料を展示します。']}, 1),
+            'first at this venue': (source, {**major, 'paragraphs': ['本展は、当ギャラリーで初の個展です。']}, 1),
+            'association with a festival': (source, {**major, 'paragraphs': ['恵比寿映像祭は、国内最大規模の国際フェスティヴァルです。']}, 1),
+            'shared page': ({**source, 'shared_index_url': True}, major, 1),
+            'changed source': (source, {**major, 'url': url + '/other'}, 1),
+            'third-party report': ({**source, 'official': False}, {**major, 'official_url': url}, 1),
+            'excerpt': (source, {**major, 'status': 'excerpt'}, 1),
+        }
+        for label, (evidence, intro, tier) in cases.items():
+            with self.subTest(label=label):
+                candidate = {**row, 'evidence': [evidence]}
+                add_recommendations({row['id']: candidate}, introductions={row['id']: intro})
+                self.assertEqual(candidate['recommendation']['tier'], tier)
+
     def test_standalone_one_day_talk_and_a_one_day_exhibition_are_distinct(self):
         dates = {'start_date': '2026-11-27', 'end_date': '2026-11-27'}
         items = {'lecture': {'id': 'lecture', 'title_original': '連続講座「収集史」', **dates},

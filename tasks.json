@@ -2946,7 +2946,7 @@
       "id": "T097",
       "title": "恢复手机浏览器的站内前进和返回",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-11-27",
       "depends_on": ["T096"],
@@ -2955,7 +2955,8 @@
       "evidence": [
         "线上 Chromium 手机宽度复现从外部进入头版、点击展览后历史中仅有外部和展览，浏览器返回直接离站。",
         "本地 iPhone 13 尺寸 Chromium 与 WebKit 核对栏目前进与后退、东京展览第 2／3 页、刷新、从海报及日历进正文和返回位置、资讯正文和旧分享链接。",
-        "a4ab57fd8 的 Pages 45925939038、Project checks 45925938998 成功，线上 Chromium 核对站内历史。增加刷新正文后，待目录载入再定位原展览的处理，本地两种浏览器通过。",
+        "提交 a4ab57fd8、14ede321e，Pages 45926654198 与 Project checks 45926654252 成功。",
+        "正式站 iPhone 13 尺寸 Chromium 与 WebKit 通过相同流程。刷新展览正文再返回时，等待目录载入后恢复原页码和东京筛选，海报重新分组后原展览仍在视口。旧分享链接的页内返回也可用。",
         "静态构建、42 项 JavaScript 测试、项目检查与 git diff --check 通过。"
       ]
     }

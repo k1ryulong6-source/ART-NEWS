@@ -2914,13 +2914,16 @@
       "id": "T095",
       "title": "移除展览收藏页的日本覆盖报告入口",
       "milestone": "M6",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-11-27",
       "depends_on": ["T094"],
       "scope": ["frontend/exhibitions.js"],
       "acceptance": ["收藏页省去目录覆盖汇总", "核对公开展览目录、收藏两区和备份入口"],
-      "evidence": []
+      "evidence": [
+        "提交 2ab75dc8b，Pages 45922785674 与 Project checks 45922785661 成功。",
+        "线上 Chromium 390px、1440px 验证空收藏、有收藏时均无日本覆盖汇总，并核对展览、场馆、备份和返回公开目录。"
+      ]
     }
   ]
 }

@@ -313,7 +313,7 @@
           ${pages > 1 ? `<nav class="news-pagination" aria-label="展览分页"><button class="text-link" data-ex-page="${filter.page-1}" ${filter.page===1?'disabled':''}>‹ 上一页</button>
             <label>第 <select data-ex-filter="page" aria-label="展览页码">${Array.from({length:pages},(_,i)=>option(i+1,i+1,filter.page)).join('')}</select> / ${pages} 页</label>
             <button class="text-link" data-ex-page="${filter.page+1}" ${filter.page===pages?'disabled':''}>下一页 ›</button></nav>` : ''}
-        </section>${live ? coverage() : ''}
+        </section>${live && !showingFavorites ? coverage() : ''}
         <details class="exhibition-coverage"><summary>备份我的观展记录</summary><p>笔记、评分、标签和收藏场馆保存在本浏览器。换设备可导出再导入。</p>
           <div class="exhibition-actions"><button class="text-link exhibition-action" data-ex-export>导出</button><button class="text-link exhibition-action" data-ex-import>导入</button><input type="file" id="exhibition-import" accept=".json,application/json" hidden></div>
         </details></div>`;

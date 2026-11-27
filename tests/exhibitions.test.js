@@ -62,6 +62,18 @@ test('programme priority wins and extra directory listings do not move an exhibi
   assert.deepEqual(ranked.map(r=>r.id),['survey','major','recent','syndicated']);
 });
 
+test('exhibition importance precedes programme labels, date confidence, preferences and opening dates', () => {
+  const high = row('rare-loan',{start_date:'2026-09-01', date_conflict:true,
+    recommendation:{tier:3,programme:3,support:0,importance_score:88}});
+  const medium = row('archive-survey',{start_date:'2026-10-01',
+    recommendation:{tier:3,programme:4,support:1,importance_score:78}});
+  const lower = row('specialist-show',{start_date:'2026-11-20',
+    recommendation:{tier:3,programme:4,support:3,importance_score:67}});
+  const records = new Map([['specialist-show',{status:'want'}]]);
+  const ranked = X.rank(C,[lower,medium,high],records,{...filters,stage:'top'});
+  assert.deepEqual(ranked.map(r=>[r.id,r.importanceScore]),[['rare-loan',88],['archive-survey',78],['specialist-show',67]]);
+});
+
 test('one edition takes one recommendation spot and older personal records can still be opened', () => {
   const primary = row('primary',{duplicate_group:'primary'});
   const alias = row('alias',{duplicate_group:'primary'});

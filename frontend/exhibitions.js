@@ -9,6 +9,7 @@
   const phases = { active: '正在展出', upcoming: '即将开幕', ended: '已闭展', unknown: '展期待定',
     cancelled: '已取消', postponed: '已延期', needs_confirmation: '展期待核对' };
   const importanceLabels = ['常设展', '常规展', '专题与企划', '重点展'];
+  const legacyImportanceBase = [0, 0, 12, 42];
   const phaseOrder = { active: 0, upcoming: 1, unknown: 2, ended: 3, cancelled: 3, postponed: 3, needs_confirmation: 3 };
   const activeLimit = 100;
   const logFormat = 'culture-desk-exhibition-log-v1';
@@ -42,7 +43,8 @@
     const state = phase(C,row,today), close = closingDays(C,row,today), start = C.daysBetween(today,row.start_date);
     const recommendation = row.recommendation || {};
     const importance = recommendation.tier ?? (row.flags?.includes('permanent') ? 0 : 1);
-    const programme = recommendation.programme ?? 0;
+    const importanceScore = recommendation.importance_score
+      ?? ((legacyImportanceBase[importance] ?? 0) + (recommendation.programme ?? 0));
     const firmDates = Number(!row.date_conflict && row.status !== 'tentative' && ageOf(C,row.last_seen,today) <= 14);
     const followed = venues?.has(row.venue_id) || false;
     const followedNew = followed && importance > 0 && !row.related_event && row.status !== 'tentative' && log?.status !== 'visited'
@@ -53,7 +55,7 @@
     });
     const photoInterest = row.types?.includes('photography') && (preference.interests || []).some(value => value === 'photography' || value === '摄影展' || value === '摄影');
     const personalInterest = Number(log?.status === 'want') * 2 + Number(followedEntity) + Number(Boolean(photoInterest));
-    return { ...row, phase: state, close, start, importance, programme, firmDates, personalInterest, log, followedNew };
+    return { ...row, phase: state, close, start, importance, importanceScore, firmDates, personalInterest, log, followedNew };
   }
 
   function groupsWithStatus(items, records, status) {
@@ -72,7 +74,7 @@
 
   function compareRecommendation(a,b) {
     const opening = String(a.start_date || '').localeCompare(String(b.start_date || ''));
-    return phaseOrder[a.phase] - phaseOrder[b.phase] || b.importance - a.importance || b.programme - a.programme
+    return phaseOrder[a.phase] - phaseOrder[b.phase] || b.importanceScore - a.importanceScore || b.importance - a.importance
       || b.firmDates - a.firmDates || b.personalInterest - a.personalInterest
       || (a.phase === 'upcoming' ? opening : -opening) || a.id.localeCompare(b.id);
   }
@@ -387,6 +389,9 @@
       const shownTitle = tab === 'original' ? row.title_original || title(row) : title(row);
       const save = `<button class="text-link reader-save" data-ex-favorite="${e(id)}" aria-pressed="${Boolean(record?.favorite)}">${record?.favorite ? '★ 已收藏展览' : '☆ 收藏展览'}</button>`;
       const back = '<button class="text-link" data-action="reader-back">‹ 返回</button>';
+      const assessment = recommendation?.importance_assessment || [];
+      const importanceScore = assessment.length ? `<p><strong>展览重要性 ${e(recommendation.importance_score)}/100</strong></p>
+        <ul class="exhibition-source-list">${assessment.map(item => `<li><strong>${e(item.label)} ${e(item.level)}/3</strong> · 权重 ${e(item.weight)}%${item.reason ? ' · ' + e(item.reason) : ''}</li>`).join('')}</ul>` : '';
       return `<article class="reader-page exhibition-reader" data-ui="exhibition-reader">
         <div class="reader-toolbar">${back}${save}${!row.is_demo && location.protocol !== 'file:' ? '<button class="text-link" data-action="share-exhibition">分享</button>' : ''}</div>
         <div class="eyebrow"><span class="channel-tag">${e(row.related_event || '展览')}</span>${source ? `<span>${e(source)}</span>` : ''}<span>${e(schedule(row))}</span>${blocks.length ? `<span class="reading-time">约 ${readingMinutes(blocks, language)} 分钟</span>` : ''}</div>
@@ -404,7 +409,7 @@
           ${venueButton(row.venue_id,row.venue_name || row.venue)}
           ${row.date_conflict ? '<p class="compact-note">来源日期有出入，请核对场馆官网。</p>' : ''}
           ${official ? `<p><a href="${e(official)}" target="_blank" rel="noopener noreferrer">场馆官方展讯 ↗</a></p>` : ''}
-          ${recommendation?.reason ? `<details class="exhibition-coverage"><summary>推荐依据</summary><p>${e(recommendation.reason)}${recommendationUrl ? ` <a href="${e(recommendationUrl)}" target="_blank" rel="noopener noreferrer">核对来源 ↗</a>` : ''}</p></details>` : ''}
+          ${recommendation?.reason ? `<details class="exhibition-coverage"><summary>推荐依据</summary>${importanceScore}<p>${e(recommendation.reason)}${recommendationUrl ? ` <a href="${e(recommendationUrl)}" target="_blank" rel="noopener noreferrer">核对来源 ↗</a>` : ''}</p></details>` : ''}
           ${sourceList ? `<ul class="exhibition-evidence">${sourceList}</ul>` : ''}
         </section>
         <form id="exhibition-record" data-ex-id="${e(id)}"><h3>我的观展记录</h3><div class="exhibition-record-fields">

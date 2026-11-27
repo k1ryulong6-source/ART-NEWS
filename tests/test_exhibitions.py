@@ -189,9 +189,29 @@ class ExhibitionInventoryTests(unittest.TestCase):
         intro = {'url': url, 'source': source['source'], 'status': 'introduction',
                  'paragraphs': ['集大成となる本展は、東京の美術館で開催する初の大規模展です。']}
         public = public_items({'items': [row]}, details={'entries': {row['id']: intro}})
-        self.assertEqual(public[row['id']]['recommendation'], {
-            'tier': 3, 'programme': 3, 'support': 1, 'url': url, 'reason': '首次大型展览，场馆本届展览介绍确认。',
-        })
+        recommendation = public[row['id']]['recommendation']
+        self.assertEqual((recommendation['tier'], recommendation['importance_score']), (3, 45))
+        self.assertEqual(recommendation['url'], url)
+        self.assertEqual(recommendation['reason'], '首次大型展览，场馆本届展览介绍确认。')
+
+    def test_reviewed_programmes_have_distinct_evidence_scores(self):
+        cases = (
+            ('jp-ex-6fb14779127a1c8985ec', '2026-11-14', '2027-03-28', 88, [3, 2, 3]),
+            ('jp-ex-707ccdca2caba931bea5', '2026-09-05', '2026-12-13', 78, [2, 3, 2]),
+            ('jp-ex-14b71b314712c63fcbb5', '2026-10-28', '2027-02-08', 67, [2, 2, 2]),
+        )
+        items = {id: {'id': id, 'start_date': start, 'end_date': end} for id, start, end, _, _ in cases}
+        for supports in (0, 4):
+            for n, row in enumerate(items.values()):
+                row['evidence'] = [{'url': f'https://source{j}.example/exhibition'}
+                                   for j in range(supports * n)]
+            add_recommendations(items)
+            for id, _, _, expected, levels in cases:
+                recommendation = items[id]['recommendation']
+                self.assertEqual((recommendation['tier'], recommendation['importance_score']), (3, expected))
+                assessment = recommendation['importance_assessment']
+                self.assertEqual([item['level'] for item in assessment], levels)
+                self.assertTrue(all(item['reason'] for item in assessment))
 
     def test_intro_promotion_requires_current_first_party_programme_evidence(self):
         url = 'https://museum.example/exhibitions/subject'

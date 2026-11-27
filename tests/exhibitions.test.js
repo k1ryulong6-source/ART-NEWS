@@ -53,6 +53,15 @@ test('format words and closing soon do not determine recommendation grades or or
   assert.deepEqual(X.rank(C,[older,recent],new Map(),{...filters,stage:'closing'}).map(r=>r.id),['older']);
 });
 
+test('programme priority wins and extra directory listings do not move an exhibition up', () => {
+  const majorSurvey = row('survey',{start_date:'2026-09-01',recommendation:{tier:3,programme:4,support:1}});
+  const majorShow = row('major',{recommendation:{tier:3,programme:3,support:3}});
+  const recent = row('recent',{start_date:'2026-11-23',recommendation:{tier:1,programme:0,support:0}});
+  const syndicated = row('syndicated',{recommendation:{tier:1,programme:0,support:3}});
+  const ranked = X.rank(C,[syndicated,majorShow,recent,majorSurvey],new Map(),{...filters,stage:'top'});
+  assert.deepEqual(ranked.map(r=>r.id),['survey','major','recent','syndicated']);
+});
+
 test('one edition takes one recommendation spot and older personal records can still be opened', () => {
   const primary = row('primary',{duplicate_group:'primary'});
   const alias = row('alias',{duplicate_group:'primary'});

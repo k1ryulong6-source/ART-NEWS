@@ -43,7 +43,6 @@
     const recommendation = row.recommendation || {};
     const importance = recommendation.tier ?? (row.flags?.includes('permanent') ? 0 : 1);
     const programme = recommendation.programme ?? 0;
-    const sourceSupport = recommendation.support ?? Number(Boolean(row.official));
     const firmDates = Number(!row.date_conflict && row.status !== 'tentative' && ageOf(C,row.last_seen,today) <= 14);
     const followed = venues?.has(row.venue_id) || false;
     const followedNew = followed && importance > 0 && !row.related_event && row.status !== 'tentative' && log?.status !== 'visited'
@@ -54,7 +53,7 @@
     });
     const photoInterest = row.types?.includes('photography') && (preference.interests || []).some(value => value === 'photography' || value === '摄影展' || value === '摄影');
     const personalInterest = Number(log?.status === 'want') * 2 + Number(followedEntity) + Number(Boolean(photoInterest));
-    return { ...row, phase: state, close, start, importance, programme, sourceSupport, firmDates, personalInterest, log, followedNew };
+    return { ...row, phase: state, close, start, importance, programme, firmDates, personalInterest, log, followedNew };
   }
 
   function groupsWithStatus(items, records, status) {
@@ -74,7 +73,7 @@
   function compareRecommendation(a,b) {
     const opening = String(a.start_date || '').localeCompare(String(b.start_date || ''));
     return phaseOrder[a.phase] - phaseOrder[b.phase] || b.importance - a.importance || b.programme - a.programme
-      || b.sourceSupport - a.sourceSupport || b.firmDates - a.firmDates || b.personalInterest - a.personalInterest
+      || b.firmDates - a.firmDates || b.personalInterest - a.personalInterest
       || (a.phase === 'upcoming' ? opening : -opening) || a.id.localeCompare(b.id);
   }
 

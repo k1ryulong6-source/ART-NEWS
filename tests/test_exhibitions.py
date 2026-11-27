@@ -162,12 +162,25 @@ class ExhibitionInventoryTests(unittest.TestCase):
     def test_verified_programme_applies_to_its_reviewed_dates(self):
         row = {'id': 'survey', 'title_original': '展覧会', 'start_date': '2026-11-01', 'end_date': '2026-11-30'}
         policy = {'verified_programmes': [{'ids': ['survey'], 'url': 'https://museum.example/programme',
-                  'start_date': row['start_date'], 'end_date': row['end_date'], 'reason': '主办方确认馆藏联展。'}], 'related_events': []}
+                  'start_date': row['start_date'], 'end_date': row['end_date'], 'programme': 4,
+                  'reason': '主办方确认馆藏联展。'}], 'related_events': []}
         add_recommendations({'survey': row}, policy)
         self.assertEqual(row['recommendation']['tier'], 3)
+        self.assertEqual(row['recommendation']['programme'], 4)
         row['end_date'] = '2027-01-20'
         add_recommendations({'survey': row}, policy)
         self.assertEqual(row['recommendation']['tier'], 1)
+
+    def test_confirmed_anniversary_title_carries_programme_evidence(self):
+        title = '美術館開館100周年記念 夢の風景'
+        source = {'title': title, 'url': 'https://directory.example/exhibition', 'official': False}
+        row = {'id': 'anniversary', 'title_original': title, 'evidence': [source]}
+        add_recommendations({'anniversary': row})
+        self.assertEqual(row['recommendation']['tier'], 1)
+        row['evidence'].append({**source, 'url': 'https://museum.example/exhibition', 'official': True})
+        add_recommendations({'anniversary': row})
+        self.assertEqual(row['recommendation']['tier'], 2)
+        self.assertEqual(row['recommendation']['programme'], 1)
 
     def test_standalone_one_day_talk_and_a_one_day_exhibition_are_distinct(self):
         dates = {'start_date': '2026-11-27', 'end_date': '2026-11-27'}

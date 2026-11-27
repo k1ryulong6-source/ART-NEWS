@@ -18,6 +18,7 @@ PROGRAMMES = (
     (3, '大型回顾展', re.compile(r'大回顧展|(?:過去最大|大規模).{0,16}回顧展|major retrospective', re.I)),
     (2, '回顾展', re.compile(r'回顧展|\bretrospective\b', re.I)),
     (2, '纪念专题', re.compile(r'(?:生誕|没後)\s*[1-9]\d{1,2}\s*周年')),
+    (1, '场馆周年专题', re.compile(r'(?:開館|創立)\s*[1-9]\d*\s*周年記念')),
     (1, '特别展', re.compile(r'特別展|特別企画展')),
 )
 EVENT_LABELS = {'講座': '讲座', '連続講座': '讲座', '講演会': '讲座', 'トークイベント': '讲座',
@@ -72,7 +73,8 @@ def related_event(row, evidence):
 def programme_grade(members, evidence, verified):
     support = min(2, max(0, len(hosts(evidence)) - 1)) + int(any(item.get('official') for item in evidence) or bool(verified))
     if verified:
-        return {'tier': 3, 'programme': 3, 'support': support, 'reason': verified['reason'], 'url': verified['url']}
+        return {'tier': 3, 'programme': verified.get('programme', 3), 'support': support,
+                'reason': verified['reason'], 'url': verified['url']}
     result = {'tier': 1, 'programme': 0, 'support': support}
     if any('permanent' in row.get('flags', ()) for row in members):
         return {**result, 'tier': 0}

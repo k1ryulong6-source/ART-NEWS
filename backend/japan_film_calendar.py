@@ -150,21 +150,22 @@ def release_dates(soup, source, get, today, previous):
                 date_evidence = prior.get('date_source_url', url)
             if not kind and card.select_one('a[href$="/theater/"]'):
                 day, kind = listed_day, 'cinema_release'
-            if not kind and requests_left:
+            conflicting_date = kind == 'streaming_release' and day != listed_day and date_evidence != movie
+            if requests_left and (not kind or conflicting_date):
                 requests_left -= 1
                 try:
                     detail = BeautifulSoup(get(movie), 'html.parser')
                 except (OSError, ValueError):
-                    unchecked.add(movie)
-                    continue
-                info = text(detail.select_one('p.data'))
-                if match := re.search(rf'劇場公開日\s*[：:]\s*({FULL_DAY})', info):
-                    kind, day = 'cinema_release', local_day(match[1], today)
-                elif match := re.search(rf'配信開始日\s*[：:]\s*({FULL_DAY})', info):
-                    kind, day = 'streaming_release', local_day(match[1], today)
+                    detail = None
+                info = text(detail.select_one('p.data')) if detail else ''
+                streaming = re.search(rf'配信開始日\s*[：:]\s*({FULL_DAY})', info)
+                cinema = re.search(rf'劇場公開日\s*[：:]\s*({FULL_DAY})', info)
+                if cinema and not kind:
+                    kind, day, date_evidence = 'cinema_release', local_day(cinema[1], today), movie
+                elif streaming:
+                    kind, day, date_evidence = 'streaming_release', local_day(streaming[1], today), movie
                     company = re.search(r'配信\s*[：:]\s*(.+?)(?=\s*配信開始日|$)', info)
                     platform = platform_name(company[1]) if company else platform
-                date_evidence = movie
             if not kind or not day:
                 unchecked.add(movie)
                 continue

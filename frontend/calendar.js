@@ -136,10 +136,9 @@
       const link = (content, attributes = '') => row.exhibition_id ? `<a ${attributes} href="#exhibition/${encodeURIComponent(row.exhibition_id)}">${content}</a>`
         : row.source_id && proof ? `<a ${attributes} ${ref(programme || proof)}>${content}</a>`
         : `<button ${attributes} data-detail="${e(row.id)}" data-type="event">${content}</button>`;
-      const posterUrl = C.safeImageUrl(movie?.poster_url) || C.safeImageUrl(row.poster_url) || C.safeImageUrl(row.image_url);
-      const backupUrl = C.safeImageUrl(movie?.artwork_url) || C.safeImageUrl(row.artwork_url);
-      const imageUrl = posterUrl || backupUrl;
-      const fallback = posterUrl && backupUrl && posterUrl !== backupUrl ? ` data-calendar-backup="${e(backupUrl)}"` : '';
+      const candidates = [movie?.poster_url,row.poster_url,row.image_url,movie?.artwork_url,row.artwork_url];
+      const [imageUrl,...backups] = new Set(candidates.map(C.safeImageUrl).filter(Boolean));
+      const fallback = backups.length ? ` data-calendar-backups="${e(JSON.stringify(backups))}"` : '';
       const poster = imageUrl ? link(`<img src="${e(imageUrl)}" alt="" loading="${index < 3 ? 'eager' : 'lazy'}" decoding="async" referrerpolicy="no-referrer" data-calendar-poster${fallback}>`,
         'class="calendar-poster" tabindex="-1" aria-hidden="true"') : '';
       const country = row.country === 'GLOBAL' ? '' : C.countryLabels[row.country] || row.country;
@@ -263,10 +262,10 @@
     document.addEventListener('error',event=>{
       const image = event.target;
       if (!image.matches?.('[data-calendar-poster]')) return;
-      if (image.dataset.calendarBackup) {
-        const backup = image.dataset.calendarBackup;
-        delete image.dataset.calendarBackup;
-        image.src = backup;
+      const backups = JSON.parse(image.dataset.calendarBackups || '[]');
+      if (backups.length) {
+        image.src = backups.shift();
+        image.dataset.calendarBackups = JSON.stringify(backups);
         return;
       }
       image.closest('.calendar-poster').hidden = true;

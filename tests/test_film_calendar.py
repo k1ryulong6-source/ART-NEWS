@@ -19,11 +19,13 @@ class FilmCalendarTests(unittest.TestCase):
         <div class="txt-box"><p class="txt">Netflixで2026年12月2日から配信。</p></div></div>
         <div class="list-block" id="mv3"><h3 class="title"><a href="/movie/3/">Undated</a></h3></div>'''
         pages = {source['week_url']:'', 'https://eiga.com/movie/1/':'<p class="data">劇場公開日：2026年12月1日</p>',
+                 'https://eiga.com/movie/2/':'<p class="data">配信：Netflix 配信開始日：2026年12月3日</p>',
                  'https://eiga.com/movie/3/':'<p class="data">2026年製作</p>'}
         rows, coverage = release_dates(BeautifulSoup(cards,'html.parser'),source,pages.__getitem__,date(2026,11,28),[])
         self.assertEqual([(r['event_type'],r['start_date'],r['platform']) for r in rows],
-                         [('cinema_release','2026-12-01',None),('streaming_release','2026-12-02','Netflix')])
+                         [('cinema_release','2026-12-01',None),('streaming_release','2026-12-03','Netflix')])
         self.assertTrue(rows[0]['poster_url'].endswith('/320.jpg'))
+        self.assertEqual(rows[1]['date_source_url'],'https://eiga.com/movie/2/')
         self.assertEqual(coverage['unclassified'], 1)
 
     def test_showing_index_paginates_without_creating_calendar_days(self):

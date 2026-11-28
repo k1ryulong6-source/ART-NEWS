@@ -1,14 +1,15 @@
 {
   "schema_version": 1,
-  "checked_at": "2026-11-28T02:03:34.708626+00:00",
-  "snapshot_at": "2026-11-28T02:03:10.804661+00:00",
-  "snapshot_key": "46dc5c82d55ab99a21c1a10deb149bde1c9771e454f4e2a7e0bb6405d7279c36",
+  "checked_at": "2026-11-28T07:49:02.820269+00:00",
+  "snapshot_at": "2026-11-28T07:48:21.152845+00:00",
+  "snapshot_key": "f439f2d81f28df475ae6d938d112370f3a801c0b3b55ce051337fa182257e065",
   "all_ready": false,
   "gates": {
     "unattended_24h": {
       "passed": false,
       "open_reasons": [
-        "current_public_snapshot_not_verified"
+        "current_public_snapshot_not_verified",
+        "stage_not_verified:collection"
       ]
     },
     "article_quality": {
@@ -22,7 +23,8 @@
       "passed": false,
       "open_reasons": [
         "foreign_full_text_backlog_remains",
-        "original_bodies_missing"
+        "original_bodies_missing",
+        "headlines_waiting_for_AI"
       ]
     },
     "coverage_gaps": {
@@ -30,7 +32,9 @@
       "open_reasons": [
         "core_source_failures",
         "enabled_source_collection_not_verified",
-        "priority_country_field_gaps"
+        "priority_country_field_gaps",
+        "attention_source_not_current:artthrob",
+        "attention_source_not_current:artafrica"
       ]
     }
   },
@@ -40,15 +44,15 @@
     "Program structure/source checks are not semantic or human translation review."
   ],
   "counts": {
-    "total": 7579,
-    "completed": 4382,
-    "api_completed": 4299,
-    "pending": 2121,
-    "without_body": 957
+    "total": 7614,
+    "completed": 4378,
+    "api_completed": 4295,
+    "pending": 2166,
+    "without_body": 951
   },
   "quality": {
-    "remote_verified": 942,
-    "remote_unchecked": 4458,
+    "remote_verified": 919,
+    "remote_unchecked": 4524,
     "complete": false
   },
   "trial": {

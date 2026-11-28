@@ -112,7 +112,7 @@
       sync(dataset); kind = type; area = region;
       position(day);
     }
-    function item({row, label, screenings}) {
+    function item({row, label, screenings}, index) {
       const proof = C.safeUrl(row.evidence_url), programme = C.safeUrl(row.programme_url);
       const booking = C.safeUrl(row.booking_url), watch = C.safeUrl(row.watch_url);
       const movie = row.movie, title = entryTitle(row);
@@ -121,7 +121,7 @@
         : row.source_id && proof ? `<a ${attributes} ${ref(programme || proof)}>${content}</a>`
         : `<button ${attributes} data-detail="${e(row.id)}" data-type="event">${content}</button>`;
       const posterUrl = C.safeImageUrl(movie?.poster_url);
-      const poster = posterUrl ? link(`<img src="${e(posterUrl)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-calendar-poster>`,
+      const poster = posterUrl ? link(`<img src="${e(posterUrl)}" alt="" loading="${index < 3 ? 'eager' : 'lazy'}" decoding="async" referrerpolicy="no-referrer" data-calendar-poster>`,
         'class="calendar-poster" tabindex="-1" aria-hidden="true"') : '';
       const country = row.country === 'GLOBAL' ? '' : C.countryLabels[row.country] || row.country;
       const place = row.prefecture_name || row.city || country;
@@ -197,7 +197,7 @@
       const listing = pageRows.map((entry,index)=>{
         const dateHeader = !chosenDay && (index===0 || entry.day!==pageRows[index-1].day)
           ? `<h3 class="calendar-date-heading">${entry.day ? e(C.dateLabel(entry.day)) : '日期待定'}</h3>` : '';
-        return dateHeader + item(entry);
+        return dateHeader + item(entry,index);
       }).join('');
       const next = entries.find(event=>event.day && event.day >= (chosenDay || dateToday));
       const other = [...new Set(all.map(row=>row.country))].filter(code=>code && code !== 'JP' && code !== 'GLOBAL').sort();

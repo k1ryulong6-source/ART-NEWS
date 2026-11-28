@@ -111,7 +111,7 @@ def page_movie(row, soup, page):
         details = ' '.join(map(node_text, soup.select('p.text, .movie-data, .movieDetail')))[:7000]
         poster = soup.select_one('img.wp-post-image')
     elif host == 'www.eurospace.co.jp':
-        details = node_text(soup.select_one('article') or soup.select_one('main') or soup.body)
+        details = node_text(soup.select_one('p.work-caption'))
         poster = soup.select_one('img[src*="_chirashi."]')
     elif host == 'www.shin-bungeiza.com':
         program = soup.find(id=urlsplit(page).fragment)
@@ -161,6 +161,8 @@ def page_movie(row, soup, page):
     original = re.search(r'(?:原題(?:または英題)?|Original title)\s*:\s*([^/|©()]{2,115}?)(?=\s*(?:日本語|字幕|劇場公開日|製作|配給|[/|©()]|$))',
                          details, flags=re.I)
     year = re.search(rf'({YEAR})\s*年(?:製作|作品|公開)|(?:^|[（(])\s*({YEAR})[年・/／)]|公開[：:]\s*({YEAR})年', details)
+    if host == 'www.eurospace.co.jp':
+        year = re.search(rf'\b({YEAR})年?\s*/', details)
     if original:
         info['original_title'] = clean(original[1])
     if year:
@@ -196,12 +198,12 @@ def claim_values(entity, key):
             if claim.get('rank') != 'deprecated' and claim.get('mainsnak', {}).get('datavalue')]
 
 
-def wikidata_matches(entities, title, year=None):
+def wikidata_matches(entities, title, year=None, *, exact_ids=()):
     matches = []
     for identifier, entity in entities.items():
         labels = [entry['value'] for entry in entity.get('labels', {}).values()]
         aliases = [entry['value'] for entries in entity.get('aliases', {}).values() for entry in entries]
-        if name_key(title) not in {name_key(name) for name in labels + aliases}:
+        if identifier not in exact_ids and name_key(title) not in {name_key(name) for name in labels + aliases}:
             continue
         years = [int(value['time'][1:5]) for value in claim_values(entity, 'P577')
                  if isinstance(value, dict) and re.match(r'^\+\d{4}-', value.get('time', ''))]
@@ -213,7 +215,7 @@ def wikidata_matches(entities, title, year=None):
             matches.append({'id': str(ids[0]) if len(set(ids)) == 1 else None,
                             'tmdb': str(posters[0]) if len(set(posters)) == 1 else None,
                             'lookup_names': list(dict.fromkeys(entity['labels'][language]['value']
-                                                 for language in ('en', 'zh-hans', 'zh') if language in entity.get('labels', {}))),
+                                                 for language in ('en', 'mul', 'zh-hans', 'zh') if language in entity.get('labels', {}))),
                             'year': min(years), 'source': 'https://www.wikidata.org/wiki/' + identifier})
     if year and len(matches) > 1:
         matches = [match for match in matches if match['year'] == year]
@@ -279,8 +281,8 @@ class MovieLookup:
         if not ids:
             return {}
         result = request(action='wbgetentities', ids='|'.join(ids), props='labels|aliases|claims',
-                         languages='en|ja|zh|zh-hans|fr|en-gb|es|it|ko|de|ru')
-        return wikidata_matches(result.get('entities', {}), title, year)
+                         languages='mul|en|ja|zh|zh-hans|fr|en-gb|es|it|ko|de|ru')
+        return wikidata_matches(result.get('entities', {}), title, year, exact_ids=set(ids))
 
     def douban(self, title):
         url = DOUBAN + '/search?' + urlencode({'type': '1002', 'query': title})

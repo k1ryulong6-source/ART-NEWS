@@ -3039,9 +3039,13 @@
       "owner": "Codex",
       "updated_at": "2026-11-28",
       "depends_on": ["T086"],
-      "scope": ["frontend/calendar.js", "frontend/theme.css", "backend/film_calendar.py", "backend/film_metadata.py", "scripts/", "data/film-metadata.json", "docs/FILM_CALENDAR.md", ".github/workflows/film-calendar.yml", ".github/workflows/pages.yml", "tests/"],
+      "scope": ["frontend/calendar.js", "frontend/theme.css", "frontend/app.js", "backend/film_calendar.py", "backend/film_metadata.py", "backend/app.py", "scripts/", "data/film-metadata.json", "docs/FILM_CALENDAR.md", ".github/workflows/film-calendar.yml", ".github/workflows/pages.yml", "tests/"],
       "acceptance": ["电影日历优先刊登核实的豆瓣中文名，未能核实的保留原名", "影院和片方海报具备可查来源，暂无可用海报的条目正常阅读", "同日同一场馆同片合并展示场次，各时刻、地区、平台和来源可查", "桌面、手机、自动更新与正式站核对通过"],
-      "evidence": []
+      "evidence": [
+        "东京时间 11 月 28 日在已保存排期中逐一查 229 组当日及未来作品排期。当前有效匹配覆盖 64 个不同的豆瓣片名与 89 个不同的海报地址，带来源存入片库。核实暖流1957年公开排片和海报来源，1939年与1957年档期独立。仍无法核实的保留原名。",
+        "首次发行 d253ff574 的 Pages 46098079161 和 Project checks 46098080055 成功。正式站 Chromium 390px、1440px 核对天堂之日400×566海报、出自同一影院一日三场的灰狼将至、购票、月度分组分页、全球流媒体和展览跳转。",
+        "终版局部更新后本地 295 项 Python 与 45 项 JavaScript 单测、YAML 解析、项目结构和 diff 检查通过。"
+      ]
     }
   ]
 }

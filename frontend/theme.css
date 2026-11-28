@@ -860,8 +860,8 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
 .calendar-desk .month-controls { gap: 6px; white-space: nowrap; }
 .calendar-desk .month-controls button { min-height: 36px; min-width: 30px; text-align: center; }
 .calendar-desk .calendar-day {
-  min-height: 44px; padding: 4px 2px 3px; flex-direction: row;
-  justify-content: center; align-items: baseline; gap: 2px; border-right: 0;
+  min-height: 44px; padding: 4px 2px 3px; flex-direction: column;
+  align-items: center; gap: 2px; border-right: 0; line-height: 1.1;
 }
 .calendar-desk .calendar-day.reference>span:first-child { background: transparent; color: var(--accent); padding: 0; }
 .calendar-desk .calendar-day.selected { background: var(--ink); color: var(--paper); }
@@ -891,6 +891,7 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
 .calendar-entry-links { display: flex; flex-wrap: wrap; column-gap: 12px; margin-top: 7px; }
 .calendar-desk>.exhibition-coverage { grid-column: 1 / -1; }
 @media (min-width: 1120px) {
+  .calendar-sidebar { position: sticky; top: 18px; }
   .calendar-listing.films { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); column-gap: 20px; }
   .calendar-listing.films .calendar-date-heading { grid-column: 1 / -1; }
   .calendar-listing.films .calendar-entry.has-poster { grid-template-columns: clamp(85px,8vw,112px) minmax(0,1fr); gap: 12px; }

@@ -46,6 +46,12 @@ class FilmCalendarTests(unittest.TestCase):
         self.assertEqual(next(row for row in rows if row['title_original'] == 'Returning Series')['watch_url'],
                          'https://www.netflix.com/title/123')
         self.assertEqual(report['official_schedule_market'],'JP')
+        official['props']['pageProps']['data']['data'] = []
+        pages[source['url']] = f'<script id="__NEXT_DATA__">{json.dumps(official)}</script>'
+        next_run = list(read_netflix(source,pages.__getitem__,date(2026,12,2),rows,{}))
+        returning = next(row for row in next_run if row['title_original'] == 'New Series')
+        self.assertEqual((returning['streaming_format'],returning['streaming_season'],returning['premiere_basis']),
+                         ('series',1,'official_announcement'))
 
     def test_japan_release_classification_preserves_published_dates_and_omits_unverified_cards(self):
         source = {'id':'eiga-releases','name':'映画.com','url':'https://eiga.com/coming/',

@@ -181,6 +181,8 @@ def read_netflix(source, get, today, previous, coverage):
 
     known = {(row.get('netflix_title_id'), row.get('streaming_season', 0), row['start_date']): row for row in previous
              if row.get('source_id') == source['id'] and row.get('netflix_title_id')}
+    confirmed = {(normalized(row['premiere_title']), row['start_date']): row for row in previous
+                 if row.get('source_id') == source['id'] and row.get('premiere_basis') == 'official_announcement'}
     seen = set()
     media_checks = 0
     formats = Counter()
@@ -189,7 +191,9 @@ def read_netflix(source, get, today, previous, coverage):
         title, identifier, image = guide.get(key, (None, None, None))
         caption, published_season, summary, article, article_image = monthly.get(
             key, (None, None, '', source['guide_url'], None))
-        season, official_item = schedule.get(key, (published_season, {}))
+        confirmed_row = confirmed.get(key, {})
+        default_season = confirmed_row.get('streaming_season', 0) if confirmed_row else published_season
+        season, official_item = schedule.get(key, (default_season, {}))
         if (season is None or key in excluded or (work, season) in seen
                 or NON_SCRIPTED.search(' '.join((title or caption or '', summary)))
                 or EARLIER.search(summary) or EARLIER_WINDOW.search(summary)):
@@ -198,9 +202,10 @@ def read_netflix(source, get, today, previous, coverage):
         if not identifier and official_item and not season:
             identifier = str(official_item['videoID'])
             image = image or official_item.get('image')
+        identifier = identifier or confirmed_row.get('netflix_title_id')
         watch = f'https://www.netflix.com/title/{identifier}' if identifier else None
         press_url = source['media_url'] + identifier if identifier else None
-        prev = known.get((identifier, season, day), {})
+        prev = known.get((identifier, season, day), {}) or confirmed_row
         facts = {}
         if press_url and day >= today.isoformat() and not prev.get('netflix_press_checked') and media_checks < source['media_limit']:
             media_checks += 1

@@ -876,6 +876,7 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
 .calendar-entry { min-width: 0; padding: 14px 0; border-bottom: var(--rule); }
 .calendar-entry.has-poster { display: grid; grid-template-columns: clamp(82px,12vw,128px) minmax(0,1fr); align-items: start; gap: 16px; }
 .calendar-poster { display: block; width: 100%; aspect-ratio: 2 / 3; background: var(--canvas); }
+.calendar-poster[hidden] { display: none; }
 .calendar-poster.landscape { aspect-ratio: 3 / 2; }
 .calendar-poster img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .calendar-entry-body { min-width: 0; overflow-wrap: anywhere; }

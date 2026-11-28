@@ -21,6 +21,17 @@ def entity(label, year, subject, movie):
 
 
 class FilmMetadataTests(unittest.TestCase):
+    def test_eiga_stream_credits_exclude_platform_text_and_default_poster(self):
+        row = {'title_original':'同じ映画'}
+        page = 'https://eiga.com/movie/123/'
+        html = '''<div class="poster-img"><img src="https://media.eiga.com/images/assets/no_poster_image.png"></div>
+        <div class="hero-img"><img src="https://media.eiga.com/images/movie/123/still.jpg" alt="同じ映画"></div>
+        <p class="data">2026年製作／日本 原題：Film Name 配信：Netflix 配信開始日：2026年12月1日</p>'''
+        result = page_movie(row,BeautifulSoup(html,'html.parser'),page)
+        self.assertFalse(result.get('poster_url'))
+        self.assertEqual(result['original_title'],'Film Name')
+        self.assertEqual(result['artwork_kind'],'still')
+
     def test_venue_credits_distinguish_production_year_from_the_restoration_schedule(self):
         soup = BeautifulSoup('''<div id="d2026-11-25-1"><img src="/photo/one-p.jpg"></div>
         <div class="schedule-content"><div class="schedule-content-txt"><p class="nihon-date">

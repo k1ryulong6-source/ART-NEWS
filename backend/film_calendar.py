@@ -6,6 +6,7 @@ import unicodedata
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, time, timedelta, timezone
 from hashlib import sha256
+from threading import Lock
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
@@ -29,6 +30,18 @@ def read_calendar(path=DATA):
 
 def text(node):
     return ' '.join(node.get_text(' ', strip=True).split()) if node else ''
+
+
+def film_image(value, page):
+    from .reading import public_url
+
+    if not isinstance(value, str) or re.search(
+            r'/(?:noimg(?:/|\.)|no_poster_image\.|npw\.gif$|placeholder(?:/|\.)|default[-_](?:movie|poster))',
+            urlsplit(value).path, re.I):
+        return None
+    if value.startswith('http://') and urlsplit(value).hostname == urlsplit(page).hostname:
+        value = 'https://' + value.removeprefix('http://')
+    return public_url(value, page)
 
 
 def local_day(label, reference, month=None):
@@ -122,6 +135,7 @@ def parse_screenings(soup, source, today):
 
 def film_dates(soup, source, get):
     from bs4 import BeautifulSoup
+    from .japan_film_calendar import image_fields
     if source['adapter'] == 'netflix':
         film_list = BeautifulSoup(get(source['film_evidence_url']), 'html.parser')
         films = {normalized(text(h)) for h in film_list.select('[data-sel=article-content] h3')}
@@ -140,6 +154,11 @@ def film_dates(soup, source, get):
             link = node.select_one('a[data-uia=play-on-netflix-link][href]')
             if link and re.fullmatch(r'https://www.netflix.com/watch/\d+(?:\?.*)?',link['href']):
                 row['watch_url'] = link['href'].split('?')[0]
+            picture = node.select_one('img[src]')
+            if picture and title.casefold() in (picture.get('alt') or '').casefold():
+                still = image_fields(picture['src'], source['url'], key='artwork')
+                if still:
+                    row.update(still, artwork_kind='still')
             yield row
     else:
         from .exhibition_sources import linked_url
@@ -153,11 +172,16 @@ def film_dates(soup, source, get):
             page = BeautifulSoup(get(url), 'html.parser')
             title = text(page.find('h1'))
             if title:
-                yield {**base(source, title, f'{year}-{month:02}', 'month', 'streaming_release', url), 'program': True}
+                row = {**base(source, title, f'{year}-{month:02}', 'month', 'streaming_release', url), 'program': True}
+                card = page.select_one('meta[property="og:image"][content]')
+                if card and (artwork := image_fields(card['content'], url, key='artwork')):
+                    row.update(artwork, artwork_kind='programme')
+                yield row
 
 
 def apple_dates(payload, source):
     from .exhibition_sources import linked_url
+    from .japan_film_calendar import image_fields
     films = json.loads(payload)['results']['originals']
     for item in films:
         if item.get('showTypeKey') != 'films' or not item.get('title'):
@@ -172,7 +196,11 @@ def apple_dates(payload, source):
             continue
         precision = 'day' if match[2] else 'month'
         url = linked_url(source['url'], item.get('url'), host_only=True)
-        yield base(source, item['title'], day if precision == 'day' else day[:7], precision, 'streaming_release', url)
+        row = base(source, item['title'], day if precision == 'day' else day[:7], precision, 'streaming_release', url)
+        image = item.get('image') or {}
+        if image.get('dirpath') and image.get('name'):
+            row.update(image_fields(image['dirpath'] + image['name'], row['evidence_url']))
+        yield row
 
 
 def disney_dates(soup, source, get):
@@ -203,6 +231,7 @@ def disney_dates(soup, source, get):
 def netflix_news_dates(soup, source, get):
     from bs4 import BeautifulSoup
     from .exhibition_sources import linked_url
+    from .japan_film_calendar import image_fields
     stories = {}
     for link in soup.select('a[href^="/en/news/"]'):
         headline = text(link)
@@ -234,6 +263,9 @@ def netflix_news_dates(soup, source, get):
                 row = base(source,title,day.isoformat(),'day','streaming_release',url)
                 if re.search(r'\b(?:globally|worldwide)\b',paragraph,re.I):
                     row['market'] = '全球'
+                card = page.select_one('meta[property="og:image"][content]')
+                if card and (artwork := image_fields(card['content'], url, key='artwork')):
+                    row.update(artwork, artwork_kind='still')
                 yield row
                 break
 
@@ -249,44 +281,67 @@ def record_id(row):
 def refresh(previous, sources, *, instant=None, fetch_factory=None):
     from bs4 import BeautifulSoup
     from .exhibition_sources import PublicHost, error_kind
+    from .japan_film_calendar import current_films, release_dates, screening_dates
     fetch_factory = fetch_factory or PublicHost
     instant = instant or datetime.now(timezone.utc)
     reports = dict(previous['sources'])
     items = {row['id']: row for row in previous['items']}
+    now_showing = previous.get('now_showing', [])
+    hosts = {}
+    host_locks = {urlsplit(source['url']).hostname: Lock() for source in sources}
 
     def read(source):
         instant_here = instant.astimezone(ZoneInfo(source['timezone'])).date()
+        hostname = urlsplit(source['url']).hostname
+        adapter = source['adapter']
+        coverage = {}
+
+        def get(url):
+            with host_locks[hostname]:
+                if hostname not in hosts:
+                    hosts[hostname] = fetch_factory(source['url'])
+                return hosts[hostname](url)
+
         try:
-            get = fetch_factory(source['url'])
-            if source['adapter'] == 'apple':
+            if adapter == 'apple':
                 rows = apple_dates(get(source['data_url']), source)
             else:
                 soup = BeautifulSoup(get(source['url']), 'html.parser')
-                if source['adapter'] == 'disney':
+                if adapter == 'eiga_showing':
+                    rows = current_films(soup, source, get)
+                elif adapter == 'eiga_releases':
+                    rows, coverage = release_dates(soup, source, get, instant_here, previous['items'])
+                elif adapter == 'eiga_venue':
+                    rows = screening_dates(soup, source, instant)
+                elif adapter == 'disney':
                     rows = disney_dates(soup, source, get)
-                elif source['adapter'] == 'netflix_news':
+                elif adapter == 'netflix_news':
                     rows = netflix_news_dates(soup, source, get)
                 elif source.get('platform'):
                     rows = film_dates(soup, source, get)
                 else:
                     rows = parse_screenings(soup, source, instant_here)
-            records = {record_id(row): row for row in rows if row}
+            records = {(row.get('id') or record_id(row)): row for row in rows if row}
             if not records:
                 raise ValueError('no_verified_film_events')
-            return source, records, None
+            return source, records, None, coverage
         except (OSError, ValueError, KeyError, TypeError, AttributeError) as error:
-            return source, {}, error_kind(error)
+            return source, {}, error_kind(error), {}
 
     with ThreadPoolExecutor(max_workers=6) as pool:
-        for source, rows, error in pool.map(read, sources):
+        for source, rows, error, coverage in pool.map(read, sources):
             identifier = source['id']
             proof = {'name':source['name'], 'url':source['url'], 'checked_at':instant.isoformat(),
-                     'status':'failed' if error else 'success','verified_this_run':len(rows)}
+                     'status':'failed' if error else 'success','verified_this_run':len(rows), **coverage}
             if error:
                 proof['reason'] = error
                 proof['last_success_at'] = reports.get(identifier, {}).get('last_success_at')
             else:
                 proof['last_success_at'] = instant.isoformat()
+                if source['adapter'] == 'eiga_showing':
+                    now_showing = list(rows.values())
+                    reports[identifier] = proof
+                    continue
                 if source.get('venue'):
                     # Current theatre timetables supersede saved sessions only in their published date window.
                     days = [row['start_date'] for row in rows.values()]
@@ -294,9 +349,14 @@ def refresh(previous, sources, *, instant=None, fetch_factory=None):
                     today = instant.astimezone(ZoneInfo(source['timezone'])).date().isoformat()
                     items = {key: row for key, row in items.items() if row['source_id'] != identifier
                              or not max(first,today) <= row['start_date'] <= last or key in rows}
+                elif source['adapter'] == 'eiga_releases':
+                    confirmed = {(row['evidence_url'], row['event_type']) for row in rows.values()}
+                    today = instant.astimezone(ZoneInfo(source['timezone'])).date().isoformat()
+                    items = {key: row for key, row in items.items() if row['source_id'] != identifier
+                             or row['start_date'] < today or (row['evidence_url'], row['event_type']) not in confirmed or key in rows}
                 items.update({key: {**row,'id':key} for key,row in rows.items()})
             reports[identifier] = proof
-    return {'schema_version':1,'generated_at':instant.isoformat(),'sources':reports,
+    return {'schema_version':1,'generated_at':instant.isoformat(),'sources':reports,'now_showing':now_showing,
             'items':sorted(items.values(),key=lambda row:(row['start_date'],row.get('start_at',''),row['id']))}
 
 

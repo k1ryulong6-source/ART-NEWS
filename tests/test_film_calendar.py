@@ -1,13 +1,58 @@
 import json
 import unittest
-from datetime import date
+from datetime import date, datetime, timezone
 
 from bs4 import BeautifulSoup
 
 from backend.film_calendar import apple_dates, disney_dates, local_day, netflix_news_dates, parse_screenings, record_id
+from backend.japan_film_calendar import current_films, release_dates, screening_dates
 
 
 class FilmCalendarTests(unittest.TestCase):
+    def test_japan_release_classification_preserves_published_dates_and_omits_unverified_cards(self):
+        source = {'id':'eiga-releases','name':'映画.com','url':'https://eiga.com/coming/',
+                  'week_url':'https://eiga.com/upcoming/','country':'JP','timezone':'Asia/Tokyo'}
+        cards = '''<h2 class="title-square">2026年 <span>12月1日</span> 公開・配信開始</h2>
+        <div class="list-block" id="mv1"><h3 class="title"><a href="/movie/1/">Cinema</a></h3>
+        <div class="img-box"><img src="https://media.eiga.com/images/movie/1/photo/poster/320.jpg"></div></div>
+        <div class="list-block" id="mv2"><h3 class="title"><a href="/movie/2/">Streaming</a></h3>
+        <div class="txt-box"><p class="txt">Netflixで2026年12月2日から配信。</p></div></div>
+        <div class="list-block" id="mv3"><h3 class="title"><a href="/movie/3/">Undated</a></h3></div>'''
+        pages = {source['week_url']:'', 'https://eiga.com/movie/1/':'<p class="data">劇場公開日：2026年12月1日</p>',
+                 'https://eiga.com/movie/3/':'<p class="data">2026年製作</p>'}
+        rows, coverage = release_dates(BeautifulSoup(cards,'html.parser'),source,pages.__getitem__,date(2026,11,28),[])
+        self.assertEqual([(r['event_type'],r['start_date'],r['platform']) for r in rows],
+                         [('cinema_release','2026-12-01',None),('streaming_release','2026-12-02','Netflix')])
+        self.assertTrue(rows[0]['poster_url'].endswith('/320.jpg'))
+        self.assertEqual(coverage['unclassified'], 1)
+
+    def test_showing_index_paginates_without_creating_calendar_days(self):
+        source = {'id':'eiga-showing','name':'映画.com','url':'https://eiga.com/now/'}
+        card = '<div class="list-block" id="mv{n}"><h3 class="title"><a href="/movie/{n}/">Film {n}</a></h3></div>'
+        first = '<p class="search-number">全2件</p>' + card.format(n=1) + '<ul class="pagination"><li><a href="/now/all/release/2/">次へ</a></li></ul>'
+        rows = current_films(BeautifulSoup(first,'html.parser'),source,lambda _:card.format(n=2))
+        self.assertEqual([r['id'] for r in rows], ['eiga-showing-1','eiga-showing-2'])
+        self.assertTrue(all('start_date' not in r for r in rows))
+        with self.assertRaisesRegex(ValueError,'catalogue_count_mismatch'):
+            current_films(BeautifulSoup(first,'html.parser'),source,lambda _:card.format(n=1))
+
+    def test_venue_cells_require_matching_japan_time_and_drop_mismatched_booking(self):
+        start = datetime.fromisoformat('2026-11-30T16:30:00+09:00')
+        source = {'id':'theatre','name':'Cinema','venue':'Cinema','url':'https://eiga.com/theater/13/1/1/',
+                  'country':'JP','city':'东京','timezone':'Asia/Tokyo'}
+        html = f'''<h1>Cinema</h1><section id="m1"><h2 class="title-xlarge">Film</h2>
+        <div class="movie-image"><a href="/movie/1/">Poster</a><img src="/images/noimg.png"></div>
+        <table class="weekly-schedule"><tr><td data-date="20261130">
+        <a href="https://example.org/#20260707" data-time="{int(start.timestamp())}">16:30</a>
+        <a href="https://example.org/#20261130" data-time="{int(start.timestamp())}">19:00</a>
+        </td></tr></table></section>'''
+        rows = list(screening_dates(BeautifulSoup(html,'html.parser'),source,datetime(2026,11,28,tzinfo=timezone.utc)))
+        self.assertEqual(len(rows),1)
+        self.assertEqual(rows[0]['start_at'],start.isoformat())
+        self.assertEqual(rows[0]['programme_url'],'https://eiga.com/movie/1/')
+        self.assertIsNone(rows[0]['booking_url'])
+        self.assertNotIn('poster_url',rows[0])
+
     def test_disney_monthly_evidence_preserves_each_platform_and_published_day(self):
         source = {'id':'disney-hulu','name':'Disney Press','url':'https://press.disneyplus.com/news','timezone':'America/New_York'}
         index = BeautifulSoup('<a href="/news/next-on-disney-plus-december-2026">Upcoming films</a>','html.parser')

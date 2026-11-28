@@ -27,10 +27,23 @@ test('streaming view uses all territories and preserves editions from other plat
   const canada = {...film,id:'ca',country:'CA',market:'加拿大'};
   const second = {...film,id:'criterion',platform:'Criterion Channel'};
   assert.ok(Cal.inArea(film,'tokyo','streaming_release'));
+  assert.ok(Cal.inArea(film,'tokyo','all'));
   assert.ok(!Cal.inArea(film,'tokyo','film'));
   assert.equal(Cal.deduplicate([film,canada,second]).length,3);
   assert.ok(Cal.inArea(slot('national',{event_type:'cinema_release',city:null,venue:null}),'tokyo','cinema_release'));
   assert.ok(!Cal.inArea(slot('osaka',{city:'大阪'}),'tokyo','film'));
+});
+
+test('the same Japanese streaming announcement gains its platform and retained poster without duplication', () => {
+  const first = slot('legacy',{event_type:'streaming_release',start_at:null,evidence_status:'official_confirmed'});
+  const update = {...first,id:'more',source_id:'eiga-releases',market:'日本',platform:'Netflix',
+    evidence_status:'media_reported',poster_url:'https://example.org/poster.jpg'};
+  const canada = {...update,id:'other',country:'CA',market:'加拿大'};
+  const items = Cal.deduplicate([first,update,canada]);
+  assert.equal(items.length,2);
+  assert.equal(items[0].id,first.id);
+  assert.equal(items[0].platform,'Netflix');
+  assert.equal(items[0].poster_url,update.poster_url);
 });
 
 test('calendar shows only opening and closing edges, keeps month-only titles and leaves canceled dates off the grid', () => {
@@ -38,7 +51,9 @@ test('calendar shows only opening and closing edges, keeps month-only titles and
   const beyond = {...exhibition,id:'continues',start_date:'2026-10-05',end_date:'2026-12-30'};
   const monthOnly = slot('month-only',{date_precision:'month',start_at:null,event_type:'streaming_release',start_date:'2026-11'});
   const calledOff = slot('cancelled',{status:'cancelled'});
-  assert.deepEqual(Cal.calendarEntries([exhibition,beyond,monthOnly,calledOff],'2026-11').map(n=>[n.row.id,n.day,n.label]),[
+  const photoCall = slot('photo-call',{event_type:'call_deadline'});
+  const inCinemas = slot('in-cinemas',{event_type:'cinema_release',start_date:null});
+  assert.deepEqual(Cal.calendarEntries([exhibition,beyond,monthOnly,calledOff,photoCall,inCinemas],'2026-11').map(n=>[n.row.id,n.day,n.label]),[
     ['exhibition','2026-11-02','开展'],['exhibition','2026-11-30','闭展'],['month-only',null,'仅公布月份']
   ]);
 });

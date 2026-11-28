@@ -13,7 +13,7 @@ from urllib.parse import urlencode, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
-from .film_calendar import DATA, read_calendar, text as node_text
+from .film_calendar import DATA, film_image as image_url, read_calendar, text as node_text
 from .snapshot_files import encoded, replace_file
 
 METADATA = DATA.with_name('film-metadata.json')
@@ -24,6 +24,7 @@ APPLE = 'https://www.apple.com/tv-pr/originals.originals.json'
 VERA = 'https://www.cinemavera.com/preview.html'
 VERA_CURRENT = 'https://www.cinemavera.com/programs.html'
 MOVIE_TYPES = {'cinema_release', 'cinema_screening', 'festival_screening', 'streaming_release'}
+ART_FIELDS = ('poster_url', 'poster_source_url', 'artwork_url', 'artwork_source_url', 'artwork_kind')
 VERSION = re.compile(r'(?:\s|[［【(])(?:[248]K|DCP|35mm|リストア版|デジタル復元|デジタルリマスター|修復版|上映版|〈.*再上映〉).*$', re.I)
 PROGRAMME = re.compile(r'^\s*(?:[2-9２-９]本(?:立て|セット)|オールナイト|短編(?:特集|プログラム)|上映プログラム|.*(?:lineup|short films program(?:me)?|double feature)$)', re.I)
 YEAR = r'(?:18|19|20)\d{2}'
@@ -76,23 +77,13 @@ def calendar_with_films(events=(), *, calendar=None, metadata=None):
     calendar = read_calendar() if calendar is None else calendar
     metadata = read_metadata() if metadata is None else metadata
     films = {}
-    for row in [*calendar['items'], *events]:
+    for row in [*calendar['items'], *calendar.get('now_showing', []), *events]:
         record = metadata['records'].get(film_key(row, include_programmes=True))
         if record and any(record.get(key) for key in ('title_zh', 'poster_url', 'original_title', 'artwork_url')):
             films[row['id']] = {key: record[key] for key in (
-                'title_zh', 'original_title', 'year', 'douban_id', 'douban_url', 'match_source_url',
-                'poster_url', 'poster_source_url', 'artwork_url', 'artwork_source_url', 'artwork_kind'
+                'title_zh', 'original_title', 'year', 'douban_id', 'douban_url', 'match_source_url', *ART_FIELDS
             ) if record.get(key)}
     return {**calendar, 'films': films, 'film_metadata_report': metadata.get('report')}
-
-
-def image_url(value, page):
-    from .reading import public_url
-    if value and urlsplit(value).path.lower().endswith(('/noimg.png', '/npw.gif')):
-        return None
-    if value and value.startswith('http://') and urlsplit(value).hostname == urlsplit(page).hostname:
-        value = 'https://' + value.removeprefix('http://')
-    return public_url(value, page)
 
 
 def artwork_fields(image, page, kind):
@@ -155,7 +146,10 @@ def page_movie(row, soup, page):
     info, poster, details = {}, None, ''
     if host == 'eiga.com':
         details = node_text(soup.select_one('p.data'))
-        poster = soup.select_one('div.pict-area img, img[itemprop=image], .movie-poster img')
+        poster = soup.select_one('.poster-img img, div.pict-area img, img[itemprop=image], .movie-poster img')
+        hero = soup.select_one('.hero-img img')
+        if hero and name_key(hero.get('alt')) == expected:
+            info.update(artwork_fields(hero, page, 'still'))
         if not poster:
             for block in soup.select('script[type="application/ld+json"]'):
                 try:
@@ -206,7 +200,7 @@ def page_movie(row, soup, page):
     if info.get('poster_url'):
         info['poster_source_url'] = page
     details = unicodedata.normalize('NFKC', details)
-    original = re.search(r'(?:原題(?:または英題)?|Original title)\s*:\s*([^/|©()]{2,115}?)(?=\s*(?:日本語|字幕|劇場公開日|製作|配給|[/|©()]|$))',
+    original = re.search(r'(?:原題(?:または英題)?|Original title)\s*:\s*([^/|©()]{2,115}?)(?=\s*(?:日本語|字幕|劇場公開日|製作|配給|配信|[/|©()]|$))',
                          details, flags=re.I)
     year = re.search(rf'({YEAR})\s*年(?:製作|作品|公開)|(?:^|[（(])\s*({YEAR})[年・/／)]|公開[：:]\s*({YEAR})年', details)
     if host == 'www.eurospace.co.jp':
@@ -377,7 +371,8 @@ class MovieLookup:
         return page_movie(row, BeautifulSoup(self.get(page), 'html.parser'), page)
 
     def resolve(self, row, *, related=None):
-        facts = self.source_facts(row)
+        published = {key: row[key] for key in ART_FIELDS if row.get(key)}
+        facts = {**self.source_facts(row), **published}
         if is_programme(row):
             return facts
         if related:
@@ -458,8 +453,9 @@ def refresh_metadata(calendar, events, previous, *, instant=None, limit=44, seco
     upcoming, archive = [], []
     for identifier, rows in groups.items():
         prior = records.get(identifier, {})
-        complete_programme = is_programme(rows[0]) and prior.get('artwork_url')
-        if complete_programme or (prior.get('title_zh') and prior.get('poster_url')) or prior.get('checked_at', '') > retry_after:
+        has_poster = prior.get('poster_url') or any(row.get('poster_url') for row in rows)
+        complete_programme = is_programme(rows[0]) and any(record.get('artwork_url') for record in [prior,*rows])
+        if complete_programme or (prior.get('title_zh') and has_poster) or prior.get('checked_at', '') > retry_after:
             continue
         future = [row for row in rows if row['start_date'] >= today[:7 if row.get('date_precision') == 'month' else 10]]
         if future:
@@ -468,7 +464,13 @@ def refresh_metadata(calendar, events, previous, *, instant=None, limit=44, seco
         else:
             row = max(rows, key=lambda row: row['start_date'])
             archive.append((identifier, row))
-    upcoming.sort(key=lambda item: (item[0] in records, item[1]['start_date']))
+    def priority(item):
+        identifier, row = item
+        prior = records.get(identifier, {})
+        missing_picture = not any(record.get('poster_url') or record.get('artwork_url') for record in (row, prior))
+        return (not missing_picture, identifier in records, row['start_date'])
+
+    upcoming.sort(key=priority)
     archive.sort(key=lambda item: (item[0] not in records, item[1]['start_date']), reverse=True)
     old_quota = min(len(archive), max(1, limit // 10)) if upcoming else limit
     now = instant.isoformat()
@@ -504,9 +506,13 @@ def refresh_metadata(calendar, events, previous, *, instant=None, limit=44, seco
                                     'source_title': row['title_original'], 'checked_at': now}
                 updated += 1
     films = {key: rows for key, rows in groups.items() if not is_programme(rows[0])}
-    available = [records.get(key, {}) for key in films]
-    programmes = [records.get(key, {}) for key in groups.keys() - films.keys()]
-    active = [records.get(key, {}) for key, rows in films.items()
+    def with_published_art(identifier, rows):
+        artwork = {field: row[field] for row in rows for field in ART_FIELDS if row.get(field)}
+        return {**artwork, **records.get(identifier, {})}
+
+    available = [with_published_art(key, rows) for key, rows in films.items()]
+    programmes = [with_published_art(key, groups[key]) for key in groups.keys() - films.keys()]
+    active = [with_published_art(key, rows) for key, rows in films.items()
               if any(row['start_date'] >= today[:len(row['start_date'])] for row in rows)]
     report = {'checked_at': instant.isoformat(), 'looked_up_this_run': updated, 'works': len(films),
               'with_douban_title': sum(bool(record.get('title_zh')) for record in available),

@@ -18,7 +18,7 @@
   const safeUrl = value => { try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } };
   const calendarEventAllowed = row => row.event_type !== 'streaming_release' || row.is_demo
     || (!row.program && row.date_precision === 'day' && Boolean(row.start_date && row.platform)
-      && ['official_announcement','verified_release'].includes(row.premiere_basis)
+      && ['official_announcement','verified_release','reported_premiere'].includes(row.premiere_basis)
       && safeUrl(row.premiere_source_url).startsWith('https://'));
   const originalPageUrl = row => safeImageUrl(row.original_page_url || row.canonical_url);
   // The static site ships article bodies separately (row.body_ref) and attaches them when a view needs one.

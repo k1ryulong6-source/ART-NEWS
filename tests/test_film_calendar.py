@@ -6,10 +6,47 @@ from bs4 import BeautifulSoup
 
 from backend.film_calendar import local_day, parse_screenings, record_id, refresh
 from backend.japan_film_calendar import current_films, release_dates, screening_dates
+from backend.netflix_calendar import read_netflix
 from backend.streaming_premieres import apple_dates, press_dates, press_premiere
 
 
 class FilmCalendarTests(unittest.TestCase):
+    def test_netflix_joins_originals_and_checks_kind_season_and_first_stream(self):
+        source = {'id':'netflix-calendar','name':'Netflix','url':'https://about.netflix.com/en/new-to-watch',
+                  'guide_url':'https://guide.example/calendar/','guide_index_url':'https://guide.example/coming-soon/',
+                  'media_url':'https://media.netflix.com/en/only-on-netflix/','media_limit':0,
+                  'platform':'Netflix','timezone':'UTC'}
+        issue = 'https://guide.example/coming-soon/whats-coming-to-netflix-in-december-2026/'
+        start = int(datetime(2026,12,3,tzinfo=timezone.utc).timestamp() * 1000)
+        official = {'props': {'pageProps': {'countryCode':'JP','data': {'totalItems':1,'data':[
+            {'title1':'New Series','title2':'Limited Series','collection':2170013,'startTime':start}
+        ]}}}}
+        guide = '''<article data-release-kind="series" data-release-origin="original">
+        <time datetime="2026-12-03T12:00:00+00:00"></time><h4 class="won-upcoming__card-title-text">Returning Series</h4>
+        <p class="won-upcoming__title-meta">Season 1 · 2026</p><span class="won-upcoming__badge-type">Series</span>
+        <a class="won-upcoming__action--queue" href="https://www.netflix.com/title/123"></a></article>'''
+        month = '''<div id="article-body"><div class="entry-inner"><h4>What’s Coming to Netflix on December 3rd</h4><ul>
+        <li>New Series (2026) Netflix Original – A new detective story.</li>
+        <li>Returning Series (Season 2) Netflix Original – A mystery continues.</li>
+        <li>Opal (2026) Netflix Original – An animated feature that opened in theaters in November.</li>
+        <li>Licensed film (2025) – enters the library.</li>
+        <li>Rereleased (2026) Netflix Original – Previously streamed in other markets.</li>
+        <li>Reality (Season 1) Netflix Original – A reality dating competition.</li>
+        <li>Weekly (Season 2 Episode 4) Netflix Original – The next episode.</li>
+        </ul></div></div>'''
+        pages = {source['url']: f'<script id="__NEXT_DATA__">{json.dumps(official)}</script>',
+                 source['guide_url']: guide, source['guide_index_url']: f'<a href="{issue}">December</a>', issue: month}
+        report = {}
+        rows = list(read_netflix(source,pages.__getitem__,date(2026,12,1),[],report))
+        types = {row['title_original']: (row['streaming_format'], row.get('streaming_season'), row['premiere_basis']) for row in rows}
+        self.assertEqual(types, {'New Series':('series',1,'official_announcement'),
+                                 'Returning Series':('series',2,'reported_premiere'),
+                                 'Opal':('animated_film',None,'reported_premiere')})
+        self.assertEqual(next(row for row in rows if row['title_original'] == 'Opal')['streaming_path'],'theatrical')
+        self.assertEqual(next(row for row in rows if row['title_original'] == 'Returning Series')['watch_url'],
+                         'https://www.netflix.com/title/123')
+        self.assertEqual(report['official_schedule_market'],'JP')
+
     def test_japan_release_classification_preserves_published_dates_and_omits_unverified_cards(self):
         source = {'id':'eiga-releases','name':'映画.com','url':'https://eiga.com/coming/',
                   'week_url':'https://eiga.com/upcoming/','country':'JP','timezone':'Asia/Tokyo'}

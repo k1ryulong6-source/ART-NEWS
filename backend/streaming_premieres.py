@@ -200,5 +200,7 @@ def verified_dates(entries, sources, previous):
             continue
         key = entry['source_id'], entry['work_url'], entry['start_date'], entry['platform']
         row = work.get(key) or base(source, entry['title'], entry['start_date'], 'day', 'streaming_release', entry['work_url'])
-        row = {**row, 'platform': entry['platform'], 'market': entry.get('market') or row.get('market')}
+        fields = ('streaming_format', 'streaming_season', 'streaming_path', 'netflix_title_id', 'watch_url')
+        row = {**row, **{field: entry[field] for field in fields if field in entry},
+               'platform': entry['platform'], 'market': entry.get('market') or row.get('market')}
         yield add_proof(row, entry['premiere_url'], title=entry.get('official_title'), basis='verified_release')

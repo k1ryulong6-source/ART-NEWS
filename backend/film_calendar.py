@@ -32,7 +32,7 @@ def calendar_event_allowed(row):
     if row.get('event_type') != 'streaming_release':
         return True
     proof = urlsplit(row.get('premiere_source_url') or '')
-    return (row.get('premiere_basis') in ('official_announcement', 'verified_release')
+    return (row.get('premiere_basis') in ('official_announcement', 'verified_release', 'reported_premiere')
             and proof.scheme == 'https' and bool(proof.hostname) and bool(row.get('platform'))
             and row.get('date_precision') == 'day' and re.fullmatch(r'\d{4}-\d{2}-\d{2}', row.get('start_date') or '')
             and not row.get('program'))
@@ -148,13 +148,20 @@ def record_id(row):
         row['source_id'], normalized(row['title_original']), row['start_date'], row.get('start_at'),
         row.get('venue'), row.get('auditorium'), row.get('platform'), row.get('market')
     )
+    if row.get('streaming_season'):
+        key += (row['streaming_season'],)
     return 'film-' + sha256(json.dumps(key, ensure_ascii=False).encode()).hexdigest()[:24]
+
+
+def premiere_work(row):
+    return row['platform'], normalized(row.get('premiere_title') or row['title_original']), row.get('streaming_season', 0)
 
 
 def refresh(previous, sources, *, verified_premieres=(), instant=None, fetch_factory=None):
     from bs4 import BeautifulSoup
     from .exhibition_sources import PublicHost, error_kind
     from .japan_film_calendar import current_films, release_dates, screening_dates
+    from .netflix_calendar import read_netflix
     from .streaming_premieres import apple_dates, press_dates, verified_dates
     fetch_factory = fetch_factory or PublicHost
     instant = instant or datetime.now(timezone.utc)
@@ -164,24 +171,31 @@ def refresh(previous, sources, *, verified_premieres=(), instant=None, fetch_fac
              and row.get('premiere_basis') != 'verified_release'}
     now_showing = previous.get('now_showing', [])
     hosts = {}
-    host_locks = {urlsplit(source['url']).hostname: Lock() for source in sources}
-    press_adapters = ('apple', 'disney', 'netflix_news')
+    source_hosts = {source['id']: {urlsplit(source[key]).hostname: source[key] for key in
+                    ('url', 'guide_url', 'media_url') if source.get(key)} for source in sources}
+    host_locks = {hostname: Lock() for domains in source_hosts.values() for hostname in domains}
+    press_adapters = ('apple', 'disney', 'netflix_news', 'netflix_calendar')
 
     def read(source):
         instant_here = instant.astimezone(ZoneInfo(source['timezone'])).date()
-        hostname = urlsplit(source['url']).hostname
+        domains = source_hosts[source['id']]
         adapter = source['adapter']
         coverage = {}
 
         def get(url):
+            hostname = urlsplit(url).hostname
+            if hostname not in domains:
+                raise ValueError('source_host_mismatch')
             with host_locks[hostname]:
                 if hostname not in hosts:
-                    hosts[hostname] = fetch_factory(source['url'])
+                    hosts[hostname] = fetch_factory(domains[hostname])
                 return hosts[hostname](url)
 
         try:
             if adapter == 'apple':
                 rows = apple_dates(get(source['data_url']), get(source['press_url']), source, get, coverage)
+            elif adapter == 'netflix_calendar':
+                rows = read_netflix(source, get, instant_here, previous['items'], coverage)
             else:
                 soup = BeautifulSoup(get(source['url']), 'html.parser')
                 if adapter == 'eiga_showing':
@@ -229,22 +243,30 @@ def refresh(previous, sources, *, verified_premieres=(), instant=None, fetch_fac
                              or row['start_date'] < today or (row['evidence_url'], row['event_type']) not in confirmed or key in rows}
                 elif source['adapter'] in press_adapters:
                     today = instant.astimezone(ZoneInfo(source['timezone'])).date().isoformat()
-                    revised = {(normalized(row['premiere_title']), row['platform']) for row in rows.values()}
+                    revised = {premiere_work(row) for row in rows.values()}
                     items = {key: row for key, row in items.items() if row['source_id'] != identifier
-                             or row['start_date'] < today or row.get('premiere_basis') != 'official_announcement'
-                             or (normalized(row.get('premiere_title') or row['title_original']), row['platform']) not in revised or key in rows}
+                             or row['start_date'] < today or row.get('premiere_basis') == 'verified_release'
+                             or premiere_work(row) not in revised or key in rows}
                 items.update({key: {**row,'id':key} for key,row in rows.items()})
             reports[identifier] = proof
 
     # A curated proof can preserve the dedicated work page and its existing metadata.
     premieres = {}
+    proof_rank = {'reported_premiere': 0, 'official_announcement': 1, 'verified_release': 2}
     for row in [*items.values(), *verified_dates(verified_premieres, sources, previous['items'])]:
         if row['event_type'] != 'streaming_release' or not calendar_event_allowed(row):
             continue
         identifier = row.get('id') or record_id(row)
-        key = (row['platform'], normalized(row.get('premiere_title') or row['title_original']), row['start_date'])
+        key = (*premiere_work(row), row['start_date'])
         if duplicate := premieres.get(key):
-            row = {**items.pop(duplicate), **row}
+            prior = items.pop(duplicate)
+            if duplicate != identifier:
+                items.pop(identifier, None)
+            if proof_rank[prior['premiere_basis']] > proof_rank[row['premiere_basis']]:
+                row = {**row, **prior}
+                identifier = duplicate
+            else:
+                row = {**prior, **row}
         premieres[key] = identifier
         items[identifier] = {**row, 'id': identifier}
     return {'schema_version':1,'generated_at':instant.isoformat(),'sources':reports,'now_showing':now_showing,

@@ -47,6 +47,25 @@ test('the same confirmed premiere in different language editions shows once with
   assert.equal(items[0].poster_url,update.poster_url);
 });
 
+test('a Netflix animation season shows its format, edition and reported release source', t => {
+  const previousDocument = global.document;
+  global.document = { addEventListener() {} };
+  t.after(() => { global.document = previousDocument; });
+  const second = slot('season2',{event_type:'streaming_release',title_original:'Animated story',start_at:null,
+    platform:'Netflix',premiere_basis:'reported_premiere',premiere_source_url:'https://example.org/launch',
+    streaming_format:'animated_series',streaming_season:2});
+  const first = {...second,id:'season1',streaming_season:1};
+  const schedule = Cal.create({C,boot:{film_calendar:{items:[first,second]}},server:false});
+  const data = {mode:'live',events:[]};
+  schedule.restoreList({mode:'live',month:'2026-11',chosenDay:null,page:1,area:'tokyo',kind:'streaming_release'},data);
+  assert.match(schedule.view(data,[]),/data-cal-count="2"/);
+  const detail = schedule.detail(data,second.id,[],{relatedImage:()=>'',save:''}).html;
+  assert.match(detail,/动画剧集/);
+  assert.match(detail,/第 2 季/);
+  assert.match(detail,/首播报道/);
+  assert.match(detail,/剧集简介/);
+});
+
 test('unverified library dates stay out of both calendar views and the old direct reader', t => {
   const previousDocument = global.document;
   global.document = { addEventListener() {} };

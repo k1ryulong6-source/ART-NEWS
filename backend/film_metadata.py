@@ -25,6 +25,7 @@ APPLE = 'https://www.apple.com/tv-pr/originals.originals.json'
 VERA = 'https://www.cinemavera.com/preview.html'
 VERA_CURRENT = 'https://www.cinemavera.com/programs.html'
 MOVIE_TYPES = {'cinema_release', 'cinema_screening', 'festival_screening', 'streaming_release'}
+SERIES_FORMATS = {'series', 'animated_series'}
 ART_FIELDS = ('poster_url', 'poster_source_url', 'artwork_url', 'artwork_source_url', 'artwork_kind')
 VERSION = re.compile(r'(?:\s|[［【(])(?:[248]K|DCP|35mm|リストア版|デジタル復元|デジタルリマスター|修復版|上映版|〈.*再上映〉).*$', re.I)
 PROGRAMME = re.compile(r'^\s*(?:[2-9２-９]本(?:立て|セット)|オールナイト|短編(?:特集|プログラム)|上映プログラム|.*(?:lineup|short films program(?:me)?|double feature)$)', re.I)
@@ -57,7 +58,9 @@ def film_key(row, *, include_programmes=False):
     if not title or not proof:
         return None
     # An undifferentiated theatre schedule can screen two films with the same title in different programmes.
-    edition = row['start_date'] if row.get('source_id') == 'cinema-vera' else ''
+    edition = row.get('streaming_season', '') if row.get('streaming_format') in SERIES_FORMATS else ''
+    if row.get('source_id') == 'cinema-vera':
+        edition = row['start_date']
     return sha256(encoded([title, proof, edition])).hexdigest()[:24]
 
 
@@ -495,6 +498,8 @@ def refresh_metadata(calendar, events, previous, *, instant=None, limit=44, seco
     japanese_releases = {}
     for row in [*calendar['items'], *events]:
         if not calendar_event_allowed(row):
+            continue
+        if row.get('streaming_format') in SERIES_FORMATS:
             continue
         if identifier := film_key(row, include_programmes=True):
             groups[identifier].append(row)

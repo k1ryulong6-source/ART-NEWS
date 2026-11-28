@@ -1,4 +1,4 @@
-> T108 已实抓 Netflix 的明确首播与新季，补到 11 月 52 条、12 月 44 条。包括电影、院线转流媒体、新剧及动画。排期合并 About Netflix 公开新作表、What's on Netflix 的月度报道与逐日原创排期，可用的 Media Center 资料补简介和图。见 D109 和 FILM_CALENDAR.md。
+> T108 已上线。Netflix 11 月核对 52 条，12 月 44 条，包括电影、院线转流媒体、新剧、新季及动画。GitHub 采集 46165759263 实际读取 About Netflix 美国新作表及 What's on Netflix 排期和报道并写回 `4fd20ecc0`。Pages 46166169977 和 Project checks 46165921437 成功。正式站 `35f6fffef99f` 与主分支的排期、采集状态一致，390px 和 1440px 核实类型、季数、日期、剧照和首播出处。见 D109 和 FILM_CALENDAR.md。
 
 > T107 流媒体首播已上线。东京时间 2026-11-29 的 GitHub 采集 46162990408 核实 11 至 12 月的 9 部电影，12 月 4 部。Pages 46163497979 和 Project checks 46163186448 成功。正式站数据版本 `f30bb0068c7f` 的排期和来源状态与主分支一致。390px 与 1440px 核实了首播详情的海报、公告、返回及「全部活动」旧片过滤。见 D108 和 FILM_CALENDAR.md。
 

@@ -3135,7 +3135,7 @@
     {
       "id": "T108",
       "title": "补齐 Netflix 电影、剧集与动画首播",
-      "status": "doing",
+      "status": "done",
       "owner": "Codex",
       "updated_at": "2026-11-29",
       "depends_on": ["T107"],
@@ -3143,7 +3143,9 @@
       "acceptance": ["实抓官方排期并核对多个类型的首播，保留已核实的条目并过滤片库补录和单集重复", "核对线上页面和 GitHub 自动采集"],
       "evidence": [
         "东京 2026-11-29 本地完整采集新增 Netflix 原创发布和新季，11 月 52 条、12 月 44 条。节目直播、旧片授权回库和单集排期未列入。",
-        "305 项 Python 测试、50 项 JavaScript 测试通过，覆盖首播来源合并、院线先行、误标季数、动画分类、旧片与逐集过滤。"
+        "305 项 Python 测试、50 项 JavaScript 测试通过，覆盖首播来源合并、院线先行、误标季数、动画分类、旧片与逐集过滤。",
+        "GitHub 采集 46165759263 成功。东京 01:33 批入库提交 4fd20ecc0，Netflix 新源识别 94 项，合并已核实条目后 11 月 52 项、12 月 44 项、1 月 1 项。来自 About Netflix 与 What's on Netflix 的页面本轮均可读取。",
+        "Pages 46166169977 和 Project checks 46165921437 成功。线上数据版本 35f6fffef99f，逐条排期与来源状态匹配 main。390px 与 1440px 浏览器核对《傲慢与偏见》、Bad Day、CoComelon Lane 第 8 季、The Cage 第 2 季、Ray Gunn 与 Cliff Booth，验证链接、详情回退和片库旧片过滤。"
       ]
     }
   ]

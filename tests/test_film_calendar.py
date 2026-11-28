@@ -17,6 +17,7 @@ class FilmCalendarTests(unittest.TestCase):
         rows = list(disney_dates(index,source,lambda _: page))
         self.assertEqual([(r['platform'],r['start_date'],r['title_original']) for r in rows],
                          [('Disney+','2026-12-01','Movie A'),('Hulu','2026-12-01','Movie A'),('Hulu','2026-12-07','Movie B')])
+        self.assertEqual([r['film_year'] for r in rows], [2022, 2022, 2000])
 
     def test_netflix_press_distinguishes_premiere_date_from_news_date(self):
         source = {'id':'netflix-newsroom','name':'About Netflix','url':'https://about.netflix.com/en/newsroom','timezone':'UTC','platform':'Netflix'}

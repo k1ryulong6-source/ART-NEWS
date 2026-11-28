@@ -20,7 +20,7 @@ from backend.presentation import browser_snapshot
 from backend.exhibitions import read_catalog
 from backend.exhibition_assets import description_counts, exhibition_entry, write_exhibition_files
 from backend.exhibition_details import read_details
-from backend.film_calendar import read_calendar
+from backend.film_metadata import calendar_with_films
 
 
 def build():
@@ -51,7 +51,7 @@ def build():
     from backend.babel_export import export_articles, integrations
     output = ROOT / 'dist'
     output.mkdir(exist_ok=True)
-    bundle['film_calendar'] = read_calendar()
+    bundle['film_calendar'] = calendar_with_films(bundle.get('live', {}).get('events', []))
     calendar_data = json.dumps(bundle['film_calendar'], ensure_ascii=False, separators=(',', ':'))
     (output / 'film-calendar.json').write_text(calendar_data, encoding='utf-8')
     bundle['film_store'] = 'film-calendar.json?v=' + sha256(calendar_data.encode()).hexdigest()[:12]

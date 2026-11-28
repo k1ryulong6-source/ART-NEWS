@@ -3030,6 +3030,18 @@
         "291 项 Python 单测、44 项 JavaScript 单测、静态构建、项目检查与 diff 检查通过。",
         "提交 58af77496，Pages 45985335575 和 Project checks 45985335493 均成功。东京时间 11 月 27 日 19:51，正式站 Chromium 手机 390px 与桌面 1440px 核对同一快照，17 条及顺序与后台一致。"
       ]
+    },
+    {
+      "id": "T102",
+      "title": "优化电影日历的海报排版和豆瓣片名",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-11-28",
+      "depends_on": ["T086"],
+      "scope": ["frontend/calendar.js", "frontend/theme.css", "backend/film_calendar.py", "backend/film_metadata.py", "scripts/", "data/film-metadata.json", "docs/FILM_CALENDAR.md", ".github/workflows/film-calendar.yml", ".github/workflows/pages.yml", "tests/"],
+      "acceptance": ["电影日历优先刊登核实的豆瓣中文名，未能核实的保留原名", "影院和片方海报具备可查来源，暂无可用海报的条目正常阅读", "同日同一场馆同片合并展示场次，各时刻、地区、平台和来源可查", "桌面、手机、自动更新与正式站核对通过"],
+      "evidence": []
     }
   ]
 }

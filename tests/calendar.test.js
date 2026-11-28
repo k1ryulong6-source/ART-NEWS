@@ -42,3 +42,21 @@ test('calendar shows only opening and closing edges, keeps month-only titles and
     ['exhibition','2026-11-02','开展'],['exhibition','2026-11-30','闭展'],['month-only',null,'仅公布月份']
   ]);
 });
+
+test('film groups combine sessions without merging venues, dates or two editions with the same title', () => {
+  const verified = {douban_id:'123',title_zh:'海边的电影',original_title:'The Film by the Sea'};
+  const movie = slot('a',{movie:verified,booking_url:'https://example.org/ticket-a'});
+  const events = [
+    movie, {...movie,id:'b',start_at:'2026-11-30T17:00:00+09:00',booking_url:'https://example.org/ticket-b'},
+    {...movie,id:'other-room',venue:'第二映画館'},
+    {...movie,id:'other-film',movie:{...verified,douban_id:'456'}},
+    {...movie,id:'different-date',start_date:'2026-11-29',start_at:'2026-11-29T12:00:00+09:00'}
+  ];
+  const groups = Cal.groupSchedule(Cal.calendarEntries(events,'2026-11'));
+  assert.equal(groups.length,4);
+  assert.deepEqual(groups.find(group=>group.row.id==='a').screenings.map(row=>row.booking_url),
+    ['https://example.org/ticket-a','https://example.org/ticket-b']);
+  assert.equal(Cal.entryTitle(movie), '海边的电影');
+  assert.equal(Cal.entryTitle({...movie,movie:{original_title:'The Film by the Sea'},title_zh:'旧译名'}), 'The Film by the Sea');
+  assert.equal(Cal.entryTitle({...movie,movie:undefined,title_zh:'旧译名'}), '海辺の映画');
+});

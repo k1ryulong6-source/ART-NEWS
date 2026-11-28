@@ -213,8 +213,12 @@ def create_app(db_path=None):
 
     @app.get("/film-calendar.json")
     def film_calendar():
-        from .film_calendar import read_calendar
-        return read_calendar()
+        from .film_metadata import calendar_with_films
+        with store.connect() as db:
+            events = [dict(row) for row in db.execute(
+                "SELECT id,title_original,event_type,evidence_url,evidence_status,start_date "
+                "FROM events WHERE is_demo=0 AND channel='film'")]
+        return calendar_with_films(events)
 
     @app.get("/api/preferences")
     async def preferences():

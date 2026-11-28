@@ -194,10 +194,10 @@ def disney_dates(soup, source, get):
                 day = date(year,month,int(match[2])).isoformat() if match and MONTHS.get(match[1].lower()) == month else None
                 continue
             # Published catalogue films end in their production year. Episode, live and podcast rows use labels instead.
-            item = re.fullmatch(r'(Disney\+|Hulu|Disney\+ and Hulu): (.+?)\s+\((?:19|20)\d{2}\)', label)
+            item = re.fullmatch(r'(Disney\+|Hulu|Disney\+ and Hulu): (.+?)\s+\(((?:19|20)\d{2})\)', label)
             if day and item and not re.search(r'\b(?:season|series|episode|podcast)\b',item[2],re.I):
                 for platform in item[1].split(' and '):
-                    yield {**base(source,item[2],day,'day','streaming_release',url),'platform':platform}
+                    yield {**base(source,item[2],day,'day','streaming_release',url),'platform':platform,'film_year':int(item[3])}
 
 
 def netflix_news_dates(soup, source, get):

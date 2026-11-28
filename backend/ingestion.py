@@ -140,7 +140,7 @@ def eiga_records(source, payload):
     for block in soup.select("div.list-block"):
         title_link = block.select_one("h3.title a")
         heading = block.find_previous("h2")
-        if not title_link or not heading:
+        if not title_link or not heading or not block.select_one('a[href$="/theater/"]'):
             continue
         match = re.search(r"(\d{4})年\s*(\d{1,2})月(\d{1,2})日", heading.get_text(" ", strip=True))
         if not match:
@@ -148,16 +148,13 @@ def eiga_records(source, payload):
         start = "-".join([match[1], match[2].zfill(2), match[3].zfill(2)])
         excerpt_node = block.select_one("p.txt")
         excerpt = excerpt_node.get_text(" ", strip=True)[:500] if excerpt_node else ""
-        streaming = bool(re.search(r"(?:Netflix|Amazon Prime|Disney|配信)", excerpt)) and not block.select_one('a[href$="/theater/"]')
-        # Missing cinema links alone is insufficient to infer a streaming release.
-        if not streaming and not block.select_one('a[href$="/theater/"]'):
-            continue
-        kind = "streaming_release" if streaming else "cinema_release"
         title = title_link.get_text(" ", strip=True)
-        summary = f"《{title}》在日本的{'流媒体上线' if streaming else '院线上映'}日期为 {start}。日期来自映画.com 上映安排，请在出行前核对原文。"
+        summary = f"《{title}》在日本的院线上映日期为 {start}。日期来自映画.com 上映安排，请在出行前核对原文。"
         record = content_record(source, title, urljoin(source["feed_url"], title_link["href"]), excerpt, summary=summary)
-        event = event_record(source, record, kind, start)
-        records.append(record); events.append(event); links.append({"content_id": record["id"], "event_id": event["id"]})
+        event = event_record(source, record, "cinema_release", start)
+        records.append(record)
+        events.append(event)
+        links.append({"content_id": record["id"], "event_id": event["id"]})
     if not records:
         raise ValueError("没有解析到上映安排，页面结构可能变化")
     return records, events, links

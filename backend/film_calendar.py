@@ -28,6 +28,16 @@ def read_calendar(path=DATA):
     return value
 
 
+def calendar_event_allowed(row):
+    if row.get('event_type') != 'streaming_release':
+        return True
+    proof = urlsplit(row.get('premiere_source_url') or '')
+    return (row.get('premiere_basis') in ('official_announcement', 'verified_release')
+            and proof.scheme == 'https' and bool(proof.hostname) and bool(row.get('platform'))
+            and row.get('date_precision') == 'day' and re.fullmatch(r'\d{4}-\d{2}-\d{2}', row.get('start_date') or '')
+            and not row.get('program'))
+
+
 def text(node):
     return ' '.join(node.get_text(' ', strip=True).split()) if node else ''
 
@@ -133,143 +143,6 @@ def parse_screenings(soup, source, today):
                                         booking=linked_url(source['url'], a['href']) if a else None)
 
 
-def film_dates(soup, source, get):
-    from bs4 import BeautifulSoup
-    from .japan_film_calendar import image_fields
-    if source['adapter'] == 'netflix':
-        film_list = BeautifulSoup(get(source['film_evidence_url']), 'html.parser')
-        films = {normalized(text(h)) for h in film_list.select('[data-sel=article-content] h3')}
-        if not films:
-            raise ValueError('netflix_film_reference_unavailable')
-        for node in soup.select('[data-sel=article-content] [data-sel=f-item]'):
-            title = text(node.find('h3'))
-            stamp = node.find('time', datetime=True)
-            description = text(node.find('p'))
-            if not stamp or not title or (normalized(title) not in films and not re.search(r'\b(?:documentary film|feature film|animated film)\b', description, re.I)):
-                continue
-            day = date.fromisoformat(stamp['datetime'][:10]).isoformat()
-            row = base(source, title, day, 'day', 'streaming_release')
-            if re.search(r'\b(?:available|streaming|premier\w*)\s+(?:on Netflix\s+)?(?:globally|worldwide)\b', description, re.I):
-                row['market'] = '全球'
-            link = node.select_one('a[data-uia=play-on-netflix-link][href]')
-            if link and re.fullmatch(r'https://www.netflix.com/watch/\d+(?:\?.*)?',link['href']):
-                row['watch_url'] = link['href'].split('?')[0]
-            picture = node.select_one('img[src]')
-            if picture and title.casefold() in (picture.get('alt') or '').casefold():
-                still = image_fields(picture['src'], source['url'], key='artwork')
-                if still:
-                    row.update(still, artwork_kind='still')
-            yield row
-    else:
-        from .exhibition_sources import linked_url
-        lineup = {}
-        for a in soup.select('a[href*=lineup]'):
-            url = linked_url(source['url'], a['href'], host_only=True)
-            match = re.search(r'criterion-channel-s-([a-z]+)-(20\d{2})-lineup/?$', urlsplit(url or '').path)
-            if match and match[1] in MONTHS:
-                lineup[url] = (int(match[2]), MONTHS[match[1]])
-        for url, (year, month) in sorted(lineup.items(), key=lambda record: record[1], reverse=True)[:2]:
-            page = BeautifulSoup(get(url), 'html.parser')
-            title = text(page.find('h1'))
-            if title:
-                row = {**base(source, title, f'{year}-{month:02}', 'month', 'streaming_release', url), 'program': True}
-                card = page.select_one('meta[property="og:image"][content]')
-                if card and (artwork := image_fields(card['content'], url, key='artwork')):
-                    row.update(artwork, artwork_kind='programme')
-                yield row
-
-
-def apple_dates(payload, source):
-    from .exhibition_sources import linked_url
-    from .japan_film_calendar import image_fields
-    films = json.loads(payload)['results']['originals']
-    for item in films:
-        if item.get('showTypeKey') != 'films' or not item.get('title'):
-            continue
-        shown = (item.get('releaseDateDisplayString') or '').strip()
-        match = re.fullmatch(r'([A-Za-z]+) (?:(\d{1,2}), )?(20\d{2})', shown)
-        if not match or match[1].lower() not in MONTHS:
-            continue
-        month = MONTHS[match[1].lower()]
-        day = date(int(match[3]), month, int(match[2] or 1)).isoformat()
-        if not (item.get('releaseDateISOString') or '').startswith(day):
-            continue
-        precision = 'day' if match[2] else 'month'
-        url = linked_url(source['url'], item.get('url'), host_only=True)
-        row = base(source, item['title'], day if precision == 'day' else day[:7], precision, 'streaming_release', url)
-        image = item.get('image') or {}
-        if image.get('dirpath') and image.get('name'):
-            row.update(image_fields(image['dirpath'] + image['name'], row['evidence_url']))
-        yield row
-
-
-def disney_dates(soup, source, get):
-    from bs4 import BeautifulSoup
-    from .exhibition_sources import linked_url
-    agenda = {}
-    for link in soup.select('a[href*=next-on-disney-plus]'):
-        url = linked_url(source['url'],link['href'],host_only=True)
-        match = re.fullmatch(r'/news/next-on-disney-plus-([a-z]+)-(20\d{2})/?',urlsplit(url or '').path)
-        if match and match[1] in MONTHS:
-            agenda[url] = (int(match[2]), MONTHS[match[1]])
-    for url,(year,month) in sorted(agenda.items(),key=lambda item:item[1],reverse=True)[:2]:
-        page = BeautifulSoup(get(url),'html.parser')
-        day = None
-        for node in page.select('.rich-text-container > h1, .rich-text-container > p'):
-            label = text(node)
-            if node.name == 'h1':
-                match = re.search(r'\b([A-Z][a-z]+) (\d{1,2})$',label)
-                day = date(year,month,int(match[2])).isoformat() if match and MONTHS.get(match[1].lower()) == month else None
-                continue
-            # Published catalogue films end in their production year. Episode, live and podcast rows use labels instead.
-            item = re.fullmatch(r'(Disney\+|Hulu|Disney\+ and Hulu): (.+?)\s+\(((?:19|20)\d{2})\)', label)
-            if day and item and not re.search(r'\b(?:season|series|episode|podcast)\b',item[2],re.I):
-                for platform in item[1].split(' and '):
-                    yield {**base(source,item[2],day,'day','streaming_release',url),'platform':platform,'film_year':int(item[3])}
-
-
-def netflix_news_dates(soup, source, get):
-    from bs4 import BeautifulSoup
-    from .exhibition_sources import linked_url
-    from .japan_film_calendar import image_fields
-    stories = {}
-    for link in soup.select('a[href^="/en/news/"]'):
-        headline = text(link)
-        if re.search(r'\b(?:premier\w+|debuts?)\b',headline,re.I):
-            url = linked_url(source['url'],link['href'],host_only=True)
-            if url:
-                stories[url] = headline
-    for url,headline in list(stories.items())[:8]:
-        quoted = re.search(r"'([^']+)'|‘([^’]+)’|“([^”]+)”", headline)
-        if not quoted:
-            continue
-        title = next(group.rstrip(' ,') for group in quoted.groups() if group)
-        page = BeautifulSoup(get(url),'html.parser')
-        published = text(page.select_one('[class*=ArticleDateWrapper]'))
-        try:
-            posted = datetime.strptime(published,'%d %B %Y').date()
-        except ValueError:
-            continue
-        paragraphs = [text(node) for node in page.select('[class*=ArticleCopy] p')]
-        introduction = ' '.join(paragraphs[:2])
-        if not re.search(r'\b(?:documentary|feature|original|animated) film\b|\ba documentary\b|\bmovie\b',introduction,re.I) or re.search(r'\b(?:limited|documentary|animated|drama) series\b',introduction,re.I):
-            continue
-        for paragraph in paragraphs:
-            when = re.search(r'\bpremier\w*\b.{0,60}?([A-Z][a-z]+)\s+(\d{1,2})(?:, (20\d{2}))?\b',paragraph)
-            if title not in paragraph or not when or when[1].lower() not in MONTHS:
-                continue
-            day = local_day(f'{MONTHS[when[1].lower()]}/{when[2]}',posted) if not when[3] else date(int(when[3]),MONTHS[when[1].lower()],int(when[2]))
-            if day and day >= posted:
-                row = base(source,title,day.isoformat(),'day','streaming_release',url)
-                if re.search(r'\b(?:globally|worldwide)\b',paragraph,re.I):
-                    row['market'] = '全球'
-                card = page.select_one('meta[property="og:image"][content]')
-                if card and (artwork := image_fields(card['content'], url, key='artwork')):
-                    row.update(artwork, artwork_kind='still')
-                yield row
-                break
-
-
 def record_id(row):
     key = (
         row['source_id'], normalized(row['title_original']), row['start_date'], row.get('start_at'),
@@ -278,17 +151,21 @@ def record_id(row):
     return 'film-' + sha256(json.dumps(key, ensure_ascii=False).encode()).hexdigest()[:24]
 
 
-def refresh(previous, sources, *, instant=None, fetch_factory=None):
+def refresh(previous, sources, *, verified_premieres=(), instant=None, fetch_factory=None):
     from bs4 import BeautifulSoup
     from .exhibition_sources import PublicHost, error_kind
     from .japan_film_calendar import current_films, release_dates, screening_dates
+    from .streaming_premieres import apple_dates, press_dates, verified_dates
     fetch_factory = fetch_factory or PublicHost
     instant = instant or datetime.now(timezone.utc)
-    reports = dict(previous['sources'])
-    items = {row['id']: row for row in previous['items']}
+    reports = {source['id']: previous['sources'][source['id']] for source in sources
+               if source['id'] in previous['sources']}
+    items = {row['id']: row for row in previous['items'] if calendar_event_allowed(row)
+             and row.get('premiere_basis') != 'verified_release'}
     now_showing = previous.get('now_showing', [])
     hosts = {}
     host_locks = {urlsplit(source['url']).hostname: Lock() for source in sources}
+    press_adapters = ('apple', 'disney', 'netflix_news')
 
     def read(source):
         instant_here = instant.astimezone(ZoneInfo(source['timezone'])).date()
@@ -304,7 +181,7 @@ def refresh(previous, sources, *, instant=None, fetch_factory=None):
 
         try:
             if adapter == 'apple':
-                rows = apple_dates(get(source['data_url']), source)
+                rows = apple_dates(get(source['data_url']), get(source['press_url']), source, get, coverage)
             else:
                 soup = BeautifulSoup(get(source['url']), 'html.parser')
                 if adapter == 'eiga_showing':
@@ -313,20 +190,16 @@ def refresh(previous, sources, *, instant=None, fetch_factory=None):
                     rows, coverage = release_dates(soup, source, get, instant_here, previous['items'])
                 elif adapter == 'eiga_venue':
                     rows = screening_dates(soup, source, instant)
-                elif adapter == 'disney':
-                    rows = disney_dates(soup, source, get)
-                elif adapter == 'netflix_news':
-                    rows = netflix_news_dates(soup, source, get)
-                elif source.get('platform'):
-                    rows = film_dates(soup, source, get)
+                elif adapter in ('disney', 'netflix_news'):
+                    rows = press_dates(soup, source, get, coverage)
                 else:
                     rows = parse_screenings(soup, source, instant_here)
-            records = {(row.get('id') or record_id(row)): row for row in rows if row}
-            if not records:
+            records = {(row.get('id') or record_id(row)): row for row in rows if row and calendar_event_allowed(row)}
+            if not records and (adapter not in press_adapters or coverage.get('failed_pages')):
                 raise ValueError('no_verified_film_events')
             return source, records, None, coverage
         except (OSError, ValueError, KeyError, TypeError, AttributeError) as error:
-            return source, {}, error_kind(error), {}
+            return source, {}, error_kind(error), coverage
 
     with ThreadPoolExecutor(max_workers=6) as pool:
         for source, rows, error, coverage in pool.map(read, sources):
@@ -354,8 +227,26 @@ def refresh(previous, sources, *, instant=None, fetch_factory=None):
                     today = instant.astimezone(ZoneInfo(source['timezone'])).date().isoformat()
                     items = {key: row for key, row in items.items() if row['source_id'] != identifier
                              or row['start_date'] < today or (row['evidence_url'], row['event_type']) not in confirmed or key in rows}
+                elif source['adapter'] in press_adapters:
+                    today = instant.astimezone(ZoneInfo(source['timezone'])).date().isoformat()
+                    revised = {(normalized(row['premiere_title']), row['platform']) for row in rows.values()}
+                    items = {key: row for key, row in items.items() if row['source_id'] != identifier
+                             or row['start_date'] < today or row.get('premiere_basis') != 'official_announcement'
+                             or (normalized(row.get('premiere_title') or row['title_original']), row['platform']) not in revised or key in rows}
                 items.update({key: {**row,'id':key} for key,row in rows.items()})
             reports[identifier] = proof
+
+    # A curated proof can preserve the dedicated work page and its existing metadata.
+    premieres = {}
+    for row in [*items.values(), *verified_dates(verified_premieres, sources, previous['items'])]:
+        if row['event_type'] != 'streaming_release' or not calendar_event_allowed(row):
+            continue
+        identifier = row.get('id') or record_id(row)
+        key = (row['platform'], normalized(row.get('premiere_title') or row['title_original']), row['start_date'])
+        if duplicate := premieres.get(key):
+            row = {**items.pop(duplicate), **row}
+        premieres[key] = identifier
+        items[identifier] = {**row, 'id': identifier}
     return {'schema_version':1,'generated_at':instant.isoformat(),'sources':reports,'now_showing':now_showing,
             'items':sorted(items.values(),key=lambda row:(row['start_date'],row.get('start_at',''),row['id']))}
 

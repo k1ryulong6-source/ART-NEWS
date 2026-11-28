@@ -2,7 +2,7 @@
   'use strict';
   const channels = { film: '电影', art: '艺术', photography: '摄影' };
   const kinds = { news: '资讯', interview: '访谈', work: '作品', photobook: '摄影集', industry_buzz: '圈内动态' };
-  const eventTypes = { cinema_release: '院线上映', festival_screening: '影展放映', streaming_release: '流媒体上线', exhibition: '展览', call_deadline: '征集截止' };
+  const eventTypes = { cinema_release: '院线上映', festival_screening: '影展放映', streaming_release: '流媒体首播', exhibition: '展览', call_deadline: '征集截止' };
   const statusNames = { want_to_see: '想看', planning: '准备去', seen: '已看过' };
   const evidenceNames = { official_confirmed: '官方确认', media_reported: '媒体报道', firsthand_response: '当事人回应', unverified: '未证实' };
   const registry = root.CULTURE_BOOTSTRAP?.regions || (typeof module !== 'undefined' && module.exports ? require('../config/regions.json') : { regions: [], languages: {} });
@@ -16,6 +16,10 @@
   const locationLabel = row => { const names = locations(row).map(place => place.city || countryLabels[place.country] || place.country); return names.length ? (row.geography_status === 'mentioned' ? '涉及 ' : '') + [...new Set(names)].join(' / ') : '地点未说明'; };
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const safeUrl = value => { try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } };
+  const calendarEventAllowed = row => row.event_type !== 'streaming_release' || row.is_demo
+    || (!row.program && row.date_precision === 'day' && Boolean(row.start_date && row.platform)
+      && ['official_announcement','verified_release'].includes(row.premiere_basis)
+      && safeUrl(row.premiere_source_url).startsWith('https://'));
   const originalPageUrl = row => safeImageUrl(row.original_page_url || row.canonical_url);
   // The static site ships article bodies separately (row.body_ref) and attaches them when a view needs one.
   const bodyPending = row => Boolean(row?.body_ref) && !row.body_loaded;
@@ -319,7 +323,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { fetchTimed, bodyPending, needBody, takeWantedBodies, attachBody, setSearchTexts, frontpageRows, babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, headlineReady, machineReady, originalPageUrl, articleBlocks, readerRoute, calendarRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { fetchTimed, bodyPending, needBody, takeWantedBodies, attachBody, setSearchTexts, frontpageRows, babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, headlineReady, machineReady, originalPageUrl, articleBlocks, readerRoute, calendarRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile, calendarEventAllowed };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

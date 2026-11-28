@@ -39,13 +39,13 @@ class PipelineChecks(unittest.TestCase):
             self.store.ingest_records(records, [], [])
         self.assertEqual(len(self.store.dataset("live")["content"]), 1)
 
-    def test_release_adapter_distinguishes_streaming_and_cinema(self):
+    def test_release_adapter_collects_cinema_without_creating_streaming_listings(self):
         page = '''<h2>2026年 10月16日 公開・配信開始</h2><div class="list-block"><h3 class="title"><a href="/movie/1/">A movie</a></h3><p class="txt">劇場公開</p><a href="/movie/1/theater/">theater</a></div><div class="list-block"><h3 class="title"><a href="/movie/2/">B movie</a></h3><p class="txt">Netflixで配信</p></div>'''
         records, events, links = eiga_records(SOURCE, page)
-        self.assertEqual(len(records), 2)
-        self.assertEqual([row["event_type"] for row in events], ["cinema_release", "streaming_release"])
+        self.assertEqual(len(records), 1)
+        self.assertEqual([row["event_type"] for row in events], ["cinema_release"])
         self.assertTrue(all(row["start_date"] == "2026-10-16" and row["timezone"] == "Asia/Tokyo" for row in events))
-        self.assertEqual(len(links), 2)
+        self.assertEqual(len(links), 1)
 
     def test_official_exhibition_requires_explicit_two_dates(self):
         source = {**SOURCE, "channels": ["photography"], "source_type": "official"}

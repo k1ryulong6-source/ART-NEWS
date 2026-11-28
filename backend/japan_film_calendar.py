@@ -14,11 +14,7 @@ from .reading import public_url
 MOVIE = re.compile(r'/movie/(\d+)/')
 CARDS = '.list-block[id^="mv"]'
 FULL_DAY = r'20\d{2}年\d{1,2}月\d{1,2}日'
-PLATFORMS = {
-    'netflix': 'Netflix', 'amazon prime video': 'Prime Video', 'prime video': 'Prime Video',
-    'apple tv': 'Apple TV', 'apple tv+': 'Apple TV', 'disney+': 'Disney+',
-    'ディズニープラス': 'Disney+', 'hulu': 'Hulu', 'u-next': 'U-NEXT', 'mubi': 'MUBI',
-}
+STREAMING_NOTICE = re.compile(rf'^(?:[^。]{{2,55}}?で\s*{FULL_DAY}から配信|{FULL_DAY}から[^。]{{2,55}}?で配信)')
 
 
 def image_fields(url, page, *, key='poster'):
@@ -103,19 +99,6 @@ def current_films(soup, source, get):
     raise ValueError('showing_catalogue_not_exhausted')
 
 
-def platform_name(raw):
-    raw = raw.strip()
-    return PLATFORMS.get(raw.casefold(), raw) if raw else None
-
-
-def date_notice(description, today):
-    for pattern in (rf'^([^。]{{2,55}}?)で\s*({FULL_DAY})から配信', rf'^({FULL_DAY})から([^。]{{2,55}}?)で配信'):
-        if match := re.search(pattern, description):
-            platform, date = match.groups() if not match[1][0].isdigit() else match.groups()[::-1]
-            return local_day(date, today), platform_name(platform)
-    return None, None
-
-
 def release_dates(soup, source, get, today, previous):
     root = source['url']
     pages = [source['week_url'], root]
@@ -125,7 +108,7 @@ def release_dates(soup, source, get, today, previous):
             if href not in pages:
                 pages.append(href)
     known = {(row['evidence_url'], row.get('listing_date', row['start_date'])): row
-             for row in previous if row.get('source_id') == source['id']}
+             for row in previous if row.get('source_id') == source['id'] and row['event_type'] == 'cinema_release'}
     records = {}
     unchecked, failed_pages = set(), {}
     requests_left = source.get('detail_limit', 105)
@@ -143,18 +126,18 @@ def release_dates(soup, source, get, today, previous):
             if not movie or not title or not listed_day or listed_day < today - timedelta(days=7):
                 continue
             description = text(card.select_one('.txt-box > p.txt'))
-            day, platform = date_notice(description, today)
-            kind = 'streaming_release' if day else None
+            day = None
             date_evidence = url
             poster = poster_of(card, movie)
             prior = known.get((movie, listed_day.isoformat()))
-            if not kind and prior:
-                day, kind, platform = datetime.fromisoformat(prior['start_date']).date(), prior['event_type'], prior.get('platform')
+            if prior:
+                day = datetime.fromisoformat(prior['start_date']).date()
                 date_evidence = prior.get('date_source_url', url)
-            if not kind and card.select_one('a[href$="/theater/"]'):
-                day, kind = listed_day, 'cinema_release'
-            conflicting_date = kind == 'streaming_release' and day != listed_day and date_evidence != movie
-            if requests_left and (not kind or conflicting_date):
+            elif card.select_one('a[href$="/theater/"]'):
+                day = listed_day
+            elif STREAMING_NOTICE.search(description):
+                continue
+            if requests_left and not day:
                 requests_left -= 1
                 try:
                     detail = BeautifulSoup(get(movie), 'html.parser')
@@ -163,25 +146,19 @@ def release_dates(soup, source, get, today, previous):
                 info = text(detail.select_one('p.data')) if detail else ''
                 streaming = re.search(rf'配信開始日\s*[：:]\s*({FULL_DAY})', info)
                 cinema = re.search(rf'劇場公開日\s*[：:]\s*({FULL_DAY})', info)
-                if cinema and not kind:
-                    kind, day, date_evidence = 'cinema_release', local_day(cinema[1], today), movie
+                if cinema:
+                    day, date_evidence = local_day(cinema[1], today), movie
                 elif streaming:
-                    kind, day, date_evidence = 'streaming_release', local_day(streaming[1], today), movie
-                    company = re.search(r'配信\s*[：:]\s*(.+?)(?=\s*配信開始日|$)', info)
-                    platform = platform_name(company[1]) if company else platform
-            if not kind or not day:
+                    continue
+            if not day:
                 unchecked.add(movie)
                 continue
             if day < today - timedelta(days=7):
                 continue
-            if kind == 'streaming_release' and re.search(r'シーズン\s*\d|[Ss]eason\s+\d', title):
-                continue
-            row = {**base(source, title, day.isoformat(), 'day', kind, movie), **poster,
+            row = {**base(source, title, day.isoformat(), 'day', 'cinema_release', movie), **poster,
                    'date_source_url': date_evidence, 'listing_date': listed_day.isoformat(), 'evidence_status': 'media_reported'}
             if profile := prose(description, 'ja', movie):
                 row['profile'] = profile
-            if kind == 'streaming_release':
-                row.update(platform=platform, market='日本')
-            records[(movie, day, kind, platform)] = row
+            records[(movie, day)] = row
     confirmed = {movie for movie, *_ in records}
     return list(records.values()), {'unclassified':len(unchecked - confirmed), 'failed_pages':failed_pages}

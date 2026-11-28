@@ -2,7 +2,7 @@
   'use strict';
   const activity = {
     film: '电影放映与上映', cinema_screening: '艺术影院放映', cinema_release: '院线上映', cinema_showing: '日本院线在映',
-    festival_screening: '影展放映', streaming_release: '流媒体上线', exhibition: '展览开幕与闭展',
+    festival_screening: '影展放映', streaming_release: '流媒体首播', exhibition: '展览开幕与闭展',
     all: '全部活动'
   };
   const theatres = ['cinema_screening','cinema_release','festival_screening'];
@@ -16,27 +16,14 @@
 
   function deduplicate(rows) {
     const events = new Map();
-    const streamProof = row => JSON.stringify([row.evidence_url,row.start_date]);
-    const japanStreams = new Map();
-    for (const row of rows) {
-      if (row.source_id !== 'eiga-releases' || row.event_type !== 'streaming_release' || row.country !== 'JP' || !row.platform) continue;
-      const key = streamProof(row);
-      if (!japanStreams.has(key)) japanStreams.set(key,new Set());
-      japanStreams.get(key).add(row.platform);
-    }
     const confidence = row => Number(Boolean(row.official || row.evidence_status === 'official_confirmed'));
-    for (const input of rows) {
-      let row = input;
-      if (row.event_type === 'streaming_release' && row.country === 'JP' && !row.platform) {
-        const matches = japanStreams.get(streamProof(row));
-        if (matches?.size === 1) row = {...row,platform:[...matches][0]};
-      }
-      const title = row.movie?.douban_id ? 'douban:' + row.movie.douban_id : normalize(row.title_original || row.title_zh);
+    for (const row of rows) {
+      const title = row.premiere_title ? normalize(row.premiere_title)
+        : row.movie?.douban_id ? 'douban:' + row.movie.douban_id : normalize(row.title_original || row.title_zh);
       const kind = row.event_type;
       if (!title || !row.start_date || !activity[kind] || row.evidence_status === 'unverified') continue;
       const time = row.start_at ? Date.parse(row.start_at) : null;
-      const market = row.market === '日本' ? 'JP' : row.market || row.country;
-      const place = kind === 'streaming_release' ? [row.platform || row.source_id || row.evidence_url, market]
+      const place = kind === 'streaming_release' ? [row.platform]
         : [row.country,row.prefecture || row.city,row.venue && normalize(row.venue_name || row.venue),row.auditorium];
       const key = JSON.stringify([kind,title,row.start_date,...place,time]);
       const previous = events.get(key);
@@ -183,7 +170,8 @@
       const slots = screenings.length ? screenings : row.start_at ? [row] : [];
       const timings = screeningTimes(slots);
       const shortLabel = label === activity.cinema_screening ? '艺术影院' : label;
-      const sourceMap = new Map((screenings.length ? screenings : [row]).flatMap(slot=>slot.origins || []).map(source=>[source.url,source.name]));
+      const sourceMap = row.premiere_source_url ? new Map([[row.premiere_source_url,'首播公告']])
+        : new Map((screenings.length ? screenings : [row]).flatMap(slot=>slot.origins || []).map(source=>[source.url,source.name]));
       const sources = [...sourceMap].flatMap(([url,name])=>C.safeUrl(url) ? [`<a ${ref(C.safeUrl(url))}>${e(name || '排期来源')} ↗</a>`] : []);
       const douban = C.safeUrl(movie?.douban_url);
       if (douban) sources.push(`<a ${ref(douban)}>豆瓣 ↗</a>`);
@@ -219,16 +207,17 @@
       });
       const additions = (inventory?.entries || []).filter(row=>!disabled(row));
       const filmRows = dataset.mode === 'demo' ? [] : forSources(film?.items,disabledSources).filter(row=>!day || row.start_date === day);
-      return deduplicate([...legacy,...filmRows,...additions].map(withMovie));
+      return deduplicate([...legacy,...filmRows,...additions].filter(C.calendarEventAllowed).map(withMovie));
     }
 
     function detail(dataset,id,disabledSources,{relatedImage,save}) {
       const live = dataset.mode !== 'demo';
       const showing = live && film?.now_showing?.find(row=>row.id === id);
-      const raw = showing || dataset.events.find(row=>row.id === id) || (live && film?.items.find(row=>row.id === id));
+      const found = showing || dataset.events.find(row=>row.id === id) || (live && film?.items.find(row=>row.id === id));
+      const raw = found && C.calendarEventAllowed(found) && found;
       const movieDetail = !raw || isFilm(raw);
       if (live && movieDetail) loadFilm();
-      const back = '<div class="reader-toolbar"><button class="text-link" data-action="reader-back">‹ 返回</button>' + save + '</div>';
+      const back = '<div class="reader-toolbar"><button class="text-link" data-action="reader-back">‹ 返回</button>' + (raw ? save : '') + '</div>';
       if ((movieDetail && pending) || !raw) {
         const message = pending ? '正在载入排期…' : failed ? '排期暂时无法载入。 <button class="text-link" data-cal-retry>重试</button>' : '这条排期暂时无法显示。';
         return {html:`<article class="reader-page calendar-reader" data-ui="calendar-reader">${back}<p role="status">${message}</p></article>`};
@@ -258,7 +247,7 @@
       const links = new Map();
       const bookingCaption = showing ? '查场次' : row.event_type === 'call_deadline' ? '报名' : '购票';
       if (!row.is_demo) for (const [value,label] of [
-        [row.watch_url,'观看'],[!times && row.booking_url,bookingCaption], [row.evidence_url,'排期来源'],
+        [row.watch_url,'观看'],[!times && row.booking_url,bookingCaption], [row.premiere_source_url,'首播公告'],[row.evidence_url,'排期来源'],
         [row.programme_url,'影片资料'],[profile?.source_url,'简介来源'],[row.movie?.douban_url,'豆瓣']
       ]) {
         const url = C.safeUrl(value);
@@ -340,7 +329,7 @@
         ${listing ? `<div class="calendar-listing${showFilm && kind!=='all'?' films':''}">${listing}</div>` : pending ? '' : `<p class="compact-note">${emptyText}</p>`}
         ${!visible.length && next?.day ? `<button class="text-link" data-cal-day="${next.day}">查看 ${e(C.dateLabel(next.day))} 的排期 ↗</button>` : ''}
         ${pages>1 ? `<div class="exhibition-pager"><button class="exhibition-chip" data-cal-page="${page-1}" ${page===1?'disabled':''}>上一页</button><span>第 ${page} / ${pages} 页</span><button class="exhibition-chip" data-cal-page="${page+1}" ${page===pages?'disabled':''}>下一页</button></div>` : ''}</section>
-        <details class="exhibition-coverage"><summary>排期来源</summary><p>展览目录提供开幕与闭展日期。影院场次以当地时间显示，流媒体保留各平台公布的上线地区与日期。</p>
+        <details class="exhibition-coverage"><summary>排期来源</summary><p>展览目录提供开幕与闭展日期。影院场次以当地时间显示。流媒体仅收录有首播依据的电影。</p>
         ${sourceRows ? '<ul>'+sourceRows+'</ul>' : ''}${boot.exhibition_report ? `<p><a href="${e(boot.exhibition_report)}">展览收录报告 ↗</a></p>` : ''}</details>
         </div>`;
     }

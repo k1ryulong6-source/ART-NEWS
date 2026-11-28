@@ -18,7 +18,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     registry = json.loads(REGISTRY.read_text(encoding='utf-8'))
     saved = read_calendar()
-    result = saved if args.metadata_only else refresh(saved, registry['sources'])
+    result = saved if args.metadata_only else refresh(saved, registry['sources'],
+                                                      verified_premieres=registry.get('verified_premieres', ()))
     if not args.metadata_only:
         write_calendar(result)
     snapshot = REGISTRY.parent.parent / 'data/live.json'

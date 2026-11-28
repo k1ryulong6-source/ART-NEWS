@@ -23,28 +23,52 @@ test('equal title, local day, room and instant collapse while two slots and othe
   assert.equal(events[0].origins.length,2);
 });
 
-test('streaming view uses all territories and preserves editions from other platforms and markets', () => {
+test('streaming views span all territories and combine the same platform premiere', () => {
   const film = slot('apple', {event_type:'streaming_release',platform:'Apple TV',country:'US',market:'美国',start_at:null});
   const canada = {...film,id:'ca',country:'CA',market:'加拿大'};
   const second = {...film,id:'criterion',platform:'Criterion Channel'};
   assert.ok(Cal.inArea(film,'tokyo','streaming_release'));
   assert.ok(Cal.inArea(film,'tokyo','all'));
   assert.ok(!Cal.inArea(film,'tokyo','film'));
-  assert.equal(Cal.deduplicate([film,canada,second]).length,3);
+  assert.equal(Cal.deduplicate([film,canada,second]).length,2);
   assert.ok(Cal.inArea(slot('national',{event_type:'cinema_release',city:null,venue:null}),'tokyo','cinema_release'));
   assert.ok(!Cal.inArea(slot('osaka',{city:'大阪'}),'tokyo','film'));
 });
 
-test('the same Japanese streaming announcement gains its platform and retained poster without duplication', () => {
-  const first = slot('legacy',{event_type:'streaming_release',start_at:null,evidence_status:'official_confirmed'});
-  const update = {...first,id:'more',source_id:'eiga-releases',market:'日本',platform:'Netflix',
+test('the same confirmed premiere in different language editions shows once with its poster', () => {
+  const first = slot('original',{event_type:'streaming_release',start_at:null,evidence_status:'official_confirmed',
+    title_original:'The Seaside Film',premiere_title:'The Seaside Film',platform:'Netflix'});
+  const update = {...first,id:'japan',source_id:'eiga-releases',market:'日本',title_original:'海辺の映画',
     evidence_status:'media_reported',poster_url:'https://example.org/poster.jpg'};
-  const canada = {...update,id:'other',country:'CA',market:'加拿大'};
-  const items = Cal.deduplicate([first,update,canada]);
-  assert.equal(items.length,2);
+  const items = Cal.deduplicate([first,update]);
+  assert.equal(items.length,1);
   assert.equal(items[0].id,first.id);
   assert.equal(items[0].platform,'Netflix');
   assert.equal(items[0].poster_url,update.poster_url);
+});
+
+test('unverified library dates stay out of both calendar views and the old direct reader', t => {
+  const previousDocument = global.document;
+  global.document = { addEventListener() {} };
+  t.after(() => { global.document = previousDocument; });
+  const base = {event_type:'streaming_release',start_at:null,platform:'Netflix'};
+  const old = slot('library',{...base,title_original:'Old catalogue film'});
+  const oldMonth = slot('monthly',{...base,title_original:'Platform lineup',program:true});
+  const verified = slot('premiere',{...base,title_original:'New feature',
+    premiere_basis:'verified_release',premiere_source_url:'https://example.org/first-release'});
+  const theatre = slot('theatre',{event_type:'cinema_release',title_original:'Film in cinemas'});
+  const schedule = Cal.create({C,boot:{film_calendar:{items:[oldMonth,verified,theatre]}},server:false});
+  const data = {mode:'live',events:[old]};
+  const options = {relatedImage:()=>'',save:''};
+  for (const kind of ['streaming_release','all']) {
+    schedule.restoreList({mode:'live',month:'2026-11',chosenDay:null,page:1,area:'tokyo',kind},data);
+    const html = schedule.view(data,[]);
+    assert.match(html,/New feature/);
+    assert.doesNotMatch(html,/Old catalogue film|Platform lineup/);
+    assert.equal(html.includes('Film in cinemas'),kind === 'all');
+  }
+  assert.doesNotMatch(schedule.detail(data,'library',[],options).html,/Old catalogue film/);
+  assert.match(schedule.detail(data,'premiere',[],options).html,/https:\/\/example\.org\/first-release[^>]*>首播公告/);
 });
 
 test('calendar shows only opening and closing edges, keeps month-only titles and leaves canceled dates off the grid', () => {

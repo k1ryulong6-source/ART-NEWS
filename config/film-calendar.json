@@ -1,6 +1,6 @@
 {
   "sources": [
-    {"id":"eiga-releases","name":"映画.com 日本公开与配信日程","adapter":"eiga_releases","url":"https://eiga.com/coming/","week_url":"https://eiga.com/upcoming/","country":"JP","timezone":"Asia/Tokyo"},
+    {"id":"eiga-releases","name":"映画.com 日本院线上映","adapter":"eiga_releases","url":"https://eiga.com/coming/","week_url":"https://eiga.com/upcoming/","country":"JP","timezone":"Asia/Tokyo"},
     {"id":"eiga-showing","name":"映画.com 日本院线在映目录","adapter":"eiga_showing","url":"https://eiga.com/now/","country":"JP","timezone":"Asia/Tokyo"},
     {"id":"eurospace","name":"Eurospace","adapter":"eurospace","url":"https://www.eurospace.co.jp/schedule/","venue":"ユーロスペース","country":"JP","city":"东京","timezone":"Asia/Tokyo"},
     {"id":"image-forum","name":"Theatre Image Forum","adapter":"image_forum","url":"https://www.imageforum.co.jp/theatre/schedule/","venue":"シアター・イメージフォーラム","country":"JP","city":"东京","timezone":"Asia/Tokyo"},
@@ -24,10 +24,18 @@
     {"id":"morc-asagaya","name":"Morc阿佐ヶ谷（映画.com）","adapter":"eiga_venue","url":"https://eiga.com/theater/13/130610/3315/","venue":"Morc阿佐ヶ谷","country":"JP","city":"东京","timezone":"Asia/Tokyo"},
     {"id":"laputa-asagaya","name":"ラピュタ阿佐ケ谷（映画.com）","adapter":"eiga_venue","url":"https://eiga.com/theater/13/130610/3070/","venue":"ラピュタ阿佐ケ谷","country":"JP","city":"东京","timezone":"Asia/Tokyo"},
     {"id":"kineca-omori","name":"キネカ大森（映画.com）","adapter":"eiga_venue","url":"https://eiga.com/theater/13/130713/3095/","venue":"キネカ大森","country":"JP","city":"东京","timezone":"Asia/Tokyo"},
-    {"id":"netflix-tudum","name":"Netflix Tudum","adapter":"netflix","url":"https://www.netflix.com/tudum/articles/new-on-netflix","film_evidence_url":"https://www.netflix.com/tudum/articles/new-movies-on-netflix","platform":"Netflix","timezone":"America/Los_Angeles"},
-    {"id":"criterion-channel","name":"Criterion Collection","adapter":"criterion","url":"https://www.criterion.com/current/posts","platform":"Criterion Channel","timezone":"America/New_York"},
-    {"id":"apple-tv","name":"Apple TV Press","adapter":"apple","url":"https://www.apple.com/tv-pr/originals/","data_url":"https://www.apple.com/tv-pr/originals.originals.json","platform":"Apple TV","timezone":"America/Los_Angeles"},
-    {"id":"disney-hulu","name":"Disney+ and Hulu Press","adapter":"disney","url":"https://press.disneyplus.com/news","platform":"Disney+","timezone":"America/New_York"},
+    {"id":"apple-tv","name":"Apple TV Press","adapter":"apple","url":"https://www.apple.com/tv-pr/originals/","data_url":"https://www.apple.com/tv-pr/originals.originals.json","press_url":"https://www.apple.com/tv-pr/news-feed.xml","platform":"Apple TV","timezone":"America/Los_Angeles"},
+    {"id":"disney-hulu","name":"Disney+ and Hulu Press","adapter":"disney","url":"https://press.disneyplus.com/news","timezone":"America/New_York"},
     {"id":"netflix-newsroom","name":"About Netflix","adapter":"netflix_news","url":"https://about.netflix.com/en/newsroom","platform":"Netflix","timezone":"UTC"}
+  ],
+  "verified_premieres": [
+    {"source_id":"apple-tv","title":"Being Heumann","start_date":"2026-11-13","platform":"Apple TV","market":"全球","work_url":"https://www.apple.com/tv-pr/originals/being-heumann/","premiere_url":"https://www.apple.com/tv-pr/news/2026/10/apple-original-films-releases-trailer-for-being-heumann-the-rousing-new-film-from-academy-award-winner-sin-heder/"},
+    {"source_id":"eiga-releases","title":"モスキートボウル","official_title":"The Mosquito Bowl","start_date":"2026-11-25","platform":"Netflix","market":"全球","work_url":"https://eiga.com/movie/106801/","premiere_url":"https://about.netflix.com/en/news/the-mosquito-bowl-military-football-screenings"},
+    {"source_id":"eiga-releases","title":"エル・ニーニョ","official_title":"The Child","start_date":"2026-11-27","platform":"Netflix","work_url":"https://eiga.com/movie/106888/","premiere_url":"https://about.netflix.com/en/news/netflix-unveils-the-official-trailer-for-the-child"},
+    {"source_id":"eiga-releases","title":"完全密着ドキュメンタリー「ゴジラ-0.0」山崎貴、世界を驚かせたその先へ。","start_date":"2026-11-27","platform":"Prime Video","market":"日本","work_url":"https://eiga.com/movie/107358/","premiere_url":"https://www.youtube.com/watch?v=48lVoCMpzxc"},
+    {"source_id":"netflix-newsroom","title":"Jão: Tales From the Void","start_date":"2026-12-03","platform":"Netflix","work_url":"https://about.netflix.com/en/news/netflix-releases-trailer-for-jao-tales-from-the-void","premiere_url":"https://about.netflix.com/en/news/netflix-releases-trailer-for-jao-tales-from-the-void"},
+    {"source_id":"eiga-releases","title":"グレッグのダメ日記 にげだしたいよ！","official_title":"Diary of a Wimpy Kid Christmas: The Getaway","start_date":"2026-12-04","platform":"Disney+","work_url":"https://eiga.com/movie/107443/","premiere_url":"https://www.disneyplus.com/explore/articles/diary-of-a-wimpy-kid-christmas-the-getaway-movie"},
+    {"source_id":"eiga-releases","title":"ジャン＝ミシェル・バスキア","official_title":"Jean-Michel Basquiat","start_date":"2026-12-11","platform":"Netflix","work_url":"https://eiga.com/movie/107158/","premiere_url":"https://www.netflix.com/tudum/articles/jean-michel-basquiat-release-date-news"},
+    {"source_id":"eiga-releases","title":"クロス・ミッション2","official_title":"Mission: Cross 2","start_date":"2026-12-25","platform":"Netflix","work_url":"https://eiga.com/movie/105450/","premiere_url":"https://about.netflix.com/en/news/mission-cross-2-returns-december-25"}
   ]
 }

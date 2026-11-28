@@ -135,7 +135,7 @@
     return `<div class="event-row"><div class="date-block"><small>${date[1] || '—'} 月</small><strong>${row.date_precision === 'day' ? date[2] : '—'}</strong></div><div class="event-row-main"><span class="event-badge ${status.tone}">${status.label}</span><h3><button class="card-title" data-detail="${e(row.id)}" data-type="event">${e(C.displayTitle(row))}</button></h3><p>${e(C.locationLabel(row))} · ${C.eventTypes[row.event_type]}${detailed ? ` · ${e(C.timeLabel(row))}${row.end_date ? ' — ' + C.dateLabel(row.end_date) : ''}` : ''}</p></div>${saveButton('event', row.id, true)}</div>`;
   }
   function upcoming(limit = 3, scope = filters()) {
-    return dataset.events.filter(row => C.matches(row, { ...scope, kind: 'all' }) && row.date_precision === 'day' && ((C.daysBetween(referenceFor(row), row.start_date) >= 0 && C.daysBetween(referenceFor(row), row.start_date) <= (preferences.upcoming_window_days || 14)) || (row.end_date && C.daysBetween(referenceFor(row), row.end_date) >= 0 && C.daysBetween(referenceFor(row), row.end_date) <= 7)))
+    return dataset.events.filter(row => C.calendarEventAllowed(row) && C.matches(row, { ...scope, kind: 'all' }) && row.date_precision === 'day' && ((C.daysBetween(referenceFor(row), row.start_date) >= 0 && C.daysBetween(referenceFor(row), row.start_date) <= (preferences.upcoming_window_days || 14)) || (row.end_date && C.daysBetween(referenceFor(row), row.end_date) >= 0 && C.daysBetween(referenceFor(row), row.end_date) <= 7)))
       .sort((a, b) => { const aEnd = C.daysBetween(referenceFor(a), a.end_date), bEnd = C.daysBetween(referenceFor(b), b.end_date); const aSoon = aEnd !== null && aEnd <= 7, bSoon = bEnd !== null && bEnd <= 7; return Number(bSoon) - Number(aSoon) || String(a.start_date).localeCompare(String(b.start_date)); }).slice(0, limit);
   }
   function agenda() {
@@ -521,7 +521,7 @@
     else if (button.dataset.action === 'import') $('import-input').click();
     else if (button.dataset.action === 'ics') {
       const all = [...(boot.live?.events || []), ...dataset.events], ids = new Set(bookmarks.map(row => row.event_id).filter(Boolean));
-      const events = [...new Map(all.filter(event => event.event_type !== 'call_deadline' && ids.has(event.id)).map(event => [event.id, event])).values()];
+      const events = [...new Map(all.filter(event => event.event_type !== 'call_deadline' && C.calendarEventAllowed(event) && ids.has(event.id)).map(event => [event.id, event])).values()];
       if (!events.some(event => event.date_precision === 'day')) { toast('请先收藏一项有确切日期的活动'); return; }
       const url = URL.createObjectURL(new Blob([C.calendarFile(events)], { type: 'text/calendar;charset=utf-8' })); const link = document.createElement('a'); link.href = url; link.download = '幕间休息.ics'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 3000); toast('已导出确切日期的活动；仅到月份的活动未导出');
     }

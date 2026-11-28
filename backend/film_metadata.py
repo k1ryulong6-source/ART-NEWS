@@ -13,7 +13,7 @@ from urllib.parse import urlencode, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
-from .film_calendar import DATA, film_image as image_url, read_calendar, text as node_text
+from .film_calendar import DATA, calendar_event_allowed, film_image as image_url, read_calendar, text as node_text
 from .film_profiles import article_profiles, eiga_profile, prose
 from .snapshot_files import encoded, replace_file
 
@@ -84,7 +84,10 @@ def calendar_with_films(events=(), *, articles=(), links=(), calendar=None, meta
             evidence[link['content_id']].add(url)
     archived = article_profiles(articles, evidence)
     works, published = [], {}
-    for row in [*calendar['items'], *calendar.get('now_showing', []), *events]:
+    items = [row for row in calendar['items'] if calendar_event_allowed(row)]
+    for row in [*items, *calendar.get('now_showing', []), *events]:
+        if not calendar_event_allowed(row):
+            continue
         if key := film_key(row, include_programmes=True):
             works.append((key, row))
             if profile := row.get('profile'):
@@ -108,7 +111,7 @@ def calendar_with_films(events=(), *, articles=(), links=(), calendar=None, meta
             details['profile_id'] = key
         if details:
             films[row['id']] = details
-    return {**calendar, 'films': films, 'profiles': profiles, 'film_metadata_report': metadata.get('report')}
+    return {**calendar, 'items': items, 'films': films, 'profiles': profiles, 'film_metadata_report': metadata.get('report')}
 
 
 def artwork_fields(image, page, kind):
@@ -491,6 +494,8 @@ def refresh_metadata(calendar, events, previous, *, instant=None, limit=44, seco
     vera_titles = defaultdict(list)
     japanese_releases = {}
     for row in [*calendar['items'], *events]:
+        if not calendar_event_allowed(row):
+            continue
         if identifier := film_key(row, include_programmes=True):
             groups[identifier].append(row)
             if row.get('source_id') == 'cinema-vera':

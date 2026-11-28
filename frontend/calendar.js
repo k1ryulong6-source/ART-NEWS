@@ -11,6 +11,7 @@
   const isExhibition = row => row.event_type === 'exhibition';
   const filmTitle = row => row.movie?.title_zh || row.movie?.original_title || row.title_original;
   const entryTitle = row => isFilm(row) && !row.is_demo ? filmTitle(row) : row.title_zh || row.title_original;
+  const mergeMovie = (primary, secondary) => primary && secondary ? {...secondary,...primary} : primary || secondary;
 
   function deduplicate(rows) {
     const events = new Map();
@@ -33,7 +34,8 @@
         ? previous.origins : [...previous.origins,evidence];
       const conflict = isExhibition(row) && previous.end_date && row.end_date && previous.end_date !== row.end_date;
       const chosen = Number(Boolean(row.exhibition_id)) > Number(Boolean(previous.exhibition_id)) || confidence(row) > confidence(previous) ? row : previous;
-      events.set(key,{...chosen,movie:chosen.movie || previous.movie || row.movie,origins,date_conflict:Boolean(chosen.date_conflict || conflict)});
+      events.set(key,{...chosen,movie:mergeMovie(chosen.movie,chosen === row ? previous.movie : row.movie),origins,
+        date_conflict:Boolean(chosen.date_conflict || conflict)});
     }
     return [...events.values()];
   }
@@ -76,6 +78,7 @@
         : JSON.stringify([row.id,day,entry.label]);
       if (!grouped.has(key)) grouped.set(key,{...entry,screenings:[]});
       const group = grouped.get(key);
+      if (group.row !== row && row.movie) group.row = {...group.row,movie:mergeMovie(group.row.movie,row.movie)};
       if (timed) group.screenings.push(row);
     }
     return [...grouped.values()];
@@ -120,8 +123,10 @@
       const link = (content, attributes = '') => row.exhibition_id ? `<a ${attributes} href="#exhibition/${encodeURIComponent(row.exhibition_id)}">${content}</a>`
         : row.source_id && proof ? `<a ${attributes} ${ref(programme || proof)}>${content}</a>`
         : `<button ${attributes} data-detail="${e(row.id)}" data-type="event">${content}</button>`;
-      const posterUrl = C.safeImageUrl(movie?.poster_url);
-      const poster = posterUrl ? link(`<img src="${e(posterUrl)}" alt="" loading="${index < 3 ? 'eager' : 'lazy'}" decoding="async" referrerpolicy="no-referrer" data-calendar-poster>`,
+      const posterUrl = C.safeImageUrl(movie?.poster_url), backupUrl = C.safeImageUrl(movie?.artwork_url);
+      const imageUrl = posterUrl || backupUrl;
+      const fallback = posterUrl && backupUrl && posterUrl !== backupUrl ? ` data-calendar-backup="${e(backupUrl)}"` : '';
+      const poster = imageUrl ? link(`<img src="${e(imageUrl)}" alt="" loading="${index < 3 ? 'eager' : 'lazy'}" decoding="async" referrerpolicy="no-referrer" data-calendar-poster${fallback}>`,
         'class="calendar-poster" tabindex="-1" aria-hidden="true"') : '';
       const country = row.country === 'GLOBAL' ? '' : C.countryLabels[row.country] || row.country;
       const place = row.prefecture_name || row.city || country;
@@ -228,13 +233,19 @@
     }
     document.addEventListener('load',event=>{
       const image = event.target;
-      if (image.matches?.('[data-calendar-poster]') && image.naturalWidth > image.naturalHeight) {
-        image.closest('.calendar-poster').classList.add('landscape');
+      if (image.matches?.('[data-calendar-poster]')) {
+        image.closest('.calendar-poster').classList.toggle('landscape', image.naturalWidth > image.naturalHeight);
       }
     },true);
     document.addEventListener('error',event=>{
       const image = event.target;
       if (!image.matches?.('[data-calendar-poster]')) return;
+      if (image.dataset.calendarBackup) {
+        const backup = image.dataset.calendarBackup;
+        delete image.dataset.calendarBackup;
+        image.src = backup;
+        return;
+      }
       image.closest('.calendar-poster').hidden = true;
       image.closest('.calendar-entry').classList.remove('has-poster');
     },true);

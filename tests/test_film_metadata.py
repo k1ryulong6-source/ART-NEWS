@@ -52,13 +52,41 @@ class FilmMetadataTests(unittest.TestCase):
         self.assertEqual(result['title_zh'], '暖流')
         self.assertTrue(result['douban_url'].endswith('/3052709/'))
 
+    def test_shared_venue_paragraph_matches_the_second_film_and_programme_art_carries_no_title(self):
+        page = 'https://www.shin-bungeiza.com/schedule#d2026-11-16-1'
+        soup = BeautifulSoup('''<div id="d2026-11-16-1"><div class="schedule-box-img">
+          <img src="/photo/2026-11-16-1-01-p.jpg"><img src="/photo/2026-11-16-1-02-p.jpg">
+          </div></div><div class="schedule-content">
+          <div class="schedule-content-img"><img src="/photo/2026-11-16-1-02-s1.jpg"></div>
+          <p class="nihon-date"><a href="/film1">あるじ</a><small>（1925・デンマーク/107分）</small><br/>
+          <a href="/film2">吸血鬼</a><small>（1931・仏=独/74分）</small></p>
+          <div class="schedule-program"><p>2本セット ドライヤー</p></div></div>''', 'html.parser')
+        second = page_movie(event('second', title_original='吸血鬼'), soup, page)
+        self.assertEqual(second['year'], 1931)
+        self.assertTrue(second['poster_url'].endswith('02-p.jpg'))
+        self.assertTrue(second['artwork_url'].endswith('02-s1.jpg'))
+        self.assertEqual(second['artwork_kind'], 'still')
+        programme = event('programme', title_original='2本セット ドライヤー')
+        facts = page_movie(programme, soup, page)
+        self.assertEqual(facts['artwork_kind'], 'programme')
+        self.assertNotIn('poster_url', facts)
+        metadata = {'records': {film_key(programme, include_programmes=True): facts}}
+        published = calendar_with_films(calendar={'items': [programme]}, metadata=metadata)
+        self.assertEqual(published['films']['programme'], facts)
+        self.assertIsNone(film_key(programme))
+
     def test_theatre_programme_date_binds_two_remakes_to_distinct_showtimes(self):
-        suffix = '<ul class="films" id="id1"><li><h3>『暖流（94分／35mm）』</h3></li><li class="txt">公開：1957年</li></ul>'
+        suffix = ('<ul class="films" id="id1"><li><h3>『暖流（94分／35mm）』</h3></li>'
+                  '<li class="img"><img src="http://www.cinemavera.com/files/warm.jpg"></li>'
+                  '<li class="txt">公開：1957年</li></ul>')
         current = BeautifulSoup('<ul class="subject"><li class="schedule">2026/11/21 ～ 2026/12/18</li></ul>' + suffix, 'html.parser')
         url = 'https://www.cinemavera.com/programs.html'
         same = event('early', title_original='暖流', source_id='cinema-vera', start_date='2026-12-10')
         later = {**same, 'id': 'late', 'start_date': '2026-12-20'}
-        self.assertEqual(page_movie(same, current, url)['year'], 1957)
+        movie = page_movie(same, current, url)
+        self.assertEqual(movie['year'], 1957)
+        self.assertEqual(movie['artwork_url'], 'https://www.cinemavera.com/files/warm.jpg')
+        self.assertEqual(movie['artwork_source_url'], url+'#id1')
         self.assertEqual(page_movie(later, current, url), {})
         self.assertNotEqual(film_key(same), film_key(later))
 

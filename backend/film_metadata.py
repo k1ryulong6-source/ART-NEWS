@@ -42,9 +42,13 @@ def work_title(title):
     return VERSION.sub('', clean(title)).strip(' 『』〈〉「」')
 
 
-def film_key(row):
-    if (row.get('event_type') not in MOVIE_TYPES or row.get('is_demo') or row.get('program')
-            or row.get('evidence_status') == 'unverified' or PROGRAMME.search(row.get('title_original') or '')):
+def is_programme(row):
+    return bool(row.get('program') or PROGRAMME.search(row.get('title_original') or ''))
+
+
+def film_key(row, *, include_programmes=False):
+    if (row.get('event_type') not in MOVIE_TYPES or row.get('is_demo') or row.get('evidence_status') == 'unverified'
+            or (not include_programmes and is_programme(row))):
         return None
     title = name_key(work_title(row.get('title_original')))
     proof = row.get('programme_url') or row.get('evidence_url')
@@ -73,20 +77,75 @@ def calendar_with_films(events=(), *, calendar=None, metadata=None):
     metadata = read_metadata() if metadata is None else metadata
     films = {}
     for row in [*calendar['items'], *events]:
-        record = metadata['records'].get(film_key(row))
-        if record and (record.get('title_zh') or record.get('poster_url') or record.get('original_title')):
+        record = metadata['records'].get(film_key(row, include_programmes=True))
+        if record and any(record.get(key) for key in ('title_zh', 'poster_url', 'original_title', 'artwork_url')):
             films[row['id']] = {key: record[key] for key in (
                 'title_zh', 'original_title', 'year', 'douban_id', 'douban_url', 'match_source_url',
-                'poster_url', 'poster_source_url'
+                'poster_url', 'poster_source_url', 'artwork_url', 'artwork_source_url', 'artwork_kind'
             ) if record.get(key)}
     return {**calendar, 'films': films, 'film_metadata_report': metadata.get('report')}
 
 
 def image_url(value, page):
     from .reading import public_url
+    if value and urlsplit(value).path.lower().endswith(('/noimg.png', '/npw.gif')):
+        return None
     if value and value.startswith('http://') and urlsplit(value).hostname == urlsplit(page).hostname:
         value = 'https://' + value.removeprefix('http://')
     return public_url(value, page)
+
+
+def artwork_fields(image, page, kind):
+    raw = image.get('data-src') or image.get('src') if image else None
+    if raw and (url := image_url(raw, page)):
+        return {'artwork_url': url, 'artwork_source_url': page, 'artwork_kind': kind}
+    return {}
+
+
+def bungeiza_artwork(row, soup, page, expected):
+    anchor = urlsplit(page).fragment
+    programme = soup.find(id=anchor)
+    schedule = programme.find_next_sibling('div', class_='schedule-content') if programme else None
+    if not schedule:
+        return {}, None, ''
+    images = programme.select('.schedule-box-img img[src$=".jpg"], .schedule-box-img img[src$=".png"]')
+    if not images:
+        images = programme.select('img[src$="-p.jpg"], img[src$="-p.png"]')
+    if is_programme(row):
+        announced = [programme.find('h1'), *schedule.select('.schedule-program > p')]
+        if any(name_key(work_title(node_text(name))) == expected for name in announced):
+            return artwork_fields(next(iter(images), None), page, 'programme'), None, ''
+        return {}, None, ''
+
+    # The venue can place several film titles and their credits inside one paragraph.
+    credits = []
+    for paragraph in schedule.select('p.nihon-date'):
+        heading = []
+        for child in paragraph.children:
+            if child.name == 'small':
+                title = name_key(work_title(' '.join(heading)))
+                if title:
+                    credits.append((title, node_text(child)))
+                heading.clear()
+            elif child.name == 'br':
+                heading.clear()
+            else:
+                heading.append(str(child) if child.name is None else node_text(child))
+    matching = [(index, description) for index, (title, description) in enumerate(credits, 1) if title == expected]
+    if len(matching) != 1:
+        return {}, None, ''
+    index, details = matching[0]
+    stem = f'/photo/{anchor.removeprefix("d")}-{index:02}-'
+    if len(credits) == 1:
+        poster = next((img for img in images if img['src'].endswith(('-p.jpg', '-p.png'))), None)
+    else:
+        poster = next((img for img in images if img['src'] in (stem+'p.jpg', stem+'p.png')), None)
+    still = next((img for img in schedule.select('.schedule-content-img img[src]')
+                  if img['src'] in (stem+'s1.jpg', stem+'s1.png')), None)
+    fallback = artwork_fields(still, page, 'still')
+    if not fallback and not poster and len(images) == 1:
+        fallback = artwork_fields(images[0], page, 'programme')
+    return fallback, poster, details
 
 
 def page_movie(row, soup, page):
@@ -113,20 +172,9 @@ def page_movie(row, soup, page):
     elif host == 'www.eurospace.co.jp':
         details = node_text(soup.select_one('p.work-caption'))
         poster = soup.select_one('img[src*="_chirashi."]')
+        info.update(artwork_fields(soup.select_one('img[src*="_bamensha."]'), page, 'still'))
     elif host == 'www.shin-bungeiza.com':
-        program = soup.find(id=urlsplit(page).fragment)
-        schedule = program.find_next_sibling('div', class_='schedule-content') if program else None
-        if not schedule:
-            return info
-        credits = schedule.select('.schedule-content-txt > p.nihon-date')
-        for credit in credits:
-            heading = ' '.join(str(child) if child.name is None else node_text(child)
-                               for child in credit.children if child.name != 'small')
-            if name_key(work_title(heading)) == expected:
-                details = node_text(credit.find('small'))
-                if len(credits) == 1:
-                    poster = program.select_one('img[src$="-p.jpg"], img[src$="-p.png"]')
-                break
+        info, poster, details = bungeiza_artwork(row, soup, page, expected)
     elif host == 'www.cinemavera.com':
         period = re.findall(r'\d{4}/\d{2}/\d{2}', node_text(soup.select_one('ul.subject .schedule')))
         dates = [value.replace('/', '-') for value in period]
@@ -141,8 +189,8 @@ def page_movie(row, soup, page):
         if len(films) != 1:
             return info
         details = node_text(films[0].select_one('li.txt'))
-        # The theatre's photographic still is not a cover. Preserve the individual credits link.
         page += '#' + films[0]['id']
+        info.update(artwork_fields(films[0].select_one('li.img img[src*="/files/"]'), page, 'still'))
         info['programme_start'], info['programme_end'] = dates
     elif host == 'diaphana.fr':
         poster = soup.select_one('img[src*="affiche"], img[class*="affiche"]')
@@ -330,6 +378,8 @@ class MovieLookup:
 
     def resolve(self, row, *, related=None):
         facts = self.source_facts(row)
+        if is_programme(row):
+            return facts
         if related:
             facts = {**related, **{key: value for key, value in facts.items() if value}}
         title = facts.get('original_title') or work_title(row['title_original'])
@@ -399,7 +449,7 @@ def refresh_metadata(calendar, events, previous, *, instant=None, limit=44, seco
     vera_titles = defaultdict(list)
     japanese_releases = {}
     for row in [*calendar['items'], *events]:
-        if identifier := film_key(row):
+        if identifier := film_key(row, include_programmes=True):
             groups[identifier].append(row)
             if row.get('source_id') == 'cinema-vera':
                 vera_titles[name_key(work_title(row['title_original']))].append((identifier, row['start_date']))
@@ -408,7 +458,8 @@ def refresh_metadata(calendar, events, previous, *, instant=None, limit=44, seco
     upcoming, archive = [], []
     for identifier, rows in groups.items():
         prior = records.get(identifier, {})
-        if (prior.get('title_zh') and prior.get('poster_url')) or prior.get('checked_at', '') > retry_after:
+        complete_programme = is_programme(rows[0]) and prior.get('artwork_url')
+        if complete_programme or (prior.get('title_zh') and prior.get('poster_url')) or prior.get('checked_at', '') > retry_after:
             continue
         future = [row for row in rows if row['start_date'] >= today[:7 if row.get('date_precision') == 'month' else 10]]
         if future:
@@ -452,14 +503,19 @@ def refresh_metadata(calendar, events, previous, *, instant=None, limit=44, seco
                     records[key] = {**records.get(key, {}), **{name: value for name, value in facts.items() if value},
                                     'source_title': row['title_original'], 'checked_at': now}
                 updated += 1
-    available = [records.get(key, {}) for key in groups]
-    active = [records.get(key, {}) for key, rows in groups.items()
+    films = {key: rows for key, rows in groups.items() if not is_programme(rows[0])}
+    available = [records.get(key, {}) for key in films]
+    programmes = [records.get(key, {}) for key in groups.keys() - films.keys()]
+    active = [records.get(key, {}) for key, rows in films.items()
               if any(row['start_date'] >= today[:len(row['start_date'])] for row in rows)]
-    report = {'checked_at': instant.isoformat(), 'looked_up_this_run': updated, 'works': len(groups),
+    report = {'checked_at': instant.isoformat(), 'looked_up_this_run': updated, 'works': len(films),
               'with_douban_title': sum(bool(record.get('title_zh')) for record in available),
               'with_poster': sum(bool(record.get('poster_url')) for record in available),
+              'with_artwork': sum(bool(record.get('poster_url') or record.get('artwork_url')) for record in available),
+              'programmes_with_artwork': sum(bool(record.get('artwork_url')) for record in programmes),
               'active_works': len(active), 'active_with_douban_title': sum(bool(record.get('title_zh')) for record in active),
               'active_with_poster': sum(bool(record.get('poster_url')) for record in active),
+              'active_with_artwork': sum(bool(record.get('poster_url') or record.get('artwork_url')) for record in active),
               'active_checked': sum(bool(record.get('checked_at')) for record in active),
               'request_failures': dict(lookup.errors)}
     return {'schema_version': 1, 'report': report, 'records': records}

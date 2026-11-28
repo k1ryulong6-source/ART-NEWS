@@ -60,3 +60,16 @@ test('film groups combine sessions without merging venues, dates or two editions
   assert.equal(Cal.entryTitle({...movie,movie:{original_title:'The Film by the Sea'},title_zh:'旧译名'}), 'The Film by the Sea');
   assert.equal(Cal.entryTitle({...movie,movie:undefined,title_zh:'旧译名'}), '海辺の映画');
 });
+
+test('grouped screenings retain artwork from later slots and duplicate official sources', () => {
+  const first = slot('first',{movie:{douban_id:'123',title_zh:'海边的电影'}});
+  const artwork = {douban_id:'123',artwork_url:'https://example.org/still.jpg',artwork_kind:'still'};
+  const sameSlot = slot('repeat',{movie:artwork});
+  const next = slot('next',{movie:artwork,start_at:'2026-11-30T15:00:00+09:00'});
+  const [merged] = Cal.deduplicate([first,sameSlot]);
+  assert.equal(merged.movie.title_zh,'海边的电影');
+  assert.equal(merged.movie.artwork_url,artwork.artwork_url);
+  const [group] = Cal.groupSchedule(Cal.calendarEntries([first,next],'2026-11'));
+  assert.equal(group.row.movie.artwork_url,artwork.artwork_url);
+  assert.equal(group.screenings.length,2);
+});

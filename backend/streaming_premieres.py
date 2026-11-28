@@ -149,7 +149,8 @@ def press_dates(soup, source, get, coverage):
     candidates = {url: title for url, headline in stories.items() if RELEASE.search(headline)
                   and not SERIES.search(headline) and (title := quoted_title(headline))}
     for url, page in press_pages(candidates, get, coverage):
-        selectors = '[class*=ArticleCopy] p' if netflix else '.rich-text-container p'
+        selectors = ('[class*=ArticleCopy] p' if netflix
+                     else '.inc_rich_article .rich-text-container > :is(p, ul, .summary)')
         paragraphs = [text(node) for node in page.select(selectors)]
         intro = ' '.join(paragraphs[:3])
         title = candidates[url]
@@ -163,11 +164,13 @@ def press_dates(soup, source, get, coverage):
                 continue
         else:
             original = re.search(r'\b(Disney\+|Hulu) [Oo]riginal (?:feature |documentary )?(?:film|movie)\b', intro)
-            stamped = page.select_one('meta[property="article:published_time"][content]')
-            if not original or not stamped:
+            if not original:
                 continue
             platform = original[1]
-            posted = date.fromisoformat(stamped['content'][:10])
+            try:
+                posted = datetime.strptime(text(page.select_one('.publish-date-standalone')), '%B %d, %Y').date()
+            except ValueError:
+                continue
         day = press_premiere(paragraphs, title, platform, posted,
                              require_first_online=netflix and not NETFLIX_LAUNCH.search(stories[url] + ' ' + intro))
         if not day or day < posted:

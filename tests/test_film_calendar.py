@@ -59,8 +59,8 @@ class FilmCalendarTests(unittest.TestCase):
         source = {'id':'disney-hulu','adapter':'disney','name':'Disney Press','url':'https://press.disneyplus.com/news','timezone':'America/New_York'}
         index = BeautifulSoup('''<a href="/news/next-on-disney-plus-december-2026">December films and premieres</a>
         <a href="/news/new">Disney+ Original Movie “New Film” premieres December 7</a>''','html.parser')
-        page = '''<meta property="article:published_time" content="2026-11-25T00:00:00Z">
-        <div class="rich-text-container"><p>The Disney+ Original movie New Film premieres December 7, only on Disney+.</p></div>'''
+        page = '''<section class="inc_rich_article"><div class="publish-date-standalone">November 25, 2026</div>
+        <div class="rich-text-container"><ul><li>The Disney+ Original movie New Film premieres December 7, only on Disney+.</li></ul></div></section>'''
         coverage = {}
         rows = list(press_dates(index,source,{'https://press.disneyplus.com/news/new':page}.__getitem__,coverage))
         self.assertEqual([(r['platform'],r['start_date'],r['title_original']) for r in rows],

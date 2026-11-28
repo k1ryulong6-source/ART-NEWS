@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 
 from .exhibition_sources import error_kind, linked_url
 from .film_calendar import base, film_image, local_day, screening, text
+from .film_profiles import prose
 from .reading import public_url
 
 MOVIE = re.compile(r'/movie/(\d+)/')
@@ -87,6 +88,8 @@ def current_films(soup, source, get):
                               'country': 'JP', 'source_id': source['id'], 'source_name': source['name'],
                               'evidence_url': movie, 'booking_url': tickets, 'evidence_status': 'media_reported',
                               **poster_of(card, movie)}
+                if profile := prose(text(card.select_one('.txt-box > p.txt')), 'ja', movie):
+                    found[key]['profile'] = profile
         next_link = next((a for a in soup.select('.pagination a[href]') if text(a) == '次へ'), None)
         if not next_link:
             if len(found) != expected:
@@ -175,6 +178,8 @@ def release_dates(soup, source, get, today, previous):
                 continue
             row = {**base(source, title, day.isoformat(), 'day', kind, movie), **poster,
                    'date_source_url': date_evidence, 'listing_date': listed_day.isoformat(), 'evidence_status': 'media_reported'}
+            if profile := prose(description, 'ja', movie):
+                row['profile'] = profile
             if kind == 'streaming_release':
                 row.update(platform=platform, market='日本')
             records[(movie, day, kind, platform)] = row

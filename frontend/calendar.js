@@ -163,6 +163,14 @@
         return `<li>${ticket ? `<a ${ref(ticket)} title="购票">${label} ↗</a>` : label}</li>`;
       }).join('');
     }
+    function upcomingScreenings(row,disabledSources) {
+      const url = row.programme_url || row.evidence_url;
+      if (!url || row.is_demo || row.event_type !== 'cinema_release') return [];
+      const instant = Date.now();
+      const entries = forSources(film?.items,disabledSources).filter(slot=>slot.event_type === 'cinema_screening'
+        && slot.programme_url === url && slot.country === row.country && Date.parse(slot.start_at) > instant);
+      return groupSchedule(entries.map(slot=>({row:slot,day:slot.start_date}))).slice(0,4);
+    }
     function item({row, label, screenings}, index) {
       const booking = C.safeUrl(row.booking_url), watch = C.safeUrl(row.watch_url);
       const movie = row.movie, title = entryTitle(row);
@@ -232,13 +240,24 @@
       const dates = [...new Set([row.start_date,row.end_date].filter(Boolean))].map(C.dateLabel).join(' — ');
       const place = placeLabels(row).join(' · ');
       const picture = cover({...row,image_url:row.image_url || relatedImage(row.id)},title);
+      const profile = film?.profiles?.[row.movie?.profile_id];
+      const language = profile && !profile.language?.startsWith('zh') ? C.languageLabels[profile.language] : '';
+      const article = profile?.article_id;
+      const credits = isFilm(row) && [profile?.directors?.length && `导演 ${profile.directors.join('、')}`,
+        (profile?.year || row.film_year) && String(profile?.year || row.film_year),
+        profile?.runtime_minutes && `${profile.runtime_minutes} 分钟`].filter(Boolean).join(' · ');
+      const introduction = profile?.text ? `<section class="calendar-reader-intro"><h2>${row.program ? '片单简介' : '影片简介'}${language ? ` <small>${e(language)}</small>` : ''}</h2>
+        <p lang="${e(profile.language || '')}">${e(profile.text)}</p>${article ? `<a class="text-link" href="${e(C.readerRoute(article))}">阅读站内介绍 ↗</a>` : ''}</section>`
+        : isFilm(row) && !row.is_demo && !row.program ? '<p class="calendar-reader-note">暂未收录影片简介。</p>' : '';
       const slots = screenings.length ? screenings : [row];
       const times = screeningTimes(slots);
       const timeLabel = {call_deadline:'截止时刻',streaming_release:'上线时间',exhibition:'活动时间'}[row.event_type] || '放映场次';
+      const upcoming = times ? [] : upcomingScreenings(row,disabledSources);
       const links = new Map();
       const bookingCaption = showing ? '查场次' : row.event_type === 'call_deadline' ? '报名' : '购票';
       if (!row.is_demo) for (const [value,label] of [
-        [row.watch_url,'观看'],[!times && row.booking_url,bookingCaption], [row.evidence_url,'排期来源'],[row.programme_url,'影片资料'],[row.movie?.douban_url,'豆瓣']
+        [row.watch_url,'观看'],[!times && row.booking_url,bookingCaption], [row.evidence_url,'排期来源'],
+        [row.programme_url,'影片资料'],[profile?.source_url,'简介来源'],[row.movie?.douban_url,'豆瓣']
       ]) {
         const url = C.safeUrl(value);
         if (url && !links.has(url)) links.set(url,label);
@@ -248,8 +267,12 @@
       return {title,html:`<article class="reader-page calendar-reader" data-ui="calendar-reader">${back}
         <header><div class="eyebrow"><span class="channel-tag">${e(badge || '活动')}</span>${dates ? `<span>${e(dates)}</span>` : ''}${row.is_demo ? '<span>示例</span>' : ''}</div>
         <h1>${e(title)}</h1>${alternate ? `<p class="calendar-original">${e(alternate)}</p>` : ''}${place ? `<p class="calendar-reader-place">${e(place)}</p>` : ''}</header>
-        ${picture ? `<figure class="calendar-reader-cover" data-calendar-art>${picture.html}</figure>` : ''}
+        ${credits ? `<p class="calendar-reader-credits">${e(credits)}</p>` : ''}
+        ${introduction || picture ? `<div class="calendar-reader-feature${introduction && picture ? ' has-cover' : ''}">
+          ${introduction}${picture ? `<figure class="calendar-reader-cover" data-calendar-art>${picture.html}</figure>` : ''}</div>` : ''}
         ${times ? `<section class="calendar-reader-times"><h2>${timeLabel} <small>${row.timezone === 'Asia/Tokyo' ? '东京时间' : '当地时间'}</small></h2><ul class="calendar-times">${times}</ul></section>` : ''}
+        ${upcoming.length ? `<section class="calendar-reader-times"><h2>已收录的近期场次 <small>当地时间</small></h2>${upcoming.map(entry=>`
+          <div class="calendar-reader-showtime"><p>${e(C.dateLabel(entry.day))} · ${e(entry.row.venue)}</p><ul class="calendar-times">${screeningTimes(entry.screenings)}</ul></div>`).join('')}</section>` : ''}
         ${notes.map(note=>`<p class="calendar-reader-note">${e(note)}</p>`).join('')}
         ${links.size ? `<div class="calendar-reader-links">${[...links].map(([url,label])=>`<a ${ref(url)}>${label} ↗</a>`).join('')}</div>` : ''}</article>`};
     }

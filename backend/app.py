@@ -218,7 +218,16 @@ def create_app(db_path=None):
             events = [dict(row) for row in db.execute(
                 "SELECT id,title_original,event_type,evidence_url,evidence_status,start_date "
                 "FROM events WHERE is_demo=0 AND channel='film'")]
-        return calendar_with_films(events)
+            links = [dict(row) for row in db.execute(
+                "SELECT ce.content_id, ce.event_id FROM content_events ce JOIN events e ON e.id=ce.event_id "
+                "WHERE e.is_demo=0 AND e.channel='film'")]
+            articles = [dict(row) for row in db.execute(
+                "SELECT DISTINCT c.id, c.canonical_url, c.source_id, c.language, c.article_blocks_json, "
+                "c.editorial_status, c.editorial_blocks_json FROM content c "
+                "JOIN content_events ce ON ce.content_id=c.id JOIN events e ON e.id=ce.event_id "
+                "WHERE e.is_demo=0 AND c.is_demo=0 AND e.channel='film' AND e.evidence_url=c.canonical_url "
+                "AND c.source_id IN ('eiga-com', 'bfi-lff')")]
+        return calendar_with_films(events, articles=articles, links=links)
 
     @app.get("/api/preferences")
     async def preferences():

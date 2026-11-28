@@ -888,12 +888,21 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
 .calendar-reader .reader-toolbar button { min-height: 42px; }
 .calendar-reader header h1 { margin-bottom: 7px; }
 .calendar-reader-place { margin-top: 8px; font: 500 14px/1.6 var(--sans); }
-.calendar-reader-cover { margin: clamp(16px, 3vw, 26px) 0; }
-.calendar-reader-cover img { display: block; max-width: 100%; max-height: min(510px, 58svh); height: auto; margin: 0 auto; object-fit: contain; }
+.calendar-reader-credits { margin: 4px 0 0; color: var(--muted); font: 500 13px/1.6 var(--sans); }
+.calendar-reader-feature { margin: clamp(16px, 3vw, 26px) 0; }
+.calendar-reader-feature.has-cover { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 11.5rem); gap: 24px; align-items: start; }
+.calendar-reader-cover { min-width: 0; }
+.calendar-reader-cover img { display: block; max-width: 100%; max-height: 300px; height: auto; margin: 0 auto; object-fit: contain; }
+.calendar-reader-intro { min-width: 0; overflow-wrap: anywhere; }
+.calendar-reader-intro h2 { margin-bottom: 7px; font: 750 17px/1.5 var(--sans); }
+.calendar-reader-intro h2 small { margin-left: 8px; color: var(--muted); font: 500 12px/1.5 var(--sans); }
+.calendar-reader-intro p { font: 400 15px/1.82 var(--sans); }
+.calendar-reader-intro a { display: inline-flex; align-items: center; min-height: 44px; margin-top: 3px; }
 .calendar-reader-times, .calendar-reader-links { border-top: var(--rule); margin-top: 16px; padding-top: 10px; }
 .calendar-reader-times h2 { font: 700 16px/1.5 var(--sans); }
 .calendar-reader-times h2 small { font: 500 12px/1.5 var(--sans); color: var(--muted); margin-left: 8px; }
 .calendar-reader-times .calendar-times { column-gap: 16px; }
+.calendar-reader-showtime { margin: 9px 0 0; font: 500 14px/1.5 var(--sans); }
 .calendar-reader-note { margin: 8px 0 0; font: 500 14px/1.5 var(--sans); }
 .calendar-reader-links { display: flex; flex-wrap: wrap; gap: 0 24px; font: 600 14px/1.5 var(--sans); }
 .calendar-reader-links a, .calendar-reader-times .calendar-times a { display: inline-flex; gap: 4px; min-height: 44px; align-items: center; }
@@ -911,6 +920,8 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
   .calendar-desk .calendar-day { min-height: 36px; }
   .calendar-entry { padding: 11px 0; }
   .calendar-entry.has-poster { grid-template-columns: 86px minmax(0,1fr); gap: 13px; }
+  .calendar-reader-feature.has-cover { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .calendar-reader-cover img { max-height: 228px; margin-inline: 0; }
 }
 @media (max-width: 360px) {
   .calendar-entry.has-poster { grid-template-columns: 73px minmax(0,1fr); }

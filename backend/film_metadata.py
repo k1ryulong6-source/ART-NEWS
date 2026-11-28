@@ -14,6 +14,7 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 from .film_calendar import DATA, film_image as image_url, read_calendar, text as node_text
+from .film_profiles import article_profiles, eiga_profile, prose
 from .snapshot_files import encoded, replace_file
 
 METADATA = DATA.with_name('film-metadata.json')
@@ -73,17 +74,41 @@ def write_metadata(payload, path=METADATA):
     replace_file(path, encoded(payload))
 
 
-def calendar_with_films(events=(), *, calendar=None, metadata=None):
+def calendar_with_films(events=(), *, articles=(), links=(), calendar=None, metadata=None):
     calendar = read_calendar() if calendar is None else calendar
     metadata = read_metadata() if metadata is None else metadata
-    films = {}
+    event_urls = {row['id']: row['evidence_url'] for row in events if row.get('evidence_url') and film_key(row)}
+    evidence = defaultdict(set)
+    for link in links:
+        if url := event_urls.get(link['event_id']):
+            evidence[link['content_id']].add(url)
+    archived = article_profiles(articles, evidence)
+    works, published = [], {}
     for row in [*calendar['items'], *calendar.get('now_showing', []), *events]:
-        record = metadata['records'].get(film_key(row, include_programmes=True))
-        if record and any(record.get(key) for key in ('title_zh', 'poster_url', 'original_title', 'artwork_url')):
-            films[row['id']] = {key: record[key] for key in (
-                'title_zh', 'original_title', 'year', 'douban_id', 'douban_url', 'match_source_url', *ART_FIELDS
-            ) if record.get(key)}
-    return {**calendar, 'films': films, 'film_metadata_report': metadata.get('report')}
+        if key := film_key(row, include_programmes=True):
+            works.append((key, row))
+            if profile := row.get('profile'):
+                if len(profile.get('text', '')) > len(published.get(key, {}).get('text', '')):
+                    published[key] = profile
+    films, profiles = {}, {}
+    for key, row in works:
+        record = metadata['records'].get(key, {})
+        if key not in profiles:
+            url = row.get('programme_url') or row.get('evidence_url')
+            saved = record.get('profile', {})
+            profile = {**published.get(key, {}), **saved, **archived.get(url, {})}
+            if saved.get('language') in ('zh', 'zh-CN'):
+                profile.update(saved)
+            if profile:
+                profiles[key] = profile
+        details = {field: record[field] for field in (
+            'title_zh', 'original_title', 'year', 'douban_id', 'douban_url', 'match_source_url', *ART_FIELDS
+        ) if record.get(field)}
+        if key in profiles:
+            details['profile_id'] = key
+        if details:
+            films[row['id']] = details
+    return {**calendar, 'films': films, 'profiles': profiles, 'film_metadata_report': metadata.get('report')}
 
 
 def artwork_fields(image, page, kind):
@@ -140,12 +165,15 @@ def bungeiza_artwork(row, soup, page, expected):
 
 
 def page_movie(row, soup, page):
-    """Read the identified film or programme's own credits and artwork."""
+    """Read the identified film or programme's artwork, credits and introduction."""
     host = urlsplit(page).hostname
     expected = name_key(work_title(row.get('title_original')))
     info, poster, details = {}, None, ''
     if host == 'eiga.com':
         details = node_text(soup.select_one('p.data'))
+        if expected and name_key(work_title(node_text(soup.find('h1')))) == expected:
+            if profile := eiga_profile(soup, page):
+                info['profile'] = profile
         poster = soup.select_one('.poster-img img, div.pict-area img, img[itemprop=image], .movie-poster img')
         hero = soup.select_one('.hero-img img')
         if hero and name_key(hero.get('alt')) == expected:
@@ -160,6 +188,10 @@ def page_movie(row, soup, page):
                     if movie.get('@type') == 'Movie' and name_key(movie.get('name')) == expected:
                         image = movie.get('image')
                         info['poster_url'] = image_url(image.get('url') if isinstance(image, dict) else image, page)
+    elif host == 'www.apple.com' and urlsplit(page).path.startswith('/tv-pr/originals/'):
+        if name_key(node_text(soup.select_one('h1.description-title'))) == expected:
+            if profile := prose(node_text(soup.select_one('.description-copy')), 'en', page):
+                info['profile'] = profile
     elif host == 'www.imageforum.co.jp':
         details = ' '.join(map(node_text, soup.select('p.text, .movie-data, .movieDetail')))[:7000]
         poster = soup.select_one('img.wp-post-image')
@@ -347,7 +379,8 @@ class MovieLookup:
             if item:
                 art = item.get('image') or {}
                 poster = public_url((art.get('dirpath') or '') + (art.get('name') or ''), APPLE) if art.get('name') else None
-                return {'poster_url': poster, 'poster_source_url': page, 'year': int(row['start_date'][:4]),
+                return {**page_movie(row, BeautifulSoup(self.get(page), 'html.parser'), page),
+                        'poster_url': poster, 'poster_source_url': page, 'year': int(row['start_date'][:4]),
                         'identity_source_url': page}
             return {}
         if source == 'cinema-vera':
@@ -376,7 +409,8 @@ class MovieLookup:
         if is_programme(row):
             return facts
         if related:
-            facts = {**related, **{key: value for key, value in facts.items() if value}}
+            facts = {**{key: value for key, value in related.items() if key != 'profile'},
+                     **{key: value for key, value in facts.items() if value}}
         title = facts.get('original_title') or work_title(row['title_original'])
         year = facts.get('year') or row.get('film_year')
         # Official programme titles sometimes include a separate foreign title.
@@ -455,7 +489,10 @@ def refresh_metadata(calendar, events, previous, *, instant=None, limit=44, seco
         prior = records.get(identifier, {})
         has_poster = prior.get('poster_url') or any(row.get('poster_url') for row in rows)
         complete_programme = is_programme(rows[0]) and any(record.get('artwork_url') for record in [prior,*rows])
-        if complete_programme or (prior.get('title_zh') and has_poster) or prior.get('checked_at', '') > retry_after:
+        profile_source = rows[0].get('source_id') == 'apple-tv' or urlsplit(
+            rows[0].get('programme_url') or rows[0].get('evidence_url') or '').hostname == 'eiga.com'
+        needs_profile = profile_source and not any(item.get('profile', {}).get('text') for item in (prior, *rows))
+        if complete_programme or (prior.get('title_zh') and has_poster and not needs_profile) or prior.get('checked_at', '') > retry_after:
             continue
         future = [row for row in rows if row['start_date'] >= today[:7 if row.get('date_precision') == 'month' else 10]]
         if future:
@@ -468,10 +505,10 @@ def refresh_metadata(calendar, events, previous, *, instant=None, limit=44, seco
         identifier, row = item
         prior = records.get(identifier, {})
         missing_picture = not any(record.get('poster_url') or record.get('artwork_url') for record in (row, prior))
-        return (not missing_picture, identifier in records, row['start_date'])
+        return (not missing_picture, bool(prior.get('checked_at')), row['start_date'])
 
     upcoming.sort(key=priority)
-    archive.sort(key=lambda item: (item[0] not in records, item[1]['start_date']), reverse=True)
+    archive.sort(key=lambda item: (not records.get(item[0], {}).get('checked_at'), item[1]['start_date']), reverse=True)
     old_quota = min(len(archive), max(1, limit // 10)) if upcoming else limit
     now = instant.isoformat()
     front_quota = max(0, limit - old_quota)
@@ -502,8 +539,16 @@ def refresh_metadata(calendar, events, previous, *, instant=None, limit=44, seco
                     equivalent.update(key for key, day in vera_titles[title]
                                       if facts['programme_start'] <= day <= facts['programme_end'])
                 for key in equivalent:
-                    records[key] = {**records.get(key, {}), **{name: value for name, value in facts.items() if value},
-                                    'source_title': row['title_original'], 'checked_at': now}
+                    previous_record = records.get(key, {})
+                    merged = {**previous_record, **{name: value for name, value in facts.items() if value},
+                              'source_title': row['title_original'], 'checked_at': now}
+                    if facts.get('profile'):
+                        saved = previous_record.get('profile', {})
+                        profile = facts['profile']
+                        if saved.get('language') in ('zh', 'zh-CN') and profile.get('language') not in ('zh', 'zh-CN'):
+                            profile = {key: value for key, value in profile.items() if key not in ('text', 'language', 'source_url')}
+                        merged['profile'] = {**saved, **profile}
+                    records[key] = merged
                 updated += 1
     films = {key: rows for key, rows in groups.items() if not is_programme(rows[0])}
     def with_published_art(identifier, rows):

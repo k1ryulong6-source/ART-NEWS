@@ -3099,6 +3099,18 @@
         "1440px Chromium 验证直达详情、海报原始比例及提醒弹窗滚动锁定。300 项 Python、48 项 JavaScript、静态构建和项目检查通过。",
         "提交 1731d714f 的 Pages 46125197358 和 Project checks 46125197344 通过，正式站资源 `calendar.js?v=47ed77564399`、`app.js?v=86de011d4601` 一致。线上 390px Chromium 重跑触摸、剪报、海报、日期、筛选、分页、刷新和浏览器前进后退。截图影片卡片返回偏移 0px，测试艺术影院保留东京时间 09:50、13:30 的场次。"
       ]
+    },
+    {
+      "id": "T106",
+      "title": "为日历电影详情补齐可阅读的影片介绍",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-11-28",
+      "depends_on": ["T105"],
+      "scope": ["backend/film_profiles.py", "backend/film_metadata.py", "backend/japan_film_calendar.py", "backend/app.py", "scripts/build_static.py", "data/film-metadata.json", "frontend/calendar.js", "frontend/theme.css", "tests/"],
+      "acceptance": ["电影详情显示核实的简介和已知制作资料，可阅读站内已保存的完整介绍", "既有中文介绍优先，新排期沿来源补入简介", "正式站《ロンガの海》手机首屏能读到影片内容，保留站内滚动和返回"],
+      "evidence": ["核对《ロンガの海》日历数据原先只有片名、日期和图片。该作品已经有同原文链接、已译的影片简介，日历此前没有读取。"]
     }
   ]
 }

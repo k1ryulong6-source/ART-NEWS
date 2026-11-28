@@ -1,3 +1,4 @@
+import json
 import unittest
 from datetime import datetime, timezone
 
@@ -21,6 +22,41 @@ def entity(label, year, subject, movie):
 
 
 class FilmMetadataTests(unittest.TestCase):
+    def test_known_work_shares_translated_synopsis_and_ignores_other_news(self):
+        url = 'https://eiga.com/movie/123/'
+        release = {**event('release'), 'event_type':'cinema_release', 'evidence_url':url}
+        slot = event('session', programme_url=url)
+        identifier = 'live-' + 'a'*24
+        blocks = [{'type':'paragraph','text':'公開のお知らせ'}, {'type':'heading','text':'解説・あらすじ'},
+                  {'type':'paragraph','text':'仕事を失った写真家が故郷に戻り、祖父が残した写真を手がかりに、遠く離れて暮らす人々を訪ねていく。'},
+                  {'type':'heading','text':'スタッフ・キャスト'}]
+        translated = [*blocks[:2], {'type':'paragraph','text':'失业的摄影师回到故乡，他以祖父留下的旧照片为线索，去探访那些散居各地的人。'}, blocks[-1]]
+        article = {'id':identifier, 'source_id':'eiga-com', 'canonical_url':url, 'language':'ja',
+                   'article_blocks_json':json.dumps(blocks), 'editorial_status':'translated', 'editorial_blocks_json':json.dumps(translated)}
+        calendar = {'items':[slot]}
+        metadata = {'records':{}}
+        links = [{'content_id':identifier, 'event_id':'release'}]
+        result = calendar_with_films([release], articles=[article], links=links, calendar=calendar, metadata=metadata)
+        key = result['films']['release']['profile_id']
+        self.assertEqual(key,result['films']['session']['profile_id'])
+        self.assertEqual(result['profiles'][key]['text'],translated[2]['text'])
+        self.assertEqual(result['profiles'][key]['article_id'],identifier)
+        unrelated = calendar_with_films([release], articles=[{**article,'canonical_url':'https://eiga.com/movie/456/'}],
+                                        links=links, calendar=calendar, metadata=metadata)
+        self.assertEqual(unrelated['profiles'], {})
+
+    def test_eiga_profiles_only_use_the_matched_synopsis_and_director_role(self):
+        row = {**event('release'),'title_original':'同じ映画'}
+        url = 'https://eiga.com/movie/123/'
+        sample = '''<h1>同じ映画</h1><section class="txt-block"><h2>解説・あらすじ</h2>
+        <p>仕事を失った写真家が故郷に戻り、祖父が残した写真を手がかりに遠く離れて暮らす人々を訪ねていく。</p>
+        <p class="data">2026年製作／83分／G／日本</p></section>
+        <dl class="movie-staff"><dt>監督</dt><dd>監督の名前</dd><dt>撮影</dt><dd>別の人</dd></dl>'''
+        profile = page_movie(row,BeautifulSoup(sample,'html.parser'),url)['profile']
+        self.assertEqual((profile['directors'],profile['year'],profile['runtime_minutes']), (['監督の名前'],2026,83))
+        self.assertNotIn('2026年製作',profile['text'])
+        self.assertNotIn('profile',page_movie({**row,'title_original':'別の映画'},BeautifulSoup(sample,'html.parser'),url))
+
     def test_eiga_stream_credits_exclude_platform_text_and_default_poster(self):
         row = {'title_original':'同じ映画'}
         page = 'https://eiga.com/movie/123/'

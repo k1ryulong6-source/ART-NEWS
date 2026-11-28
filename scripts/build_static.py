@@ -51,7 +51,9 @@ def build():
     from backend.babel_export import export_articles, integrations
     output = ROOT / 'dist'
     output.mkdir(exist_ok=True)
-    bundle['film_calendar'] = calendar_with_films(bundle.get('live', {}).get('events', []))
+    live = bundle.get('live', {})
+    bundle['film_calendar'] = calendar_with_films(live.get('events', []), articles=live.get('content', []),
+                                                 links=live.get('content_events', []))
     calendar_data = json.dumps(bundle['film_calendar'], ensure_ascii=False, separators=(',', ':'))
     (output / 'film-calendar.json').write_text(calendar_data, encoding='utf-8')
     bundle['film_store'] = 'film-calendar.json?v=' + sha256(calendar_data.encode()).hexdigest()[:12]

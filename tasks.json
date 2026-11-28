@@ -3110,7 +3110,11 @@
       "depends_on": ["T105"],
       "scope": ["backend/film_profiles.py", "backend/film_metadata.py", "backend/japan_film_calendar.py", "backend/app.py", "scripts/build_static.py", "data/film-metadata.json", "frontend/calendar.js", "frontend/theme.css", "tests/"],
       "acceptance": ["电影详情显示核实的简介和已知制作资料，可阅读站内已保存的完整介绍", "既有中文介绍优先，新排期沿来源补入简介", "正式站《ロンガの海》手机首屏能读到影片内容，保留站内滚动和返回"],
-      "evidence": ["核对《ロンガの海》日历数据原先只有片名、日期和图片。该作品已经有同原文链接、已译的影片简介，日历此前没有读取。"]
+      "evidence": [
+        "核对《ロンガの海》日历数据原先只有片名、日期和图片。该作品已有同原文链接的影片文章。新简介用影片官网核实，导演和 83 分钟来自对应作品一手资料，站内文章可继续阅览。",
+        "静态构建的 437 部日本在映影片中 427 部有简介。未来两个月已保存排期中 1,240/1,607 项关联真实简介。采集复用映画.com、Apple TV Press、Eurospace、Image Forum 和 Cinema Vera 资料。",
+        "本地 Chromium 390px 验证中文简介在首屏、海报缩小、节目时刻、站内介绍及触摸滚动、返回。1440px 验证图文并列。302 项 Python、48 项 JavaScript 和静态构建检查通过。"
+      ]
     }
   ]
 }

@@ -6,6 +6,7 @@
     all: '全部活动'
   };
   const theatres = ['cinema_screening','cinema_release','festival_screening'];
+  const unavailable = ['cancelled','postponed','needs_confirmation','tentative'];
   const isFilm = row => theatres.includes(row.event_type) || row.event_type === 'streaming_release';
   const normalize = value => String(value || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
   const isExhibition = row => row.event_type === 'exhibition';
@@ -70,7 +71,7 @@
     const entries = [];
     for (const row of rows) {
       if (!activity[row.event_type] || !row.start_date) continue;
-      if (['cancelled','postponed','needs_confirmation','tentative'].includes(row.status)) continue;
+      if (unavailable.includes(row.status)) continue;
       const opening = row.date_precision === 'day' ? row.start_date : null;
       if (row.start_date.startsWith(month) && ['day','month'].includes(row.date_precision)) {
         entries.push({row,day:opening,label:opening ? isExhibition(row) ? '开展' : activity[row.event_type] : '仅公布月份'});
@@ -168,7 +169,8 @@
       if (!url || row.is_demo || row.event_type !== 'cinema_release') return [];
       const instant = Date.now();
       const entries = forSources(film?.items,disabledSources).filter(slot=>slot.event_type === 'cinema_screening'
-        && slot.programme_url === url && slot.country === row.country && Date.parse(slot.start_at) > instant);
+        && slot.programme_url === url && slot.country === row.country && Date.parse(slot.start_at) > instant
+        && slot.evidence_status !== 'unverified' && !unavailable.includes(slot.status));
       return groupSchedule(entries.map(slot=>({row:slot,day:slot.start_date}))).slice(0,4);
     }
     function item({row, label, screenings}, index) {
@@ -269,7 +271,7 @@
         <h1>${e(title)}</h1>${alternate ? `<p class="calendar-original">${e(alternate)}</p>` : ''}${place ? `<p class="calendar-reader-place">${e(place)}</p>` : ''}</header>
         ${credits ? `<p class="calendar-reader-credits">${e(credits)}</p>` : ''}
         ${introduction || picture ? `<div class="calendar-reader-feature${introduction && picture ? ' has-cover' : ''}">
-          ${introduction}${picture ? `<figure class="calendar-reader-cover" data-calendar-art>${picture.html}</figure>` : ''}</div>` : ''}
+          ${picture ? `<figure class="calendar-reader-cover" data-calendar-art>${picture.html}</figure>` : ''}${introduction}</div>` : ''}
         ${times ? `<section class="calendar-reader-times"><h2>${timeLabel} <small>${row.timezone === 'Asia/Tokyo' ? '东京时间' : '当地时间'}</small></h2><ul class="calendar-times">${times}</ul></section>` : ''}
         ${upcoming.length ? `<section class="calendar-reader-times"><h2>已收录的近期场次 <small>当地时间</small></h2>${upcoming.map(entry=>`
           <div class="calendar-reader-showtime"><p>${e(C.dateLabel(entry.day))} · ${e(entry.row.venue)}</p><ul class="calendar-times">${screeningTimes(entry.screenings)}</ul></div>`).join('')}</section>` : ''}
@@ -360,7 +362,10 @@
         return;
       }
       const art = image.closest('[data-calendar-art]');
-      if (art) art.hidden = true;
+      if (art) {
+        art.hidden = true;
+        art.closest('.calendar-reader-feature')?.classList.remove('has-cover');
+      }
       image.closest('.calendar-entry')?.classList.remove('has-poster');
     },true);
     document.addEventListener('change',event=>{

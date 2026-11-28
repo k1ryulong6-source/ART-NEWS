@@ -195,10 +195,17 @@ def page_movie(row, soup, page):
     elif host == 'www.imageforum.co.jp':
         details = ' '.join(map(node_text, soup.select('p.text, .movie-data, .movieDetail')))[:7000]
         poster = soup.select_one('img.wp-post-image')
+        heading = node_text(soup.select_one('h2.schedule-day-title3'))
+        if name_key(work_title(heading)) == expected:
+            if profile := prose(node_text(soup.select_one('.movie-right p.text')), 'ja', page):
+                info['profile'] = profile
     elif host == 'www.eurospace.co.jp':
         details = node_text(soup.select_one('p.work-caption'))
         poster = soup.select_one('img[src*="_chirashi."]')
         info.update(artwork_fields(soup.select_one('img[src*="_bamensha."]'), page, 'still'))
+        if any(name_key(work_title(node_text(heading))) == expected for heading in soup.select('h2')):
+            if profile := prose(node_text(soup.select_one('p.work-text')), 'ja', page):
+                info['profile'] = profile
     elif host == 'www.shin-bungeiza.com':
         info, poster, details = bungeiza_artwork(row, soup, page, expected)
     elif host == 'www.cinemavera.com':
@@ -214,8 +221,14 @@ def page_movie(row, soup, page):
                 films.append(block)
         if len(films) != 1:
             return info
-        details = node_text(films[0].select_one('li.txt'))
+        description = films[0].select_one('li.txt')
+        details = node_text(description)
         page += '#' + films[0]['id']
+        if description:
+            story = ' '.join(part for part in description.stripped_strings
+                             if not re.match(r'^(?:公開|監督|出演)\s*[：:]|^[©Ⓒ]', part))
+            if profile := prose(story, 'ja', page):
+                info['profile'] = profile
         info.update(artwork_fields(films[0].select_one('li.img img[src*="/files/"]'), page, 'still'))
         info['programme_start'], info['programme_end'] = dates
     elif host == 'diaphana.fr':
@@ -489,7 +502,7 @@ def refresh_metadata(calendar, events, previous, *, instant=None, limit=44, seco
         prior = records.get(identifier, {})
         has_poster = prior.get('poster_url') or any(row.get('poster_url') for row in rows)
         complete_programme = is_programme(rows[0]) and any(record.get('artwork_url') for record in [prior,*rows])
-        profile_source = rows[0].get('source_id') == 'apple-tv' or urlsplit(
+        profile_source = rows[0].get('source_id') in ('apple-tv', 'image-forum', 'eurospace', 'cinema-vera') or urlsplit(
             rows[0].get('programme_url') or rows[0].get('evidence_url') or '').hostname == 'eiga.com'
         needs_profile = profile_source and not any(item.get('profile', {}).get('text') for item in (prior, *rows))
         if complete_programme or (prior.get('title_zh') and has_poster and not needs_profile) or prior.get('checked_at', '') > retry_after:

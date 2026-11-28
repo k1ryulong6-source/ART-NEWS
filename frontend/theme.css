@@ -891,6 +891,8 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
 .calendar-reader-credits { margin: 4px 0 0; color: var(--muted); font: 500 13px/1.6 var(--sans); }
 .calendar-reader-feature { margin: clamp(16px, 3vw, 26px) 0; }
 .calendar-reader-feature.has-cover { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 11.5rem); gap: 24px; align-items: start; }
+.calendar-reader-feature.has-cover > .calendar-reader-cover { grid-area: 1 / 2; }
+.calendar-reader-feature.has-cover > :not(.calendar-reader-cover) { grid-area: 1 / 1; }
 .calendar-reader-cover { min-width: 0; }
 .calendar-reader-cover img { display: block; max-width: 100%; max-height: 300px; height: auto; margin: 0 auto; object-fit: contain; }
 .calendar-reader-intro { min-width: 0; overflow-wrap: anywhere; }
@@ -920,8 +922,9 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
   .calendar-desk .calendar-day { min-height: 36px; }
   .calendar-entry { padding: 11px 0; }
   .calendar-entry.has-poster { grid-template-columns: 86px minmax(0,1fr); gap: 13px; }
-  .calendar-reader-feature.has-cover { grid-template-columns: minmax(0, 1fr); gap: 14px; }
-  .calendar-reader-cover img { max-height: 228px; margin-inline: 0; }
+  .calendar-reader-feature.has-cover { display: flow-root; }
+  .calendar-reader-feature.has-cover > .calendar-reader-cover { float: right; width: min(32%, 7rem); margin: 0 0 10px 13px; }
+  .calendar-reader-cover img { max-height: 200px; }
 }
 @media (max-width: 360px) {
   .calendar-entry.has-poster { grid-template-columns: 73px minmax(0,1fr); }

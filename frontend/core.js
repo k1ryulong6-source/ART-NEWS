@@ -75,6 +75,7 @@
   }
 
   const readerRoute = id => '#reader/' + encodeURIComponent(id);
+  const calendarRoute = id => '#calendar/' + encodeURIComponent(id);
   function babelReaderUrl(row) {
     const integration = root.CULTURE_BOOTSTRAP?.integrations?.babel;
     if (integration?.enabled === false || row.is_demo || !/^live-[a-f0-9]{24}$/.test(row.id) || !/^[a-f0-9]{64}$/.test(row.article_hash || '') || (bodyPending(row) ? !row.has_original_body : !sourceText(row).trim() || !articleBlocks(row).length)) return '';
@@ -90,9 +91,11 @@
   function parseRoute(hash) {
     const value = (hash || '').replace(/^#/, '');
     if (value.startsWith('reader/')) { try { const id = decodeURIComponent(value.slice(7)); return id ? { view: 'reader', id } : { view: 'today' }; } catch { return { view: 'today' }; } }
-    if (value.startsWith('exhibition/')) {
-      const id = value.slice(11);
-      return /^[A-Za-z0-9][A-Za-z0-9_-]{0,99}$/.test(id) ? { view: 'exhibition', id } : { view: 'exhibitions' };
+    const [section, id, extra] = value.split('/');
+    if (id !== undefined && (section === 'exhibition' || section === 'calendar')) {
+      const valid = extra === undefined && /^[A-Za-z0-9][A-Za-z0-9_-]{0,99}$/.test(id);
+      if (section === 'calendar') return valid ? { view: 'calendar-detail', id } : { view: 'calendar' };
+      return valid ? { view: 'exhibition', id } : { view: 'exhibitions' };
     }
     return { view: ['today','explore','exhibitions','calendar','bookmarks','settings','coverage','attention'].includes(value) ? value : 'today' };
   }
@@ -316,7 +319,7 @@
     const encoder = new TextEncoder();
     return lines.map(line => { let parts = [], current = '', size = 0; for (const char of line) { const bytes = encoder.encode(char).length; if (size + bytes > 75) { parts.push(current); current = ' '; size = 1; } current += char; size += bytes; } parts.push(current); return parts.join('\r\n'); }).join('\r\n') + '\r\n';
   }
-  const api = { fetchTimed, bodyPending, needBody, takeWantedBodies, attachBody, setSearchTexts, frontpageRows, babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, headlineReady, machineReady, originalPageUrl, articleBlocks, readerRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
+  const api = { fetchTimed, bodyPending, needBody, takeWantedBodies, attachBody, setSearchTexts, frontpageRows, babelReaderUrl, sourceText, priorityOf, priorityRank, priorityCompare, editorialReady, headlineReady, machineReady, originalPageUrl, articleBlocks, readerRoute, calendarRoute, parseRoute, displayTitle, readingSummary, safeImageUrl, translatedArticleUrl, channels, kinds, eventTypes, statusNames, evidenceNames, countryLabels, cityCountries, languageLabels, registry, locations, locationLabel, escape, safeUrl, daysBetween, dateLabel, localDate, matches, isCurrentContent, selectToday, eventInstant, timeLabel, eventState, validateImport, calendarFile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.CultureCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

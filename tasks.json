@@ -3082,6 +3082,22 @@
         "GitHub 日历采集和发布 46120994039、46121579910 实跑成功。该轮 21 个放映场所确认 1,309 场，Cinema Vera 的 robots 读取失败，保留已核实的 161 场。Tudum 受采集限制，Criterion 当轮 403，旧片单保留。映画.com 有 3 项类型或日期待确认。",
         "提交 082f8c81d 的 Pages 46121787027、Project checks 46121787023 成功。线上 `/film-calendar.json` 与本地静态版本 4a17162f9522 一致，确认了按作品信息纠正的配信日期。300 项 Python 与 47 项 JavaScript 测试、静态构建与项目检查通过。"
       ]
+    },
+    {
+      "id": "T105",
+      "title": "把日历活动改为精简的站内详情页",
+      "milestone": "M6",
+      "status": "doing",
+      "owner": "Codex",
+      "updated_at": "2026-11-28",
+      "depends_on": ["T104"],
+      "scope": ["frontend/app.js", "frontend/calendar.js", "frontend/core.js", "frontend/theme.css", "frontend/styles.css", "docs/FILM_CALENDAR.md", "tests/"],
+      "acceptance": ["日历海报和标题打开同一站内详情，已接展览继续使用展览正文", "只展示已确认的排期和可用链接，旧活动剪报可继续用", "手机详情单页滚动，返回恢复日历筛选、页码与阅读位置"],
+      "evidence": [
+        "线上 390px 重现《ロンガの海》通用弹窗的 11 项资料，根页面和弹窗原先没有设置滚动限制。",
+        "本地 390px Chromium 触摸复测，图片与标题进入同一站内详情，背景日历不挂载。返回恢复筛选与卡片位置，刷新后浏览器后退仍恢复第 2 页，前进恢复该场馆的逐场时间。旧活动剪报、流媒体、在映入口和原展览详情通过。",
+        "1440px Chromium 验证直达详情、海报原始比例及提醒弹窗滚动锁定。300 项 Python、48 项 JavaScript、静态构建和项目检查通过。"
+      ]
     }
   ]
 }

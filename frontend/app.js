@@ -10,8 +10,8 @@
   let localWritable = true, toastTimer, refreshTimer, scrollToRestore;
   let notifications = [], sourceStatus = dataset.source_status || [];
   const makeId = () => typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  const state = { view: 'today', channel: 'all', kind: 'all', country: 'all', city: 'all', language: 'all', query: '', mode: 'demo', bookmarkStatus: 'all', readerId: null, readerTab: 'chinese', editorialOnly: false, priority: 'all', advancedOpen: false, listPage: 1, sort: 'recommended' };
-  const isReader = view => view === 'reader' || view === 'exhibition';
+  const state = { view: 'today', channel: 'all', kind: 'all', country: 'all', city: 'all', language: 'all', query: '', mode: 'demo', bookmarkStatus: 'all', readerId: null, calendarId: null, readerTab: 'chinese', editorialOnly: false, priority: 'all', advancedOpen: false, listPage: 1, sort: 'recommended' };
+  const isReader = view => view === 'reader' || view === 'exhibition' || view === 'calendar-detail';
   const isExhibition = view => view === 'exhibitions' || view === 'exhibition';
   function readLocal() {
     try {
@@ -51,14 +51,18 @@
     C, boot, server, toast, rerender: render, paginate: pageExhibitions, newspaperBody, readingMinutes, isActive: () => isExhibition(state.view) || state.view === 'calendar'
   });
   const schedule = window.CultureCalendar?.create({
-    C, boot, server, exhibitions, rerender: render, isActive: () => state.view === 'calendar'
+    C, boot, server, exhibitions, rerender: render, isActive: () => state.view === 'calendar' || state.view === 'calendar-detail'
   });
-  function artwork(row, large = false) {
+  function activityArtwork(row) {
     if (!row.image_url && row.event_type) {
       const link = dataset.content_events.find(item => item.event_id === row.id);
       const content = dataset.content.find(item => item.id === link?.content_id);
-      if (content?.image_url) row = { ...row, image_url: content.image_url, image_alt: content.image_alt, image_credit: content.image_credit, source_id: content.source_id };
+      if (content?.image_url) return { ...row, image_url: content.image_url, image_alt: content.image_alt, image_credit: content.image_credit, source_id: content.source_id };
     }
+    return row;
+  }
+  function artwork(row, large = false) {
+    row = activityArtwork(row);
     const image = C.safeImageUrl(row.image_url);
     return image ? `<span class="source-art"><img class="source-photo" src="${e(image)}" alt="${e(row.image_alt || C.displayTitle(row))}" loading="${large ? 'eager' : 'lazy'}" referrerpolicy="no-referrer" data-source-photo></span><span class="image-caption">图／${e(row.image_credit || sourceName(row))}</span>` : '';
   }
@@ -71,15 +75,10 @@
       return;
     }
     if (!img.matches?.('img[data-source-photo]')) return;
-    const box = img.closest('.card-art, .feature-art, .reader-cover, .detail-art');
+    const box = img.closest('.card-art, .feature-art, .reader-cover');
     if (box) box.hidden = true; else img.hidden = true;
     img.closest('.has-art')?.classList.remove('has-art');
   }, true);
-  function readingBody(row) {
-    const ready = C.editorialReady(row);
-    const chinese = ready ? row.editorial_excerpt_zh : row.summary_zh || (row.language === 'zh' ? row.excerpt_original : null);
-    return `<section class="reading-section"><h3>${ready ? '中文译文摘录' : '中文资料'}</h3><p class="detail-summary">${e(chinese || '这篇文章的中文译文尚未完成；原文已保留，可在原文页直接阅读。')}</p>${ready ? `<p class="reading-note">${row.editorial_status === 'translated' ? 'AI 按全文语境翻译。' : 'AI 按全文语境翻译并校对，非人工译者审核。'}</p>` : ''}<h3>原文摘录</h3>${row.excerpt_original ? `<p class="original-excerpt" lang="${e(row.language)}">${e(row.excerpt_original)}</p><p class="reading-note">来源短摘录，文章正文见原文页。</p>` : '<p class="reading-note">来源未提供短摘录，原标题与正文保留。</p>'}</section>`;
-  }
   function sourceName(row) { return dataset.sources.find(s => s.id === row.source_id)?.name || '来源待确认'; }
   function filters() {
     const disabled = state.view === 'bookmarks' ? [] : preferences.disabled_sources || [];
@@ -90,7 +89,7 @@
   function findBookmark(type, id) { return bookmarks.find(b => b[type === 'content' ? 'content_id' : 'event_id'] === id); }
   function nav() {
     const labels = { today: '头版', explore: '资讯', exhibitions: '展览', calendar: '日历', bookmarks: '剪报' };
-    const current = state.view === 'attention' ? 'explore' : state.view === 'exhibition' ? 'exhibitions' : state.view;
+    const current = { attention:'explore', exhibition:'exhibitions', 'calendar-detail':'calendar' }[state.view] || state.view;
     $('navigation').innerHTML = Object.entries(labels).map(([key, label]) => {
       const attrs = `class="nav-button ${current === key ? 'active' : ''}" ${current === key ? 'aria-current="page"' : ''}`;
       return `<button ${attrs} data-view="${key}">${label}${key === 'bookmarks' && bookmarks.length ? `<span class="nav-count">${bookmarks.length}</span>` : ''}</button>`;
@@ -115,7 +114,6 @@
     return `<div class="filters">${withTabs ? `<div class="tabs" role="group" aria-label="频道筛选">${[['all', '综合'], ...['art','film','photography'].map(key=>[key,C.channels[key]])].map(([key, label]) => `<button class="tab ${state.channel === key && state.kind !== 'industry_buzz' && state.view !== 'attention' ? 'active' : ''}" data-channel="${key}" aria-pressed="${state.channel === key && state.kind !== 'industry_buzz' && state.view !== 'attention'}">${label}</button>`).join('')}<button class="tab ${state.kind === 'industry_buzz' && state.view !== 'attention' ? 'active' : ''}" data-kind="industry_buzz" aria-pressed="${state.kind === 'industry_buzz' && state.view !== 'attention'}">圈内</button>${state.view === 'explore' || state.view === 'attention' ? attentionTab() : ''}</div>` : ''}<div class="scope-links"><button class="text-link" data-scope="global" aria-pressed="${state.country === 'all'}">全球</button><button class="text-link" data-scope="japan" aria-pressed="${state.country === 'JP'}">日本</button></div><details class="advanced-filters" id="advanced-filters" ${state.advancedOpen ? 'open' : ''}><summary>筛选${[state.city,state.language].filter(v=>v!=='all').length || state.kind!=='all' ? ' · 已启用' : ''}</summary><div class="filter-selects"><select id="country-filter" aria-label="国家筛选"><option value="all">所有地区</option>${Object.entries(C.countryLabels).map(([code, label]) => `<option value="${code}" ${state.country === code ? 'selected' : ''}>${e(label)}</option>`).join('')}<option value="unknown" ${state.country === 'unknown' ? 'selected' : ''}>地点未说明</option></select><select id="city-filter" aria-label="城市筛选"><option value="all">所有城市</option>${Object.keys(C.cityCountries).filter(city => state.country === 'all' || C.cityCountries[city] === state.country).map(city => `<option ${state.city === city ? 'selected' : ''}>${e(city)}</option>`).join('')}</select>${state.view !== 'calendar' ? `<select id="language-filter" aria-label="资讯原文语言"><option value="all">原文语言 · 全部</option>${Object.entries(C.languageLabels).map(([code, label]) => `<option value="${code}" ${state.language === code ? 'selected' : ''}>${e(label)}</option>`).join('')}</select>` : ''}${state.mode !== 'demo' ? `<button class="text-link" data-action="${state.editorialOnly ? 'all-news' : 'editorial-news'}" aria-pressed="${state.editorialOnly}">只看AI译文</button>` : ''}<label class="toggle-label"><input id="buzz-filter" type="checkbox" ${preferences.industry_buzz.enabled ? 'checked' : ''}>圈内动态</label></div></details></div>`;
   }
   function empty(title, text, action = '') { return `<div class="empty"><h2>${title}</h2>${text ? `<p>${text}</p>` : ''}${action}</div>`; }
-  function meta(row) { return ui.meta(row); }
   function saveButton(type, id, inline = false) {
     const saved = findBookmark(type, id);
     return `<button class="${inline ? 'save-inline' : 'save-button'} ${saved ? 'saved' : ''}" data-save-type="${type}" data-save-id="${e(id)}" aria-label="${saved ? '移出剪报' : '加入剪报'}" aria-pressed="${Boolean(saved)}">${inline ? (saved ? '★ 已剪报' : '☆ 剪报') : saved ? '★' : '☆'}</button>`;
@@ -268,24 +266,32 @@
     const chinese = translatedBlocks.length ? `<div class="reader-document" lang="zh-CN"><p class="reading-note">${row.language === 'zh' ? '' : !C.editorialReady(row) && C.machineReady(row) ? '自动机翻，未经人工审核，细节请对照原文。' : row.editorial_status === 'translated' ? 'AI 按全文语境翻译。' : 'AI 按全文语境翻译并校对 · 非人工译者审核。'}</p>${partial ? '<p class="article-status">来源仅取得公开部分，译文也仅包含这部分内容。</p>' : ''}${row.language !== 'zh' && notes.length ? `<div class="translation-notes"><h2>译名与表达说明</h2>${notes.map(note => `<p>${e(note)}</p>`).join('')}</div>` : ''}${headerImage}${newspaperBody(translatedBlocks, true, row.language !== 'zh' && !C.editorialReady(row) && C.machineReady(row))}</div>` : `<p class="article-status original-pending" role="status">${blocks.length ? `原文·待译 · 以下为${e(C.languageLabels[row.language] || '外文')}原文，中文译文尚未完成。` : '正文尚未取得。'}</p>${original}`;
     return `<article class="reader-page"><div class="reader-toolbar"><button class="text-link" data-action="reader-back">‹ 返回</button><button class="text-link reader-save" data-save-type="content" data-save-id="${e(row.id)}">${saved ? '★ 已剪报' : '☆ 剪报'}</button>${articleShareUrl(row) ? '<button class="text-link" data-action="share-article">分享</button>' : ''}${C.babelReaderUrl(row) ? `<a class="text-link" data-ui="babel-import" href="${e(C.babelReaderUrl(row))}" target="_blank" rel="noopener noreferrer" title="导入原文，在巴别塔查词阅读">巴别塔阅读 ↗</a>` : ''}</div><div class="eyebrow"><span class="channel-tag">${e(C.channels[row.channel] || '文化')}</span>${e(sourceName(row))} · ${e(publicationLabel(row))}${(() => { const shown = state.readerTab === 'chinese' && translatedBlocks.length ? translatedBlocks : blocks; return shown.length ? `<span class="reading-time">约 ${readingMinutes(shown, shown === blocks ? row.language : 'zh')} 分钟</span>` : ''; })()}</div>${(() => { const title = state.readerTab === 'original' ? row.title_original : C.displayTitle(row); return `<h1 lang="${e(title === row.title_original && row.language !== 'zh' ? row.language : 'zh-CN')}">${e(title)}</h1>`; })()}<div class="reader-tabs" role="tablist" aria-label="阅读内容"><button role="tab" aria-selected="${state.readerTab === 'chinese'}" data-reader-tab="chinese">${translatedBlocks.length ? '中文' : '正文'}</button><button role="tab" aria-selected="${state.readerTab === 'original'}" data-reader-tab="original">原文</button></div><div class="reader-content" role="tabpanel">${state.readerTab === 'original' ? original : chinese}</div>${!row.is_demo && url ? `<div class="reader-source-link"><span>原文</span><a href="${e(url)}" target="_blank" rel="noopener noreferrer">${e(url)}</a></div>` : ''}<div class="reader-toolbar reader-end"><button class="text-link" data-action="reader-back">‹ 返回</button><button class="text-link reader-save" data-save-type="content" data-save-id="${e(row.id)}">${saved ? '★ 已剪报' : '☆ 剪报'}</button></div></article>`;
   }
-  function routeHash(view = state.view, id = view === 'reader' ? state.readerId : state.exhibitionId) {
-    if (view === 'reader') return C.readerRoute(id);
-    if (view === 'exhibition') return '#exhibition/' + encodeURIComponent(id);
+  function routeHash(view = state.view, id) {
+    if (view === 'reader') return C.readerRoute(id ?? state.readerId);
+    if (view === 'exhibition') return '#exhibition/' + encodeURIComponent(id ?? state.exhibitionId);
+    if (view === 'calendar-detail') return C.calendarRoute(id ?? state.calendarId);
     return '#' + view;
   }
   const historyEntry = () => history.state?.cultureDesk || {};
-  function rememberPage(exhibitionId) {
+  function anchorFor(selector,attribute,id) {
+    const selected = id && document.querySelector(`${selector}[${attribute}="${CSS.escape(id)}"]`);
+    const card = selected || Array.from(document.querySelectorAll(selector)).find(item => {
+      const box = item.getBoundingClientRect();
+      return box.bottom > 0 && box.top < window.innerHeight;
+    });
+    return card ? {id:card.getAttribute(attribute),offset:card.getBoundingClientRect().top} : null;
+  }
+  function rememberPage(id) {
     scrollToRestore = undefined;
     const entry = { ...historyEntry(), scrollTop: window.scrollY };
     if (state.view === 'exhibitions') {
       entry.exhibitionList = exhibitions?.listState();
       // Poster sizes can change while the catalogue reloads. Keep a visible card as the scroll anchor.
-      const opened = exhibitionId && document.querySelector(`.exhibition-card[data-ex-id="${CSS.escape(exhibitionId)}"]`);
-      const card = opened || Array.from(document.querySelectorAll('.exhibition-card')).find(card => {
-        const box = card.getBoundingClientRect();
-        return box.bottom > 0 && box.top < window.innerHeight;
-      });
-      entry.exhibitionAnchor = card ? {id: card.dataset.exId, offset: card.getBoundingClientRect().top} : null;
+      entry.exhibitionAnchor = anchorFor('.exhibition-card','data-ex-id',id);
+    }
+    if (state.view === 'calendar') {
+      entry.calendarList = schedule?.listState();
+      entry.calendarAnchor = anchorFor('.calendar-entry','data-cal-id',id);
     }
     if (state.view === 'explore') entry.newsPage = state.listPage;
     history.replaceState({ ...history.state, cultureDesk: entry }, '', routeHash());
@@ -305,11 +311,12 @@
   }
   function openReader(id, recordVisit = true, view = 'reader') {
     if (recordVisit && routeHash() !== routeHash(view, id)) {
-      rememberPage(view === 'exhibition' ? id : undefined);
+      rememberPage(id);
       history.pushState({cultureDesk: {inSiteReader: true}}, '', routeHash(view, id));
     }
     state.readerTab = 'chinese'; state.view = view;
     if (view === 'exhibition') state.exhibitionId = id;
+    else if (view === 'calendar-detail') state.calendarId = id;
     else {
       state.readerId = id;
       const story = dataset.content.find(item => item.id === id); if (story?.body_failed) story.body_failed = false;
@@ -349,6 +356,13 @@
     if (advanced) state.advancedOpen = advanced.open;
     document.body.dataset.page = isReader(state.view) ? 'reader' : state.view;
     const story = state.view === 'reader' && dataset.content.find(item => item.id === state.readerId);
+    const eventDetail = state.view === 'calendar-detail' && schedule?.detail(dataset,state.calendarId,preferences.disabled_sources || [],{
+      relatedImage: id => {
+        const event = dataset.events.find(row=>row.id === id);
+        return event && activityArtwork(event).image_url;
+      },
+      save: dataset.events.some(row=>row.id === state.calendarId) ? saveButton('event',state.calendarId,true) : ''
+    });
     const needsArchive = !server && !archiveLoaded && state.mode === 'live'
       && (['explore', 'bookmarks', 'attention', 'coverage'].includes(state.view) || (state.view === 'reader' && !story));
     if (needsArchive && !archiveFailed) loadArchive();
@@ -359,27 +373,28 @@
     searchInput.placeholder = searchingExhibitions ? '检索展览' : '检索';
     searchInput.setAttribute('aria-label', searchingExhibitions ? '搜索展名、场馆' : '搜索资讯');
     $('edition-note').textContent = state.mode === 'demo' ? '所有示例均为虚构。' : '原文与 AI 译文分开标注；配图注明来源。';
-    const views = { today, explore, exhibitions: exhibitionPage, exhibition: () => exhibitions?.inlineReader(state.exhibitionId, dataset, state.readerTab) || '<p>展览暂时无法载入。</p>', calendar, bookmarks: bookmarkPage, settings, coverage: coveragePage, attention: attentionPage, reader: readerPage };
+    const views = { today, explore, exhibitions: exhibitionPage, exhibition: () => exhibitions?.inlineReader(state.exhibitionId, dataset, state.readerTab) || '<p>展览暂时无法载入。</p>', calendar, 'calendar-detail': () => eventDetail?.html || '<p>日历暂时无法载入。</p>', bookmarks: bookmarkPage, settings, coverage: coveragePage, attention: attentionPage, reader: readerPage };
     $('main').innerHTML = needsArchive ? (archiveFailed
       ? '<p role="status">旧闻索引暂时无法载入。<button class="text-link" data-action="retry-archive">重试</button></p>'
       : '<p role="status">正在载入旧闻索引…</p>') : (views[state.view] || today)();
     exhibitions?.layoutCards?.();
-    if (scrollToRestore && !needsArchive && (state.view !== 'exhibitions' || !exhibitions?.isLoading())) {
+    const loadingList = (state.view === 'exhibitions' && exhibitions?.isLoading()) || (state.view === 'calendar' && schedule?.isLoading());
+    if (scrollToRestore && !needsArchive && !loadingList) {
       const {top, anchor} = scrollToRestore;
-      const card = anchor && document.querySelector(`.exhibition-card[data-ex-id="${CSS.escape(anchor.id)}"]`);
+      const [selector, attribute] = state.view === 'calendar' ? ['.calendar-entry','data-cal-id'] : ['.exhibition-card','data-ex-id'];
+      const card = anchor && document.querySelector(`${selector}[${attribute}="${CSS.escape(anchor.id)}"]`);
       window.scrollTo({ top: card ? window.scrollY + card.getBoundingClientRect().top - anchor.offset : top });
       scrollToRestore = undefined;
     }
     // A new page moves focus to <main>, so keyboard and screen-reader users start at the top of it.
-    const spot = state.view + (state.view === 'reader' ? ':' + state.readerId : state.view === 'exhibition' ? ':' + state.exhibitionId : '');
-    if (lastSpot && spot !== lastSpot && document.activeElement !== searchInput) $('main').focus({ preventScroll: true });
-    lastSpot = spot;
-    // Tab titles name the page (and the story when reading), so history, bookmarks and shared tabs differ.
-    const pageTitles = { explore: '资讯', attention: '一種關注', exhibitions: '展览', exhibition: '展览', calendar: '日历', bookmarks: '剪报', settings: '阅读设置', coverage: '收录与译文' };
-    const exhibitTitle = state.view === 'exhibition' ? exhibitions?.readerTitle(state.exhibitionId, state.readerTab) : '';
-    const pageTitle = story ? (state.readerTab === 'original' ? story.title_original : C.displayTitle(story)) : exhibitTitle || pageTitles[state.view];
-    document.title = pageTitle ? `${pageTitle} · 幕间休息` : '幕间休息';
     const hash = routeHash();
+    if (lastSpot && hash !== lastSpot && document.activeElement !== searchInput) $('main').focus({ preventScroll: true });
+    lastSpot = hash;
+    // Tab titles name the page (and the story when reading), so history, bookmarks and shared tabs differ.
+    const pageTitles = { explore: '资讯', attention: '一種關注', exhibitions: '展览', exhibition: '展览', calendar: '日历', 'calendar-detail': '日历', bookmarks: '剪报', settings: '阅读设置', coverage: '收录与译文' };
+    const exhibitTitle = state.view === 'exhibition' ? exhibitions?.readerTitle(state.exhibitionId, state.readerTab) : '';
+    const pageTitle = story ? (state.readerTab === 'original' ? story.title_original : C.displayTitle(story)) : exhibitTitle || eventDetail?.title || pageTitles[state.view];
+    document.title = pageTitle ? `${pageTitle} · 幕间休息` : '幕间休息';
     if (location.hash !== hash) history.replaceState(history.state, '', hash);
     loadBodies(C.takeWantedBodies());
     if (!needsArchive && state.view === 'explore' && state.query.trim() && dataset.content.some(C.bodyPending)) loadSearchIndex();
@@ -408,20 +423,8 @@
       .catch(() => { searchIndexRequest = null; });
   }
   function showDetail(type, id) {
-    if (type === 'content') { openReader(id); return; }
-    const row = (type === 'content' ? dataset.content : dataset.events).find(item => item.id === id);
-    if (!row) return;
-    const source = type === 'content' ? sourceName(row) : '活动日期证据';
-    const href = C.safeUrl(type === 'content' ? row.canonical_url : row.evidence_url), isDemo = Boolean(row.is_demo);
-    const related = type === 'content' ? dataset.content_events.filter(link => link.content_id === id).map(link => dataset.events.find(event => event.id === link.event_id)).filter(Boolean) : [];
-    const inCalendar = state.view === 'calendar' && window.CultureCalendar;
-    const movie = inCalendar && schedule?.movieFor(id);
-    const displayTitle = inCalendar ? inCalendar.entryTitle({...row, movie}) : C.displayTitle(row);
-    const cover = movie?.poster_url || movie?.artwork_url;
-    const picture = artwork(cover ? {...row, image_url:cover, image_alt:displayTitle} : row, true);
-    $('detail-body').innerHTML = `${picture ? `<div class="detail-art">${picture}</div>` : ''}<div class="detail-tag">${meta(row)}</div><h2 id="detail-title" class="detail-title">${e(displayTitle)}</h2><p class="detail-original">原标题：${e(row.title_original)}</p>${type === 'content' ? (isDemo ? `<p class="detail-summary">${e(row.summary_zh)}</p>` : readingBody(row)) : `<p class="detail-summary">${e(C.timeLabel(row))}${row.end_date ? ' — ' + C.dateLabel(row.end_date) : ''} · ${C.eventTypes[row.event_type]}</p>`}<dl class="detail-facts"><dt>消息状态</dt><dd><span class="evidence ${row.evidence_status === 'unverified' ? 'unverified' : ''}">${C.evidenceNames[row.evidence_status]}</span></dd><dt>信息来源</dt><dd>${e(source)}</dd><dt>地区</dt><dd>${e(C.locationLabel(row))}</dd>${type === 'event' ? `<dt>当地时区</dt><dd>${e(row.timezone)}</dd><dt>准确时刻</dt><dd>${e(C.timeLabel(row))}</dd>${row.time_note ? `<dt>时刻说明</dt><dd>${e(row.time_note)}</dd>` : ''}${row.eligibility_note ? `<dt>参赛资格</dt><dd>${e(row.eligibility_note)}</dd>` : ''}${row.booking_status ? `<dt>余票状态</dt><dd>${row.booking_status === 'sold_out' ? '官网显示已售罄；变动请核对原文' : '请核对官网实时余票'}</dd>` : ''}${row.booking_url ? `<dt>预约／报名</dt><dd><a href="${e(C.safeUrl(row.booking_url))}" target="_blank" rel="noopener noreferrer">打开官方入口 ↗</a></dd>` : ''}${row.event_type !== 'call_deadline' ? `<dt>场馆</dt><dd>${e(row.venue || '待确认')}</dd>` : ''}<dt>票价</dt><dd>${e(row.price_text || '待确认')}</dd>${row.event_type !== 'call_deadline' ? `<dt>休馆说明</dt><dd>${e(row.closure_note || '请以场馆官方说明为准')}</dd>` : ''}<dt>日期精度</dt><dd>${row.date_precision === 'day' ? '具体日期' : row.date_precision === 'month' ? '仅月份，具体日期待公布' : '待公布'}</dd>` : `<dt>原文语言</dt><dd>${e(C.languageLabels[row.language] || row.language || '待确认')}</dd><dt>发布时间</dt><dd>${e(publicationLabel(row))}</dd>`}<dt>数据状态</dt><dd>${isDemo ? '虚构示例 · 不可据此安排出行' : '真实资讯'}</dd><dt>原文链接</dt><dd>${isDemo ? '示例链接，不提供真实页面' : href ? `<a href="${e(href)}" target="_blank" rel="noopener noreferrer">查看原文 ↗</a>` : '链接待确认'}</dd></dl>${related.map(event => `<div class="detail-activity"><span class="event-badge">${e(C.countryLabels[event.country] || event.country)} · ${C.eventTypes[event.event_type]}</span><h3>${e(C.displayTitle(event))}</h3><p>${e(C.timeLabel(event))}${event.end_date ? ' — ' + C.dateLabel(event.end_date) : ''} · ${e(event.timezone)}</p><button class="text-link" style="margin-top:10px" data-detail="${e(event.id)}" data-type="event">查看活动信息 ↗</button></div>`).join('')}<div class="detail-controls"><button class="button secondary" data-detail-save="${e(id)}" data-type="${type}">${findBookmark(type, id) ? '★ 已剪报' : '☆ 剪报'}</button>${!isDemo && href ? `<a class="button secondary" href="${e(href)}" target="_blank" rel="noopener noreferrer">查看原文 ↗</a>` : ''}</div>`;
-    $('detail-dialog').dataset.type = type; $('detail-dialog').dataset.recordId = id;
-    if (!$('detail-dialog').open) $('detail-dialog').showModal();
+    if (type === 'content') openReader(id);
+    else if (dataset.events.some(row=>row.id === id)) openReader(id,true,'calendar-detail');
   }
   async function toggleSave(type, id) {
     const old = findBookmark(type, id);
@@ -437,7 +440,6 @@
       if (state.view === 'reader') { nav(); document.querySelectorAll('.reader-save').forEach(button => { button.textContent = findBookmark('content', state.readerId) ? '★ 已剪报' : '☆ 剪报'; }); }
       else render();
       if (persisted) toast(old ? '已移出剪报' : '已加入剪报');
-      if ($('detail-dialog').open) showDetail($('detail-dialog').dataset.type, $('detail-dialog').dataset.recordId);
     } catch (error) { toast(error.message); }
   }
   async function savePreferences(next) {
@@ -498,13 +500,12 @@
     }
     else if (button.dataset.action === 'reader-back') {
       if (historyEntry().inSiteReader) history.back();
-      else { enterView(state.view === 'exhibition' ? 'exhibitions' : 'today'); render(); window.scrollTo({ top: 0 }); }
+      else { enterView(state.view === 'exhibition' ? 'exhibitions' : state.view === 'calendar-detail' ? 'calendar' : 'today'); render(); window.scrollTo({ top: 0 }); }
     }
     else if (button.dataset.channel) { state.channel = button.dataset.channel; state.kind = 'all'; render(); }
     else if (button.dataset.kind) { state.kind = state.kind === button.dataset.kind ? 'all' : button.dataset.kind; state.channel = 'all'; render(); }
     else if (button.dataset.detail) showDetail(button.dataset.type, button.dataset.detail);
     else if (button.dataset.saveId) await toggleSave(button.dataset.saveType, button.dataset.saveId);
-    else if (button.dataset.detailSave) await toggleSave(button.dataset.type, button.dataset.detailSave);
     else if (button.dataset.status) { state.bookmarkStatus = button.dataset.status; render(); }
     else if (button.dataset.scope) { state.country = button.dataset.scope === 'japan' ? 'JP' : 'all'; state.city = 'all'; state.language = 'all'; render(); }
     else if (button.dataset.action === 'reset-filters') { state.channel = state.kind = state.country = state.city = state.language = state.priority = 'all'; state.query = ''; render(); }
@@ -596,8 +597,9 @@
   function restorePage() {
     const route = C.parseRoute(location.hash);
     const entry = historyEntry();
-    scrollToRestore = Number.isFinite(entry.scrollTop) ? {top: entry.scrollTop, anchor: entry.exhibitionAnchor} : undefined;
+    scrollToRestore = Number.isFinite(entry.scrollTop) ? {top: entry.scrollTop, anchor: route.view === 'calendar' ? entry.calendarAnchor : entry.exhibitionAnchor} : undefined;
     if (route.view === 'exhibitions' && entry.exhibitionList) exhibitions?.restoreList(entry.exhibitionList);
+    if (route.view === 'calendar' && entry.calendarList) schedule?.restoreList(entry.calendarList,dataset);
     if (route.view === 'explore' && entry.newsPage) state.listPage = entry.newsPage;
     if ($('detail-dialog').open) $('detail-dialog').close();
     if (isReader(route.view)) openReader(route.id, false, route.view);

@@ -152,6 +152,9 @@ test('original reader links preserve the source and routes survive refresh and m
   assert.deepEqual(C.parseRoute(C.readerRoute('live-example')), { view: 'reader', id: 'live-example' });
   assert.deepEqual(C.parseRoute('#reader/%broken'), { view: 'today' });
   assert.deepEqual(C.parseRoute('#calendar'), { view: 'calendar' });
+  assert.deepEqual(C.parseRoute(C.calendarRoute('film-123')), { view: 'calendar-detail', id: 'film-123' });
+  assert.deepEqual(C.parseRoute('#calendar/film-123/extra'), { view: 'calendar' });
+  assert.deepEqual(C.parseRoute('#calendar/%broken'), { view: 'calendar' });
 });
 
 test('stored body blocks display without executable links and search uses the original body', () => {

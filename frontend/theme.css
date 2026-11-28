@@ -363,18 +363,10 @@ figure.card-art,figure.feature-art{margin:0 0 10px}
 dialog{background:var(--paper);color:var(--ink);border:0;border-top:4px solid var(--ink);padding:22px 26px 26px;box-shadow:0 18px 50px #0003}
 dialog::backdrop{background:#1514124d}
 .dialog-close{font-size:24px;line-height:1;width:28px;height:28px;background:var(--paper)}
-.detail-art{margin-bottom:14px}
-.detail-art .source-art{aspect-ratio:2}
 .detail-title{font-size:26px;font-weight:900;line-height:1.3;margin:6px 0 8px}
-.detail-original{font-family:var(--sans);font-size:12px;color:var(--muted)}
-.detail-summary{font-size:15px;line-height:1.8;margin:10px 0}
-.detail-facts{display:grid;grid-template-columns:84px 1fr;gap:6px 12px;font-family:var(--sans);font-size:13px;padding:12px 0;margin:14px 0;border-top:var(--rule-ink);border-bottom:var(--rule-ink)}
-.detail-facts dt{color:var(--muted)}
-.detail-facts dd{overflow-wrap:anywhere}
 .detail-activity{padding:10px 0;border-bottom:var(--rule)}
 .detail-activity h3{font-size:16px;font-weight:800;margin:3px 0}
 .detail-activity p{font-family:var(--sans);font-size:12px;color:var(--muted)}
-.detail-controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .reading-section h3{font-size:15px;font-weight:800;margin:14px 0 6px}
 .evidence.unverified{color:var(--accent)}
 
@@ -891,6 +883,20 @@ html.cover-open :is(.film-edge,.film-edge span,.brand .wordmark){animation-play-
 .calendar-times a { border-bottom: var(--rule); }
 .calendar-entry-links { display: flex; flex-wrap: wrap; column-gap: 12px; margin-top: 7px; }
 .calendar-desk>.exhibition-coverage { grid-column: 1 / -1; }
+.calendar-reader { max-width: min(100%, 46rem); }
+.calendar-reader .reader-toolbar { gap: 16px; }
+.calendar-reader .reader-toolbar button { min-height: 42px; }
+.calendar-reader header h1 { margin-bottom: 7px; }
+.calendar-reader-place { margin-top: 8px; font: 500 14px/1.6 var(--sans); }
+.calendar-reader-cover { margin: clamp(16px, 3vw, 26px) 0; }
+.calendar-reader-cover img { display: block; max-width: 100%; max-height: min(510px, 58svh); height: auto; margin: 0 auto; object-fit: contain; }
+.calendar-reader-times, .calendar-reader-links { border-top: var(--rule); margin-top: 16px; padding-top: 10px; }
+.calendar-reader-times h2 { font: 700 16px/1.5 var(--sans); }
+.calendar-reader-times h2 small { font: 500 12px/1.5 var(--sans); color: var(--muted); margin-left: 8px; }
+.calendar-reader-times .calendar-times { column-gap: 16px; }
+.calendar-reader-note { margin: 8px 0 0; font: 500 14px/1.5 var(--sans); }
+.calendar-reader-links { display: flex; flex-wrap: wrap; gap: 0 24px; font: 600 14px/1.5 var(--sans); }
+.calendar-reader-links a, .calendar-reader-times .calendar-times a { display: inline-flex; gap: 4px; min-height: 44px; align-items: center; }
 @media (min-width: 1120px) {
   .calendar-sidebar { position: sticky; top: 18px; }
   .calendar-listing.films { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); column-gap: 20px; }

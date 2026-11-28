@@ -51,7 +51,8 @@
       const alternate = chosen === row ? previous : row;
       events.set(key,{...chosen,movie:mergeMovie(chosen.movie,alternate.movie),origins,
         image_url:chosen.image_url || alternate.image_url,poster_url:chosen.poster_url || alternate.poster_url,
-        artwork_url:chosen.artwork_url || alternate.artwork_url,
+        artwork_url:chosen.artwork_url || alternate.artwork_url, booking_url:chosen.booking_url || alternate.booking_url,
+        watch_url:chosen.watch_url || alternate.watch_url, programme_url:chosen.programme_url || alternate.programme_url,
         date_conflict:Boolean(chosen.date_conflict || conflict)});
     }
     return [...events.values()];
@@ -103,6 +104,9 @@
 
   function create({C,boot,server,exhibitions,isActive,rerender}) {
     const e = C.escape, pageSize = 12;
+    const ref = url => `href="${e(url)}" target="_blank" rel="noopener noreferrer"`;
+    const clocks = new Map();
+    const landscape = new Map();
     let mode, dateToday, month, chosenDay, page = 1, area = 'tokyo', kind = 'film';
     let film = !server && boot.film_calendar || null, pending = false, failed = false;
     function loadFilm() {
@@ -128,30 +132,46 @@
         position(dateToday);
       }
     }
-    function item({row, label, screenings}, index) {
-      const proof = C.safeUrl(row.evidence_url), programme = C.safeUrl(row.programme_url);
-      const booking = C.safeUrl(row.booking_url), watch = C.safeUrl(row.watch_url);
-      const movie = row.movie, title = entryTitle(row);
-      const ref = url => `href="${e(url)}" target="_blank" rel="noopener noreferrer"`;
-      const link = (content, attributes = '') => row.exhibition_id ? `<a ${attributes} href="#exhibition/${encodeURIComponent(row.exhibition_id)}">${content}</a>`
-        : row.source_id && proof ? `<a ${attributes} ${ref(programme || proof)}>${content}</a>`
-        : `<button ${attributes} data-detail="${e(row.id)}" data-type="event">${content}</button>`;
+    const listState = () => ({mode,month,chosenDay,page,area,kind});
+    function restoreList(saved, dataset) {
+      sync(dataset);
+      if (saved?.mode === mode) ({month,chosenDay,page,area,kind} = saved);
+    }
+    const isLoading = () => pending || ((kind === 'all' || kind === 'exhibition') && exhibitions?.isLoading());
+
+    function cover(row, alt = '', eager = true) {
+      const movie = row.movie;
       const candidates = [movie?.poster_url,row.poster_url,row.image_url,movie?.artwork_url,row.artwork_url];
       const [imageUrl,...backups] = new Set(candidates.map(C.safeImageUrl).filter(Boolean));
       const fallback = backups.length ? ` data-calendar-backups="${e(JSON.stringify(backups))}"` : '';
-      const poster = imageUrl ? link(`<img src="${e(imageUrl)}" alt="" loading="${index < 3 ? 'eager' : 'lazy'}" decoding="async" referrerpolicy="no-referrer" data-calendar-poster${fallback}>`,
-        'class="calendar-poster" tabindex="-1" aria-hidden="true"') : '';
+      return imageUrl ? {landscape:landscape.get(imageUrl),html:`<img src="${e(imageUrl)}" alt="${e(alt)}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" referrerpolicy="no-referrer" data-calendar-poster${fallback}>`} : null;
+    }
+    function placeLabels(row) {
       const country = row.country === 'GLOBAL' ? '' : C.countryLabels[row.country] || row.country;
       const place = row.prefecture_name || row.city || country;
-      const subtitle = row.event_type === 'streaming_release' ? [row.platform,row.market || country || '上线地区以来源为准']
-        : [row.venue,place];
-      const slots = screenings.length ? screenings : row.start_at ? [row] : [];
-      const timings = slots.map(slot=>{
-        const time = `<time datetime="${e(slot.start_at)}">${e(slot.start_at.slice(11,16))}</time>`;
-        const text = time + (slot.auditorium ? ` <span>${e(slot.auditorium)}</span>` : '');
-        const ticket = C.safeUrl(slot.booking_url);
-        return `<li>${ticket ? `<a ${ref(ticket)} title="购票">${text} ↗</a>` : text}</li>`;
+      return [...new Set((row.event_type === 'streaming_release' ? [row.platform,row.market || country] : [row.venue,place]).filter(Boolean))];
+    }
+    function screeningTimes(slots) {
+      return slots.map(slot=>{
+        const instant = C.eventInstant(slot), date = new Date(instant);
+        if (!instant || Number.isNaN(date.getTime())) return '';
+        const zone = slot.timezone;
+        if (!clocks.has(zone)) clocks.set(zone,new Intl.DateTimeFormat('zh-CN',{timeZone:zone,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}));
+        const time = `<time datetime="${e(instant)}">${e(clocks.get(zone).format(date))}</time>`;
+        const label = time + (slot.auditorium ? ` <span>${e(slot.auditorium)}</span>` : '');
+        const ticket = !slot.is_demo && C.safeUrl(slot.booking_url);
+        return `<li>${ticket ? `<a ${ref(ticket)} title="购票">${label} ↗</a>` : label}</li>`;
       }).join('');
+    }
+    function item({row, label, screenings}, index) {
+      const booking = C.safeUrl(row.booking_url), watch = C.safeUrl(row.watch_url);
+      const movie = row.movie, title = entryTitle(row);
+      const url = row.exhibition_id ? '#exhibition/' + encodeURIComponent(row.exhibition_id) : C.calendarRoute(row.id);
+      const image = cover(row,'',index < 3);
+      const poster = image ? `<a class="calendar-poster${image.landscape ? ' landscape' : ''}" data-calendar-art href="${e(url)}" tabindex="-1" aria-hidden="true">${image.html}</a>` : '';
+      const subtitle = placeLabels(row);
+      const slots = screenings.length ? screenings : row.start_at ? [row] : [];
+      const timings = screeningTimes(slots);
       const shortLabel = label === activity.cinema_screening ? '艺术影院' : label;
       const sourceMap = new Map((screenings.length ? screenings : [row]).flatMap(slot=>slot.origins || []).map(source=>[source.url,source.name]));
       const sources = [...sourceMap].flatMap(([url,name])=>C.safeUrl(url) ? [`<a ${ref(C.safeUrl(url))}>${e(name || '排期来源')} ↗</a>`] : []);
@@ -161,20 +181,14 @@
       if (watch) sources.push(`<a ${ref(watch)}>观看 ↗</a>`);
       return `<article class="calendar-entry${poster ? ' has-poster' : ''}" data-cal-id="${e(row.id)}" data-cal-kind="${e(row.event_type)}">
         ${poster}<div class="calendar-entry-body"><p class="calendar-entry-meta">${[shortLabel,...subtitle].filter(Boolean).map(e).join(' · ')}${row.date_conflict ? ' · 展期有出入' : ''}</p>
-        <h3>${link(e(title))}</h3>
+        <h3><a href="${e(url)}">${e(title)}</a></h3>
         ${isFilm(row) && row.title_original !== title ? `<p class="calendar-original">${e(row.title_original)}</p>` : ''}
         ${timings ? `<ul class="calendar-times" aria-label="当地时间">${timings}</ul>` : ''}
         ${sources.length ? `<div class="calendar-entry-links">${sources.join('')}</div>` : ''}</div></article>`;
     }
-    function movieFor(id) { return film?.films?.[id]; }
-    function view(dataset, disabledSources) {
-      sync(dataset);
-      const live = dataset.mode !== 'demo';
-      const showExhibitions = kind === 'exhibition' || kind === 'all';
-      const showFilm = kind !== 'exhibition';
-      const showCatalogue = kind === 'cinema_showing';
-      if (live && showFilm) loadFilm();
-      const inventory = live && showExhibitions ? exhibitions?.calendarInventory() : null;
+    const withMovie = row => film?.films?.[row.id] ? {...row,movie:film.films[row.id]} : row;
+    const forSources = (rows,disabledSources) => (rows || []).filter(row=>!disabledSources.includes(row.source_id));
+    function scheduleRows(dataset,disabledSources,inventory,day) {
       const sourceNames = new Map([...(boot.sources?.sources || []), ...(dataset.sources || [])].map(row=>[row.id,row.name]));
       const eventSources = new Map(Object.entries(boot.calendar_event_sources || {}));
       if (server) {
@@ -188,15 +202,67 @@
         const ids = eventSources.get(row.id);
         return ids?.length && ids.every(id=>disabledSources.includes(id));
       };
-      const legacy = dataset.events.filter(row=>!disabled(row)
+      const legacy = dataset.events.filter(row=>(!day || row.start_date === day) && !disabled(row)
         && !(isExhibition(row) && (inventory?.includesLegacy || exhibitions?.hidden(row.id)))).map(row=>{
         const ids = [...new Set(eventSources.get(row.id) || [])];
         return ids.length === 1 ? {...row,source_name:sourceNames.get(ids[0])} : row;
       });
       const additions = (inventory?.entries || []).filter(row=>!disabled(row));
-      const withMovie = row => live && movieFor(row.id) ? {...row,movie:movieFor(row.id)} : row;
-      const fromFilm = rows => (live ? rows || [] : []).filter(row=>!disabledSources.includes(row.source_id));
-      const all = showCatalogue ? [] : deduplicate([...legacy,...fromFilm(film?.items),...additions].map(withMovie));
+      const filmRows = dataset.mode === 'demo' ? [] : forSources(film?.items,disabledSources).filter(row=>!day || row.start_date === day);
+      return deduplicate([...legacy,...filmRows,...additions].map(withMovie));
+    }
+
+    function detail(dataset,id,disabledSources,{relatedImage,save}) {
+      const live = dataset.mode !== 'demo';
+      const showing = live && film?.now_showing?.find(row=>row.id === id);
+      const raw = showing || dataset.events.find(row=>row.id === id) || (live && film?.items.find(row=>row.id === id));
+      const movieDetail = !raw || isFilm(raw);
+      if (live && movieDetail) loadFilm();
+      const back = '<div class="reader-toolbar"><button class="text-link" data-action="reader-back">‹ 返回</button>' + save + '</div>';
+      if ((movieDetail && pending) || !raw) {
+        const message = pending ? '正在载入排期…' : failed ? '排期暂时无法载入。 <button class="text-link" data-cal-retry>重试</button>' : '这条排期暂时无法显示。';
+        return {html:`<article class="reader-page calendar-reader" data-ui="calendar-reader">${back}<p role="status">${message}</p></article>`};
+      }
+      const day = raw.start_date;
+      const grouped = day && activity[raw.event_type] && groupSchedule(calendarEntries(scheduleRows(dataset,disabledSources,null,day),day.slice(0,7)))
+        .find(entry=>entry.row.id === id || entry.screenings.some(slot=>slot.id === id));
+      const row = grouped?.row || withMovie(raw), screenings = grouped?.screenings || [];
+      const title = entryTitle(row), badge = showing ? '在映' : C.eventTypes[row.event_type] || activity[row.event_type];
+      const alternate = row.title_original && normalize(title) !== normalize(row.title_original) ? row.title_original : '';
+      const dates = [...new Set([row.start_date,row.end_date].filter(Boolean))].map(C.dateLabel).join(' — ');
+      const place = placeLabels(row).join(' · ');
+      const picture = cover({...row,image_url:row.image_url || relatedImage(row.id)},title);
+      const slots = screenings.length ? screenings : [row];
+      const times = screeningTimes(slots);
+      const timeLabel = {call_deadline:'截止时刻',streaming_release:'上线时间',exhibition:'活动时间'}[row.event_type] || '放映场次';
+      const links = new Map();
+      const bookingCaption = showing ? '查场次' : row.event_type === 'call_deadline' ? '报名' : '购票';
+      if (!row.is_demo) for (const [value,label] of [
+        [row.watch_url,'观看'],[!times && row.booking_url,bookingCaption], [row.evidence_url,'排期来源'],[row.programme_url,'影片资料'],[row.movie?.douban_url,'豆瓣']
+      ]) {
+        const url = C.safeUrl(value);
+        if (url && !links.has(url)) links.set(url,label);
+      }
+      const status = {cancelled:'已取消',postponed:'已延期',tentative:'日期待确认',needs_confirmation:'日期待确认'}[row.status];
+      const notes = [status,row.booking_status === 'sold_out' && '已售罄',row.price_text,row.time_note,row.closure_note,row.eligibility_note].filter(Boolean);
+      return {title,html:`<article class="reader-page calendar-reader" data-ui="calendar-reader">${back}
+        <header><div class="eyebrow"><span class="channel-tag">${e(badge || '活动')}</span>${dates ? `<span>${e(dates)}</span>` : ''}${row.is_demo ? '<span>示例</span>' : ''}</div>
+        <h1>${e(title)}</h1>${alternate ? `<p class="calendar-original">${e(alternate)}</p>` : ''}${place ? `<p class="calendar-reader-place">${e(place)}</p>` : ''}</header>
+        ${picture ? `<figure class="calendar-reader-cover" data-calendar-art>${picture.html}</figure>` : ''}
+        ${times ? `<section class="calendar-reader-times"><h2>${timeLabel} <small>${row.timezone === 'Asia/Tokyo' ? '东京时间' : '当地时间'}</small></h2><ul class="calendar-times">${times}</ul></section>` : ''}
+        ${notes.map(note=>`<p class="calendar-reader-note">${e(note)}</p>`).join('')}
+        ${links.size ? `<div class="calendar-reader-links">${[...links].map(([url,label])=>`<a ${ref(url)}>${label} ↗</a>`).join('')}</div>` : ''}</article>`};
+    }
+
+    function view(dataset, disabledSources) {
+      sync(dataset);
+      const live = dataset.mode !== 'demo';
+      const showExhibitions = kind === 'exhibition' || kind === 'all';
+      const showFilm = kind !== 'exhibition';
+      const showCatalogue = kind === 'cinema_showing';
+      if (live && showFilm) loadFilm();
+      const inventory = live && showExhibitions ? exhibitions?.calendarInventory() : null;
+      const all = showCatalogue ? [] : scheduleRows(dataset,disabledSources,inventory);
       const rows = all.filter(row=>inArea(row,area,kind)
         && (kind === 'all' || (kind === 'film' ? theatres.includes(row.event_type) : kind === row.event_type)));
       const entries = groupSchedule(calendarEntries(rows,month)), byDay = new Map();
@@ -210,7 +276,7 @@
         days.push(`<button class="calendar-day ${day===dateToday?'reference':''} ${day===chosenDay?'selected':''}" data-cal-day="${day}" aria-label="${day}，${count} 项活动" aria-pressed="${day===chosenDay}"><span>${n}</span>${count ? `<span class="calendar-activity-count">${count}</span>` : ''}</button>`);
       }
       while (days.length % 7) days.push(blank);
-      const visible = showCatalogue ? fromFilm(film?.now_showing).map(row=>({row:withMovie(row),label:'在映',screenings:[]}))
+      const visible = showCatalogue ? (live ? forSources(film?.now_showing,disabledSources) : []).map(row=>({row:withMovie(row),label:'在映',screenings:[]}))
         : chosenDay ? entries.filter(event=>event.day===chosenDay) : entries;
       const pages = Math.max(1,Math.ceil(visible.length / pageSize));
       page = Math.min(page,pages);
@@ -256,7 +322,9 @@
     document.addEventListener('load',event=>{
       const image = event.target;
       if (image.matches?.('[data-calendar-poster]')) {
-        image.closest('.calendar-poster').classList.toggle('landscape', image.naturalWidth > image.naturalHeight);
+        const wide = image.naturalWidth > image.naturalHeight;
+        landscape.set(image.currentSrc,wide);
+        image.closest('.calendar-poster')?.classList.toggle('landscape',wide);
       }
     },true);
     document.addEventListener('error',event=>{
@@ -268,8 +336,9 @@
         image.dataset.calendarBackups = JSON.stringify(backups);
         return;
       }
-      image.closest('.calendar-poster').hidden = true;
-      image.closest('.calendar-entry').classList.remove('has-poster');
+      const art = image.closest('[data-calendar-art]');
+      if (art) art.hidden = true;
+      image.closest('.calendar-entry')?.classList.remove('has-poster');
     },true);
     document.addEventListener('change',event=>{
       if (!isActive()) return;
@@ -298,7 +367,7 @@
       rerender();
       if ('calPage' in d) document.getElementById('calendar-results')?.scrollIntoView({block:'start'});
     });
-    return {view,movieFor};
+    return {view,detail,listState,restoreList,isLoading};
   }
   const api = {create,deduplicate,calendarEntries,groupSchedule,inArea,entryTitle};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

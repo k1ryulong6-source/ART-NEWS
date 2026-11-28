@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const Cal = require('../frontend/calendar.js');
+const C = require('../frontend/core.js');
 
 const slot = (id, fields = {}) => ({
   id, title_original:'海辺の映画', event_type:'cinema_screening', country:'JP', city:'东京', venue:'映画館',
@@ -87,4 +88,29 @@ test('grouped screenings retain artwork from later slots and duplicate official 
   const [group] = Cal.groupSchedule(Cal.calendarEntries([first,next],'2026-11'));
   assert.equal(group.row.movie.artwork_url,artwork.artwork_url);
   assert.equal(group.screenings.length,2);
+});
+
+test('the event reader renders only supplied facts and joins the correct local screening times', t => {
+  const previousDocument = global.document;
+  global.document = { addEventListener() {} };
+  t.after(() => { global.document = previousDocument; });
+  const release = slot('release',{event_type:'cinema_release',start_at:null,city:null,venue:null,price_text:null});
+  const programme = 'https://example.org/programme';
+  const first = slot('first',{timezone:'Asia/Tokyo',source_id:'museum',start_at:'2026-11-30T03:00:00Z',programme_url:programme});
+  const last = slot('last',{...first,id:'last',start_at:'2026-11-30T07:30:00Z',booking_url:'https://example.org/ticket'});
+  const catalogued = {...release,id:'eiga-showing-123',start_date:null,booking_url:'https://example.org/theatres'};
+  const boot = {film_calendar:{items:[first,last],now_showing:[catalogued]}};
+  const schedule = Cal.create({C,boot,server:false});
+  const dataset = {mode:'live',events:[release]};
+  const options = {relatedImage:()=>'',save:''};
+  const detail = schedule.detail(dataset,'release',[],options).html;
+  assert.match(detail, /2026\.11\.30/);
+  assert.doesNotMatch(detail, /待确认|日期精度|原文|calendar-reader-times|calendar-reader-cover/);
+  const screenings = schedule.detail(dataset,'last',[],options).html;
+  assert.match(screenings, /12:00<\/time>/);
+  assert.match(screenings, /16:30<\/time>/);
+  assert.match(screenings, /https:\/\/example\.org\/ticket/);
+  const showing = schedule.detail(dataset,catalogued.id,[],options).html;
+  assert.match(showing, /查场次/);
+  assert.doesNotMatch(showing, /2026\.|calendar-reader-times/);
 });
